@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+server/node_modules/
+
+# Build output
+server/dist/
+
+# Environment variables
+.env
+server/.env
+
+# Prisma
+server/node_modules/.prisma/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+*.local
+
+.vercel

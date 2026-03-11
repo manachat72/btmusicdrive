@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Track Order — btmusicdrive</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { colors: { primary: '#4f46e5' } } }
+    };
+  </script>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body class="bg-gray-50 min-h-screen font-sans">
+
+  <!-- Navbar -->
+  <nav class="bg-white border-b border-gray-100 sticky top-0 z-40">
+    <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-2">
+        <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+          <i class="ph ph-sparkle text-white text-lg"></i>
+        </div>
+        <span class="text-xl font-black text-gray-900 tracking-tight">btmusicdrive</span>
+      </a>
+      <a href="index.html" class="text-sm text-gray-500 hover:text-primary flex items-center gap-1 transition-colors">
+        <i class="ph ph-arrow-left"></i> Back to Store
+      </a>
+    </div>
+  </nav>
+
+  <main class="max-w-2xl mx-auto px-4 py-12">
+
+    <!-- Header -->
+    <div class="text-center mb-10">
+      <div class="inline-flex items-center justify-center w-16 h-16 bg-indigo-50 rounded-2xl mb-4">
+        <i class="ph ph-package text-primary text-3xl"></i>
+      </div>
+      <h1 class="text-3xl font-black text-gray-900">Track Your Order</h1>
+      <p class="text-gray-500 mt-2">Enter your Order ID to see the latest shipping status.</p>
+    </div>
+
+    <!-- Search Form -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
+      <label class="block text-sm font-semibold text-gray-700 mb-2">Order ID</label>
+      <div class="flex gap-3">
+        <input id="order-id-input" type="text" placeholder="e.g. A1B2C3D4"
+          class="flex-1 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition uppercase font-mono" />
+        <button onclick="trackOrder()"
+          class="bg-primary hover:bg-indigo-700 text-white font-bold px-6 py-3 rounded-xl transition-colors flex items-center gap-2 whitespace-nowrap">
+          <i class="ph ph-magnifying-glass"></i> Track
+        </button>
+      </div>
+      <p id="search-error" class="hidden text-red-500 text-sm mt-2 flex items-center gap-1">
+        <i class="ph ph-warning-circle"></i> <span id="search-error-text"></span>
+      </p>
+      <p class="text-xs text-gray-400 mt-3">
+        <i class="ph ph-info mr-1"></i>You can find your Order ID in your confirmation email or on the checkout success page.
+      </p>
+    </div>
+
+    <!-- Loading -->
+    <div id="loading" class="hidden text-center py-10">
+      <i class="ph ph-circle-notch animate-spin text-primary text-4xl"></i>
+      <p class="text-gray-400 mt-2 text-sm">Fetching order details...</p>
+    </div>
+
+    <!-- Result Card -->
+    <div id="result-card" class="hidden space-y-4">
+
+      <!-- Status Banner -->
+      <div id="status-banner" class="rounded-2xl p-5 border flex items-center gap-4">
+        <div id="status-icon" class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 text-2xl"></div>
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider mb-0.5" id="status-label"></p>
+          <p class="text-base font-bold text-gray-900" id="status-message"></p>
+        </div>
+      </div>
+
+      <!-- Tracking Steps -->
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-5">Shipping Progress</h2>
+        <div id="tracking-steps" class="space-y-0"></div>
+      </div>
+
+      <!-- Tracking Link -->
+      <div id="tracking-link-card" class="hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Carrier Tracking</h2>
+        <div class="flex items-center gap-4">
+          <div id="carrier-logo" class="w-12 h-12 rounded-xl flex items-center justify-center text-white text-lg font-black flex-shrink-0"></div>
+          <div class="flex-1">
+            <p class="text-sm font-semibold text-gray-800" id="carrier-name"></p>
+            <p class="text-sm text-gray-500 font-mono" id="tracking-number-display"></p>
+          </div>
+          <a id="tracking-external-link" href="#" target="_blank" rel="noopener"
+            class="bg-primary hover:bg-indigo-700 text-white font-bold px-4 py-2.5 rounded-xl text-sm transition-colors flex items-center gap-2 flex-shrink-0">
+            Track <i class="ph ph-arrow-square-out"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Order Items -->
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Order Items</h2>
+        <div id="order-items-list" class="space-y-3"></div>
+        <div class="border-t border-gray-100 pt-4 mt-4 flex justify-between items-center">
+          <span class="text-sm text-gray-500">Total</span>
+          <span class="text-lg font-black text-gray-900" id="order-total"></span>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    const API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
+      ? 'http://localhost:5000/api'
+      : '/api';
+
+    const STATUS_CONFIG = {
+      PENDING:    { icon: 'ph-clock', color: 'bg-amber-50 border-amber-200', iconBg: 'bg-amber-100', iconColor: 'text-amber-600', label: 'Pending', message: 'Your order has been placed and is awaiting confirmation.' },
+      PROCESSING: { icon: 'ph-gear', color: 'bg-blue-50 border-blue-200', iconBg: 'bg-blue-100', iconColor: 'text-blue-600', label: 'Processing', message: 'Payment confirmed! Your order is being prepared.' },
+      PAID:       { icon: 'ph-check-circle', color: 'bg-green-50 border-green-200', iconBg: 'bg-green-100', iconColor: 'text-green-600', label: 'Paid', message: 'Payment received. Preparing your package.' },
+      SHIPPED:    { icon: 'ph-truck', color: 'bg-indigo-50 border-indigo-200', iconBg: 'bg-indigo-100', iconColor: 'text-indigo-600', label: 'Shipped', message: 'Your package is on the way!' },
+      DELIVERED:  { icon: 'ph-house', color: 'bg-emerald-50 border-emerald-200', iconBg: 'bg-emerald-100', iconColor: 'text-emerald-600', label: 'Delivered', message: 'Package delivered. Enjoy your order!' },
+      CANCELLED:  { icon: 'ph-x-circle', color: 'bg-red-50 border-red-200', iconBg: 'bg-red-100', iconColor: 'text-red-600', label: 'Cancelled', message: 'This order has been cancelled.' },
+    };
+
+    const STEPS = ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED'];
+
+    const CARRIER_TRACKING_URLS = {
+      Kerry: 'https://th.kerryexpress.com/en/track/?track=',
+      Flash: 'https://www.flashexpress.co.th/tracking/?se=',
+    };
+
+    const CARRIER_COLORS = {
+      Kerry: '#e8321f',
+      Flash: '#ff6600',
+    };
+
+    async function trackOrder() {
+      const raw = document.getElementById('order-id-input').value.trim();
+      if (!raw) { showSearchError('Please enter an Order ID.'); return; }
+
+      // Support both short (8-char) and full UUID input
+      hideSearchError();
+      showLoading(true);
+      document.getElementById('result-card').classList.add('hidden');
+
+      const token = localStorage.getItem('btmusicdrive_token');
+      if (!token) {
+        showLoading(false);
+        showSearchError('You must be logged in to track an order. Please sign in at the store.');
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/orders/${raw}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (res.status === 404) { showLoading(false); showSearchError('Order not found. Double-check the Order ID.'); return; }
+        if (res.status === 403) { showLoading(false); showSearchError('You do not have permission to view this order.'); return; }
+        if (!res.ok) { showLoading(false); showSearchError('Server error. Please try again.'); return; }
+
+        const order = await res.json();
+        showLoading(false);
+        renderOrder(order);
+      } catch (e) {
+        showLoading(false);
+        showSearchError('Network error. Is the backend running?');
+      }
+    }
+
+    function renderOrder(order) {
+      const cfg = STATUS_CONFIG[order.status] || STATUS_CONFIG.PENDING;
+
+      // Status banner
+      const banner = document.getElementById('status-banner');
+      banner.className = `rounded-2xl p-5 border flex items-center gap-4 ${cfg.color}`;
+      const iconEl = document.getElementById('status-icon');
+      iconEl.className = `w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 text-2xl ${cfg.iconBg}`;
+      iconEl.innerHTML = `<i class="ph ${cfg.icon} ${cfg.iconColor}"></i>`;
+      document.getElementById('status-label').textContent = cfg.label;
+      document.getElementById('status-label').className = `text-xs font-semibold uppercase tracking-wider mb-0.5 ${cfg.iconColor}`;
+      document.getElementById('status-message').textContent = cfg.message;
+
+      // Tracking steps
+      const stepsEl = document.getElementById('tracking-steps');
+      stepsEl.innerHTML = '';
+      const currentIdx = STEPS.indexOf(order.status);
+      STEPS.forEach((step, idx) => {
+        const done = idx <= currentIdx;
+        const active = idx === currentIdx;
+        const cfg2 = STATUS_CONFIG[step];
+        stepsEl.innerHTML += `
+          <div class="flex gap-4 ${idx < STEPS.length - 1 ? 'pb-5' : ''}">
+            <div class="flex flex-col items-center">
+              <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 transition-all
+                ${done ? 'bg-primary' : 'bg-gray-100'} ${active ? 'ring-4 ring-indigo-100' : ''}">
+                <i class="ph ${done ? 'ph-check-bold' : cfg2.icon} text-sm ${done ? 'text-white' : 'text-gray-400'}"></i>
+              </div>
+              ${idx < STEPS.length - 1 ? `<div class="w-0.5 flex-1 mt-1 ${done ? 'bg-primary' : 'bg-gray-200'}"></div>` : ''}
+            </div>
+            <div class="pt-1.5 pb-1">
+              <p class="text-sm font-semibold ${done ? 'text-gray-900' : 'text-gray-400'}">${cfg2.label}</p>
+              <p class="text-xs text-gray-400 mt-0.5">${cfg2.message}</p>
+            </div>
+          </div>`;
+      });
+
+      // Carrier tracking
+      const linkCard = document.getElementById('tracking-link-card');
+      if (order.trackingNumber && order.carrier) {
+        linkCard.classList.remove('hidden');
+        const logo = document.getElementById('carrier-logo');
+        logo.textContent = order.carrier[0];
+        logo.style.background = CARRIER_COLORS[order.carrier] || '#4f46e5';
+        document.getElementById('carrier-name').textContent = `${order.carrier} Express`;
+        document.getElementById('tracking-number-display').textContent = order.trackingNumber;
+        const trackUrl = (CARRIER_TRACKING_URLS[order.carrier] || '') + order.trackingNumber;
+        document.getElementById('tracking-external-link').href = trackUrl;
+      } else {
+        linkCard.classList.add('hidden');
+      }
+
+      // Items
+      const itemsEl = document.getElementById('order-items-list');
+      itemsEl.innerHTML = (order.items || []).map(item => `
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center flex-shrink-0">
+            <i class="ph ph-package text-primary"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-semibold text-gray-800 truncate">${escHtml(item.product?.name || 'Product')}</p>
+            <p class="text-xs text-gray-400">Qty: ${item.quantity}</p>
+          </div>
+          <p class="text-sm font-bold text-gray-900 flex-shrink-0">฿${(Number(item.priceAtTime) * item.quantity).toFixed(2)}</p>
+        </div>`).join('');
+
+      document.getElementById('order-total').textContent = `฿${Number(order.totalAmount).toFixed(2)}`;
+      document.getElementById('result-card').classList.remove('hidden');
+    }
+
+    function showLoading(show) {
+      document.getElementById('loading').classList.toggle('hidden', !show);
+    }
+
+    function showSearchError(msg) {
+      document.getElementById('search-error-text').textContent = msg;
+      document.getElementById('search-error').classList.remove('hidden');
+    }
+
+    function hideSearchError() {
+      document.getElementById('search-error').classList.add('hidden');
+    }
+
+    function escHtml(str) {
+      const d = document.createElement('div');
+      d.appendChild(document.createTextNode(String(str)));
+      return d.innerHTML;
+    }
+
+    document.getElementById('order-id-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') trackOrder();
+    });
+  </script>
+</body>
+</html>

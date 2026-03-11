@@ -1,0 +1,82 @@
+[
+  {
+    "id": "1",
+    "name": "Minimalist Leather Watch",
+    "price": 4590,
+    "categoryId": "1",
+    "category": { "id": "1", "name": "Accessories" },
+    "imageUrl": "https://images.unsplash.com/photo-1524805444758-089113d48a6d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+    "description": "A sleek, minimalist leather watch perfect for any occasion.",
+    "stock": 50
+  },
+  {
+    "id": "2",
+    "name": "Classic White Sneakers",
+    "price": 2990,
+    "categoryId": "2",
+    "category": { "id": "2", "name": "Shoes" },
+    "imageUrl": "https://images.unsplash.com/photo-1549298916-b41d501d3772?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+    "description": "Comfortable and stylish white sneakers.",
+    "stock": 100
+  },
+  {
+    "id": "3",
+    "name": "Cotton Essentials T-Shirt",
+    "price": 590,
+    "categoryId": "3",
+    "category": { "id": "3", "name": "Clothing" },
+    "imageUrl": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+    "description": "Premium cotton t-shirt for everyday wear.",
+    "stock": 200
+  },
+  {
+    "id": "4",
+    "name": "Premium Denim Jacket",
+    "price": 3990,
+    "categoryId": "3",
+    "category": { "id": "3", "name": "Clothing" },
+    "imageUrl": "https://images.unsplash.com/photo-1576871337632-b9aef4c17ab9?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+    "description": "High-quality denim jacket with a classic fit.",
+    "stock": 30
+  },
+  {
+    "id": "5",
+    "name": "Canvas Weekend Bag",
+    "price": 1890,
+    "categoryId": "1",
+    "category": { "id": "1", "name": "Accessories" },
+    "imageUrl": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+    "description": "Durable canvas bag for weekend getaways.",
+    "stock": 45
+  },
+  {
+    "id": "6",
+    "name": "Polarized Sunglasses",
+    "price": 1290,
+    "categoryId": "1",
+    "category": { "id": "1", "name": "Accessories" },
+    "imageUrl": "https://images.unsplash.com/photo-1511499767150-a48a237f0083?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+    "description": "Stylish polarized sunglasses with UV protection.",
+    "stock": 80
+  },
+  {
+    "id": "7",
+    "name": "Wool Blend Coat",
+    "price": 6990,
+    "categoryId": "3",
+    "category": { "id": "3", "name": "Clothing" },
+    "imageUrl": "https://images.unsplash.com/photo-1539533113208-f6df8cc8b543?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+    "description": "Warm and elegant wool blend coat.",
+    "stock": 20
+  },
+  {
+    "id": "8",
+    "name": "Leather Crossbody Bag",
+    "price": 3290,
+    "categoryId": "1",
+    "category": { "id": "1", "name": "Accessories" },
+    "imageUrl": "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+    "description": "Compact and stylish leather crossbody bag.",
+    "stock": 60
+  }
+]

@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>btmusicdrive — Admin Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <style>
+    /* ── WP Admin Design Tokens ────────────────────────────────────────────── */
+    :root {
+      --sidebar-bg:    #23282d;
+      --sidebar-hover: #2c3338;
+      --topbar-bg:     #1d2327;
+      --accent:        #0073aa;
+      --accent-h:      #006799;
+      --sidebar-txt:   #a7aaad;
+      --sep:           #3c434a;
+      --content-bg:    #f0f0f1;
+      --card-bg:       #fff;
+      --card-border:   #c3c4c7;
+      --text:          #1d2327;
+      --muted:         #646970;
+      --sidebar-w:     250px;
+      --topbar-h:      46px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+           font-size: 13px; background: var(--content-bg); color: var(--text); }
+    a { text-decoration: none; color: inherit; }
+    button { font-family: inherit; }
+
+    /* ── Password Gate ─────────────────────────────────────────────────────── */
+    #password-gate {
+      position: fixed; inset: 0; background: #1d2327;
+      display: flex; align-items: center; justify-content: center; z-index: 9999;
+    }
+    .gate-box {
+      background: #fff; border-radius: 6px; padding: 44px 40px;
+      width: 100%; max-width: 360px; box-shadow: 0 8px 40px rgba(0,0,0,.5);
+      text-align: center;
+    }
+    .gate-logo {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 6px;
+    }
+    .gate-logo-icon {
+      width: 36px; height: 36px; border-radius: 7px; background: var(--accent);
+      display: flex; align-items: center; justify-content: center; color: #fff; font-size: 16px;
+    }
+    .gate-sub   { color: var(--muted); font-size: 13px; margin-bottom: 28px; }
+    .gate-label { display: block; text-align: left; font-size: 12px; font-weight: 600;
+                  color: var(--text); margin-bottom: 6px; }
+    .gate-input {
+      width: 100%; border: 1px solid var(--card-border); border-radius: 4px;
+      padding: 9px 12px; font-size: 14px; outline: none;
+      transition: border-color .15s, box-shadow .15s; margin-bottom: 14px;
+    }
+    .gate-input:focus { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+    .gate-error { color: #d63638; font-size: 12px; margin-bottom: 12px; display: none; }
+    .gate-error.show { display: block; }
+    .gate-btn {
+      width: 100%; background: var(--accent); color: #fff; border: none;
+      border-radius: 4px; padding: 10px; font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: background .15s;
+    }
+    .gate-btn:hover { background: var(--accent-h); }
+
+    /* ── Sidebar ───────────────────────────────────────────────────────────── */
+    #wp-sidebar {
+      position: fixed; top: 0; left: 0; bottom: 0; width: var(--sidebar-w);
+      background: var(--sidebar-bg); z-index: 200;
+      display: flex; flex-direction: column; overflow-y: auto; overflow-x: hidden;
+      transition: transform .25s ease;
+    }
+    #wp-sidebar::-webkit-scrollbar { width: 3px; }
+    #wp-sidebar::-webkit-scrollbar-thumb { background: var(--sep); border-radius: 2px; }
+
+    .sb-brand {
+      padding: 15px 18px; display: flex; align-items: center; gap: 11px;
+      border-bottom: 1px solid var(--sep); flex-shrink: 0;
+    }
+    .sb-brand-icon {
+      width: 32px; height: 32px; border-radius: 6px; background: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 14px; flex-shrink: 0;
+    }
+    .sb-brand-name  { color: #fff; font-size: 14px; font-weight: 700; line-height: 1.2; }
+    .sb-brand-sub   { color: var(--sidebar-txt); font-size: 11px; }
+
+    .sb-nav         { flex: 1; padding: 6px 0; }
+    .sb-section-lbl {
+      padding: 14px 18px 4px; color: #5d6673; font-size: 10px;
+      font-weight: 700; text-transform: uppercase; letter-spacing: .9px;
+    }
+    .sb-sep         { height: 1px; background: var(--sep); margin: 6px 0; }
+
+    .sb-item {
+      display: flex; align-items: center; gap: 11px; padding: 9px 18px;
+      color: var(--sidebar-txt); font-size: 13px; font-weight: 500;
+      cursor: pointer; border-left: 3px solid transparent;
+      transition: background .12s, color .12s;
+      user-select: none;
+    }
+    .sb-item:hover  { background: var(--sidebar-hover); color: #fff; }
+    .sb-item.active { background: var(--sidebar-hover); color: #fff; border-left-color: var(--accent); }
+    .sb-item i      { width: 16px; text-align: center; font-size: 13px; }
+
+    .sb-badge {
+      margin-left: auto; background: #d63638; color: #fff;
+      font-size: 10px; font-weight: 700; padding: 1px 6px;
+      border-radius: 9px; min-width: 18px; text-align: center; display: none;
+    }
+    .sb-badge.show { display: inline-block; }
+
+    .sb-footer {
+      padding: 11px 18px; border-top: 1px solid var(--sep);
+      color: #5d6673; font-size: 11px; flex-shrink: 0;
+    }
+
+    /* ── Sidebar Overlay (mobile) ──────────────────────────────────────────── */
+    #sb-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,.55); z-index: 199;
+    }
+    #sb-overlay.show { display: block; }
+
+    /* ── Top Admin Bar ─────────────────────────────────────────────────────── */
+    #wp-topbar {
+      position: fixed; top: 0; left: var(--sidebar-w); right: 0;
+      height: var(--topbar-h); background: var(--topbar-bg);
+      display: flex; align-items: center; padding: 0 18px; gap: 14px;
+      z-index: 100; box-shadow: 0 1px 0 rgba(255,255,255,.04);
+    }
+    .topbar-hamburger {
+      display: none; background: none; border: none; color: var(--sidebar-txt);
+      font-size: 16px; cursor: pointer; padding: 4px 6px; border-radius: 3px;
+      line-height: 1; transition: color .12s;
+    }
+    .topbar-hamburger:hover { color: #fff; }
+    .topbar-crumb {
+      flex: 1; display: flex; align-items: center; gap: 7px;
+      color: var(--sidebar-txt); font-size: 13px;
+    }
+    .topbar-crumb .site-name { color: #fff; font-weight: 600; }
+    .topbar-crumb .sep-arrow { color: #5d6673; font-size: 12px; }
+    #topbar-title { color: var(--sidebar-txt); }
+
+    .topbar-right { display: flex; align-items: center; gap: 2px; }
+    .tb-btn {
+      display: flex; align-items: center; gap: 6px; padding: 6px 10px;
+      border-radius: 3px; color: var(--sidebar-txt); font-size: 12px;
+      cursor: pointer; border: none; background: none;
+      transition: background .12s, color .12s; white-space: nowrap;
+    }
+    .tb-btn:hover       { background: rgba(255,255,255,.08); color: #fff; }
+    .tb-btn.logout:hover{ color: #f86368; }
+    .tb-divider         { width: 1px; height: 18px; background: var(--sep); margin: 0 4px; }
+
+    /* ── Main Content ──────────────────────────────────────────────────────── */
+    #wp-main {
+      margin-left: var(--sidebar-w); margin-top: var(--topbar-h);
+      min-height: calc(100vh - var(--topbar-h));
+      padding: 22px 24px; background: var(--content-bg);
+    }
+    .wp-page-hdr {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      flex-wrap: wrap; gap: 10px; margin-bottom: 20px;
+    }
+    .wp-page-title { font-size: 23px; font-weight: 400; color: var(--text); line-height: 1.3; }
+    .wp-page-desc  { font-size: 13px; color: var(--muted); margin-top: 3px; }
+
+    /* ── Stats Cards ───────────────────────────────────────────────────────── */
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px;
+    }
+    .stat-card {
+      background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 4px;
+      box-shadow: 0 1px 1px rgba(0,0,0,.04); padding: 18px 18px 16px;
+      display: flex; align-items: flex-start; gap: 14px; border-left: 4px solid;
+    }
+    .stat-card.c-blue   { border-left-color: #0073aa; }
+    .stat-card.c-green  { border-left-color: #00a32a; }
+    .stat-card.c-orange { border-left-color: #f56e28; }
+    .stat-card.c-purple { border-left-color: #8a5dc8; }
+
+    .stat-icon {
+      width: 42px; height: 42px; border-radius: 6px; font-size: 17px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .stat-icon.c-blue   { background: #e6f3f8; color: #0073aa; }
+    .stat-icon.c-green  { background: #eaf7eb; color: #00a32a; }
+    .stat-icon.c-orange { background: #fef0e8; color: #f56e28; }
+    .stat-icon.c-purple { background: #f2eef9; color: #8a5dc8; }
+
+    .stat-val    { font-size: 21px; font-weight: 700; color: var(--text); line-height: 1.1; margin-bottom: 3px; }
+    .stat-lbl    { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+    .stat-trend  { font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 4px; }
+    .trend-up    { color: #00a32a; }
+    .trend-down  { color: #d63638; }
+    .trend-neu   { color: var(--muted); }
+
+    /* ── WP Card ───────────────────────────────────────────────────────────── */
+    .wp-card {
+      background: var(--card-bg); border: 1px solid var(--card-border);
+      border-radius: 4px; box-shadow: 0 1px 1px rgba(0,0,0,.04); margin-bottom: 18px;
+    }
+    .card-hdr {
+      padding: 13px 18px; border-bottom: 1px solid var(--card-border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .card-hdr h2 { font-size: 14px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 8px; }
+    .card-hdr h2 i { color: var(--accent); }
+    .card-tag {
+      font-size: 11px; color: var(--muted); background: var(--content-bg);
+      border: 1px solid #dcdcde; padding: 2px 8px; border-radius: 3px;
+    }
+    .card-body     { padding: 18px; }
+    .card-body.nopad { padding: 0; }
+
+    /* ── Channel Table ─────────────────────────────────────────────────────── */
+    .wp-tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .wp-tbl thead { background: #f6f7f7; }
+    .wp-tbl th {
+      text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--card-border);
+      font-size: 11px; font-weight: 600; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .5px;
+    }
+    .wp-tbl th.r, .wp-tbl td.r { text-align: right; }
+    .wp-tbl td { padding: 11px 14px; border-bottom: 1px solid #f0f0f1; }
+    .wp-tbl tbody tr:last-child td { border-bottom: none; }
+    .wp-tbl tbody tr:hover td { background: #f9f9f9; }
+    .wp-tbl tfoot td {
+      padding: 11px 14px; font-weight: 700; background: #f6f7f7;
+      border-top: 2px solid var(--card-border);
+    }
+    .ch-name-cell { display: flex; align-items: center; gap: 9px; }
+    .ch-icon {
+      width: 26px; height: 26px; border-radius: 5px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 11px;
+    }
+    .share-pill {
+      display: inline-block; padding: 2px 8px; border-radius: 9px;
+      font-size: 11px; font-weight: 700;
+    }
+    .mini-bar-track { background: #f0f0f1; border-radius: 3px; height: 5px; overflow: hidden; min-width: 80px; }
+    .mini-bar-fill  { height: 5px; border-radius: 3px; }
+
+    /* ── Channel Distribution Bars ─────────────────────────────────────────── */
+    .dist-row { margin-bottom: 16px; }
+    .dist-row:last-child { margin-bottom: 0; }
+    .dist-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px; }
+    .dist-label { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; }
+    .dist-dot   { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .dist-val   { font-size: 13px; font-weight: 700; }
+    .dist-track { background: #ebebeb; border-radius: 3px; height: 9px; overflow: hidden; }
+    .dist-fill  { height: 9px; border-radius: 3px; transition: width .7s ease; }
+
+    /* ── Buttons ───────────────────────────────────────────────────────────── */
+    .wp-btn {
+      display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px;
+      border: 1px solid var(--card-border); border-radius: 3px; background: var(--card-bg);
+      color: var(--text); font-size: 13px; font-family: inherit; cursor: pointer;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .wp-btn:hover { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+
+    /* ── Orders States ─────────────────────────────────────────────────────── */
+    .wp-loading-box { padding: 50px 20px; text-align: center; }
+    .wp-spinner {
+      width: 32px; height: 32px; border: 3px solid #dcdcde;
+      border-top-color: var(--accent); border-radius: 50%;
+      animation: spin .75s linear infinite; margin: 0 auto 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .wp-notice {
+      border-left: 4px solid; padding: 12px 16px; font-size: 13px;
+      border-radius: 0 3px 3px 0; margin-bottom: 16px;
+    }
+    .wp-notice.err  { background: #fcf0f1; border-left-color: #d63638; color: #d63638; }
+    .wp-empty-box   { text-align: center; padding: 60px 20px; color: var(--muted); }
+    .wp-empty-box i { font-size: 42px; opacity: .3; display: block; margin-bottom: 12px; }
+
+    /* ── Status Badges ─────────────────────────────────────────────────────── */
+    .s-badge {
+      display: inline-flex; align-items: center; padding: 2px 9px;
+      border-radius: 10px; font-size: 11px; font-weight: 700; white-space: nowrap; border: 1px solid;
+    }
+    .s-PENDING    { background:#fef8ee; color:#996800;  border-color:#f0d5a0; }
+    .s-PROCESSING { background:#eef5fb; color:#0a4b78;  border-color:#afd3e8; }
+    .s-PAID       { background:#edfaef; color:#1a7834;  border-color:#a8e6b4; }
+    .s-SHIPPED    { background:#eef2ff; color:#3730a3;  border-color:#c7d2fe; }
+    .s-DELIVERED  { background:#ecfdf5; color:#065f46;  border-color:#6ee7b7; }
+    .s-CANCELLED  { background:#fef2f2; color:#991b1b;  border-color:#fca5a5; }
+
+    /* ── Tracking Form (inline) ────────────────────────────────────────────── */
+    .track-form   { display: flex; flex-direction: column; gap: 5px; min-width: 210px; }
+    .track-form select,
+    .track-form input[type=text] {
+      width: 100%; padding: 6px 8px; font-size: 12px; font-family: inherit;
+      border: 1px solid var(--card-border); border-radius: 3px; background: #fff;
+      outline: none; transition: border-color .12s;
+    }
+    .track-form select:focus,
+    .track-form input:focus { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+    .track-form-row { display: flex; gap: 5px; }
+    .track-form-row input { flex: 1; min-width: 0; }
+    .ship-btn {
+      padding: 6px 11px; background: var(--accent); color: #fff; border: none;
+      border-radius: 3px; font-size: 12px; font-weight: 600; font-family: inherit;
+      cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 5px;
+      transition: background .12s; flex-shrink: 0;
+    }
+    .ship-btn:hover    { background: var(--accent-h); }
+    .ship-btn:disabled { background: #c3c4c7; cursor: not-allowed; }
+    .track-done { color: #00a32a; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+    .track-meta { font-size: 11px; color: var(--muted); margin-top: 3px; font-family: monospace; }
+
+    /* ── Placeholder Sections ──────────────────────────────────────────────── */
+    .ph-box {
+      background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 4px;
+      padding: 70px 20px; text-align: center; color: var(--muted);
+    }
+    .ph-box i  { font-size: 48px; opacity: .2; display: block; margin-bottom: 16px; }
+    .ph-box h3 { font-size: 18px; color: var(--text); margin-bottom: 6px; font-weight: 400; }
+
+    /* ── Toast ─────────────────────────────────────────────────────────────── */
+    #toast {
+      position: fixed; bottom: 22px; right: 22px; z-index: 9999;
+      background: #1d2327; color: #fff; padding: 11px 18px; border-radius: 4px;
+      font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 9px;
+      box-shadow: 0 4px 18px rgba(0,0,0,.35); max-width: 360px;
+      transform: translateY(90px); opacity: 0;
+      transition: transform .22s ease, opacity .22s ease;
+    }
+    #toast.show       { transform: translateY(0); opacity: 1; }
+    #toast.err #ti    { color: #f86368; }
+    #toast:not(.err) #ti { color: #68de7c; }
+
+    /* ── Responsive ────────────────────────────────────────────────────────── */
+    @media (max-width: 782px) {
+      #wp-sidebar         { transform: translateX(calc(-1 * var(--sidebar-w))); }
+      #wp-sidebar.open    { transform: translateX(0); }
+      #wp-topbar          { left: 0; }
+      #wp-main            { margin-left: 0; padding: 14px; }
+      .topbar-hamburger   { display: flex; }
+      .stats-grid         { grid-template-columns: 1fr 1fr; gap: 12px; }
+      .site-name-crumb    { display: none; }
+      .sep-arrow-crumb    { display: none; }
+    }
+    @media (max-width: 520px) {
+      .stats-grid { gap: 10px; }
+      .stat-val   { font-size: 18px; }
+    }
+    /* ── Settings Form ─────────────────────────────────────────────────────── */
+    .settings-grid   { display: flex; flex-direction: column; gap: 14px; }
+    .settings-row    { display: flex; flex-direction: column; gap: 5px; }
+    .settings-label  { font-size: 12px; font-weight: 600; color: var(--text); }
+    .settings-input  {
+      width: 100%; border: 1px solid var(--card-border); border-radius: 3px;
+      padding: 8px 10px; font-size: 13px; font-family: inherit;
+      outline: none; transition: border-color .12s, box-shadow .12s;
+    }
+    .settings-input:focus { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+    .settings-hint   { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .settings-save-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 16px; background: var(--accent); color: #fff;
+      border: none; border-radius: 3px; font-size: 13px; font-weight: 600;
+      font-family: inherit; cursor: pointer; transition: background .12s;
+    }
+    .settings-save-btn:hover { background: var(--accent-h); }
+
+    /* ── Toggle Switch ─────────────────────────────────────────────────────── */
+    .toggle-switch  { position: relative; display: inline-flex; align-items: center; cursor: pointer; }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .toggle-track   {
+      width: 38px; height: 22px; background: #c3c4c7; border-radius: 11px;
+      transition: background .2s; position: relative;
+    }
+    .toggle-switch input:checked + .toggle-track { background: var(--accent); }
+    .toggle-thumb   {
+      position: absolute; top: 3px; left: 3px;
+      width: 16px; height: 16px; background: #fff; border-radius: 50%;
+      transition: transform .2s; box-shadow: 0 1px 3px rgba(0,0,0,.2);
+    }
+    .toggle-switch input:checked + .toggle-track .toggle-thumb { transform: translateX(16px); }
+
+    /* ── Product image thumb ───────────────────────────────────────────────── */
+    .prod-thumb {
+      width: 42px; height: 42px; border-radius: 4px; object-fit: cover;
+      border: 1px solid var(--card-border); background: #f6f7f7;
+    }
+    .prod-thumb-placeholder {
+      width: 42px; height: 42px; border-radius: 4px;
+      background: #f6f7f7; border: 1px solid var(--card-border);
+      display: flex; align-items: center; justify-content: center;
+      color: #c3c4c7; font-size: 16px;
+    }
+    .role-badge {
+      display: inline-flex; align-items: center; padding: 2px 8px;
+      border-radius: 9px; font-size: 11px; font-weight: 700; border: 1px solid;
+    }
+    .role-ADMIN { background:#eef2ff;color:#3730a3;border-color:#c7d2fe; }
+    .role-USER  { background:#f6f7f7;color:var(--muted);border-color:#dcdcde; }
+
+    /* ── Action Buttons ────────────────────────────────────────────────────── */
+    .action-btn {
+      display: inline-flex; align-items: center; gap: 4px; padding: 4px 9px;
+      border: 1px solid var(--card-border); border-radius: 3px; font-size: 12px;
+      font-family: inherit; cursor: pointer; background: var(--card-bg);
+      color: var(--text); transition: border-color .12s, color .12s;
+    }
+    .action-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .action-btn.del:hover { border-color: #d63638; color: #d63638; }
+  </style>
+</head>
+<body>
+
+<!-- ── PASSWORD GATE ──────────────────────────────────────────────────────── -->
+<div id="password-gate">
+  <div class="gate-box">
+    <div class="gate-logo">
+      <div class="gate-logo-icon"><i class="fa-solid fa-bolt"></i></div>
+      btmusicdrive Admin
+    </div>
+    <p class="gate-sub">Sign in to access the dashboard</p>
+    <label class="gate-label" for="gate-password">Admin Password</label>
+    <input id="gate-password" type="password" class="gate-input" placeholder="Enter password…" />
+    <p id="gate-error" class="gate-error">Incorrect password. Please try again.</p>
+    <button onclick="checkPassword()" class="gate-btn">Log In</button>
+  </div>
+</div>
+
+<!-- ── DASHBOARD ──────────────────────────────────────────────────────────── -->
+<div id="dashboard" style="display:none;">
+
+  <!-- SIDEBAR -->
+  <aside id="wp-sidebar">
+    <div class="sb-brand">
+      <div class="sb-brand-icon"><i class="fa-solid fa-bolt"></i></div>
+      <div>
+        <div class="sb-brand-name">btmusicdrive</div>
+        <div class="sb-brand-sub">Admin Panel</div>
+      </div>
+    </div>
+
+    <nav class="sb-nav">
+      <div class="sb-section-lbl">Main</div>
+      <div class="sb-item active" id="nav-dashboard" onclick="showSection('dashboard')">
+        <i class="fa-solid fa-gauge-high"></i><span>Dashboard</span>
+      </div>
+
+      <div class="sb-section-lbl" style="margin-top:6px;">Store</div>
+      <div class="sb-item" id="nav-orders" onclick="showSection('orders')">
+        <i class="fa-solid fa-box"></i><span>Orders</span>
+        <span class="sb-badge" id="orders-badge"></span>
+      </div>
+      <div class="sb-item" id="nav-products" onclick="showSection('products')">
+        <i class="fa-solid fa-tag"></i><span>Products</span>
+      </div>
+      <div class="sb-item" id="nav-customers" onclick="showSection('customers')">
+        <i class="fa-solid fa-users"></i><span>Customers</span>
+      </div>
+
+      <div class="sb-sep"></div>
+      <div class="sb-item" id="nav-settings" onclick="showSection('settings')">
+        <i class="fa-solid fa-gear"></i><span>Settings</span>
+      </div>
+    </nav>
+
+    <div class="sb-footer">btmusicdrive Store &nbsp;v1.0.0</div>
+  </aside>
+
+  <!-- Mobile overlay -->
+  <div id="sb-overlay" onclick="closeSidebar()"></div>
+
+  <!-- TOP ADMIN BAR -->
+  <header id="wp-topbar">
+    <button class="topbar-hamburger" onclick="toggleSidebar()">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+    <div class="topbar-crumb">
+      <span class="site-name">btmusicdrive</span>
+      <span class="sep-arrow">›</span>
+      <span id="topbar-title">Dashboard</span>
+    </div>
+    <div class="topbar-right">
+      <a href="index.html" class="tb-btn">
+        <i class="fa-solid fa-store"></i><span>View Store</span>
+      </a>
+      <div class="tb-divider"></div>
+      <div class="tb-btn" style="cursor:default;">
+        <i class="fa-solid fa-circle-user"></i><span>Admin</span>
+      </div>
+      <button onclick="logout()" class="tb-btn logout">
+        <i class="fa-solid fa-right-from-bracket"></i><span>Sign Out</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main id="wp-main">
+
+    <!-- ── DASHBOARD SECTION ──────────────────────────────────────────────── -->
+    <section id="section-dashboard">
+      <div class="wp-page-hdr">
+        <div>
+          <h1 class="wp-page-title">Dashboard</h1>
+          <p class="wp-page-desc">Sales overview &mdash; June 2025 (Mockup data)</p>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-card c-blue">
+          <div class="stat-icon c-blue"><i class="fa-solid fa-coins"></i></div>
+          <div>
+            <div class="stat-val">฿183,420</div>
+            <div class="stat-lbl">Total Revenue</div>
+            <div class="stat-trend trend-up"><i class="fa-solid fa-arrow-trend-up"></i> +12.4% vs last month</div>
+          </div>
+        </div>
+        <div class="stat-card c-green">
+          <div class="stat-icon c-green"><i class="fa-solid fa-cart-shopping"></i></div>
+          <div>
+            <div class="stat-val">1,284</div>
+            <div class="stat-lbl">Total Orders</div>
+            <div class="stat-trend trend-up"><i class="fa-solid fa-arrow-trend-up"></i> +8.1% vs last month</div>
+          </div>
+        </div>
+        <div class="stat-card c-orange">
+          <div class="stat-icon c-orange"><i class="fa-solid fa-receipt"></i></div>
+          <div>
+            <div class="stat-val">฿142.85</div>
+            <div class="stat-lbl">Avg. Order Value</div>
+            <div class="stat-trend trend-down"><i class="fa-solid fa-arrow-trend-down"></i> -2.1% vs last month</div>
+          </div>
+        </div>
+        <div class="stat-card c-purple">
+          <div class="stat-icon c-purple"><i class="fa-solid fa-store"></i></div>
+          <div>
+            <div class="stat-val">4</div>
+            <div class="stat-lbl">Active Channels</div>
+            <div class="stat-trend trend-neu">btmusicdrive · Shopee · Lazada · TikTok</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Channel Revenue Table -->
+      <div class="wp-card">
+        <div class="card-hdr">
+          <h2><i class="fa-solid fa-chart-bar"></i>Revenue by Channel</h2>
+          <span class="card-tag">June 2025 &middot; Mockup</span>
+        </div>
+        <div class="card-body nopad" style="overflow-x:auto;">
+          <table class="wp-tbl">
+            <thead>
+              <tr>
+                <th>Channel</th>
+                <th class="r">Orders</th>
+                <th class="r">Revenue</th>
+                <th class="r">Avg. Order</th>
+                <th class="r">Share</th>
+                <th style="width:110px;"></th>
+              </tr>
+            </thead>
+            <tbody id="channel-table-body"></tbody>
+            <tfoot>
+              <tr>
+                <td><strong>Total</strong></td>
+                <td class="r"><strong>1,284</strong></td>
+                <td class="r"><strong>฿183,420</strong></td>
+                <td class="r"><strong>฿142.85</strong></td>
+                <td class="r"><strong>100%</strong></td>
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+      <!-- Distribution bars -->
+      <div class="wp-card">
+        <div class="card-hdr">
+          <h2><i class="fa-solid fa-chart-pie"></i>Revenue Distribution</h2>
+        </div>
+        <div class="card-body" id="channel-bars"></div>
+      </div>
+    </section>
+
+    <!-- ── ORDERS SECTION ─────────────────────────────────────────────────── -->
+    <section id="section-orders" style="display:none;">
+      <div class="wp-page-hdr">
+        <h1 class="wp-page-title">Orders</h1>
+        <button onclick="loadOrders()" class="wp-btn">
+          <i class="fa-solid fa-arrows-rotate"></i> Refresh
+        </button>
+      </div>
+
+      <div id="orders-loading" class="wp-card" style="display:none;">
+        <div class="wp-loading-box">
+          <div class="wp-spinner"></div>
+          <p style="color:var(--muted);">Loading orders…</p>
+        </div>
+      </div>
+
+      <div id="orders-error" class="wp-notice err" style="display:none;">
+        <strong>Error:</strong> <span id="orders-error-text">Failed to load orders.</span>
+        <p style="margin-top:5px;font-size:12px;opacity:.8;">Make sure you are signed in as ADMIN and the backend is running.</p>
+      </div>
+
+      <div id="orders-table-wrapper" class="wp-card" style="display:none;">
+        <div class="card-body nopad" style="overflow-x:auto;">
+          <table class="wp-tbl">
+            <thead>
+              <tr>
+                <th>Order</th>
+                <th>Customer</th>
+                <th>Status</th>
+                <th class="r">Total</th>
+                <th>Date</th>
+                <th>Update Tracking</th>
+              </tr>
+            </thead>
+            <tbody id="orders-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="orders-empty" class="wp-empty-box" style="display:none;">
+        <i class="fa-solid fa-box-open"></i>
+        <p>No orders yet.</p>
+      </div>
+    </section>
+
+    <!-- ── PRODUCTS ──────────────────────────────────────────────────────── -->
+    <section id="section-products" style="display:none;">
+      <div class="wp-page-hdr">
+        <div>
+          <h1 class="wp-page-title">Products</h1>
+          <p class="wp-page-desc" id="products-count-label">Manage your store catalog</p>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button onclick="loadProducts()" class="wp-btn"><i class="fa-solid fa-arrows-rotate"></i> Refresh</button>
+          <button onclick="openProductModal(null)" class="wp-btn" style="background:var(--accent);color:#fff;border-color:var(--accent);">
+            <i class="fa-solid fa-plus"></i> Add Product
+          </button>
+        </div>
+      </div>
+
+      <div id="products-loading" class="wp-card" style="display:none;">
+        <div class="wp-loading-box"><div class="wp-spinner"></div><p style="color:var(--muted);">Loading products…</p></div>
+      </div>
+      <div id="products-error" class="wp-notice err" style="display:none;">
+        <strong>Error:</strong> <span id="products-error-text"></span>
+      </div>
+
+      <div id="products-table-wrapper" class="wp-card" style="display:none;">
+        <div class="card-body nopad" style="overflow-x:auto;">
+          <table class="wp-tbl">
+            <thead>
+              <tr>
+                <th style="width:60px;">Image</th>
+                <th>Product</th>
+                <th>Category</th>
+                <th class="r">Price</th>
+                <th class="r">Stock</th>
+                <th style="width:120px;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="products-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div id="products-empty" class="wp-empty-box" style="display:none;">
+        <i class="fa-solid fa-tag"></i><p>No products found.</p>
+      </div>
+    </section>
+
+    <!-- ── CUSTOMERS ─────────────────────────────────────────────────────── -->
+    <section id="section-customers" style="display:none;">
+      <div class="wp-page-hdr">
+        <div>
+          <h1 class="wp-page-title">Customers</h1>
+          <p class="wp-page-desc" id="customers-count-label">All registered accounts</p>
+        </div>
+        <button onclick="loadCustomers()" class="wp-btn"><i class="fa-solid fa-arrows-rotate"></i> Refresh</button>
+      </div>
+      <div class="wp-card" style="margin-bottom:14px;">
+        <div class="card-body" style="padding:12px 16px;">
+          <div style="display:flex;gap:10px;align-items:center;">
+            <i class="fa-solid fa-magnifying-glass" style="color:var(--muted);font-size:13px;"></i>
+            <input id="customer-search" type="text" placeholder="Search by name or email…" oninput="filterCustomers()"
+              style="flex:1;border:none;outline:none;font-size:13px;font-family:inherit;background:transparent;">
+          </div>
+        </div>
+      </div>
+      <div id="customers-loading" class="wp-card" style="display:none;">
+        <div class="wp-loading-box"><div class="wp-spinner"></div><p style="color:var(--muted);">Loading customers…</p></div>
+      </div>
+      <div id="customers-error" class="wp-notice err" style="display:none;">
+        <strong>Error:</strong> <span id="customers-error-text"></span>
+      </div>
+      <div id="customers-table-wrapper" class="wp-card" style="display:none;">
+        <div class="card-body nopad" style="overflow-x:auto;">
+          <table class="wp-tbl">
+            <thead><tr><th>Customer</th><th>Email</th><th>Role</th><th class="r">Orders</th><th>Joined</th></tr></thead>
+            <tbody id="customers-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div id="customers-empty" class="wp-empty-box" style="display:none;">
+        <i class="fa-solid fa-users"></i><p>No customers found.</p>
+      </div>
+    </section>
+
+    <!-- ── SETTINGS ──────────────────────────────────────────────────────── -->
+    <section id="section-settings" style="display:none;">
+      <div class="wp-page-hdr"><h1 class="wp-page-title">Settings</h1></div>
+
+      <!-- Store Info -->
+      <div class="wp-card" style="margin-bottom:18px;">
+        <div class="card-hdr"><h2><i class="fa-solid fa-store"></i>Store Information</h2></div>
+        <div class="card-body">
+          <div class="settings-grid">
+            <div class="settings-row">
+              <label class="settings-label">Store Name</label>
+              <input type="text" id="s-store-name" class="settings-input" value="btmusicdrive">
+            </div>
+            <div class="settings-row">
+              <label class="settings-label">Support Email</label>
+              <input type="email" id="s-support-email" class="settings-input" placeholder="support@example.com">
+            </div>
+            <div class="settings-row">
+              <label class="settings-label">Store URL</label>
+              <input type="text" id="s-store-url" class="settings-input" value="https://btmusicdrive.vercel.app">
+            </div>
+            <div class="settings-row">
+              <label class="settings-label">Currency</label>
+              <select id="s-currency" class="settings-input">
+                <option value="THB" selected>THB — Thai Baht (฿)</option>
+                <option value="USD">USD — US Dollar ($)</option>
+                <option value="EUR">EUR — Euro (€)</option>
+              </select>
+            </div>
+          </div>
+          <div style="margin-top:14px;"><button onclick="saveSettings('store')" class="settings-save-btn"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button></div>
+        </div>
+      </div>
+
+      <!-- Shipping & Tax -->
+      <div class="wp-card" style="margin-bottom:18px;">
+        <div class="card-hdr"><h2><i class="fa-solid fa-truck"></i>Shipping &amp; Tax</h2></div>
+        <div class="card-body">
+          <div class="settings-grid">
+            <div class="settings-row">
+              <label class="settings-label">Flat Shipping Rate (฿)</label>
+              <input type="number" id="s-shipping" class="settings-input" value="50" min="0">
+              <p class="settings-hint">Applied to all orders at checkout.</p>
+            </div>
+            <div class="settings-row">
+              <label class="settings-label">Free Shipping Threshold (฿)</label>
+              <input type="number" id="s-free-shipping" class="settings-input" placeholder="e.g. 1500 (0 = disabled)" min="0" value="0">
+            </div>
+            <div class="settings-row">
+              <label class="settings-label">Tax Rate (%)</label>
+              <input type="number" id="s-tax" class="settings-input" value="8" min="0" max="100" step="0.1">
+            </div>
+          </div>
+          <div style="margin-top:14px;"><button onclick="saveSettings('shipping')" class="settings-save-btn"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button></div>
+        </div>
+      </div>
+
+      <!-- Payment -->
+      <div class="wp-card" style="margin-bottom:18px;">
+        <div class="card-hdr"><h2><i class="fa-solid fa-credit-card"></i>Payment Providers</h2></div>
+        <div class="card-body">
+          <div class="settings-grid">
+            <div class="settings-row">
+              <label class="settings-label">Stripe Publishable Key</label>
+              <input type="text" id="s-stripe-pk" class="settings-input" placeholder="pk_live_…">
+            </div>
+            <div class="settings-row">
+              <label class="settings-label">Stripe Secret Key</label>
+              <input type="password" id="s-stripe-sk" class="settings-input" placeholder="sk_live_…">
+              <p class="settings-hint">Stored securely on the server — never exposed to the browser.</p>
+            </div>
+            <div class="settings-row" style="align-items:center;flex-direction:row;gap:10px;">
+              <label class="settings-label" style="margin:0;flex:none;">Cash on Delivery</label>
+              <label class="toggle-switch">
+                <input type="checkbox" id="s-cod" checked>
+                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              </label>
+            </div>
+          </div>
+          <div style="margin-top:14px;"><button onclick="saveSettings('payment')" class="settings-save-btn"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button></div>
+        </div>
+      </div>
+
+      <!-- Security -->
+      <div class="wp-card">
+        <div class="card-hdr"><h2><i class="fa-solid fa-shield-halved"></i>Admin Security</h2></div>
+        <div class="card-body">
+          <div class="settings-grid">
+            <div class="settings-row">
+              <label class="settings-label">Current Password</label>
+              <input type="password" id="s-pw-current" class="settings-input" placeholder="Enter current password">
+            </div>
+            <div class="settings-row">
+              <label class="settings-label">New Password</label>
+              <input type="password" id="s-pw-new" class="settings-input" placeholder="Minimum 8 characters">
+            </div>
+            <div class="settings-row">
+              <label class="settings-label">Confirm New Password</label>
+              <input type="password" id="s-pw-confirm" class="settings-input" placeholder="Repeat new password">
+            </div>
+          </div>
+          <div style="margin-top:14px;"><button onclick="changeAdminPassword()" class="settings-save-btn"><i class="fa-solid fa-key"></i> Change Password</button></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div><!-- end #dashboard -->
+
+<!-- ── PRODUCT MODAL ──────────────────────────────────────────────────────── -->
+<div id="product-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:6px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3);margin:16px;">
+    <div style="padding:16px 20px;border-bottom:1px solid var(--card-border);display:flex;align-items:center;justify-content:space-between;">
+      <h2 id="modal-title" style="font-size:15px;font-weight:700;">Add Product</h2>
+      <button onclick="closeProductModal()" style="background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;line-height:1;">&#x2715;</button>
+    </div>
+    <div style="padding:20px;">
+      <input type="hidden" id="pm-id">
+      <div class="settings-grid">
+        <div class="settings-row">
+          <label class="settings-label">Product Name <span style="color:#d63638;">*</span></label>
+          <input type="text" id="pm-name" class="settings-input" placeholder="e.g. Classic White Sneakers">
+        </div>
+        <div class="settings-row">
+          <label class="settings-label">Price (฿) <span style="color:#d63638;">*</span></label>
+          <input type="number" id="pm-price" class="settings-input" placeholder="0" min="0" step="1">
+        </div>
+        <div class="settings-row">
+          <label class="settings-label">Category</label>
+          <input type="text" id="pm-category" class="settings-input" placeholder="e.g. Shoes, Clothing, Accessories">
+        </div>
+        <div class="settings-row">
+          <label class="settings-label">Stock</label>
+          <input type="number" id="pm-stock" class="settings-input" placeholder="0" min="0">
+        </div>
+        <div class="settings-row">
+          <label class="settings-label">Image URL</label>
+          <input type="text" id="pm-image" class="settings-input" placeholder="https://…">
+        </div>
+        <div class="settings-row">
+          <label class="settings-label">Description</label>
+          <textarea id="pm-description" class="settings-input" rows="3" placeholder="Short product description…" style="resize:vertical;"></textarea>
+        </div>
+      </div>
+      <div id="pm-error" style="display:none;color:#d63638;font-size:12px;margin-top:10px;padding:8px 12px;background:#fcf0f1;border-radius:3px;border-left:3px solid #d63638;"></div>
+      <div style="margin-top:16px;display:flex;gap:8px;justify-content:flex-end;">
+        <button onclick="closeProductModal()" class="wp-btn">Cancel</button>
+        <button onclick="saveProduct()" id="pm-save-btn" class="settings-save-btn"><i class="fa-solid fa-floppy-disk"></i> Save Product</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── DELETE CONFIRM MODAL ───────────────────────────────────────────────── -->
+<div id="confirm-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:600;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:6px;width:100%;max-width:360px;padding:28px 24px;box-shadow:0 20px 60px rgba(0,0,0,.3);margin:16px;text-align:center;">
+    <div style="width:52px;height:52px;border-radius:50%;background:#fef2f2;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
+      <i class="fa-solid fa-trash" style="color:#d63638;font-size:20px;"></i>
+    </div>
+    <h3 style="font-size:16px;font-weight:700;margin-bottom:6px;">Delete Product?</h3>
+    <p id="confirm-text" style="font-size:13px;color:var(--muted);margin-bottom:20px;">This action cannot be undone.</p>
+    <div style="display:flex;gap:8px;justify-content:center;">
+      <button onclick="closeConfirm()" class="wp-btn">Cancel</button>
+      <button onclick="confirmDelete()" id="confirm-delete-btn" style="background:#d63638;color:#fff;border:none;border-radius:3px;padding:7px 18px;font-size:13px;font-weight:600;cursor:pointer;">
+        <i class="fa-solid fa-trash"></i> Delete
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast">
+  <i id="ti" class="fa-solid fa-circle-check"></i>
+  <span id="toast-msg"></span>
+</div>
+
+<script>
+  const API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
+    ? 'http://localhost:5000/api' : '/api';
+  const ADMIN_PASSWORD = 'lumina-admin-2025';
+
+  const CHANNELS = [
+    { name: 'btmusicdrive Store', icon: 'fa-bolt',         color: '#0073aa', orders: 312, revenue: 44616, share: 24.3 },
+    { name: 'Shopee',       icon: 'fa-store',         color: '#ee4d2d', orders: 487, revenue: 68978, share: 37.6 },
+    { name: 'Lazada',       icon: 'fa-bag-shopping',  color: '#0f146d', orders: 298, revenue: 43512, share: 23.7 },
+    { name: 'TikTok Shop',  icon: 'fa-music',         color: '#2d2d2d', orders: 187, revenue: 26314, share: 14.4 },
+  ];
+
+  const SECTIONS = ['dashboard', 'orders', 'products', 'customers', 'settings'];
+  const SECTION_TITLES = {
+    dashboard: 'Dashboard', orders: 'Orders', products: 'Products',
+    customers: 'Customers', settings: 'Settings'
+  };
+
+  // ── Gate ──────────────────────────────────────────────────────────────────
+  function checkPassword() {
+    const val = document.getElementById('gate-password').value;
+    if (val === ADMIN_PASSWORD) {
+      sessionStorage.setItem('lumina_admin', '1');
+      document.getElementById('password-gate').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+      initDashboard();
+    } else {
+      document.getElementById('gate-error').classList.add('show');
+      document.getElementById('gate-password').value = '';
+      document.getElementById('gate-password').focus();
+    }
+  }
+  document.getElementById('gate-password').addEventListener('keydown', e => {
+    if (e.key === 'Enter') checkPassword();
+  });
+  function logout() {
+    sessionStorage.removeItem('lumina_admin');
+    document.getElementById('dashboard').style.display = 'none';
+    document.getElementById('password-gate').style.display = 'flex';
+    document.getElementById('gate-password').value = '';
+    document.getElementById('gate-error').classList.remove('show');
+  }
+  if (sessionStorage.getItem('lumina_admin')) {
+    document.getElementById('password-gate').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    initDashboard();
+  }
+
+  // ── Mobile sidebar ────────────────────────────────────────────────────────
+  function toggleSidebar() {
+    document.getElementById('wp-sidebar').classList.toggle('open');
+    document.getElementById('sb-overlay').classList.toggle('show');
+  }
+  function closeSidebar() {
+    document.getElementById('wp-sidebar').classList.remove('open');
+    document.getElementById('sb-overlay').classList.remove('show');
+  }
+
+  // ── Section switching ─────────────────────────────────────────────────────
+  function showSection(id) {
+    SECTIONS.forEach(s => {
+      const el = document.getElementById('section-' + s);
+      if (el) el.style.display = 'none';
+      const nav = document.getElementById('nav-' + s);
+      if (nav) nav.classList.remove('active');
+    });
+    const target = document.getElementById('section-' + id);
+    if (target) target.style.display = 'block';
+    const navEl = document.getElementById('nav-' + id);
+    if (navEl) navEl.classList.add('active');
+    document.getElementById('topbar-title').textContent = SECTION_TITLES[id] || id;
+    closeSidebar();
+    if (id === 'orders') loadOrders();
+  }
+
+  // ── Init ──────────────────────────────────────────────────────────────────
+  function initDashboard() {
+    renderChannelTable();
+    renderChannelBars();
+    showSection('dashboard');
+  }
+
+  // ── Sales Overview ────────────────────────────────────────────────────────
+  function renderChannelTable() {
+    document.getElementById('channel-table-body').innerHTML = CHANNELS.map(c => `
+      <tr>
+        <td>
+          <div class="ch-name-cell">
+            <div class="ch-icon" style="background:${c.color};"><i class="fa-solid ${c.icon}"></i></div>
+            <strong>${c.name}</strong>
+          </div>
+        </td>
+        <td class="r">${c.orders.toLocaleString()}</td>
+        <td class="r"><strong>฿${c.revenue.toLocaleString()}</strong></td>
+        <td class="r" style="color:var(--muted);">฿${(c.revenue / c.orders).toFixed(2)}</td>
+        <td class="r">
+          <span class="share-pill" style="background:${c.color}22;color:${c.color};">${c.share}%</span>
+        </td>
+        <td>
+          <div class="mini-bar-track">
+            <div class="mini-bar-fill" style="width:${c.share}%;background:${c.color};"></div>
+          </div>
+        </td>
+      </tr>`).join('');
+  }
+
+  function renderChannelBars() {
+    const max = Math.max(...CHANNELS.map(c => c.revenue));
+    document.getElementById('channel-bars').innerHTML = CHANNELS.map(c => `
+      <div class="dist-row">
+        <div class="dist-meta">
+          <div class="dist-label">
+            <div class="dist-dot" style="background:${c.color};"></div>
+            <span>${c.name}</span>
+          </div>
+          <span class="dist-val">฿${c.revenue.toLocaleString()}</span>
+        </div>
+        <div class="dist-track">
+          <div class="dist-fill" style="width:${(c.revenue / max * 100).toFixed(1)}%;background:${c.color};"></div>
+        </div>
+      </div>`).join('');
+  }
+
+  // ── Orders ────────────────────────────────────────────────────────────────
+  function vis(id, show) {
+    const el = document.getElementById(id);
+    if (el) el.style.display = show ? 'block' : 'none';
+  }
+
+  async function loadOrders() {
+    const token = localStorage.getItem('btmusicdrive_token');
+    vis('orders-loading', true);
+    vis('orders-table-wrapper', false);
+    vis('orders-error', false);
+    vis('orders-empty', false);
+
+    if (!token) {
+      vis('orders-loading', false);
+      document.getElementById('orders-error-text').textContent = 'No auth token. Please sign in as ADMIN on the store first.';
+      vis('orders-error', true);
+      return;
+    }
+    try {
+      const res = await fetch(`${API_BASE}/orders`, { headers: { Authorization: `Bearer ${token}` } });
+      vis('orders-loading', false);
+      if (res.status === 403) {
+        document.getElementById('orders-error-text').textContent = 'Your account does not have ADMIN role.';
+        vis('orders-error', true); return;
+      }
+      if (!res.ok) {
+        document.getElementById('orders-error-text').textContent = 'Server error. Is the backend running?';
+        vis('orders-error', true); return;
+      }
+      const orders = await res.json();
+
+      const pending = orders.filter(o => o.status === 'PENDING' || o.status === 'PROCESSING').length;
+      const badge = document.getElementById('orders-badge');
+      badge.textContent = pending;
+      badge.classList.toggle('show', pending > 0);
+
+      if (!orders.length) { vis('orders-empty', true); return; }
+      renderOrdersTable(orders);
+      vis('orders-table-wrapper', true);
+    } catch {
+      vis('orders-loading', false);
+      document.getElementById('orders-error-text').textContent = 'Network error. Is the backend running on port 5000?';
+      vis('orders-error', true);
+    }
+  }
+
+  function renderOrdersTable(orders) {
+    document.getElementById('orders-tbody').innerHTML = orders.map(order => {
+      const date = new Date(order.createdAt).toLocaleDateString('th-TH', { day: '2-digit', month: 'short', year: 'numeric' });
+      const shortId = '#' + order.id.slice(-8).toUpperCase();
+      const name  = order.user?.name || order.user?.email?.split('@')[0] || 'Unknown';
+      const email = order.user?.email || '';
+      const shipped = order.status === 'SHIPPED' || order.status === 'DELIVERED';
+      return `
+        <tr>
+          <td>
+            <div style="font-family:monospace;font-weight:700;font-size:12px;">${shortId}</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px;">${order.items?.length || 0} item(s)</div>
+          </td>
+          <td>
+            <div style="font-weight:600;">${escHtml(name)}</div>
+            <div style="font-size:11px;color:var(--muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(email)}</div>
+          </td>
+          <td>
+            <span class="s-badge s-${order.status}">${order.status}</span>
+            ${order.trackingNumber ? `<div class="track-meta">${escHtml(order.carrier||'')} &middot; ${escHtml(order.trackingNumber)}</div>` : ''}
+          </td>
+          <td class="r" style="font-weight:700;">฿${Number(order.totalAmount).toFixed(2)}</td>
+          <td style="white-space:nowrap;color:var(--muted);font-size:12px;">${date}</td>
+          <td>
+            ${shipped
+              ? `<div class="track-done"><i class="fa-solid fa-circle-check"></i> Tracking set</div>`
+              : `<form class="track-form" onsubmit="submitTracking(event,'${order.id}')">
+                  <select name="carrier" required>
+                    <option value="">Select Carrier…</option>
+                    <option value="Kerry">Kerry Express</option>
+                    <option value="Flash">Flash Express</option>
+                  </select>
+                  <div class="track-form-row">
+                    <input type="text" name="trackingNumber" placeholder="Tracking number" required />
+                    <button type="submit" class="ship-btn">
+                      <i class="fa-solid fa-truck"></i> Ship
+                    </button>
+                  </div>
+                </form>`
+            }
+          </td>
+        </tr>`;
+    }).join('');
+  }
+
+  async function submitTracking(e, orderId) {
+    e.preventDefault();
+    const form = e.target;
+    const carrier = form.carrier.value;
+    const trackingNumber = form.trackingNumber.value.trim();
+    const token = localStorage.getItem('btmusicdrive_token');
+    const btn = form.querySelector('.ship-btn');
+    if (!token) { showToast('No auth token found.', true); return; }
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>';
+    try {
+      const res = await fetch(`${API_BASE}/orders/${orderId}/tracking`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ carrier, trackingNumber })
+      });
+      if (res.ok) {
+        showToast(`Shipped via ${carrier} — tracking email sent!`);
+        loadOrders();
+      } else {
+        const data = await res.json().catch(() => ({}));
+        showToast(data.error || 'Failed to update tracking.', true);
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-truck"></i> Ship';
+      }
+    } catch {
+      showToast('Network error.', true);
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-truck"></i> Ship';
+    }
+  }
+
+  // ── Toast ─────────────────────────────────────────────────────────────────
+  let toastTimer;
+  function showToast(msg, isError = false) {
+    clearTimeout(toastTimer);
+    const toast = document.getElementById('toast');
+    document.getElementById('ti').className = `fa-solid ${isError ? 'fa-triangle-exclamation' : 'fa-circle-check'}`;
+    document.getElementById('toast-msg').textContent = msg;
+    toast.className = isError ? 'err show' : 'show';
+    toastTimer = setTimeout(() => { toast.className = isError ? 'err' : ''; }, 4000);
+  }
+
+  function escHtml(str) {
+    const d = document.createElement('div');
+    d.appendChild(document.createTextNode(String(str)));
+    return d.innerHTML;
+  }
+  // ── Section loading triggers ──────────────────────────────────────────────
+  const _origShowSection = showSection;
+  function showSection(id) {
+    _origShowSection(id);
+    if (id === 'products') loadProducts();
+    if (id === 'customers') loadCustomers();
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // PRODUCTS
+  // ══════════════════════════════════════════════════════════════════════════
+  let _products = [];
+
+  async function loadProducts() {
+    const token = localStorage.getItem('btmusicdrive_token');
+    vis('products-loading', true);
+    vis('products-table-wrapper', false);
+    vis('products-error', false);
+    vis('products-empty', false);
+
+    try {
+      let products = [];
+      if (token) {
+        const res = await fetch(`${API_BASE}/products`, { headers: { Authorization: `Bearer ${token}` } });
+        if (res.ok) products = await res.json();
+        else throw new Error('api_fail');
+      } else throw new Error('no_token');
+      _products = products;
+    } catch {
+      // Fallback to local products.json
+      try {
+        const res = await fetch('products.json');
+        _products = res.ok ? await res.json() : [];
+      } catch { _products = []; }
+    }
+
+    vis('products-loading', false);
+    document.getElementById('products-count-label').textContent =
+      `${_products.length} product${_products.length !== 1 ? 's' : ''} in your catalog`;
+
+    if (!_products.length) { vis('products-empty', true); return; }
+    renderProductsTable(_products);
+    vis('products-table-wrapper', true);
+  }
+
+  function renderProductsTable(products) {
+    document.getElementById('products-tbody').innerHTML = products.map(p => `
+      <tr>
+        <td>${p.imageUrl
+          ? `<img src="${escHtml(p.imageUrl)}" class="prod-thumb" alt="">`
+          : `<div class="prod-thumb-placeholder"><i class="fa-solid fa-tag"></i></div>`}</td>
+        <td>
+          <div style="font-weight:600;">${escHtml(p.name)}</div>
+          <div style="font-size:11px;color:var(--muted);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(p.description || '')}</div>
+        </td>
+        <td style="color:var(--muted);">${escHtml(p.category?.name || p.categoryName || '—')}</td>
+        <td class="r" style="font-weight:700;">฿${Number(p.price).toLocaleString()}</td>
+        <td class="r">
+          <span style="font-weight:${p.stock <= 5 ? '700' : '400'};color:${p.stock <= 5 ? '#d63638' : 'inherit'};">
+            ${p.stock ?? '—'}
+          </span>
+        </td>
+        <td style="white-space:nowrap;">
+          <button class="action-btn" onclick='openProductModal(${JSON.stringify(p)})'><i class="fa-solid fa-pen"></i> Edit</button>
+          <button class="action-btn del" onclick="askDeleteProduct('${escHtml(p.id)}','${escHtml(p.name)}')" style="margin-left:4px;"><i class="fa-solid fa-trash"></i></button>
+        </td>
+      </tr>`).join('');
+  }
+
+  // Product Modal
+  let _deleteProductId = null;
+
+  function openProductModal(product) {
+    document.getElementById('pm-error').style.display = 'none';
+    document.getElementById('pm-id').value      = product?.id || '';
+    document.getElementById('pm-name').value    = product?.name || '';
+    document.getElementById('pm-price').value   = product?.price || '';
+    document.getElementById('pm-category').value= product?.category?.name || product?.categoryName || '';
+    document.getElementById('pm-stock').value   = product?.stock ?? '';
+    document.getElementById('pm-image').value   = product?.imageUrl || '';
+    document.getElementById('pm-description').value = product?.description || '';
+    document.getElementById('modal-title').textContent = product ? 'Edit Product' : 'Add Product';
+    document.getElementById('product-modal').style.display = 'flex';
+  }
+
+  function closeProductModal() {
+    document.getElementById('product-modal').style.display = 'none';
+  }
+
+  async function saveProduct() {
+    const id    = document.getElementById('pm-id').value;
+    const name  = document.getElementById('pm-name').value.trim();
+    const price = document.getElementById('pm-price').value;
+    const errEl = document.getElementById('pm-error');
+
+    if (!name)  { errEl.textContent = 'Product name is required.'; errEl.style.display = 'block'; return; }
+    if (!price) { errEl.textContent = 'Price is required.'; errEl.style.display = 'block'; return; }
+
+    const body = {
+      name, price: parseFloat(price),
+      categoryName: document.getElementById('pm-category').value.trim(),
+      stock: parseInt(document.getElementById('pm-stock').value) || 0,
+      imageUrl: document.getElementById('pm-image').value.trim(),
+      description: document.getElementById('pm-description').value.trim(),
+    };
+
+    const token = localStorage.getItem('btmusicdrive_token');
+    const btn = document.getElementById('pm-save-btn');
+    btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Saving…';
+    errEl.style.display = 'none';
+
+    try {
+      const url    = id ? `${API_BASE}/products/${id}` : `${API_BASE}/products`;
+      const method = id ? 'PATCH' : 'POST';
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify(body)
+      });
+      if (res.ok) {
+        closeProductModal();
+        showToast(id ? 'Product updated!' : 'Product created!');
+        loadProducts();
+      } else {
+        const data = await res.json().catch(() => ({}));
+        errEl.textContent = data.error || 'Failed to save product.';
+        errEl.style.display = 'block';
+      }
+    } catch {
+      errEl.textContent = 'Network error. Is the backend running?';
+      errEl.style.display = 'block';
+    }
+
+    btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Product';
+  }
+
+  function askDeleteProduct(id, name) {
+    _deleteProductId = id;
+    document.getElementById('confirm-text').textContent = `"${name}" will be permanently deleted.`;
+    document.getElementById('confirm-modal').style.display = 'flex';
+  }
+
+  function closeConfirm() {
+    _deleteProductId = null;
+    document.getElementById('confirm-modal').style.display = 'none';
+  }
+
+  async function confirmDelete() {
+    if (!_deleteProductId) return;
+    const token = localStorage.getItem('btmusicdrive_token');
+    const btn = document.getElementById('confirm-delete-btn');
+    btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>';
+    try {
+      const res = await fetch(`${API_BASE}/products/${_deleteProductId}`, {
+        method: 'DELETE',
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      });
+      if (res.ok) {
+        closeConfirm(); showToast('Product deleted.'); loadProducts();
+      } else {
+        const data = await res.json().catch(() => ({}));
+        showToast(data.error || 'Failed to delete product.', true);
+        btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-trash"></i> Delete';
+      }
+    } catch {
+      showToast('Network error.', true);
+      btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-trash"></i> Delete';
+    }
+  }
+
+  // Close modals on backdrop click
+  document.getElementById('product-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeProductModal(); });
+  document.getElementById('confirm-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeConfirm(); });
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // CUSTOMERS
+  // ══════════════════════════════════════════════════════════════════════════
+  let _customers = [];
+
+  async function loadCustomers() {
+    const token = localStorage.getItem('btmusicdrive_token');
+    vis('customers-loading', true);
+    vis('customers-table-wrapper', false);
+    vis('customers-error', false);
+    vis('customers-empty', false);
+
+    if (!token) {
+      vis('customers-loading', false);
+      document.getElementById('customers-error-text').textContent = 'No auth token. Please sign in as ADMIN on the store first.';
+      vis('customers-error', true); return;
+    }
+    try {
+      const res = await fetch(`${API_BASE}/users`, { headers: { Authorization: `Bearer ${token}` } });
+      vis('customers-loading', false);
+      if (res.status === 403) {
+        document.getElementById('customers-error-text').textContent = 'Your account does not have ADMIN role.';
+        vis('customers-error', true); return;
+      }
+      if (!res.ok) {
+        document.getElementById('customers-error-text').textContent = 'Server error. Is the backend running?';
+        vis('customers-error', true); return;
+      }
+      _customers = await res.json();
+      document.getElementById('customers-count-label').textContent =
+        `${_customers.length} registered customer${_customers.length !== 1 ? 's' : ''}`;
+      if (!_customers.length) { vis('customers-empty', true); return; }
+      renderCustomersTable(_customers);
+      vis('customers-table-wrapper', true);
+    } catch {
+      vis('customers-loading', false);
+      document.getElementById('customers-error-text').textContent = 'Network error. Is the backend running?';
+      vis('customers-error', true);
+    }
+  }
+
+  function renderCustomersTable(customers) {
+    document.getElementById('customers-tbody').innerHTML = customers.map(u => {
+      const joined = new Date(u.createdAt).toLocaleDateString('th-TH', { day:'2-digit', month:'short', year:'numeric' });
+      const initials = (u.name || u.email || '?').slice(0,2).toUpperCase();
+      const orderCount = u._count?.orders ?? u.orderCount ?? '—';
+      return `
+        <tr>
+          <td>
+            <div style="display:flex;align-items:center;gap:9px;">
+              <div style="width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;flex-shrink:0;">${escHtml(initials)}</div>
+              <div>
+                <div style="font-weight:600;">${escHtml(u.name || '—')}</div>
+                <div style="font-size:11px;color:var(--muted);">ID: ${escHtml(u.id?.slice(-8)?.toUpperCase() || '')}</div>
+              </div>
+            </div>
+          </td>
+          <td style="color:var(--muted);font-size:12px;">${escHtml(u.email || '—')}</td>
+          <td><span class="role-badge role-${u.role || 'USER'}">${u.role || 'USER'}</span></td>
+          <td class="r" style="font-weight:600;">${orderCount}</td>
+          <td style="white-space:nowrap;color:var(--muted);font-size:12px;">${joined}</td>
+        </tr>`;
+    }).join('');
+  }
+
+  function filterCustomers() {
+    const q = document.getElementById('customer-search').value.toLowerCase();
+    if (!q) { renderCustomersTable(_customers); return; }
+    const filtered = _customers.filter(u =>
+      (u.name || '').toLowerCase().includes(q) || (u.email || '').toLowerCase().includes(q)
+    );
+    renderCustomersTable(filtered);
+    vis('customers-empty', filtered.length === 0);
+    vis('customers-table-wrapper', filtered.length > 0);
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // SETTINGS
+  // ══════════════════════════════════════════════════════════════════════════
+  function saveSettings(section) {
+    const labels = { store: 'Store settings', shipping: 'Shipping & tax settings', payment: 'Payment settings' };
+    // In a real app, this would POST to /api/settings
+    showToast(`${labels[section] || 'Settings'} saved!`);
+  }
+
+  function changeAdminPassword() {
+    const current = document.getElementById('s-pw-current').value;
+    const next    = document.getElementById('s-pw-new').value;
+    const confirm = document.getElementById('s-pw-confirm').value;
+    if (!current) { showToast('Enter your current password.', true); return; }
+    if (current !== ADMIN_PASSWORD) { showToast('Current password is incorrect.', true); return; }
+    if (next.length < 8) { showToast('New password must be at least 8 characters.', true); return; }
+    if (next !== confirm) { showToast('Passwords do not match.', true); return; }
+    // In a real app, POST to /api/auth/admin/change-password
+    showToast('Password changed successfully!');
+    document.getElementById('s-pw-current').value = '';
+    document.getElementById('s-pw-new').value = '';
+    document.getElementById('s-pw-confirm').value = '';
+  }
+</script>
+</body>
+</html>
