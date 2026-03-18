@@ -48,9 +48,12 @@ app.use((err: any, req: any, res: any, next: any) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log('' + '' + '🚀 Server is running on http://localhost:' + PORT);
-  console.log('📡 API: http://localhost:' + PORT + '/api' + '' + '');
-});
+// Only start listening when running locally (not on Vercel serverless)
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log('🚀 Server is running on http://localhost:' + PORT);
+    console.log('📡 API: http://localhost:' + PORT + '/api');
+  });
+}
 
 export default app;
