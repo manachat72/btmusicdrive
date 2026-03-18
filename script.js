@@ -221,11 +221,13 @@ function renderProducts() {
         productCard.style.animationDelay = `${index * 0.1}s`;
         
         // Generate stars HTML
+        const rating = product.rating || 0;
+        const reviews = product.reviews || 0;
         let starsHtml = '';
         for (let i = 1; i <= 5; i++) {
-            if (i <= Math.floor(product.rating)) {
+            if (i <= Math.floor(rating)) {
                 starsHtml += `<i class="ph-fill ph-star text-yellow-400 text-sm"></i>`;
-            } else if (i === Math.ceil(product.rating) && !Number.isInteger(product.rating)) {
+            } else if (i === Math.ceil(rating) && !Number.isInteger(rating)) {
                 starsHtml += `<i class="ph-fill ph-star-half text-yellow-400 text-sm"></i>`;
             } else {
                 starsHtml += `<i class="ph ph-star text-gray-300 text-sm"></i>`;
@@ -256,7 +258,7 @@ function renderProducts() {
                     <div class="flex mr-2">
                         ${starsHtml}
                     </div>
-                    <span class="text-xs text-gray-500">(${product.reviews})</span>
+                    <span class="text-xs text-gray-500">(${reviews})</span>
                 </div>
                 <div class="flex items-center justify-between">
                     <span class="text-xl font-bold text-gray-900">฿${product.price.toFixed(2)}</span>
