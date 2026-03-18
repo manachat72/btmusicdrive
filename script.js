@@ -45,10 +45,142 @@ let currentUser = null;
 
 // Initialize App
 document.addEventListener('DOMContentLoaded', async () => {
+    initFacebookSDK();
+    await loadNavMenus();
     await fetchProducts();
     setupEventListeners();
     updateCartUI();
 });
+
+// ── Facebook SDK Init ──────────────────────────────────────────────────────
+function initFacebookSDK() {
+    window.fbAsyncInit = function() {
+        FB.init({
+            appId: '1234567890', // TODO: Replace with your Facebook App ID
+            cookie: true,
+            xfbml: true,
+            version: 'v19.0'
+        });
+    };
+}
+
+function loginWithFacebook() {
+    if (typeof FB === 'undefined') {
+        showToast('Facebook SDK ยังไม่พร้อม กรุณาลองใหม่');
+        return;
+    }
+    FB.login(function(response) {
+        if (response.authResponse) {
+            handleFacebookLogin(response.authResponse.accessToken);
+        }
+    }, { scope: 'email,public_profile' });
+}
+
+async function handleFacebookLogin(accessToken) {
+    authSubmitText.classList.add('opacity-0');
+    authSpinner.classList.remove('hidden');
+    authSubmitBtn.disabled = true;
+    authError.classList.add('hidden');
+
+    try {
+        const res = await fetch(`${API_BASE}/auth/facebook`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ accessToken })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Facebook login failed');
+
+        localStorage.setItem('btmusicdrive_token', data.token);
+        currentUser = data.user;
+        updateUserUI();
+        toggleAuthModal();
+        showToast('เข้าสู่ระบบด้วย Facebook สำเร็จ!');
+        await syncLocalCartToDatabase();
+    } catch (error) {
+        authErrorText.textContent = error.message;
+        authError.classList.remove('hidden');
+    } finally {
+        authSubmitText.classList.remove('opacity-0');
+        authSpinner.classList.add('hidden');
+        authSubmitBtn.disabled = false;
+    }
+}
+window.loginWithFacebook = loginWithFacebook;
+
+// ── Password Toggle ────────────────────────────────────────────────────────
+function togglePasswordVisibility() {
+    const pw = document.getElementById('auth-password');
+    const icon = document.getElementById('pw-eye-icon');
+    if (pw.type === 'password') {
+        pw.type = 'text';
+        icon.classList.remove('ph-eye');
+        icon.classList.add('ph-eye-slash');
+    } else {
+        pw.type = 'password';
+        icon.classList.remove('ph-eye-slash');
+        icon.classList.add('ph-eye');
+    }
+}
+window.togglePasswordVisibility = togglePasswordVisibility;
+
+// ── Dynamic Navigation Menus ───────────────────────────────────────────────
+const DEFAULT_MENUS = [
+    { label: 'หน้าแรก', url: '#', icon: null },
+    { label: 'สินค้า', url: '#shop', icon: null },
+    { label: 'หมวดหมู่', url: '#categories', icon: null },
+    { label: 'เกี่ยวกับ', url: '#about', icon: null },
+    { label: 'ติดตามพัสดุ', url: 'track-order.html', icon: 'ph ph-package' },
+];
+
+async function loadNavMenus() {
+    let menus = DEFAULT_MENUS;
+    try {
+        const res = await fetch(`${API_BASE}/menus`);
+        if (res.ok) {
+            const data = await res.json();
+            if (data.length > 0) menus = data;
+        }
+    } catch { /* use defaults */ }
+    renderNavMenus(menus);
+}
+
+function renderNavMenus(menus) {
+    const desktop = document.getElementById('desktop-nav');
+    const mobile = document.getElementById('mobile-nav');
+    if (!desktop || !mobile) return;
+
+    // Desktop
+    desktop.innerHTML = menus.map(m => {
+        const iconHtml = m.icon ? `<i class="${m.icon} text-base"></i> ` : '';
+        if (m.children && m.children.length > 0) {
+            const submenu = m.children.map(c =>
+                `<a href="${c.url}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary">${c.icon ? `<i class="${c.icon}"></i> ` : ''}${c.label}</a>`
+            ).join('');
+            return `<div class="relative group">
+                <button class="text-gray-600 hover:text-primary transition-colors font-medium flex items-center gap-1 px-3 py-2 rounded-lg hover:bg-gray-50">
+                    ${iconHtml}${m.label} <i class="ph ph-caret-down text-xs ml-1"></i>
+                </button>
+                <div class="absolute left-0 top-full mt-1 w-52 bg-white rounded-xl shadow-xl border border-gray-100 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                    ${submenu}
+                </div>
+            </div>`;
+        }
+        return `<a href="${m.url}" class="text-gray-600 hover:text-primary transition-colors font-medium flex items-center gap-1 px-3 py-2 rounded-lg hover:bg-gray-50">${iconHtml}${m.label}</a>`;
+    }).join('');
+
+    // Mobile
+    mobile.innerHTML = menus.map(m => {
+        const iconHtml = m.icon ? `<i class="${m.icon}"></i> ` : '';
+        let html = `<a href="${m.url}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50 flex items-center gap-2">${iconHtml}${m.label}</a>`;
+        if (m.children && m.children.length > 0) {
+            html += m.children.map(c =>
+                `<a href="${c.url}" class="block pl-8 pr-3 py-2 rounded-md text-sm text-gray-600 hover:text-primary hover:bg-gray-50">${c.icon ? `<i class="${c.icon}"></i> ` : ''}${c.label}</a>`
+            ).join('');
+        }
+        return html;
+    }).join('') + `<a href="admin.html" id="admin-nav-link-mobile" class="hidden px-3 py-2 rounded-md text-base font-medium text-amber-600 hover:text-amber-700 hover:bg-amber-50 flex items-center gap-2"><i class="ph ph-shield-check"></i> Admin Dashboard</a>`;
+}
 
 // Fetch Products from API or fallback to local JSON
 async function fetchProducts() {
@@ -105,21 +237,21 @@ function renderProducts() {
             `<span class="absolute top-4 left-4 bg-white px-3 py-1 rounded-full text-xs font-bold text-gray-900 shadow-sm">${product.badge}</span>` : '';
 
         productCard.innerHTML = `
-            <div class="relative h-64 overflow-hidden group">
+            <a href="product.html?id=${product.id}" class="block relative h-64 overflow-hidden group cursor-pointer">
                 <img src="${product.imageUrl}" alt="${product.name}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                 ${badgeHtml}
                 <div class="absolute inset-0 bg-black bg-opacity-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                    <button class="add-to-cart-btn bg-white text-gray-900 hover:bg-primary hover:text-white font-bold py-3 px-6 rounded-full shadow-lg transition-colors flex items-center" data-id="${product.id}">
+                    <button class="add-to-cart-btn bg-white text-gray-900 hover:bg-primary hover:text-white font-bold py-3 px-6 rounded-full shadow-lg transition-colors flex items-center" data-id="${product.id}" onclick="event.preventDefault();event.stopPropagation();">
                         <i class="ph ph-shopping-cart mr-2 text-lg"></i> Add to Cart
                     </button>
                 </div>
-                <button class="absolute top-4 right-4 bg-white p-2 rounded-full text-gray-400 hover:text-red-500 shadow-sm transition-colors z-10">
+                <button class="absolute top-4 right-4 bg-white p-2 rounded-full text-gray-400 hover:text-red-500 shadow-sm transition-colors z-10" onclick="event.preventDefault();event.stopPropagation();">
                     <i class="ph ph-heart text-xl"></i>
                 </button>
-            </div>
+            </a>
             <div class="p-5">
                 <div class="text-xs text-gray-500 font-medium mb-1 uppercase tracking-wider">${product.category?.name || product.category || ''}</div>
-                <h3 class="text-lg font-bold text-gray-900 mb-2 truncate">${product.name}</h3>
+                <a href="product.html?id=${product.id}" class="block"><h3 class="text-lg font-bold text-gray-900 mb-2 truncate hover:text-primary transition-colors">${product.name}</h3></a>
                 <div class="flex items-center mb-3">
                     <div class="flex mr-2">
                         ${starsHtml}
@@ -228,11 +360,14 @@ function toggleAuthModal() {
 }
 
 function updateAuthUI() {
-    authTitle.textContent = isLoginMode ? 'Welcome Back' : 'Create Account';
-    authSubmitText.textContent = isLoginMode ? 'Sign In' : 'Sign Up';
-    authToggleBtn.textContent = isLoginMode ? 'Sign Up' : 'Sign In';
+    authTitle.textContent = isLoginMode ? 'เข้าสู่ระบบ' : 'สมัครสมาชิก';
+    authSubmitText.textContent = isLoginMode ? 'เข้าสู่ระบบ' : 'สมัครสมาชิก';
+    authToggleBtn.textContent = isLoginMode ? 'สมัครสมาชิก' : 'เข้าสู่ระบบ';
     authError.classList.add('hidden');
-    document.getElementById('auth-toggle-text').childNodes[0].nodeValue = isLoginMode ? "Don't have an account? " : "Already have an account? ";
+    document.getElementById('auth-toggle-text').childNodes[0].nodeValue = isLoginMode ? "ไม่ใช่สมาชิก? " : "มีบัญชีแล้ว? ";
+    // Hide remember-me row and forgot password when in register mode
+    const rememberRow = document.getElementById('auth-remember-row');
+    if (rememberRow) rememberRow.style.display = isLoginMode ? 'flex' : 'none';
 }
 
 async function handleGoogleCredentialResponse(response) {

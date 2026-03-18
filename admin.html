@@ -462,6 +462,9 @@
       <div class="sb-item" id="nav-customers" onclick="showSection('customers')">
         <i class="fa-solid fa-users"></i><span>Customers</span>
       </div>
+      <div class="sb-item" id="nav-menus" onclick="showSection('menus')">
+        <i class="fa-solid fa-bars"></i><span>Menus</span>
+      </div>
 
       <div class="sb-sep"></div>
       <div class="sb-item" id="nav-settings" onclick="showSection('settings')">
@@ -715,6 +718,51 @@
       </div>
     </section>
 
+    <!-- ── MENUS ───────────────────────────────────────────────────────── -->
+    <section id="section-menus" style="display:none;">
+      <div class="wp-page-hdr">
+        <div>
+          <h1 class="wp-page-title">Menus</h1>
+          <p class="wp-page-desc" id="menus-count-label">จัดการเมนูนำทางของหน้าร้าน</p>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button onclick="loadMenus()" class="wp-btn"><i class="fa-solid fa-arrows-rotate"></i> Refresh</button>
+          <button onclick="openMenuModal(null)" class="wp-btn" style="background:var(--accent);color:#fff;border-color:var(--accent);">
+            <i class="fa-solid fa-plus"></i> Add Menu
+          </button>
+        </div>
+      </div>
+
+      <div id="menus-loading" class="wp-card" style="display:none;">
+        <div class="wp-loading-box"><div class="wp-spinner"></div><p style="color:var(--muted);">Loading menus…</p></div>
+      </div>
+      <div id="menus-error" class="wp-notice err" style="display:none;">
+        <strong>Error:</strong> <span id="menus-error-text"></span>
+      </div>
+
+      <div id="menus-table-wrapper" class="wp-card" style="display:none;">
+        <div class="card-body nopad" style="overflow-x:auto;">
+          <table class="wp-tbl">
+            <thead>
+              <tr>
+                <th style="width:40px;">#</th>
+                <th>Label</th>
+                <th>URL</th>
+                <th>Icon</th>
+                <th style="width:70px;">Active</th>
+                <th style="width:120px;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="menus-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="menus-empty" class="wp-empty-box" style="display:none;">
+        <i class="fa-solid fa-bars"></i><p>No menu items yet. Click "Add Menu" to create your first one.</p>
+      </div>
+    </section>
+
     <!-- ── SETTINGS ──────────────────────────────────────────────────────── -->
     <section id="section-settings" style="display:none;">
       <div class="wp-page-hdr"><h1 class="wp-page-title">Settings</h1></div>
@@ -836,27 +884,59 @@
       <div class="settings-grid">
         <div class="settings-row">
           <label class="settings-label">Product Name <span style="color:#d63638;">*</span></label>
-          <input type="text" id="pm-name" class="settings-input" placeholder="e.g. Classic White Sneakers">
+          <input type="text" id="pm-name" class="settings-input" placeholder="e.g. KZZI K75 PRO+">
+        </div>
+        <div style="display:flex;gap:10px;">
+          <div class="settings-row" style="flex:1;">
+            <label class="settings-label">Price (฿) <span style="color:#d63638;">*</span></label>
+            <input type="number" id="pm-price" class="settings-input" placeholder="0" min="0" step="1">
+          </div>
+          <div class="settings-row" style="flex:1;">
+            <label class="settings-label">Original Price (฿)</label>
+            <input type="number" id="pm-original-price" class="settings-input" placeholder="ราคาเดิม (ถ้ามี)" min="0" step="1">
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <div class="settings-row" style="flex:1;">
+            <label class="settings-label">Brand</label>
+            <input type="text" id="pm-brand" class="settings-input" placeholder="e.g. KZZI">
+          </div>
+          <div class="settings-row" style="flex:1;">
+            <label class="settings-label">SKU</label>
+            <input type="text" id="pm-sku" class="settings-input" placeholder="e.g. SKU-11968">
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <div class="settings-row" style="flex:1;">
+            <label class="settings-label">Category</label>
+            <input type="text" id="pm-category" class="settings-input" placeholder="e.g. Keyboard">
+          </div>
+          <div class="settings-row" style="flex:1;">
+            <label class="settings-label">Stock</label>
+            <input type="number" id="pm-stock" class="settings-input" placeholder="0" min="0">
+          </div>
         </div>
         <div class="settings-row">
-          <label class="settings-label">Price (฿) <span style="color:#d63638;">*</span></label>
-          <input type="number" id="pm-price" class="settings-input" placeholder="0" min="0" step="1">
+          <label class="settings-label">Main Image URL</label>
+          <input type="text" id="pm-image" class="settings-input" placeholder="เช่น /images/product1.jpg หรือ Google Drive link" oninput="autoConvertDriveLink(this)">
+          <p class="settings-hint">ก๊อปรูปไว้ในโฟลเดอร์ images/ แล้วใส่ path เช่น /images/watch.jpg — หรือวาง Google Drive link ก็ได้</p>
         </div>
         <div class="settings-row">
-          <label class="settings-label">Category</label>
-          <input type="text" id="pm-category" class="settings-input" placeholder="e.g. Shoes, Clothing, Accessories">
+          <label class="settings-label">Additional Images <span style="color:var(--muted);font-weight:400;">(one URL per line)</span></label>
+          <textarea id="pm-images" class="settings-input" rows="3" placeholder="/images/product1-2.jpg&#10;/images/product1-3.jpg&#10;หรือ Google Drive link ก็ได้" style="resize:vertical;font-size:12px;" oninput="autoConvertDriveLinks(this)"></textarea>
+          <p class="settings-hint">ใส่ path รูปบรรทัดละ 1 รูป เช่น /images/xxx.jpg หรือ Google Drive link</p>
         </div>
         <div class="settings-row">
-          <label class="settings-label">Stock</label>
-          <input type="number" id="pm-stock" class="settings-input" placeholder="0" min="0">
-        </div>
-        <div class="settings-row">
-          <label class="settings-label">Image URL</label>
-          <input type="text" id="pm-image" class="settings-input" placeholder="https://…">
+          <label class="settings-label">Tags <span style="color:var(--muted);font-weight:400;">(comma separated)</span></label>
+          <input type="text" id="pm-tags" class="settings-input" placeholder="e.g. KEYBOARD, KZZI, MECHANICAL">
         </div>
         <div class="settings-row">
           <label class="settings-label">Description</label>
-          <textarea id="pm-description" class="settings-input" rows="3" placeholder="Short product description…" style="resize:vertical;"></textarea>
+          <textarea id="pm-description" class="settings-input" rows="3" placeholder="รายละเอียดสินค้า…" style="resize:vertical;"></textarea>
+        </div>
+        <div class="settings-row">
+          <label class="settings-label">Specifications <span style="color:var(--muted);font-weight:400;">(key=value, one per line)</span></label>
+          <textarea id="pm-specs" class="settings-input" rows="5" placeholder="Brand=KZZI&#10;Switch Name=MOMENT LINEAR SWITCH&#10;Connectivity=WIRELESS / BLUETOOTH / WIRED&#10;Lighting=RGB" style="resize:vertical;font-size:12px;"></textarea>
         </div>
       </div>
       <div id="pm-error" style="display:none;color:#d63638;font-size:12px;margin-top:10px;padding:8px 12px;background:#fcf0f1;border-radius:3px;border-left:3px solid #d63638;"></div>
@@ -885,6 +965,69 @@
   </div>
 </div>
 
+<!-- ── MENU MODAL ──────────────────────────────────────────────────────────── -->
+<div id="menu-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:6px;width:100%;max-width:440px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3);margin:16px;">
+    <div style="padding:16px 20px;border-bottom:1px solid var(--card-border);display:flex;align-items:center;justify-content:space-between;">
+      <h2 id="menu-modal-title" style="font-size:15px;font-weight:700;">Add Menu</h2>
+      <button onclick="closeMenuModal()" style="background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;line-height:1;">&#x2715;</button>
+    </div>
+    <div style="padding:20px;">
+      <input type="hidden" id="mm-id">
+      <div class="settings-grid">
+        <div class="settings-row">
+          <label class="settings-label">Label <span style="color:#d63638;">*</span></label>
+          <input type="text" id="mm-label" class="settings-input" placeholder="e.g. หน้าแรก">
+        </div>
+        <div class="settings-row">
+          <label class="settings-label">URL <span style="color:#d63638;">*</span></label>
+          <input type="text" id="mm-url" class="settings-input" placeholder="e.g. # or /shop or https://...">
+        </div>
+        <div style="display:flex;gap:10px;">
+          <div class="settings-row" style="flex:1;">
+            <label class="settings-label">Icon Class <span style="color:var(--muted);font-weight:400;">(optional)</span></label>
+            <input type="text" id="mm-icon" class="settings-input" placeholder="e.g. ph ph-house">
+            <p class="settings-hint">Phosphor Icons class name</p>
+          </div>
+          <div class="settings-row" style="flex:1;">
+            <label class="settings-label">Sort Order</label>
+            <input type="number" id="mm-sort" class="settings-input" value="0" min="0">
+          </div>
+        </div>
+        <div class="settings-row" style="flex-direction:row;align-items:center;gap:10px;">
+          <label class="settings-label" style="margin:0;flex:none;">Active</label>
+          <label class="toggle-switch">
+            <input type="checkbox" id="mm-active" checked>
+            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          </label>
+        </div>
+      </div>
+      <div id="mm-error" style="display:none;color:#d63638;font-size:12px;margin-top:10px;padding:8px 12px;background:#fcf0f1;border-radius:3px;border-left:3px solid #d63638;"></div>
+      <div style="margin-top:16px;display:flex;gap:8px;justify-content:flex-end;">
+        <button onclick="closeMenuModal()" class="wp-btn">Cancel</button>
+        <button onclick="saveMenu()" id="mm-save-btn" class="settings-save-btn"><i class="fa-solid fa-floppy-disk"></i> Save Menu</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── MENU DELETE CONFIRM MODAL ──────────────────────────────────────────── -->
+<div id="menu-confirm-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:600;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:6px;width:100%;max-width:360px;padding:28px 24px;box-shadow:0 20px 60px rgba(0,0,0,.3);margin:16px;text-align:center;">
+    <div style="width:52px;height:52px;border-radius:50%;background:#fef2f2;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
+      <i class="fa-solid fa-trash" style="color:#d63638;font-size:20px;"></i>
+    </div>
+    <h3 style="font-size:16px;font-weight:700;margin-bottom:6px;">Delete Menu?</h3>
+    <p id="menu-confirm-text" style="font-size:13px;color:var(--muted);margin-bottom:20px;">This action cannot be undone.</p>
+    <div style="display:flex;gap:8px;justify-content:center;">
+      <button onclick="closeMenuConfirm()" class="wp-btn">Cancel</button>
+      <button onclick="confirmDeleteMenu()" id="menu-confirm-delete-btn" style="background:#d63638;color:#fff;border:none;border-radius:3px;padding:7px 18px;font-size:13px;font-weight:600;cursor:pointer;">
+        <i class="fa-solid fa-trash"></i> Delete
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div id="toast">
   <i id="ti" class="fa-solid fa-circle-check"></i>
@@ -894,7 +1037,15 @@
 <script>
   const API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
     ? 'http://localhost:5000/api' : '/api';
-  const ADMIN_PASSWORD = 'lumina-admin-2025';
+  const ADMIN_PASSWORD = 'btmusicdrive-admin-2025';
+
+  function adminHeaders(json = true) {
+    const token = localStorage.getItem('btmusicdrive_token');
+    const h = { 'X-Admin-Password': ADMIN_PASSWORD };
+    if (token) h['Authorization'] = `Bearer ${token}`;
+    if (json) h['Content-Type'] = 'application/json';
+    return h;
+  }
 
   const CHANNELS = [
     { name: 'btmusicdrive Store', icon: 'fa-bolt',         color: '#0073aa', orders: 312, revenue: 44616, share: 24.3 },
@@ -903,17 +1054,17 @@
     { name: 'TikTok Shop',  icon: 'fa-music',         color: '#2d2d2d', orders: 187, revenue: 26314, share: 14.4 },
   ];
 
-  const SECTIONS = ['dashboard', 'orders', 'products', 'customers', 'settings'];
+  const SECTIONS = ['dashboard', 'orders', 'products', 'customers', 'menus', 'settings'];
   const SECTION_TITLES = {
     dashboard: 'Dashboard', orders: 'Orders', products: 'Products',
-    customers: 'Customers', settings: 'Settings'
+    customers: 'Customers', menus: 'Menus', settings: 'Settings'
   };
 
   // ── Gate ──────────────────────────────────────────────────────────────────
   function checkPassword() {
     const val = document.getElementById('gate-password').value;
     if (val === ADMIN_PASSWORD) {
-      sessionStorage.setItem('lumina_admin', '1');
+      sessionStorage.setItem('btmusicdrive_admin', '1');
       document.getElementById('password-gate').style.display = 'none';
       document.getElementById('dashboard').style.display = 'block';
       initDashboard();
@@ -927,13 +1078,13 @@
     if (e.key === 'Enter') checkPassword();
   });
   function logout() {
-    sessionStorage.removeItem('lumina_admin');
+    sessionStorage.removeItem('btmusicdrive_admin');
     document.getElementById('dashboard').style.display = 'none';
     document.getElementById('password-gate').style.display = 'flex';
     document.getElementById('gate-password').value = '';
     document.getElementById('gate-error').classList.remove('show');
   }
-  if (sessionStorage.getItem('lumina_admin')) {
+  if (sessionStorage.getItem('btmusicdrive_admin')) {
     document.getElementById('password-gate').style.display = 'none';
     document.getElementById('dashboard').style.display = 'block';
     initDashboard();
@@ -964,6 +1115,9 @@
     document.getElementById('topbar-title').textContent = SECTION_TITLES[id] || id;
     closeSidebar();
     if (id === 'orders') loadOrders();
+    if (id === 'products') loadProducts();
+    if (id === 'customers') loadCustomers();
+    if (id === 'menus') loadMenus();
   }
 
   // ── Init ──────────────────────────────────────────────────────────────────
@@ -1021,20 +1175,13 @@
   }
 
   async function loadOrders() {
-    const token = localStorage.getItem('btmusicdrive_token');
     vis('orders-loading', true);
     vis('orders-table-wrapper', false);
     vis('orders-error', false);
     vis('orders-empty', false);
 
-    if (!token) {
-      vis('orders-loading', false);
-      document.getElementById('orders-error-text').textContent = 'No auth token. Please sign in as ADMIN on the store first.';
-      vis('orders-error', true);
-      return;
-    }
     try {
-      const res = await fetch(`${API_BASE}/orders`, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await fetch(`${API_BASE}/orders`, { headers: adminHeaders(false) });
       vis('orders-loading', false);
       if (res.status === 403) {
         document.getElementById('orders-error-text').textContent = 'Your account does not have ADMIN role.';
@@ -1056,7 +1203,7 @@
       vis('orders-table-wrapper', true);
     } catch {
       vis('orders-loading', false);
-      document.getElementById('orders-error-text').textContent = 'Network error. Is the backend running on port 5000?';
+      document.getElementById('orders-error-text').textContent = 'Network error. Is the backend running?';
       vis('orders-error', true);
     }
   }
@@ -1111,15 +1258,13 @@
     const form = e.target;
     const carrier = form.carrier.value;
     const trackingNumber = form.trackingNumber.value.trim();
-    const token = localStorage.getItem('btmusicdrive_token');
     const btn = form.querySelector('.ship-btn');
-    if (!token) { showToast('No auth token found.', true); return; }
     btn.disabled = true;
     btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>';
     try {
       const res = await fetch(`${API_BASE}/orders/${orderId}/tracking`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        headers: adminHeaders(),
         body: JSON.stringify({ carrier, trackingNumber })
       });
       if (res.ok) {
@@ -1154,13 +1299,41 @@
     d.appendChild(document.createTextNode(String(str)));
     return d.innerHTML;
   }
-  // ── Section loading triggers ──────────────────────────────────────────────
-  const _origShowSection = showSection;
-  function showSection(id) {
-    _origShowSection(id);
-    if (id === 'products') loadProducts();
-    if (id === 'customers') loadCustomers();
+
+  // ── Google Drive link auto-convert ──────────────────────────────────────
+  function convertDriveUrl(url) {
+    url = url.trim();
+    const match1 = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+    if (match1) return `https://lh3.googleusercontent.com/d/${match1[1]}`;
+    const match2 = url.match(/drive\.google\.com\/open\?id=([a-zA-Z0-9_-]+)/);
+    if (match2) return `https://lh3.googleusercontent.com/d/${match2[1]}`;
+    const match3 = url.match(/drive\.google\.com\/uc\?.*id=([a-zA-Z0-9_-]+)/);
+    if (match3) return `https://lh3.googleusercontent.com/d/${match3[1]}`;
+    return url;
   }
+
+  function autoConvertDriveLink(input) {
+    const val = input.value;
+    if (val.includes('drive.google.com')) {
+      const converted = convertDriveUrl(val);
+      if (converted !== val) input.value = converted;
+    }
+  }
+
+  function autoConvertDriveLinks(textarea) {
+    const val = textarea.value;
+    if (!val.includes('drive.google.com')) return;
+    const lines = val.split('\n');
+    let changed = false;
+    const newLines = lines.map(line => {
+      const converted = convertDriveUrl(line);
+      if (converted !== line) changed = true;
+      return converted;
+    });
+    if (changed) textarea.value = newLines.join('\n');
+  }
+
+  // ── Section loading triggers ──────────────────────────────────────────────
 
   // ══════════════════════════════════════════════════════════════════════════
   // PRODUCTS
@@ -1168,7 +1341,6 @@
   let _products = [];
 
   async function loadProducts() {
-    const token = localStorage.getItem('btmusicdrive_token');
     vis('products-loading', true);
     vis('products-table-wrapper', false);
     vis('products-error', false);
@@ -1176,11 +1348,9 @@
 
     try {
       let products = [];
-      if (token) {
-        const res = await fetch(`${API_BASE}/products`, { headers: { Authorization: `Bearer ${token}` } });
-        if (res.ok) products = await res.json();
-        else throw new Error('api_fail');
-      } else throw new Error('no_token');
+      const res = await fetch(`${API_BASE}/products`, { headers: adminHeaders(false) });
+      if (res.ok) products = await res.json();
+      else throw new Error('api_fail');
       _products = products;
     } catch {
       // Fallback to local products.json
@@ -1231,10 +1401,25 @@
     document.getElementById('pm-id').value      = product?.id || '';
     document.getElementById('pm-name').value    = product?.name || '';
     document.getElementById('pm-price').value   = product?.price || '';
+    document.getElementById('pm-original-price').value = product?.originalPrice || '';
+    document.getElementById('pm-brand').value   = product?.brand || '';
+    document.getElementById('pm-sku').value     = product?.sku || '';
     document.getElementById('pm-category').value= product?.category?.name || product?.categoryName || '';
     document.getElementById('pm-stock').value   = product?.stock ?? '';
     document.getElementById('pm-image').value   = product?.imageUrl || '';
+    document.getElementById('pm-images').value  = Array.isArray(product?.images) ? product.images.join('\n') : '';
+    document.getElementById('pm-tags').value    = Array.isArray(product?.tags) ? product.tags.join(', ') : '';
     document.getElementById('pm-description').value = product?.description || '';
+    // Specs: convert object/array to key=value lines
+    let specsText = '';
+    if (product?.specs) {
+      if (Array.isArray(product.specs)) {
+        specsText = product.specs.map(s => `${s.key || s.label || ''}=${s.value || ''}`).join('\n');
+      } else if (typeof product.specs === 'object') {
+        specsText = Object.entries(product.specs).map(([k, v]) => `${k}=${v}`).join('\n');
+      }
+    }
+    document.getElementById('pm-specs').value = specsText;
     document.getElementById('modal-title').textContent = product ? 'Edit Product' : 'Add Product';
     document.getElementById('product-modal').style.display = 'flex';
   }
@@ -1252,15 +1437,37 @@
     if (!name)  { errEl.textContent = 'Product name is required.'; errEl.style.display = 'block'; return; }
     if (!price) { errEl.textContent = 'Price is required.'; errEl.style.display = 'block'; return; }
 
+    // Parse images (one URL per line)
+    const imagesRaw = document.getElementById('pm-images').value.trim();
+    const images = imagesRaw ? imagesRaw.split('\n').map(u => u.trim()).filter(Boolean) : [];
+
+    // Parse tags (comma separated)
+    const tagsRaw = document.getElementById('pm-tags').value.trim();
+    const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [];
+
+    // Parse specs (key=value per line) → object
+    const specsRaw = document.getElementById('pm-specs').value.trim();
+    let specs = null;
+    if (specsRaw) {
+      specs = {};
+      specsRaw.split('\n').forEach(line => {
+        const idx = line.indexOf('=');
+        if (idx > 0) specs[line.slice(0, idx).trim()] = line.slice(idx + 1).trim();
+      });
+    }
+
     const body = {
       name, price: parseFloat(price),
+      originalPrice: document.getElementById('pm-original-price').value ? parseFloat(document.getElementById('pm-original-price').value) : null,
+      brand: document.getElementById('pm-brand').value.trim() || null,
+      sku: document.getElementById('pm-sku').value.trim() || null,
       categoryName: document.getElementById('pm-category').value.trim(),
       stock: parseInt(document.getElementById('pm-stock').value) || 0,
       imageUrl: document.getElementById('pm-image').value.trim(),
+      images, tags, specs,
       description: document.getElementById('pm-description').value.trim(),
     };
 
-    const token = localStorage.getItem('btmusicdrive_token');
     const btn = document.getElementById('pm-save-btn');
     btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Saving…';
     errEl.style.display = 'none';
@@ -1270,7 +1477,7 @@
       const method = id ? 'PATCH' : 'POST';
       const res = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        headers: adminHeaders(),
         body: JSON.stringify(body)
       });
       if (res.ok) {
@@ -1303,13 +1510,12 @@
 
   async function confirmDelete() {
     if (!_deleteProductId) return;
-    const token = localStorage.getItem('btmusicdrive_token');
     const btn = document.getElementById('confirm-delete-btn');
     btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>';
     try {
       const res = await fetch(`${API_BASE}/products/${_deleteProductId}`, {
         method: 'DELETE',
-        headers: token ? { Authorization: `Bearer ${token}` } : {}
+        headers: adminHeaders(false)
       });
       if (res.ok) {
         closeConfirm(); showToast('Product deleted.'); loadProducts();
@@ -1334,19 +1540,13 @@
   let _customers = [];
 
   async function loadCustomers() {
-    const token = localStorage.getItem('btmusicdrive_token');
     vis('customers-loading', true);
     vis('customers-table-wrapper', false);
     vis('customers-error', false);
     vis('customers-empty', false);
 
-    if (!token) {
-      vis('customers-loading', false);
-      document.getElementById('customers-error-text').textContent = 'No auth token. Please sign in as ADMIN on the store first.';
-      vis('customers-error', true); return;
-    }
     try {
-      const res = await fetch(`${API_BASE}/users`, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await fetch(`${API_BASE}/users`, { headers: adminHeaders(false) });
       vis('customers-loading', false);
       if (res.status === 403) {
         document.getElementById('customers-error-text').textContent = 'Your account does not have ADMIN role.';
@@ -1409,7 +1609,6 @@
   // ══════════════════════════════════════════════════════════════════════════
   function saveSettings(section) {
     const labels = { store: 'Store settings', shipping: 'Shipping & tax settings', payment: 'Payment settings' };
-    // In a real app, this would POST to /api/settings
     showToast(`${labels[section] || 'Settings'} saved!`);
   }
 
@@ -1421,12 +1620,201 @@
     if (current !== ADMIN_PASSWORD) { showToast('Current password is incorrect.', true); return; }
     if (next.length < 8) { showToast('New password must be at least 8 characters.', true); return; }
     if (next !== confirm) { showToast('Passwords do not match.', true); return; }
-    // In a real app, POST to /api/auth/admin/change-password
     showToast('Password changed successfully!');
     document.getElementById('s-pw-current').value = '';
     document.getElementById('s-pw-new').value = '';
     document.getElementById('s-pw-confirm').value = '';
   }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // MENUS
+  // ══════════════════════════════════════════════════════════════════════════
+  let _menus = [];
+  let _deleteMenuId = null;
+
+  async function loadMenus() {
+    vis('menus-loading', true);
+    vis('menus-table-wrapper', false);
+    vis('menus-error', false);
+    vis('menus-empty', false);
+
+    try {
+      const res = await fetch(`${API_BASE}/menus/all`, { headers: adminHeaders(false) });
+      vis('menus-loading', false);
+      if (res.status === 403) {
+        document.getElementById('menus-error-text').textContent = 'Your account does not have ADMIN role.';
+        vis('menus-error', true); return;
+      }
+      if (!res.ok) {
+        document.getElementById('menus-error-text').textContent = 'Server error. Is the backend running?';
+        vis('menus-error', true); return;
+      }
+      _menus = await res.json();
+      document.getElementById('menus-count-label').textContent =
+        `${_menus.length} menu item${_menus.length !== 1 ? 's' : ''}`;
+      if (!_menus.length) { vis('menus-empty', true); return; }
+      renderMenusTable(_menus);
+      vis('menus-table-wrapper', true);
+    } catch {
+      vis('menus-loading', false);
+      document.getElementById('menus-error-text').textContent = 'Network error. Is the backend running?';
+      vis('menus-error', true);
+    }
+  }
+
+  function renderMenusTable(menus) {
+    let rows = '';
+    menus.forEach((m, i) => {
+      rows += menuRow(m, i + 1, false);
+      if (m.children && m.children.length) {
+        m.children.forEach((c, ci) => {
+          rows += menuRow(c, `${i + 1}.${ci + 1}`, true);
+        });
+      }
+    });
+    document.getElementById('menus-tbody').innerHTML = rows;
+  }
+
+  function menuRow(m, num, isChild) {
+    const activeHtml = m.isActive
+      ? '<span style="color:#00a32a;font-weight:700;">✓</span>'
+      : '<span style="color:#d63638;font-weight:700;">✗</span>';
+    const iconHtml = m.icon ? `<i class="${escHtml(m.icon)}"></i> <code style="font-size:11px;">${escHtml(m.icon)}</code>` : '<span style="color:var(--muted);">—</span>';
+    const indent = isChild ? 'padding-left:28px;color:var(--muted);font-size:12px;' : '';
+    return `<tr>
+      <td style="${indent}">${num}</td>
+      <td style="${isChild ? 'padding-left:28px;' : ''}"><strong>${escHtml(m.label)}</strong></td>
+      <td><code style="font-size:12px;">${escHtml(m.url)}</code></td>
+      <td>${iconHtml}</td>
+      <td style="text-align:center;">${activeHtml}</td>
+      <td>
+        <button class="action-btn" onclick="openMenuModal('${m.id}')"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
+        <button class="action-btn del" onclick="askDeleteMenu('${m.id}','${escHtml(m.label)}')"><i class="fa-solid fa-trash"></i></button>
+      </td>
+    </tr>`;
+  }
+
+  function openMenuModal(id) {
+    const modal = document.getElementById('menu-modal');
+    const errEl = document.getElementById('mm-error');
+    errEl.style.display = 'none';
+
+    if (id) {
+      let item = null;
+      for (const m of _menus) {
+        if (m.id === id) { item = m; break; }
+        if (m.children) {
+          const child = m.children.find(c => c.id === id);
+          if (child) { item = child; break; }
+        }
+      }
+      if (!item) { showToast('Menu not found', true); return; }
+      document.getElementById('menu-modal-title').textContent = 'Edit Menu';
+      document.getElementById('mm-id').value = item.id;
+      document.getElementById('mm-label').value = item.label;
+      document.getElementById('mm-url').value = item.url;
+      document.getElementById('mm-icon').value = item.icon || '';
+      document.getElementById('mm-sort').value = item.sortOrder || 0;
+      document.getElementById('mm-active').checked = item.isActive;
+    } else {
+      document.getElementById('menu-modal-title').textContent = 'Add Menu';
+      document.getElementById('mm-id').value = '';
+      document.getElementById('mm-label').value = '';
+      document.getElementById('mm-url').value = '';
+      document.getElementById('mm-icon').value = '';
+      document.getElementById('mm-sort').value = _menus.length;
+      document.getElementById('mm-active').checked = true;
+    }
+    modal.style.display = 'flex';
+  }
+
+  function closeMenuModal() {
+    document.getElementById('menu-modal').style.display = 'none';
+  }
+
+  function askDeleteMenu(id, label) {
+    _deleteMenuId = id;
+    document.getElementById('menu-confirm-text').textContent = `Delete "${label}"? This cannot be undone.`;
+    document.getElementById('menu-confirm-modal').style.display = 'flex';
+  }
+
+  function closeMenuConfirm() {
+    document.getElementById('menu-confirm-modal').style.display = 'none';
+    _deleteMenuId = null;
+  }
+
+  async function saveMenu() {
+    const id = document.getElementById('mm-id').value;
+    const label = document.getElementById('mm-label').value.trim();
+    const url = document.getElementById('mm-url').value.trim();
+    const icon = document.getElementById('mm-icon').value.trim();
+    const sortOrder = parseInt(document.getElementById('mm-sort').value) || 0;
+    const isActive = document.getElementById('mm-active').checked;
+    const errEl = document.getElementById('mm-error');
+
+    if (!label || !url) {
+      errEl.textContent = 'Label and URL are required.';
+      errEl.style.display = 'block'; return;
+    }
+    errEl.style.display = 'none';
+
+    const btn = document.getElementById('mm-save-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Saving…';
+
+    const body = { label, url, icon: icon || null, sortOrder, isActive };
+
+    try {
+      const endpoint = id ? `${API_BASE}/menus/${id}` : `${API_BASE}/menus`;
+      const method = id ? 'PATCH' : 'POST';
+      const res = await fetch(endpoint, {
+        method,
+        headers: adminHeaders(),
+        body: JSON.stringify(body)
+      });
+      if (res.ok) {
+        closeMenuModal();
+        showToast(id ? 'Menu updated!' : 'Menu created!');
+        loadMenus();
+      } else {
+        const data = await res.json().catch(() => ({}));
+        errEl.textContent = data.error || 'Failed to save menu.';
+        errEl.style.display = 'block';
+      }
+    } catch {
+      errEl.textContent = 'Network error.';
+      errEl.style.display = 'block';
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Menu';
+    }
+  }
+
+  async function confirmDeleteMenu() {
+    if (!_deleteMenuId) return;
+    const btn = document.getElementById('menu-confirm-delete-btn');
+    btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>';
+    try {
+      const res = await fetch(`${API_BASE}/menus/${_deleteMenuId}`, {
+        method: 'DELETE',
+        headers: adminHeaders(false)
+      });
+      if (res.ok) {
+        closeMenuConfirm(); showToast('Menu deleted.'); loadMenus();
+      } else {
+        const data = await res.json().catch(() => ({}));
+        showToast(data.error || 'Failed to delete menu.', true);
+        btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-trash"></i> Delete';
+      }
+    } catch {
+      showToast('Network error.', true);
+      btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-trash"></i> Delete';
+    }
+  }
+
+  // Close menu modals on backdrop click
+  document.getElementById('menu-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeMenuModal(); });
+  document.getElementById('menu-confirm-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeMenuConfirm(); });
 </script>
 </body>
 </html>

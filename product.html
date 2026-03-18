@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>สินค้า — btmusicdrive</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#4f46e5',
+            secondary: '#1e293b',
+          }
+        }
+      }
+    };
+  </script>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .thumb { border: 2px solid transparent; cursor: pointer; transition: border-color .2s; border-radius: 8px; overflow: hidden; }
+    .thumb.active { border-color: #4f46e5; }
+    .thumb:hover { border-color: #a5b4fc; }
+    .tab-btn { position: relative; padding: 12px 24px; font-weight: 600; color: #64748b; transition: color .2s; }
+    .tab-btn.active { color: #1e293b; }
+    .tab-btn.active::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: #4f46e5; border-radius: 3px 3px 0 0; }
+    .tab-btn:hover { color: #334155; }
+    .spec-row:nth-child(even) { background: #f8fafc; }
+    .tag { display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; transition: opacity .2s; }
+    .tag:hover { opacity: .8; }
+    .qty-btn { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border: 1px solid #e2e8f0; font-size: 18px; cursor: pointer; transition: background .15s; }
+    .qty-btn:hover { background: #f1f5f9; }
+    .gallery-main { aspect-ratio: 1; background: #f1f5f9; border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+    .gallery-main img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .gallery-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,.85); box-shadow: 0 2px 8px rgba(0,0,0,.12); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background .2s; z-index: 5; }
+    .gallery-nav:hover { background: #fff; }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800 antialiased">
+
+  <!-- Navbar -->
+  <nav class="bg-white shadow-sm fixed w-full z-50 top-0">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16 items-center">
+        <a href="index.html" class="flex items-center cursor-pointer">
+          <i class="ph-fill ph-shopping-bag text-primary text-3xl mr-2"></i>
+          <span class="font-bold text-xl tracking-tight">btmusicdrive</span>
+        </a>
+        <div class="hidden md:flex space-x-8 items-center">
+          <a href="index.html" class="text-gray-600 hover:text-primary transition-colors font-medium">Home</a>
+          <a href="index.html#shop" class="text-gray-600 hover:text-primary transition-colors font-medium">Shop</a>
+          <a href="track-order.html" class="text-gray-600 hover:text-primary transition-colors font-medium flex items-center gap-1">
+            <i class="ph ph-package text-base"></i> Track Order
+          </a>
+        </div>
+        <div class="flex items-center space-x-4">
+          <a href="index.html" class="text-gray-600 hover:text-primary transition-colors">
+            <i class="ph ph-arrow-left text-2xl"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Loading -->
+  <div id="loading" class="pt-24 text-center py-20">
+    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+    <p class="mt-4 text-gray-500">กำลังโหลดสินค้า...</p>
+  </div>
+
+  <!-- Error -->
+  <div id="error" class="pt-24 text-center py-20 hidden">
+    <i class="ph ph-warning-circle text-5xl text-red-400 mb-4"></i>
+    <p class="text-red-500 text-lg font-semibold">ไม่พบสินค้า</p>
+    <a href="index.html" class="mt-4 inline-block text-primary hover:underline font-medium">← กลับหน้าร้าน</a>
+  </div>
+
+  <!-- Product Content -->
+  <main id="product-content" class="hidden pt-20 pb-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+      <!-- Breadcrumb -->
+      <nav class="mb-6 text-sm text-gray-500">
+        <a href="index.html" class="hover:text-primary">หน้าแรก</a>
+        <span class="mx-2">/</span>
+        <a href="index.html#shop" class="hover:text-primary">สินค้า</a>
+        <span class="mx-2">/</span>
+        <span id="bc-name" class="text-gray-700 font-medium"></span>
+      </nav>
+
+      <!-- Top Section: Gallery + Info -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+
+        <!-- Gallery -->
+        <div>
+          <div class="gallery-main relative" id="main-image-wrap">
+            <img id="main-image" src="" alt="">
+            <button class="gallery-nav left-3" onclick="prevImage()"><i class="ph ph-caret-left text-lg"></i></button>
+            <button class="gallery-nav right-3" onclick="nextImage()"><i class="ph ph-caret-right text-lg"></i></button>
+          </div>
+          <div id="thumbs" class="flex gap-3 mt-4 overflow-x-auto pb-2"></div>
+        </div>
+
+        <!-- Info -->
+        <div>
+          <!-- Badge -->
+          <div class="flex items-center gap-2 mb-3">
+            <span id="stock-badge" class="inline-block px-3 py-1 rounded-full text-xs font-bold"></span>
+          </div>
+
+          <h1 id="p-name" class="text-2xl md:text-3xl font-bold text-gray-900 mb-2"></h1>
+
+          <div id="p-meta" class="text-sm text-gray-500 mb-4 flex flex-wrap gap-x-4 gap-y-1">
+            <span id="p-brand-wrap" class="hidden">แบรนด์: <strong id="p-brand"></strong></span>
+            <span id="p-sku-wrap" class="hidden">รหัสสินค้า: <strong id="p-sku"></strong></span>
+          </div>
+
+          <!-- Price -->
+          <div class="flex items-baseline gap-3 mb-6">
+            <span id="p-price" class="text-3xl font-bold text-red-600"></span>
+            <span id="p-original-price" class="text-lg text-gray-400 line-through hidden"></span>
+          </div>
+
+          <!-- Quantity -->
+          <div class="flex items-center gap-4 mb-6">
+            <span class="text-sm font-medium text-gray-600">จำนวน</span>
+            <div class="flex items-center border border-gray-200 rounded-lg overflow-hidden">
+              <button class="qty-btn" onclick="changeQty(-1)">−</button>
+              <input id="qty" type="text" value="01" class="w-12 text-center font-semibold text-sm border-x border-gray-200 py-2" readonly>
+              <button class="qty-btn" onclick="changeQty(1)">+</button>
+            </div>
+          </div>
+
+          <!-- Buttons -->
+          <div class="flex gap-3 mb-6">
+            <button onclick="addToCartFromDetail()" class="flex-1 border-2 border-gray-300 hover:border-primary text-gray-700 hover:text-primary font-bold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2">
+              <i class="ph ph-shopping-cart text-xl"></i> เพิ่มในตะกร้า
+            </button>
+            <button onclick="buyNow()" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2">
+              ซื้อเลย
+            </button>
+          </div>
+
+          <!-- Tags -->
+          <div id="p-tags" class="flex flex-wrap gap-2 mb-4"></div>
+
+          <!-- Share -->
+          <div class="flex items-center gap-3 text-gray-400 pt-4 border-t border-gray-100">
+            <i class="ph ph-share-network text-lg cursor-pointer hover:text-primary"></i>
+            <i class="ph ph-heart text-lg cursor-pointer hover:text-red-500"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs Section -->
+      <div class="mt-12">
+        <div class="border-b border-gray-200 flex">
+          <button class="tab-btn active" onclick="switchTab('all')">ทั้งหมด</button>
+          <button class="tab-btn" onclick="switchTab('details')">รายละเอียดสินค้า</button>
+          <button class="tab-btn" onclick="switchTab('specs')">คุณสมบัติสินค้า</button>
+        </div>
+
+        <!-- Tab: All -->
+        <div id="tab-all" class="py-8">
+          <div id="desc-section" class="mb-10">
+            <h3 class="text-lg font-bold text-gray-900 mb-4">รายละเอียดสินค้า</h3>
+            <div id="p-description" class="text-gray-600 leading-relaxed whitespace-pre-line"></div>
+          </div>
+          <div id="specs-section">
+            <h3 class="text-lg font-bold text-gray-900 mb-4">คุณสมบัติสินค้า</h3>
+            <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+              <table class="w-full">
+                <tbody id="specs-table-all"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab: Details -->
+        <div id="tab-details" class="py-8 hidden">
+          <div id="p-description-2" class="text-gray-600 leading-relaxed whitespace-pre-line"></div>
+        </div>
+
+        <!-- Tab: Specs -->
+        <div id="tab-specs" class="py-8 hidden">
+          <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+            <table class="w-full">
+              <tbody id="specs-table"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Toast -->
+  <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+<script>
+  const API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
+    ? 'http://localhost:5000/api' : '/api';
+
+  let product = null;
+  let currentImageIndex = 0;
+  let allImages = [];
+
+  // ── Load Product ─────────────────────────────────────────────────────────────
+  async function loadProduct() {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    if (!id) { showError(); return; }
+
+    try {
+      let res;
+      try {
+        res = await fetch(`${API_BASE}/products/${id}`);
+        if (!res.ok) throw new Error();
+        product = await res.json();
+      } catch {
+        // Fallback to products.json
+        const fallback = await fetch('products.json');
+        const all = await fallback.json();
+        product = all.find(p => p.id === id);
+      }
+
+      if (!product) { showError(); return; }
+      renderProduct();
+    } catch {
+      showError();
+    }
+  }
+
+  function showError() {
+    document.getElementById('loading').classList.add('hidden');
+    document.getElementById('error').classList.remove('hidden');
+  }
+
+  // ── Render ───────────────────────────────────────────────────────────────────
+  function renderProduct() {
+    document.title = `${product.name} — btmusicdrive`;
+    document.getElementById('bc-name').textContent = product.name;
+    document.getElementById('p-name').textContent = product.name;
+
+    // Price
+    document.getElementById('p-price').textContent = `฿${Number(product.price).toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
+    if (product.originalPrice && product.originalPrice > product.price) {
+      const el = document.getElementById('p-original-price');
+      el.textContent = `฿${Number(product.originalPrice).toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
+      el.classList.remove('hidden');
+    }
+
+    // Stock badge
+    const badge = document.getElementById('stock-badge');
+    if (product.stock > 0) {
+      badge.textContent = 'มีสินค้า';
+      badge.className = 'inline-block px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700';
+    } else {
+      badge.textContent = 'สินค้าหมด';
+      badge.className = 'inline-block px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-600';
+    }
+
+    // Brand & SKU
+    if (product.brand) {
+      document.getElementById('p-brand').textContent = product.brand;
+      document.getElementById('p-brand-wrap').classList.remove('hidden');
+    }
+    if (product.sku) {
+      document.getElementById('p-sku').textContent = product.sku;
+      document.getElementById('p-sku-wrap').classList.remove('hidden');
+    }
+
+    // Images
+    allImages = [];
+    if (product.imageUrl) allImages.push(product.imageUrl);
+    if (Array.isArray(product.images)) {
+      product.images.forEach(url => {
+        if (url && !allImages.includes(url)) allImages.push(url);
+      });
+    }
+    if (allImages.length === 0) allImages.push('https://via.placeholder.com/600x600?text=No+Image');
+    renderGallery();
+
+    // Description
+    const desc = product.description || 'ไม่มีรายละเอียดสินค้า';
+    document.getElementById('p-description').textContent = desc;
+    document.getElementById('p-description-2').textContent = desc;
+
+    // Specs
+    renderSpecs();
+
+    // Tags
+    const tagsEl = document.getElementById('p-tags');
+    const tagColors = ['bg-red-600', 'bg-blue-600', 'bg-green-600', 'bg-purple-600', 'bg-amber-600', 'bg-teal-600', 'bg-pink-600'];
+    if (Array.isArray(product.tags) && product.tags.length > 0) {
+      tagsEl.innerHTML = product.tags.map((t, i) =>
+        `<span class="tag text-white ${tagColors[i % tagColors.length]}">#${escHtml(t)}</span>`
+      ).join('');
+    }
+
+    // Show
+    document.getElementById('loading').classList.add('hidden');
+    document.getElementById('product-content').classList.remove('hidden');
+  }
+
+  // ── Gallery ──────────────────────────────────────────────────────────────────
+  function renderGallery() {
+    document.getElementById('main-image').src = allImages[0];
+    const thumbsEl = document.getElementById('thumbs');
+    thumbsEl.innerHTML = allImages.map((url, i) =>
+      `<div class="thumb flex-shrink-0 w-20 h-20 ${i === 0 ? 'active' : ''}" onclick="selectImage(${i})">
+        <img src="${escHtml(url)}" alt="" class="w-full h-full object-cover">
+      </div>`
+    ).join('');
+  }
+
+  function selectImage(idx) {
+    currentImageIndex = idx;
+    document.getElementById('main-image').src = allImages[idx];
+    document.querySelectorAll('.thumb').forEach((t, i) => t.classList.toggle('active', i === idx));
+  }
+
+  function prevImage() {
+    selectImage((currentImageIndex - 1 + allImages.length) % allImages.length);
+  }
+  function nextImage() {
+    selectImage((currentImageIndex + 1) % allImages.length);
+  }
+
+  // ── Specs Table ──────────────────────────────────────────────────────────────
+  function renderSpecs() {
+    const specs = product.specs;
+    if (!specs || (Array.isArray(specs) && specs.length === 0) || (typeof specs === 'object' && Object.keys(specs).length === 0)) {
+      document.getElementById('specs-section').classList.add('hidden');
+      return;
+    }
+
+    let rows = '';
+    if (Array.isArray(specs)) {
+      rows = specs.map((s, i) =>
+        `<tr class="spec-row"><td class="px-6 py-3 font-semibold text-gray-800 w-1/3 border-b border-gray-100">${escHtml(s.key || s.label || '')}</td><td class="px-6 py-3 text-gray-600 border-b border-gray-100">${escHtml(s.value || '')}</td></tr>`
+      ).join('');
+    } else {
+      rows = Object.entries(specs).map(([k, v]) =>
+        `<tr class="spec-row"><td class="px-6 py-3 font-semibold text-gray-800 w-1/3 border-b border-gray-100">${escHtml(k)}</td><td class="px-6 py-3 text-gray-600 border-b border-gray-100">${escHtml(String(v))}</td></tr>`
+      ).join('');
+    }
+
+    document.getElementById('specs-table-all').innerHTML = rows;
+    document.getElementById('specs-table').innerHTML = rows;
+  }
+
+  // ── Tabs ──────────────────────────────────────────────────────────────────────
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('[id^="tab-"]').forEach(el => el.classList.add('hidden'));
+    document.getElementById('tab-' + tab).classList.remove('hidden');
+    event.currentTarget.classList.add('active');
+  }
+
+  // ── Quantity ─────────────────────────────────────────────────────────────────
+  function changeQty(delta) {
+    const el = document.getElementById('qty');
+    let val = parseInt(el.value) || 1;
+    val = Math.max(1, Math.min(99, val + delta));
+    el.value = String(val).padStart(2, '0');
+  }
+
+  // ── Cart Actions ─────────────────────────────────────────────────────────────
+  function addToCartFromDetail() {
+    if (!product) return;
+    const qty = parseInt(document.getElementById('qty').value) || 1;
+    // Use localStorage cart (same as index.html)
+    let cart = [];
+    try { cart = JSON.parse(localStorage.getItem('btmusicdrive_cart') || '[]'); } catch {}
+    const existing = cart.find(c => c.id === product.id);
+    if (existing) {
+      existing.quantity += qty;
+    } else {
+      cart.push({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.imageUrl,
+        category: product.category?.name || '',
+        quantity: qty,
+      });
+    }
+    localStorage.setItem('btmusicdrive_cart', JSON.stringify(cart));
+    showToast(`เพิ่ม "${product.name}" ลงตะกร้าแล้ว (${qty} ชิ้น)`);
+  }
+
+  function buyNow() {
+    addToCartFromDetail();
+    window.location.href = 'checkout.html';
+  }
+
+  // ── Utils ────────────────────────────────────────────────────────────────────
+  function escHtml(str) {
+    const d = document.createElement('div');
+    d.appendChild(document.createTextNode(String(str || '')));
+    return d.innerHTML;
+  }
+
+  function showToast(message) {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = 'bg-gray-900 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 transform translate-y-10 opacity-0 transition-all duration-300';
+    toast.innerHTML = `<div class="bg-green-500 rounded-full p-1"><i class="ph ph-check text-white"></i></div><p class="text-sm font-medium">${message}</p>`;
+    container.appendChild(toast);
+    requestAnimationFrame(() => {
+      toast.classList.remove('translate-y-10', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+    });
+    setTimeout(() => {
+      toast.classList.remove('translate-y-0', 'opacity-100');
+      toast.classList.add('translate-y-10', 'opacity-0');
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
+  }
+
+  // ── Init ─────────────────────────────────────────────────────────────────────
+  loadProduct();
+</script>
+</body>
+</html>

@@ -25,6 +25,9 @@
     <!-- Google Identity Services -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 
+    <!-- Facebook SDK -->
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/th_TH/sdk.js"></script>
+
     <!-- Custom CSS -->
     <link rel="stylesheet" href="style.css">
     
@@ -49,16 +52,12 @@
                     <span class="font-bold text-xl tracking-tight">btmusicdrive</span>
                 </div>
 
-                <!-- Desktop Menu -->
-                <div class="hidden md:flex space-x-8 items-center">
-                    <a href="#" class="text-gray-600 hover:text-primary transition-colors font-medium">Home</a>
-                    <a href="#shop" class="text-gray-600 hover:text-primary transition-colors font-medium">Shop</a>
-                    <a href="#categories" class="text-gray-600 hover:text-primary transition-colors font-medium">Categories</a>
-                    <a href="#about" class="text-gray-600 hover:text-primary transition-colors font-medium">About</a>
-                    <a href="track-order.html" class="text-gray-600 hover:text-primary transition-colors font-medium flex items-center gap-1">
-                        <i class="ph ph-package text-base"></i> Track Order
-                    </a>
-                    <a href="admin.html" id="admin-nav-link" class="hidden text-amber-600 hover:text-amber-700 transition-colors font-medium flex items-center gap-1 text-sm">
+                <!-- Desktop Menu (dynamic) -->
+                <div class="hidden md:flex items-center gap-1" id="desktop-nav">
+                    <!-- Populated by JS from /api/menus -->
+                </div>
+                <div class="hidden md:flex items-center">
+                    <a href="admin.html" id="admin-nav-link" class="hidden text-amber-600 hover:text-amber-700 transition-colors font-medium flex items-center gap-1 text-sm ml-4">
                         <i class="ph ph-shield-check text-base"></i> Admin
                     </a>
                 </div>
@@ -86,17 +85,8 @@
 
         <!-- Mobile Menu -->
         <div class="md:hidden hidden bg-white border-t border-gray-100 absolute w-full" id="mobile-menu">
-            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 shadow-lg">
-                <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50">Home</a>
-                <a href="#shop" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50">Shop</a>
-                <a href="#categories" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50">Categories</a>
-                <a href="#about" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50">About</a>
-                <a href="track-order.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50 flex items-center gap-2">
-                    <i class="ph ph-package"></i> Track Order
-                </a>
-                <a href="admin.html" id="admin-nav-link-mobile" class="hidden px-3 py-2 rounded-md text-base font-medium text-amber-600 hover:text-amber-700 hover:bg-amber-50 flex items-center gap-2">
-                    <i class="ph ph-shield-check"></i> Admin Dashboard
-                </a>
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 shadow-lg" id="mobile-nav">
+                <!-- Populated by JS from /api/menus -->
             </div>
         </div>
     </nav>
@@ -136,14 +126,15 @@
     <!-- Auth Modal -->
     <div id="auth-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[60] hidden items-center justify-center p-4 transition-opacity opacity-0">
         <div class="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300" id="auth-modal-content">
-            <div class="flex justify-between items-center p-6 border-b border-gray-100">
-                <h2 class="text-2xl font-bold text-gray-900" id="auth-title">Welcome Back</h2>
+            <div class="flex justify-end items-center p-4">
                 <button id="close-auth-btn" class="text-gray-400 hover:text-gray-600 transition-colors">
                     <i class="ph ph-x text-2xl"></i>
                 </button>
             </div>
             
-            <div class="p-6">
+            <div class="px-8 pb-8">
+                <h2 class="text-2xl font-bold text-gray-900 text-center mb-6" id="auth-title">เข้าสู่ระบบ</h2>
+
                 <!-- Error Message Container -->
                 <div id="auth-error" class="hidden bg-red-50 text-red-600 text-sm p-3 rounded-lg mb-4 flex items-center">
                     <i class="ph ph-warning-circle text-lg mr-2"></i>
@@ -151,55 +142,78 @@
                 </div>
 
                 <form id="auth-form" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                        <input type="email" id="auth-email" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-colors" placeholder="you@example.com">
+                    <div class="relative">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"><i class="ph ph-at text-xl"></i></span>
+                        <input type="email" id="auth-email" required class="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-colors text-gray-700" placeholder="อีเมล">
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                        <input type="password" id="auth-password" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-colors" placeholder="••••••••">
+                    <div class="relative">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"><i class="ph ph-at text-xl"></i></span>
+                        <input type="password" id="auth-password" required class="w-full pl-12 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-colors text-gray-700" placeholder="รหัสผ่าน">
+                        <button type="button" onclick="togglePasswordVisibility()" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                            <i class="ph ph-eye text-xl" id="pw-eye-icon"></i>
+                        </button>
                     </div>
-                    <button type="submit" id="auth-submit-btn" class="w-full bg-primary hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition-colors flex justify-center items-center">
-                        <span id="auth-submit-text">Sign In</span>
+
+                    <div id="auth-remember-row" class="flex items-center">
+                        <input type="checkbox" id="auth-remember" class="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary">
+                        <label for="auth-remember" class="ml-2 text-sm text-gray-600">จำฉันเข้าระบบ</label>
+                    </div>
+
+                    <button type="submit" id="auth-submit-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 px-4 rounded-xl transition-colors flex justify-center items-center text-lg">
+                        <span id="auth-submit-text">เข้าสู่ระบบ</span>
                         <i class="ph ph-spinner animate-spin hidden ml-2" id="auth-spinner"></i>
                     </button>
                 </form>
 
-                <div class="mt-6">
+                <div class="mt-5">
                     <div class="relative">
                         <div class="absolute inset-0 flex items-center">
-                            <div class="w-full border-t border-gray-300"></div>
+                            <div class="w-full border-t border-gray-200"></div>
                         </div>
                         <div class="relative flex justify-center text-sm">
-                            <span class="px-2 bg-white text-gray-500">Or continue with</span>
+                            <span class="px-3 bg-white text-gray-400">หรือเข้าสู่ระบบด้วย</span>
                         </div>
                     </div>
 
-                    <div class="mt-6 text-center" id="google-btn-container">
-                        <div id="g_id_onload"
-                            data-client_id="46644504211-991ljdkldsbsb08d9aki6v8aeafrnp6k.apps.googleusercontent.com"
-                            data-context="signin"
-                            data-ux_mode="popup"
-                            data-callback="handleGoogleCredentialResponse"
-                            data-auto_prompt="false">
-                        </div>
-                        <div class="g_id_signin"
-                            data-type="standard"
-                            data-shape="rectangular"
-                            data-theme="outline"
-                            data-text="signin_with"
-                            data-size="large"
-                            data-logo_alignment="left"
-                            data-width="350">
+                    <div class="mt-5 space-y-3">
+                        <!-- Facebook Login Button -->
+                        <button onclick="loginWithFacebook()" id="fb-login-btn" class="w-full flex items-center justify-center gap-3 bg-[#1877F2] hover:bg-[#166FE5] text-white font-bold py-3 px-4 rounded-xl transition-colors">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                            เข้าสู่ระบบด้วย Facebook
+                        </button>
+
+                        <!-- Google Login Button -->
+                        <div id="google-btn-container">
+                            <div id="g_id_onload"
+                                data-client_id="46644504211-991ljdkldsbsb08d9aki6v8aeafrnp6k.apps.googleusercontent.com"
+                                data-context="signin"
+                                data-ux_mode="popup"
+                                data-callback="handleGoogleCredentialResponse"
+                                data-auto_prompt="false">
+                            </div>
+                            <div class="g_id_signin"
+                                data-type="standard"
+                                data-shape="rectangular"
+                                data-theme="outline"
+                                data-text="signin_with"
+                                data-size="large"
+                                data-logo_alignment="center"
+                                data-width="400"
+                                data-locale="th">
+                            </div>
                         </div>
                     </div>
                 </div>
                 
-                <div class="mt-6 text-center">
+                <div class="mt-5 text-center">
                     <p class="text-sm text-gray-600" id="auth-toggle-text">
-                        Don't have an account? 
-                        <button type="button" id="auth-toggle-btn" class="text-primary font-bold hover:underline">Sign Up</button>
+                        ไม่ใช่สมาชิก? 
+                        <button type="button" id="auth-toggle-btn" class="text-primary font-bold hover:underline">สมัครสมาชิก</button>
                     </p>
+                </div>
+
+                <div class="mt-4 text-center border-t border-gray-100 pt-4">
+                    <button type="button" class="text-sm font-bold text-gray-700 hover:text-primary transition-colors">ลืมรหัสผ่าน ?</button>
                 </div>
             </div>
         </div>
@@ -430,4 +444,11 @@
                     <i class="ph-fill ph-paypal-logo text-3xl text-gray-400 hover:text-gray-600 cursor-pointer transition-colors"></i>
                     <i class="ph-fill ph-visa-logo text-3xl text-gray-400 hover:text-gray-600 cursor-pointer transition-colors"></i>
                 </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
    

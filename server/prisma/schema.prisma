@@ -19,12 +19,27 @@ model User {
   email        String    @unique
   passwordHash String?
   googleId     String?   @unique
+  facebookId   String?   @unique
   name         String?
   role         Role      @default(CUSTOMER)
   orders       Order[]
   cart         Cart?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
+}
+
+model MenuItem {
+  id        String   @id @default(uuid())
+  label     String
+  url       String
+  icon      String?
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  parentId  String?
+  parent    MenuItem? @relation("MenuChildren", fields: [parentId], references: [id])
+  children  MenuItem[] @relation("MenuChildren")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Cart {
@@ -58,18 +73,24 @@ model Category {
 }
 
 model Product {
-  id          String      @id @default(uuid())
-  name        String
-  description String?
-  price       Float
-  stock       Int         @default(0)
-  imageUrl    String?
-  category    Category    @relation(fields: [categoryId], references: [id])
-  categoryId  String
-  orderItems  OrderItem[]
-  cartItems   CartItem[]
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id            String      @id @default(uuid())
+  name          String
+  description   String?
+  price         Float
+  originalPrice Float?
+  stock         Int         @default(0)
+  imageUrl      String?
+  images        String[]    @default([])
+  brand         String?
+  sku           String?
+  tags          String[]    @default([])
+  specs         Json?
+  category      Category    @relation(fields: [categoryId], references: [id])
+  categoryId    String
+  orderItems    OrderItem[]
+  cartItems     CartItem[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 }
 
 model Order {
