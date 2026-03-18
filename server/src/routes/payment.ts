@@ -231,26 +231,19 @@ router.post('/webhook', async (req: Request, res: Response) => {
     return res.status(400).json({ error: `Webhook Error: ${err.message}` });
   }
 
-  if (event.type === 'checkout.session.completed') {
-    const session = event.data.object as Stripe.Checkout.Session;
-
-    if (session.payment_status !== 'paid') {
-      return res.json({ received: true, note: 'payment not yet paid' });
-    }
-
+  // ── Helper: create order from checkout session ──────────────────────────
+  async function createOrderFromSession(session: Stripe.Checkout.Session, status: 'PENDING' | 'PROCESSING') {
     const userId = session.metadata?.userId;
     const sessionId = session.id;
 
     if (!userId) {
       console.error('[Webhook] No userId in session metadata');
-      return res.json({ received: true });
+      return null;
     }
 
     // Idempotency: skip if order already exists
     const existing = await prisma.order.findFirst({ where: { stripeSessionId: sessionId } });
-    if (existing) {
-      return res.json({ received: true, orderId: existing.id });
-    }
+    if (existing) return existing;
 
     // Get user's cart
     const cart = await prisma.cart.findUnique({
@@ -260,7 +253,7 @@ router.post('/webhook', async (req: Request, res: Response) => {
 
     if (!cart || cart.items.length === 0) {
       console.warn('[Webhook] Cart empty for user', userId);
-      return res.json({ received: true });
+      return null;
     }
 
     let totalAmount = 0;
@@ -275,7 +268,7 @@ router.post('/webhook', async (req: Request, res: Response) => {
         data: {
           userId,
           totalAmount,
-          status: 'PROCESSING',
+          status,
           stripeSessionId: sessionId,
           promoCode: session.metadata?.promoCode || null,
           discountAmount: parseFloat(session.metadata?.discountAmount || '0'),
@@ -297,21 +290,89 @@ router.post('/webhook', async (req: Request, res: Response) => {
       return newOrder;
     }) as any;
 
-    // Fire-and-forget confirmation email
-    sendOrderConfirmationEmail({
-      orderId: order.id,
-      customerEmail: order.user.email,
-      customerName: order.user.name || '',
-      items: order.items.map((i: any) => ({
-        name: i.product.name,
-        quantity: i.quantity,
-        priceAtTime: Number(i.priceAtTime),
-      })),
-      totalAmount: Number(order.totalAmount),
-    }).catch((err: any) => console.error('[Email] Webhook email failed:', err));
+    return order;
+  }
 
-    console.log('[Webhook] Order created:', order.id);
-    return res.json({ received: true, orderId: order.id });
+  // ── checkout.session.completed ─────────────────────────────────────────
+  // Fires for both sync (card) and async (PromptPay) payments
+  if (event.type === 'checkout.session.completed') {
+    const session = event.data.object as Stripe.Checkout.Session;
+
+    if (session.payment_status === 'paid') {
+      // Sync payment (card) — create order immediately
+      const order = await createOrderFromSession(session, 'PROCESSING');
+      if (order && (order as any).user) {
+        sendOrderConfirmationEmail({
+          orderId: order.id,
+          customerEmail: (order as any).user.email,
+          customerName: (order as any).user.name || '',
+          items: (order as any).items.map((i: any) => ({
+            name: i.product.name, quantity: i.quantity, priceAtTime: Number(i.priceAtTime),
+          })),
+          totalAmount: Number(order.totalAmount),
+        }).catch((err: any) => console.error('[Email] Webhook email failed:', err));
+        console.log('[Webhook] Order created (sync):', order.id);
+      }
+    } else {
+      // Async payment (PromptPay) — create order as PENDING, wait for async result
+      const order = await createOrderFromSession(session, 'PENDING');
+      if (order) console.log('[Webhook] Order created (async pending):', order.id);
+    }
+
+    return res.json({ received: true });
+  }
+
+  // ── checkout.session.async_payment_succeeded (PromptPay confirmed) ─────
+  if (event.type === 'checkout.session.async_payment_succeeded') {
+    const session = event.data.object as Stripe.Checkout.Session;
+    const sessionId = session.id;
+
+    // Update existing pending order to PROCESSING
+    const order = await prisma.order.findFirst({
+      where: { stripeSessionId: sessionId },
+      include: { items: { include: { product: true } }, user: { select: { id: true, email: true, name: true } } },
+    });
+
+    if (order) {
+      await prisma.order.update({ where: { id: order.id }, data: { status: 'PROCESSING' } });
+      sendOrderConfirmationEmail({
+        orderId: order.id,
+        customerEmail: order.user.email,
+        customerName: order.user.name || '',
+        items: order.items.map((i: any) => ({
+          name: i.product.name, quantity: i.quantity, priceAtTime: Number(i.priceAtTime),
+        })),
+        totalAmount: Number(order.totalAmount),
+      }).catch((err: any) => console.error('[Email] Async payment email failed:', err));
+      console.log('[Webhook] Async payment succeeded, order updated:', order.id);
+    } else {
+      // Order not created yet — create it now
+      const newOrder = await createOrderFromSession(session, 'PROCESSING');
+      if (newOrder && (newOrder as any).user) {
+        sendOrderConfirmationEmail({
+          orderId: newOrder.id,
+          customerEmail: (newOrder as any).user.email,
+          customerName: (newOrder as any).user.name || '',
+          items: (newOrder as any).items.map((i: any) => ({
+            name: i.product.name, quantity: i.quantity, priceAtTime: Number(i.priceAtTime),
+          })),
+          totalAmount: Number(newOrder.totalAmount),
+        }).catch((err: any) => console.error('[Email] Async payment email failed:', err));
+      }
+    }
+
+    return res.json({ received: true });
+  }
+
+  // ── checkout.session.async_payment_failed (PromptPay failed/expired) ───
+  if (event.type === 'checkout.session.async_payment_failed') {
+    const session = event.data.object as Stripe.Checkout.Session;
+    const existing = await prisma.order.findFirst({ where: { stripeSessionId: session.id } });
+    if (existing) {
+      await prisma.order.update({ where: { id: existing.id }, data: { status: 'CANCELLED' } });
+      console.log('[Webhook] Async payment failed, order cancelled:', existing.id);
+    }
+    return res.json({ received: true });
   }
 
   res.json({ received: true });
