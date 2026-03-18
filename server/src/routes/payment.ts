@@ -213,4 +213,108 @@ router.post('/confirm', authenticateToken, async (req: AuthRequest, res: Respons
   }
 });
 
+// ── Stripe Webhook (production-safe) ──────────────────────────────────────────
+router.post('/webhook', async (req: Request, res: Response) => {
+  const sig = req.headers['stripe-signature'] as string;
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+  if (!webhookSecret) {
+    console.error('[Webhook] STRIPE_WEBHOOK_SECRET not set');
+    return res.status(500).json({ error: 'Webhook secret not configured' });
+  }
+
+  let event: Stripe.Event;
+  try {
+    event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
+  } catch (err: any) {
+    console.error('[Webhook] Signature verification failed:', err.message);
+    return res.status(400).json({ error: `Webhook Error: ${err.message}` });
+  }
+
+  if (event.type === 'checkout.session.completed') {
+    const session = event.data.object as Stripe.Checkout.Session;
+
+    if (session.payment_status !== 'paid') {
+      return res.json({ received: true, note: 'payment not yet paid' });
+    }
+
+    const userId = session.metadata?.userId;
+    const sessionId = session.id;
+
+    if (!userId) {
+      console.error('[Webhook] No userId in session metadata');
+      return res.json({ received: true });
+    }
+
+    // Idempotency: skip if order already exists
+    const existing = await prisma.order.findFirst({ where: { stripeSessionId: sessionId } });
+    if (existing) {
+      return res.json({ received: true, orderId: existing.id });
+    }
+
+    // Get user's cart
+    const cart = await prisma.cart.findUnique({
+      where: { userId },
+      include: { items: { include: { product: true } } },
+    });
+
+    if (!cart || cart.items.length === 0) {
+      console.warn('[Webhook] Cart empty for user', userId);
+      return res.json({ received: true });
+    }
+
+    let totalAmount = 0;
+    const orderItems = cart.items.map((item: any) => {
+      totalAmount += Number(item.product.price) * item.quantity;
+      return { productId: item.productId, quantity: item.quantity, priceAtTime: Number(item.product.price) };
+    });
+    totalAmount += SHIPPING_COST_THB;
+
+    const order = await prisma.$transaction(async (tx) => {
+      const newOrder = await tx.order.create({
+        data: {
+          userId,
+          totalAmount,
+          status: 'PROCESSING',
+          stripeSessionId: sessionId,
+          promoCode: session.metadata?.promoCode || null,
+          discountAmount: parseFloat(session.metadata?.discountAmount || '0'),
+          items: { create: orderItems },
+        },
+        include: {
+          items: { include: { product: true } },
+          user: { select: { id: true, email: true, name: true } },
+        },
+      });
+      await tx.cartItem.deleteMany({ where: { cartId: cart.id } });
+
+      if (session.metadata?.promoCode) {
+        await tx.promoCode.updateMany({
+          where: { code: session.metadata.promoCode, isActive: true },
+          data: { usedCount: { increment: 1 } },
+        });
+      }
+      return newOrder;
+    }) as any;
+
+    // Fire-and-forget confirmation email
+    sendOrderConfirmationEmail({
+      orderId: order.id,
+      customerEmail: order.user.email,
+      customerName: order.user.name || '',
+      items: order.items.map((i: any) => ({
+        name: i.product.name,
+        quantity: i.quantity,
+        priceAtTime: Number(i.priceAtTime),
+      })),
+      totalAmount: Number(order.totalAmount),
+    }).catch((err: any) => console.error('[Email] Webhook email failed:', err));
+
+    console.log('[Webhook] Order created:', order.id);
+    return res.json({ received: true, orderId: order.id });
+  }
+
+  res.json({ received: true });
+});
+
 export default router;
