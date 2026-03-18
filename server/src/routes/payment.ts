@@ -120,7 +120,7 @@ router.post('/create-checkout-session', authenticateToken, async (req: AuthReque
   }
 });
 
-// Confirm payment and create DB order with status PROCESSING
+// Confirm payment and create DB order
 router.post('/confirm', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.id;
@@ -133,6 +133,12 @@ router.post('/confirm', authenticateToken, async (req: AuthRequest, res: Respons
     const session = await stripe.checkout.sessions.retrieve(sessionId, {
       expand: ['line_items'],
     });
+
+    // PromptPay (async): payment_status is 'unpaid' when user returns
+    if (session.payment_status === 'unpaid') {
+      // Webhook will handle order creation when payment actually completes
+      return res.json({ status: 'pending', message: 'Payment is being processed (PromptPay). You will receive a confirmation email once completed.' });
+    }
 
     if (session.payment_status !== 'paid') {
       return res.status(400).json({ error: 'Payment not completed' });

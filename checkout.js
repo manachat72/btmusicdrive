@@ -408,6 +408,7 @@ async function checkPaymentStatus() {
         // Confirm payment with backend to create the DB order
         const token = localStorage.getItem('btmusicdrive_token');
         let orderId = sessionId.slice(-8).toUpperCase();
+        let isPending = false;
 
         if (token) {
             try {
@@ -417,8 +418,13 @@ async function checkPaymentStatus() {
                     body: JSON.stringify({ sessionId })
                 });
                 if (res.ok) {
-                    const order = await res.json();
-                    orderId = order.id ? order.id.slice(-8).toUpperCase() : orderId;
+                    const data = await res.json();
+                    if (data.status === 'pending') {
+                        // PromptPay async — payment not yet confirmed
+                        isPending = true;
+                    } else {
+                        orderId = data.id ? data.id.slice(-8).toUpperCase() : orderId;
+                    }
                 }
             } catch (e) {
                 console.warn('Could not confirm order with backend:', e);
@@ -429,10 +435,26 @@ async function checkPaymentStatus() {
         cart = [];
         localStorage.removeItem('cart');
 
-        // Show success modal
-        document.getElementById('order-id-display').textContent = `Order #${orderId}`;
-        document.getElementById('success-modal').classList.remove('hidden');
-        document.getElementById('success-modal').classList.add('flex');
+        if (isPending) {
+            // Show pending modal for PromptPay
+            const modalContent = document.querySelector('#success-modal .text-center') || document.querySelector('#success-modal > div > div');
+            if (modalContent) {
+                const icon = modalContent.querySelector('.ph-check-circle, .ph-seal-check');
+                if (icon) { icon.className = 'ph ph-clock-countdown text-5xl text-yellow-500'; }
+                const title = modalContent.querySelector('h2');
+                if (title) { title.textContent = 'Payment Processing'; }
+                const desc = modalContent.querySelector('p');
+                if (desc) { desc.textContent = 'Your PromptPay payment is being verified. You will receive a confirmation email once the payment is confirmed.'; }
+            }
+            document.getElementById('order-id-display').textContent = 'Awaiting Payment';
+            document.getElementById('success-modal').classList.remove('hidden');
+            document.getElementById('success-modal').classList.add('flex');
+        } else {
+            // Show success modal
+            document.getElementById('order-id-display').textContent = `Order #${orderId}`;
+            document.getElementById('success-modal').classList.remove('hidden');
+            document.getElementById('success-modal').classList.add('flex');
+        }
 
     } else if (status === 'cancelled') {
         showError('Payment was cancelled. You can try again when you are ready.');
