@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>การคืนสินค้า — btmusicdrive</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { 
+        theme: { 
+            extend: { 
+                colors: { 
+                    primary: '#C8A84E', 
+                    secondary: '#1a1a1a' 
+                } 
+            } 
+        } 
+    };
+  </script>
+  
+  <!-- Phosphor Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-gray-50 text-gray-800 antialiased">
+
+  <!-- Shared Navbar -->
+  <header id="site-header"></header>
+
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <!-- PAGE CONTENT — RETURN POLICY -->
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <main class="pt-20 pb-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="flex flex-col lg:flex-row gap-8">
+
+        <!-- ══ Sidebar ══ -->
+        <aside class="lg:w-64 flex-shrink-0">
+          <!-- เกี่ยวกับเรา -->
+          <div class="mb-6">
+            <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">เกี่ยวกับเรา</h3>
+            <ul class="space-y-1">
+              <li>
+                <a href="contact.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors">
+                  <i class="ph ph-headset text-lg"></i> ติดต่อเรา
+                </a>
+              </li>
+              <li>
+                <a href="about.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors">
+                  <i class="ph ph-info text-lg"></i> เกี่ยวกับเรา
+                </a>
+              </li>
+              <li>
+                <a href="terms.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors">
+                  <i class="ph ph-file-text text-lg"></i> ข้อกำหนดและเงื่อนไข
+                </a>
+              </li>
+              <li>
+                <a href="privacy.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors">
+                  <i class="ph ph-shield-check text-lg"></i> นโยบายความเป็นส่วนตัว
+                </a>
+              </li>
+            </ul>
+          </div>
+          <!-- บริการลูกค้า -->
+          <div>
+            <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">บริการลูกค้า</h3>
+            <ul class="space-y-1">
+              <li>
+                <a href="returns.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-primary font-semibold bg-amber-50 border-l-4 border-primary transition-colors">
+                  <i class="ph ph-package text-lg"></i> การคืนสินค้า
+                </a>
+              </li>
+              <li>
+                <a href="warranty.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors">
+                  <i class="ph ph-seal-check text-lg"></i> การรับประกันสินค้า
+                </a>
+              </li>
+              <li>
+                <a href="exchange.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors">
+                  <i class="ph ph-arrows-clockwise text-lg"></i> เงื่อนไขการเปลี่ยน/คืนสินค้า
+                </a>
+              </li>
+              <li>
+                <a href="refund.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors">
+                  <i class="ph ph-wallet text-lg"></i> การคืนเงิน
+                </a>
+              </li>
+            </ul>
+          </div>
+        </aside>
+
+        <!-- ══ Main Content ══ -->
+        <div class="flex-1 min-w-0">
+          <div class="bg-white rounded-2xl border border-gray-100 p-6 sm:p-10">
+
+            <!-- Page Title -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-6 border-b border-gray-100">
+              <div class="flex items-center gap-3">
+                <div class="bg-blue-50 w-10 h-10 rounded-full flex items-center justify-center">
+                  <i class="ph ph-package text-xl text-blue-600"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-gray-900">นโยบายการคืนสินค้าและการคืนเงิน</h1>
+              </div>
+              <span class="text-sm text-gray-500">อัปเดตล่าสุด: 27 มีนาคม 2026</span>
+            </div>
+
+            <!-- Content -->
+            <div class="space-y-8 text-[15px] text-gray-600 leading-relaxed">
+              
+              <section>
+                <p>ที่ <strong>btmusicdrive</strong> ความพึงพอใจของลูกค้าคือสิ่งสำคัญที่สุดสำหรับเรา หากท่านไม่ได้รับความพึงพอใจในตัวสินค้า หรือสินค้ามีปัญหาจากการผลิต ท่านสามารถขอเปลี่ยนสินค้าหรือคืนเงินได้ตามเงื่อนไขที่ระบุไว้ด้านล่างนี้</p>
+              </section>
+
+              <section>
+                <h2 class="text-lg font-bold text-gray-900 mb-3">1. ระยะเวลาการแจ้งขอเปลี่ยน/คืนสินค้า</h2>
+                <ul class="list-disc pl-5 space-y-2">
+                  <li><strong>สินค้ามีปัญหา (Hardware Defect):</strong> ท่านสามารถแจ้งขอเปลี่ยนสินค้าใหม่ได้ภายในระยะเวลาการรับประกัน <strong>30 วัน</strong> นับจากวันที่ท่านได้รับสินค้า (อ้างอิงจากสถานะการจัดส่งสำเร็จของบริษัทขนส่ง)</li>
+                  <li><strong>กรณีได้รับสินค้าผิดรุ่น ผิดแบบ:</strong> กรุณาแจ้งให้ทางเราทราบภายใน <strong>7 วัน</strong> นับจากวันที่ได้รับสินค้า</li>
+                </ul>
+              </section>
+
+              <section>
+                <h2 class="text-lg font-bold text-gray-900 mb-3">2. เงื่อนไขการรับเปลี่ยนหรือคืนสินค้า</h2>
+                <p class="mb-2">ทางเรายินดีรับเปลี่ยนหรือคืนสินค้าในกรณีดังต่อไปนี้:</p>
+                <ul class="list-disc pl-5 space-y-2">
+                  <li>สินค้าไม่สามารถใช้งานได้ อ่านข้อมูลไม่ได้ หรืออุปกรณ์ปลายทาง (คอมพิวเตอร์, เครื่องเสียงรถยนต์) ไม่สามารถตรวจพบแฟลชไดร์ฟได้ตั้งแต่ครั้งแรกที่ใช้งาน</li>
+                  <li>ทางร้านจัดส่งสินค้าผิดรุ่น ผิดความจุ หรือผิดแนวเพลงจากที่ท่านได้ทำการสั่งซื้อไว้</li>
+                  <li>สินค้าต้องอยู่ในสภาพสมบูรณ์ พร้อมกล่องบรรจุภัณฑ์ และอุปกรณ์เสริมต่างๆ (ถ้ามี) กลับมาอย่างครบถ้วน</li>
+                </ul>
+              </section>
+
+              <section>
+                <h2 class="text-lg font-bold text-gray-900 mb-3">3. สินค้าที่ไม่สามารถเปลี่ยนหรือคืนได้</h2>
+                <p class="mb-2">ขอสงวนสิทธิ์ไม่รับเปลี่ยนหรือคืนสินค้าในกรณีดังต่อไปนี้:</p>
+                <ul class="list-disc pl-5 space-y-2">
+                  <li>สินค้ามีความเสียหายจากการใช้งานผิดประเภท เช่น ตกกระแทก แตกหัก ร้าว มีรอยขีดข่วนลึก โดนน้ำ หรือไหม้</li>
+                  <li>สินค้าถูกดัดแปลง แกะ งัดแงะ หรือมีการปรับเปลี่ยนไฟล์ข้อมูลภายในแฟลชไดร์ฟ (เช่น ฟอร์แมตใหม่ หรือลบ/เพิ่มเพลงด้วยตนเอง) ซึ่งทำให้ระบบข้อมูลเสียหาย</li>
+                  <li>เหตุผลส่วนตัว เช่น เปลี่ยนใจ ไม่ชอบแนวเพลง หรือสั่งซื้อผิดรุ่นด้วยตนเอง</li>
+                </ul>
+              </section>
+
+              <section>
+                <h2 class="text-lg font-bold text-gray-900 mb-3">4. ขั้นตอนการขอเปลี่ยนหรือคืนสินค้า</h2>
+                <ol class="list-decimal pl-5 space-y-3">
+                  <li><strong>ติดต่อแอดมิน:</strong> แจ้งความประสงค์ขอเปลี่ยน/คืนสินค้าผ่านทาง LINE ID: <a href="#" class="text-primary hover:underline">@btmusicdrive</a> พร้อมแนบรูปถ่ายสินค้า, รูปถ่ายใบเสร็จ/หมายเลขคำสั่งซื้อ, และวิดีโอแสดงปัญหาการใช้งาน</li>
+                  <li><strong>การพิจารณา:</strong> เจ้าหน้าที่จะตรวจสอบข้อมูลและประเมินเบื้องต้นภายใน 1-2 วันทำการ หากตรงตามเงื่อนไข จะแจ้งที่อยู่สำหรับส่งคืนสินค้า</li>
+                  <li><strong>ส่งคืนสินค้า:</strong> ลูกค้าจัดส่งสินค้ากลับมายังคลังสินค้าของเรา (ในกรณีที่สินค้ามีปัญหาจากทางร้าน ทางเราจะเป็นผู้รับผิดชอบค่าใช้จ่ายในการจัดส่งขากลับ)</li>
+                  <li><strong>รับสินค้าชิ้นใหม่หรือรับเงินคืน:</strong> เมื่อเราได้รับและตรวจสอบสินค้าเรียบร้อยแล้ว จะดำเนินการจัดส่งสินค้าชิ้นใหม่ หรือดำเนินการคืนเงินให้ท่านภายในระยะเวลาที่กำหนด</li>
+                </ol>
+              </section>
+
+              <section>
+                <h2 class="text-lg font-bold text-gray-900 mb-3">5. นโยบายการคืนเงิน (Refund Policy)</h2>
+                <p class="mb-2">หากกรณีของท่านเข้าข่ายได้รับเงินคืน ทางเราจะดำเนินการโอนเงินคืนตามขั้นตอนดังนี้:</p>
+                <ul class="list-disc pl-5 space-y-2">
+                  <li><strong>ชำระผ่านการโอนเงิน/เก็บเงินปลายทาง:</strong> ทางเราจะโอนเงินคืนเข้าบัญชีธนาคารที่มีชื่อตรงกับผู้สั่งซื้อภายใน <strong>3-5 วันทำการ</strong> หลังจากที่ได้รับการอนุมัติการคืนเงิน</li>
+                  <li><strong>ชำระผ่านบัตรเครดิต/เดบิต:</strong> ยอดเงินจะถูกคืนกลับไปยังบัตรที่ท่านใช้ชำระเงิน โดยใช้เวลาประมาณ <strong>15-30 วันทำการ</strong> (ขึ้นอยู่กับนโยบายของแต่ละธนาคารผู้ออกบัตร)</li>
+                </ul>
+              </section>
+
+              <section>
+                <h2 class="text-lg font-bold text-gray-900 mb-3">6. ติดต่อสอบถามเกี่ยวกับการเคลมสินค้า</h2>
+                <p>หากท่านมีข้อสงสัยเพิ่มเติม สามารถติดต่อฝ่ายบริการลูกค้าของเราได้ที่:</p>
+                <ul class="mt-2 space-y-1">
+                  <li><strong>โทรศัพท์:</strong> 02-123-4567 (จันทร์-เสาร์ เวลา 09:00 - 18:00 น.)</li>
+                  <li><strong>Line ID:</strong> @btmusicdrive</li>
+                  <li><strong>อีเมล:</strong> services@btmusicdrive.com</li>
+                </ul>
+              </section>
+
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+
+  <!-- Shared Footer -->
+  <div id="site-footer"></div>
+
+  <script src="components.js"></script>
+</body>
+</html>

@@ -1,9 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>btmusicdrive - Modern E-Commerce</title>
+    <title>btmusicdrive | ขายแฟลชไดร์ฟเพลง MP3 รวมฮิตทุกแนว เสียง HD เสียบปุ๊บฟังปั๊บ</title>
+    <meta name="description" content="btmusicdrive ร้านขายแฟลชไดร์ฟเพลง MP3 รวมเพลงฮิตทุกแนว ลูกทุ่ง หมอลำ สตริง เพื่อชีวิต สากล เพลงยุค 90s เสียง HD คุณภาพสูง เสียบปุ๊บฟังปั๊บ ฟังในรถ เครื่องเสียง จัดส่งทั่วไทย">
+    <meta name="keywords" content="แฟลชไดร์ฟเพลง, USB เพลง, เพลง MP3, เพลงลูกทุ่ง, หมอลำ, เพลงสตริง, เพื่อชีวิต, เพลงสากล, เพลงยุค 90s, ฟังเพลงในรถ, แฟลชไดร์ฟเพลง HD, btmusicdrive, เสียบปุ๊บฟังปั๊บ">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -11,8 +13,8 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: '#4f46e5', // Indigo 600
-                        secondary: '#1e293b', // Slate 800
+                        primary: '#C8A84E', // Gold
+                        secondary: '#1a1a1a', // Black
                     }
                 }
             }
@@ -39,231 +41,101 @@
     </style>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Kanit', 'Inter', sans-serif; }
+    </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans antialiased overflow-x-hidden">
 
-    <!-- Navbar -->
-    <nav class="bg-white shadow-sm fixed w-full z-50 top-0 transition-all duration-300" id="navbar">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16 items-center">
-                <!-- Logo -->
-                <div class="flex-shrink-0 flex items-center cursor-pointer">
-                    <i class="ph-fill ph-shopping-bag text-primary text-3xl mr-2"></i>
-                    <span class="font-bold text-xl tracking-tight">btmusicdrive</span>
-                </div>
-
-                <!-- Desktop Menu (dynamic) -->
-                <div class="hidden md:flex items-center gap-1" id="desktop-nav">
-                    <!-- Populated by JS from /api/menus -->
-                </div>
-                <div class="hidden md:flex items-center">
-                    <a href="admin.html" id="admin-nav-link" class="hidden text-amber-600 hover:text-amber-700 transition-colors font-medium flex items-center gap-1 text-sm ml-4">
-                        <i class="ph ph-shield-check text-base"></i> Admin
-                    </a>
-                </div>
-
-                <!-- Icons -->
-                <div class="flex items-center space-x-4">
-                    <button class="text-gray-600 hover:text-primary transition-colors">
-                        <i class="ph ph-magnifying-glass text-2xl"></i>
-                    </button>
-                    <button class="text-gray-600 hover:text-primary transition-colors relative group" id="auth-btn">
-                        <i class="ph ph-user text-2xl"></i>
-                        <span id="user-greeting" class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs font-medium text-gray-900 hidden whitespace-nowrap bg-white px-2 py-1 rounded shadow-sm"></span>
-                    </button>
-                    <button class="text-gray-600 hover:text-primary transition-colors relative" id="cart-btn">
-                        <i class="ph ph-shopping-cart text-2xl"></i>
-                        <span id="cart-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">0</span>
-                    </button>
-                    <!-- Mobile Menu Button -->
-                    <button class="md:hidden text-gray-600 hover:text-primary transition-colors" id="mobile-menu-btn">
-                        <i class="ph ph-list text-2xl"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Mobile Menu -->
-        <div class="md:hidden hidden bg-white border-t border-gray-100 absolute w-full" id="mobile-menu">
-            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 shadow-lg" id="mobile-nav">
-                <!-- Populated by JS from /api/menus -->
-            </div>
-        </div>
-    </nav>
-
-    <!-- Cart Sidebar -->
-    <div id="cart-sidebar" class="fixed inset-y-0 right-0 max-w-sm w-full bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
-        <div class="flex items-center justify-between p-4 border-b border-gray-200">
-            <h2 class="text-lg font-bold flex items-center"><i class="ph ph-shopping-cart mr-2"></i> Your Cart</h2>
-            <button id="close-cart-btn" class="text-gray-500 hover:text-red-500 transition-colors">
-                <i class="ph ph-x text-2xl"></i>
-            </button>
-        </div>
-        
-        <div id="cart-items-container" class="flex-1 overflow-y-auto p-4 space-y-4">
-            <!-- Cart items will be dynamically injected here -->
-            <div class="text-center text-gray-500 mt-10" id="empty-cart-msg">
-                <i class="ph ph-shopping-cart text-6xl mb-4 text-gray-300"></i>
-                <p>Your cart is empty.</p>
-            </div>
-        </div>
-
-        <div class="p-4 border-t border-gray-200 bg-gray-50">
-            <div class="flex justify-between text-base font-medium text-gray-900 mb-4">
-                <p>Subtotal</p>
-                <p id="cart-total">$0.00</p>
-            </div>
-            <p class="text-sm text-gray-500 mb-4">Shipping and taxes calculated at checkout.</p>
-            <button onclick="window.location='checkout.html'" class="w-full bg-primary hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition-colors shadow-md flex items-center justify-center gap-2">
-                <i class="ph ph-lock-key"></i> Checkout
-            </button>
-        </div>
-    </div>
-    
-    <!-- Cart Overlay -->
-    <div id="cart-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden transition-opacity"></div>
-
-    <!-- Auth Modal -->
-    <div id="auth-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[60] hidden items-center justify-center p-4 transition-opacity opacity-0">
-        <div class="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300" id="auth-modal-content">
-            <div class="flex justify-end items-center p-4">
-                <button id="close-auth-btn" class="text-gray-400 hover:text-gray-600 transition-colors">
-                    <i class="ph ph-x text-2xl"></i>
-                </button>
-            </div>
-            
-            <div class="px-8 pb-8">
-                <h2 class="text-2xl font-bold text-gray-900 text-center mb-6" id="auth-title">เข้าสู่ระบบ</h2>
-
-                <!-- Error Message Container -->
-                <div id="auth-error" class="hidden bg-red-50 text-red-600 text-sm p-3 rounded-lg mb-4 flex items-center">
-                    <i class="ph ph-warning-circle text-lg mr-2"></i>
-                    <span id="auth-error-text"></span>
-                </div>
-
-                <form id="auth-form" class="space-y-4">
-                    <div class="relative">
-                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"><i class="ph ph-at text-xl"></i></span>
-                        <input type="email" id="auth-email" required class="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-colors text-gray-700" placeholder="อีเมล">
-                    </div>
-                    <div class="relative">
-                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"><i class="ph ph-at text-xl"></i></span>
-                        <input type="password" id="auth-password" required class="w-full pl-12 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-colors text-gray-700" placeholder="รหัสผ่าน">
-                        <button type="button" onclick="togglePasswordVisibility()" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
-                            <i class="ph ph-eye text-xl" id="pw-eye-icon"></i>
-                        </button>
-                    </div>
-
-                    <div id="auth-remember-row" class="flex items-center">
-                        <input type="checkbox" id="auth-remember" class="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary">
-                        <label for="auth-remember" class="ml-2 text-sm text-gray-600">จำฉันเข้าระบบ</label>
-                    </div>
-
-                    <button type="submit" id="auth-submit-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 px-4 rounded-xl transition-colors flex justify-center items-center text-lg">
-                        <span id="auth-submit-text">เข้าสู่ระบบ</span>
-                        <i class="ph ph-spinner animate-spin hidden ml-2" id="auth-spinner"></i>
-                    </button>
-                </form>
-
-                <div class="mt-5">
-                    <div class="relative">
-                        <div class="absolute inset-0 flex items-center">
-                            <div class="w-full border-t border-gray-200"></div>
-                        </div>
-                        <div class="relative flex justify-center text-sm">
-                            <span class="px-3 bg-white text-gray-400">หรือเข้าสู่ระบบด้วย</span>
-                        </div>
-                    </div>
-
-                    <div class="mt-5 space-y-3">
-                        <!-- Facebook Login Button -->
-                        <button onclick="loginWithFacebook()" id="fb-login-btn" class="w-full flex items-center justify-center gap-3 bg-[#1877F2] hover:bg-[#166FE5] text-white font-bold py-3 px-4 rounded-xl transition-colors">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-                            เข้าสู่ระบบด้วย Facebook
-                        </button>
-
-                        <!-- Google Login Button -->
-                        <div id="google-btn-container">
-                            <div id="g_id_onload"
-                                data-client_id="46644504211-991ljdkldsbsb08d9aki6v8aeafrnp6k.apps.googleusercontent.com"
-                                data-context="signin"
-                                data-ux_mode="popup"
-                                data-callback="handleGoogleCredentialResponse"
-                                data-auto_prompt="false">
-                            </div>
-                            <div class="g_id_signin"
-                                data-type="standard"
-                                data-shape="rectangular"
-                                data-theme="outline"
-                                data-text="signin_with"
-                                data-size="large"
-                                data-logo_alignment="center"
-                                data-width="400"
-                                data-locale="th">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="mt-5 text-center">
-                    <p class="text-sm text-gray-600" id="auth-toggle-text">
-                        ไม่ใช่สมาชิก? 
-                        <button type="button" id="auth-toggle-btn" class="text-primary font-bold hover:underline">สมัครสมาชิก</button>
-                    </p>
-                </div>
-
-                <div class="mt-4 text-center border-t border-gray-100 pt-4">
-                    <button type="button" class="text-sm font-bold text-gray-700 hover:text-primary transition-colors">ลืมรหัสผ่าน ?</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- Shared Navbar -->
+    <header id="site-header"></header>
 
     <!-- Hero Section -->
     <section class="pt-24 pb-12 md:pt-32 md:pb-24 lg:pt-40 lg:pb-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative">
         <div class="flex flex-col md:flex-row items-center gap-12">
             <div class="md:w-1/2 space-y-6 z-10">
-                <span class="inline-block py-1 px-3 rounded-full bg-indigo-100 text-primary text-sm font-semibold tracking-wide">New Collection 2026</span>
+                <span class="inline-block py-1 px-3 rounded-full bg-amber-100 text-amber-700 text-sm font-semibold tracking-wide">สินค้าขายดี 2026</span>
                 <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight text-gray-900">
-                    Discover Your <br>
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-purple-600">Unique Style</span>
+                    แฟลชไดร์ฟเพลง MP3 <br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 to-amber-500">รวมฮิตทุกแนวที่คุณคิดถึง</span>
                 </h1>
                 <p class="text-lg text-gray-600 md:max-w-md">
-                    Explore our curated collection of premium lifestyle products designed to elevate your everyday experience.
+                    เสียบปุ๊บ ฟังปั๊บ! รวมเพลงฮิตคุณภาพเสียง HD ลูกทุ่ง หมอลำ สตริง เพื่อชีวิต สากล พร้อมฟังทันทีในรถยนต์และเครื่องเสียง
                 </p>
                 <div class="flex flex-col sm:flex-row gap-4 pt-4">
-                    <a href="#shop" class="bg-primary hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-lg text-center transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
-                        Shop Now
+                    <a href="#shop" class="bg-primary hover:bg-amber-700 text-white font-semibold py-3 px-8 rounded-lg text-center transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                        สั่งซื้อเลย
                     </a>
                     <a href="#categories" class="bg-white hover:bg-gray-50 text-gray-900 border border-gray-200 font-semibold py-3 px-8 rounded-lg text-center transition-all shadow-sm">
-                        Explore Categories
+                        ดูหมวดหมู่เพลง
                     </a>
                 </div>
                 
                 <div class="flex items-center gap-4 pt-6 text-sm text-gray-500 font-medium">
                     <div class="flex -space-x-2">
-                        <img class="w-8 h-8 rounded-full border-2 border-white" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=64&q=80" alt="User">
-                        <img class="w-8 h-8 rounded-full border-2 border-white" src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=64&q=80" alt="User">
-                        <img class="w-8 h-8 rounded-full border-2 border-white" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=64&q=80" alt="User">
+                        <img class="w-8 h-8 rounded-full border-2 border-white" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=64&q=80" alt="ลูกค้า btmusicdrive">
+                        <img class="w-8 h-8 rounded-full border-2 border-white" src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=64&q=80" alt="ลูกค้า btmusicdrive">
+                        <img class="w-8 h-8 rounded-full border-2 border-white" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=64&q=80" alt="ลูกค้า btmusicdrive">
                     </div>
-                    <span>Loved by 10k+ customers</span>
+                    <span>ลูกค้ากว่า 10,000+ คนไว้วางใจ</span>
                 </div>
             </div>
             
             <div class="md:w-1/2 relative">
-                <div class="absolute inset-0 bg-gradient-to-tr from-primary to-purple-300 rounded-3xl transform rotate-3 scale-105 opacity-20 animate-pulse-slow"></div>
-                <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Fashion Model" class="relative rounded-3xl shadow-2xl object-cover h-[500px] w-full z-10">
+                <div class="absolute inset-0 bg-gradient-to-tr from-amber-500 to-yellow-300 rounded-3xl transform rotate-3 scale-105 opacity-20 animate-pulse-slow"></div>
+                <img src="images/hero-banner.png" alt="แฟลชไดร์ฟเพลง MP3 เสียบฟังในรถยนต์" class="relative rounded-3xl shadow-2xl object-cover h-[280px] sm:h-[380px] md:h-[450px] lg:h-[500px] w-full z-10">
                 
                 <!-- Floating Card -->
-                <div class="absolute -bottom-6 -left-6 bg-white p-4 rounded-xl shadow-xl z-20 flex items-center gap-4 animate-bounce-slow">
-                    <div class="bg-green-100 p-3 rounded-full text-green-600">
+                <div class="absolute -bottom-4 left-2 sm:-bottom-6 sm:-left-6 bg-white p-3 sm:p-4 rounded-xl shadow-xl z-20 flex items-center gap-3 sm:gap-4 animate-bounce-slow">
+                    <div class="bg-amber-100 p-3 rounded-full text-amber-600">
                         <i class="ph-fill ph-star text-xl"></i>
                     </div>
                     <div>
                         <p class="font-bold text-gray-900">4.9/5</p>
-                        <p class="text-xs text-gray-500">Customer Rating</p>
+                        <p class="text-xs text-gray-500">คะแนนจากลูกค้า</p>
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Flash Sale Countdown -->
+    <section id="flash-sale" class="py-12 bg-gradient-to-r from-red-600 to-red-700 relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute -top-10 -right-10 w-64 h-64 bg-white rounded-full"></div>
+            <div class="absolute -bottom-10 -left-10 w-48 h-48 bg-white rounded-full"></div>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center gap-2 bg-white/20 px-4 py-1.5 rounded-full mb-4">
+                    <i class="ph-fill ph-lightning text-yellow-300 text-lg"></i>
+                    <span class="text-white font-bold text-sm tracking-wider uppercase">Flash Sale</span>
+                </div>
+                <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-3">🔥 ลดราคาแรง! เฉพาะวันนี้</h2>
+                <p class="text-red-100 text-lg">เวลาจำกัด! สินค้าลดราคาพิเศษ หมดเขตเที่ยงคืนนี้</p>
+            </div>
+            <!-- Countdown Timer -->
+            <div class="flex justify-center gap-3 sm:gap-5 mb-8">
+                <div class="bg-white/15 backdrop-blur-sm rounded-xl p-3 sm:p-4 min-w-[70px] text-center border border-white/20">
+                    <div id="countdown-hours" class="text-3xl sm:text-4xl font-black text-white">00</div>
+                    <div class="text-red-200 text-xs font-medium mt-1">ชั่วโมง</div>
+                </div>
+                <div class="text-white text-3xl font-bold self-center">:</div>
+                <div class="bg-white/15 backdrop-blur-sm rounded-xl p-3 sm:p-4 min-w-[70px] text-center border border-white/20">
+                    <div id="countdown-minutes" class="text-3xl sm:text-4xl font-black text-white">00</div>
+                    <div class="text-red-200 text-xs font-medium mt-1">นาที</div>
+                </div>
+                <div class="text-white text-3xl font-bold self-center">:</div>
+                <div class="bg-white/15 backdrop-blur-sm rounded-xl p-3 sm:p-4 min-w-[70px] text-center border border-white/20">
+                    <div id="countdown-seconds" class="text-3xl sm:text-4xl font-black text-white">00</div>
+                    <div class="text-red-200 text-xs font-medium mt-1">วินาที</div>
+                </div>
+            </div>
+            <div class="text-center">
+                <a href="#shop" class="inline-flex items-center gap-2 bg-white hover:bg-gray-100 text-red-600 font-bold py-3 px-8 rounded-full transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                    <i class="ph ph-shopping-cart text-xl"></i> ช้อปเลย!
+                </a>
             </div>
         </div>
     </section>
@@ -273,24 +145,24 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div class="flex flex-col items-center text-center p-4">
+                    <i class="ph ph-music-note text-4xl text-primary mb-3"></i>
+                    <h3 class="font-bold text-gray-900 mb-1">เสียงใสระดับ HD</h3>
+                    <p class="text-sm text-gray-500">คุณภาพเสียงคมชัดทุกเพลง</p>
+                </div>
+                <div class="flex flex-col items-center text-center p-4">
+                    <i class="ph ph-seal-check text-4xl text-primary mb-3"></i>
+                    <h3 class="font-bold text-gray-900 mb-1">ของแท้ 100%</h3>
+                    <p class="text-sm text-gray-500">การันตีคุณภาพทุกชิ้น</p>
+                </div>
+                <div class="flex flex-col items-center text-center p-4">
                     <i class="ph ph-truck text-4xl text-primary mb-3"></i>
-                    <h3 class="font-bold text-gray-900 mb-1">Free Shipping</h3>
-                    <p class="text-sm text-gray-500">On all orders over $50</p>
-                </div>
-                <div class="flex flex-col items-center text-center p-4">
-                    <i class="ph ph-arrow-counter-clockwise text-4xl text-primary mb-3"></i>
-                    <h3 class="font-bold text-gray-900 mb-1">30 Days Return</h3>
-                    <p class="text-sm text-gray-500">Money back guarantee</p>
-                </div>
-                <div class="flex flex-col items-center text-center p-4">
-                    <i class="ph ph-shield-check text-4xl text-primary mb-3"></i>
-                    <h3 class="font-bold text-gray-900 mb-1">Secure Payment</h3>
-                    <p class="text-sm text-gray-500">100% secure checkout</p>
+                    <h3 class="font-bold text-gray-900 mb-1">จัดส่งด่วนทั่วไทย</h3>
+                    <p class="text-sm text-gray-500">ส่งไวถึงมือภายใน 1-3 วัน</p>
                 </div>
                 <div class="flex flex-col items-center text-center p-4">
                     <i class="ph ph-headset text-4xl text-primary mb-3"></i>
-                    <h3 class="font-bold text-gray-900 mb-1">24/7 Support</h3>
-                    <p class="text-sm text-gray-500">Dedicated help center</p>
+                    <h3 class="font-bold text-gray-900 mb-1">บริการหลังการขาย</h3>
+                    <p class="text-sm text-gray-500">พร้อมดูแลลูกค้าทุกวัน</p>
                 </div>
             </div>
         </div>
@@ -300,38 +172,38 @@
     <section id="categories" class="py-16 bg-gray-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-gray-900 mb-4">Shop by Category</h2>
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">หมวดหมู่แนวเพลง</h2>
                 <div class="w-16 h-1 bg-primary mx-auto rounded"></div>
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Category 1 -->
-                <a href="#" class="group relative rounded-2xl overflow-hidden h-64 md:h-80 shadow-md hover:shadow-xl transition-shadow">
-                    <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Women's Fashion" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                <!-- Category 1: ลูกทุ่ง/หมอลำ -->
+                <a href="#shop" class="group relative rounded-2xl overflow-hidden h-64 md:h-80 shadow-md hover:shadow-xl transition-shadow">
+                    <img src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="แฟลชไดร์ฟเพลงลูกทุ่ง หมอลำ มันส์ๆ" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
                     <div class="absolute inset-0 bg-black bg-opacity-30 group-hover:bg-opacity-40 transition-opacity"></div>
                     <div class="absolute bottom-6 left-6">
-                        <h3 class="text-2xl font-bold text-white mb-1">Women</h3>
-                        <p class="text-gray-200 text-sm flex items-center">Shop Now <i class="ph ph-arrow-right ml-1 transition-transform group-hover:translate-x-1"></i></p>
+                        <h3 class="text-2xl font-bold text-white mb-1">เพลงลูกทุ่ง / หมอลำ</h3>
+                        <p class="text-gray-200 text-sm flex items-center">สั่งซื้อเลย <i class="ph ph-arrow-right ml-1 transition-transform group-hover:translate-x-1"></i></p>
                     </div>
                 </a>
                 
-                <!-- Category 2 -->
-                <a href="#" class="group relative rounded-2xl overflow-hidden h-64 md:h-80 shadow-md hover:shadow-xl transition-shadow">
-                    <img src="https://images.unsplash.com/photo-1490578474895-699bc4e3f44f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Men's Fashion" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                <!-- Category 2: สตริง/ยุค 90s -->
+                <a href="#shop" class="group relative rounded-2xl overflow-hidden h-64 md:h-80 shadow-md hover:shadow-xl transition-shadow">
+                    <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="แฟลชไดร์ฟเพลงสตริง ยุค 90s" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
                     <div class="absolute inset-0 bg-black bg-opacity-30 group-hover:bg-opacity-40 transition-opacity"></div>
                     <div class="absolute bottom-6 left-6">
-                        <h3 class="text-2xl font-bold text-white mb-1">Men</h3>
-                        <p class="text-gray-200 text-sm flex items-center">Shop Now <i class="ph ph-arrow-right ml-1 transition-transform group-hover:translate-x-1"></i></p>
+                        <h3 class="text-2xl font-bold text-white mb-1">เพลงสตริง / ยุค 90s</h3>
+                        <p class="text-gray-200 text-sm flex items-center">สั่งซื้อเลย <i class="ph ph-arrow-right ml-1 transition-transform group-hover:translate-x-1"></i></p>
                     </div>
                 </a>
                 
-                <!-- Category 3 -->
-                <a href="#" class="group relative rounded-2xl overflow-hidden h-64 md:h-80 shadow-md hover:shadow-xl transition-shadow">
-                    <img src="https://images.unsplash.com/photo-1611591437281-460bfbe1220a?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Accessories" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                <!-- Category 3: เพื่อชีวิต/สากล -->
+                <a href="#shop" class="group relative rounded-2xl overflow-hidden h-64 md:h-80 shadow-md hover:shadow-xl transition-shadow">
+                    <img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="แฟลชไดร์ฟเพลงเพื่อชีวิต สากล" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
                     <div class="absolute inset-0 bg-black bg-opacity-30 group-hover:bg-opacity-40 transition-opacity"></div>
                     <div class="absolute bottom-6 left-6">
-                        <h3 class="text-2xl font-bold text-white mb-1">Accessories</h3>
-                        <p class="text-gray-200 text-sm flex items-center">Shop Now <i class="ph ph-arrow-right ml-1 transition-transform group-hover:translate-x-1"></i></p>
+                        <h3 class="text-2xl font-bold text-white mb-1">เพื่อชีวิต / สากล</h3>
+                        <p class="text-gray-200 text-sm flex items-center">สั่งซื้อเลย <i class="ph ph-arrow-right ml-1 transition-transform group-hover:translate-x-1"></i></p>
                     </div>
                 </a>
             </div>
@@ -343,11 +215,11 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-end mb-10">
                 <div>
-                    <h2 class="text-3xl font-bold text-gray-900 mb-2">Trending Products</h2>
+                    <h2 class="text-3xl font-bold text-gray-900 mb-2">สินค้าขายดี</h2>
                     <div class="w-16 h-1 bg-primary rounded"></div>
                 </div>
-                <a href="#" class="text-primary hover:text-indigo-800 font-medium flex items-center transition-colors">
-                    View All <i class="ph ph-arrow-right ml-1"></i>
+                <a href="#" class="text-primary hover:text-amber-700 font-medium flex items-center transition-colors">
+                    ดูทั้งหมด <i class="ph ph-arrow-right ml-1"></i>
                 </a>
             </div>
             
@@ -362,93 +234,75 @@
     <section class="py-16 px-4">
         <div class="max-w-7xl mx-auto bg-gray-900 rounded-3xl overflow-hidden relative">
             <div class="absolute inset-0">
-                <img src="https://images.unsplash.com/photo-1556905055-8f358a7a47b2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80" alt="Promo" class="w-full h-full object-cover opacity-40">
+                <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80" alt="โปรโมชั่นแฟลชไดร์ฟเพลง ส่งฟรี" class="w-full h-full object-cover opacity-40">
             </div>
             <div class="relative z-10 py-16 px-8 md:px-16 md:w-2/3">
-                <span class="text-secondary font-bold tracking-wider uppercase text-sm mb-2 block">Limited Time Offer</span>
-                <h2 class="text-3xl md:text-5xl font-bold text-white mb-6 leading-tight">Get 20% Off Your First Order</h2>
-                <p class="text-gray-300 text-lg mb-8 max-w-md">Join our newsletter to receive your discount code and stay updated on new arrivals.</p>
+                <span class="text-yellow-400 font-bold tracking-wider uppercase text-sm mb-2 block">โปรโมชั่นพิเศษ</span>
+                <h2 class="text-3xl md:text-5xl font-bold text-white mb-6 leading-tight">ส่งฟรี! เมื่อสั่งซื้อ 2 ชิ้นขึ้นไป</h2>
+                <p class="text-gray-300 text-lg mb-8 max-w-md">สมัครรับข่าวสารเพื่อรับโปรโมชั่นสุดพิเศษและอัปเดตสินค้าใหม่ก่อนใคร</p>
                 <form class="flex flex-col sm:flex-row gap-3 max-w-md">
-                    <input type="email" placeholder="Enter your email" class="flex-1 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary border-0" required>
-                    <button type="submit" class="bg-primary hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition-colors shadow-md whitespace-nowrap">
-                        Subscribe
+                    <input type="email" placeholder="กรอกอีเมลของคุณ" class="flex-1 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary border-0" required>
+                    <button type="submit" class="bg-primary hover:bg-amber-700 text-white font-bold py-3 px-6 rounded-lg transition-colors shadow-md whitespace-nowrap">
+                        สมัครรับข่าวสาร
                     </button>
                 </form>
             </div>
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="bg-gray-50 pt-16 pb-8 border-t border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
-                <div class="col-span-1 md:col-span-1">
-                    <div class="flex items-center mb-6 cursor-pointer">
-                        <i class="ph-fill ph-shopping-bag text-primary text-3xl mr-2"></i>
-                        <span class="font-bold text-2xl tracking-tight text-gray-900">btmusicdrive</span>
-                    </div>
-                    <p class="text-gray-500 mb-6">Elevating your everyday style with premium quality fashion and accessories.</p>
-                    <div class="flex space-x-4">
-                        <a href="#" class="text-gray-400 hover:text-primary transition-colors"><i class="ph-fill ph-facebook-logo text-2xl"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-primary transition-colors"><i class="ph-fill ph-twitter-logo text-2xl"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-primary transition-colors"><i class="ph-fill ph-instagram-logo text-2xl"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-primary transition-colors"><i class="ph-fill ph-youtube-logo text-2xl"></i></a>
-                    </div>
-                </div>
-                
-                <div>
-                    <h4 class="font-bold text-gray-900 mb-6 text-lg">Shop</h4>
-                    <ul class="space-y-3">
-                        <li><a href="#" class="text-gray-500 hover:text-primary transition-colors">Women's Clothing</a></li>
-                        <li><a href="#" class="text-gray-500 hover:text-primary transition-colors">Men's Clothing</a></li>
-                        <li><a href="#" class="text-gray-500 hover:text-primary transition-colors">Accessories</a></li>
-                        <li><a href="#" class="text-gray-500 hover:text-primary transition-colors">New Arrivals</a></li>
-                        <li><a href="#" class="text-gray-500 hover:text-primary transition-colors">Sale</a></li>
-                    </ul>
-                </div>
-                
-                <div>
-                    <h4 class="font-bold text-gray-900 mb-6 text-lg">Help</h4>
-                    <ul class="space-y-3">
-                        <li><a href="#" class="text-gray-500 hover:text-primary transition-colors">Customer Service</a></li>
-                        <li><a href="track-order.html" class="text-gray-500 hover:text-primary transition-colors">Track Order</a></li>
-                        <li><a href="#" class="text-gray-500 hover:text-primary transition-colors">Returns & Exchanges</a></li>
-                        <li><a href="#" class="text-gray-500 hover:text-primary transition-colors">Shipping Information</a></li>
-                        <li><a href="#" class="text-gray-500 hover:text-primary transition-colors">FAQ</a></li>
-                    </ul>
-                </div>
-                
-                <div>
-                    <h4 class="font-bold text-gray-900 mb-6 text-lg">Contact Us</h4>
-                    <ul class="space-y-4 text-gray-500">
-                        <li class="flex items-start">
-                            <i class="ph ph-map-pin text-xl text-primary mr-3 mt-1"></i>
-                            <span>123 Fashion Street, Suite 100<br>New York, NY 10001</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="ph ph-phone text-xl text-primary mr-3"></i>
-                            <span>+1 (800) 123-4567</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="ph ph-envelope text-xl text-primary mr-3"></i>
-                            <span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="35464045455a4741755940585c5b541b565a58">[email&#160;protected]</a></span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="border-t border-gray-200 pt-8 flex flex-col md:flex-row justify-between items-center">
-                <p class="text-gray-500 text-sm mb-4 md:mb-0">&copy; 2026 btmusicdrive. All rights reserved.</p>
-                <div class="flex space-x-4">
-                    <i class="ph-fill ph-stripe-logo text-3xl text-gray-400 hover:text-gray-600 cursor-pointer transition-colors"></i>
-                    <i class="ph-fill ph-paypal-logo text-3xl text-gray-400 hover:text-gray-600 cursor-pointer transition-colors"></i>
-                    <i class="ph-fill ph-visa-logo text-3xl text-gray-400 hover:text-gray-600 cursor-pointer transition-colors"></i>
-                </div>
-            </div>
-        </div>
-    </footer>
+    <!-- Shared Footer -->
+    <div id="site-footer"></div>
 
+    <script src="components.js"></script>
     <script src="script.js"></script>
+    <script>
+    // ── Flash Sale Countdown ──────────────────────────────────────
+    (function() {
+        function updateCountdown() {
+            const now = new Date();
+            const endOfDay = new Date(now);
+            endOfDay.setHours(23, 59, 59, 999);
+            const diff = endOfDay - now;
+            if (diff <= 0) { return; }
+            const h = Math.floor(diff / 3600000);
+            const m = Math.floor((diff % 3600000) / 60000);
+            const s = Math.floor((diff % 60000) / 1000);
+            document.getElementById('countdown-hours').textContent = String(h).padStart(2, '0');
+            document.getElementById('countdown-minutes').textContent = String(m).padStart(2, '0');
+            document.getElementById('countdown-seconds').textContent = String(s).padStart(2, '0');
+        }
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    })();
+
+    // ── Wishlist Heart Button on Product Cards ────────────────────
+    document.addEventListener('click', function(e) {
+        const heartBtn = e.target.closest('.wishlist-heart-btn') || e.target.closest('[data-wishlist]');
+        if (!heartBtn) return;
+        e.preventDefault();
+        e.stopPropagation();
+        const pid = heartBtn.getAttribute('data-id') || heartBtn.getAttribute('data-wishlist');
+        if (!pid) return;
+        let wishlist = JSON.parse(localStorage.getItem('btmusicdrive_wishlist') || '[]');
+        const idx = wishlist.findIndex(w => w.id === pid);
+        const icon = heartBtn.querySelector('i');
+        if (idx >= 0) {
+            wishlist.splice(idx, 1);
+            if (icon) { icon.className = 'ph ph-heart text-xl'; }
+            if (typeof _showToast === 'function') _showToast('ลบออกจากรายการที่ถูกใจ');
+            else if (typeof showToast === 'function') showToast('ลบออกจากรายการที่ถูกใจ');
+        } else {
+            const product = (typeof products !== 'undefined') ? products.find(p => p.id === pid) : null;
+            if (product) {
+                wishlist.push({ id: product.id, name: product.name, price: product.price, image: product.imageUrl || product.image });
+            }
+            if (icon) { icon.className = 'ph-fill ph-heart text-xl text-red-500'; }
+            if (typeof _showToast === 'function') _showToast('เพิ่มในรายการที่ถูกใจแล้ว ❤');
+            else if (typeof showToast === 'function') showToast('เพิ่มในรายการที่ถูกใจแล้ว ❤');
+        }
+        localStorage.setItem('btmusicdrive_wishlist', JSON.stringify(wishlist));
+    });
+    </script>
 </body>
 </html>
    

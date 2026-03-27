@@ -10,23 +10,26 @@
       theme: {
         extend: {
           colors: {
-            primary: '#4f46e5',
-            secondary: '#1e293b',
+            primary: '#C8A84E',
+            secondary: '#1a1a1a',
           }
         }
       }
     };
   </script>
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script async defer crossorigin="anonymous" src="https://connect.facebook.net/th_TH/sdk.js"></script>
+  <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Inter', sans-serif; }
     .thumb { border: 2px solid transparent; cursor: pointer; transition: border-color .2s; border-radius: 8px; overflow: hidden; }
-    .thumb.active { border-color: #4f46e5; }
-    .thumb:hover { border-color: #a5b4fc; }
+    .thumb.active { border-color: #C8A84E; }
+    .thumb:hover { border-color: #d4b970; }
     .tab-btn { position: relative; padding: 12px 24px; font-weight: 600; color: #64748b; transition: color .2s; }
-    .tab-btn.active { color: #1e293b; }
-    .tab-btn.active::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: #4f46e5; border-radius: 3px 3px 0 0; }
+    .tab-btn.active { color: #1a1a1a; }
+    .tab-btn.active::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: #C8A84E; border-radius: 3px 3px 0 0; }
     .tab-btn:hover { color: #334155; }
     .spec-row:nth-child(even) { background: #f8fafc; }
     .tag { display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; transition: opacity .2s; }
@@ -37,33 +40,15 @@
     .gallery-main img { max-width: 100%; max-height: 100%; object-fit: contain; }
     .gallery-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,.85); box-shadow: 0 2px 8px rgba(0,0,0,.12); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background .2s; z-index: 5; }
     .gallery-nav:hover { background: #fff; }
+    .shop-link { display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; border: 1.5px solid #e2e8f0; color: #64748b; transition: all .2s; cursor: pointer; }
+    .shop-link:hover { border-color: #C8A84E; color: #C8A84E; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(200,168,78,.18); }
+    .shop-link svg { width: 20px; height: 20px; }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased">
 
-  <!-- Navbar -->
-  <nav class="bg-white shadow-sm fixed w-full z-50 top-0">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between h-16 items-center">
-        <a href="index.html" class="flex items-center cursor-pointer">
-          <i class="ph-fill ph-shopping-bag text-primary text-3xl mr-2"></i>
-          <span class="font-bold text-xl tracking-tight">btmusicdrive</span>
-        </a>
-        <div class="hidden md:flex space-x-8 items-center">
-          <a href="index.html" class="text-gray-600 hover:text-primary transition-colors font-medium">Home</a>
-          <a href="index.html#shop" class="text-gray-600 hover:text-primary transition-colors font-medium">Shop</a>
-          <a href="track-order.html" class="text-gray-600 hover:text-primary transition-colors font-medium flex items-center gap-1">
-            <i class="ph ph-package text-base"></i> Track Order
-          </a>
-        </div>
-        <div class="flex items-center space-x-4">
-          <a href="index.html" class="text-gray-600 hover:text-primary transition-colors">
-            <i class="ph ph-arrow-left text-2xl"></i>
-          </a>
-        </div>
-      </div>
-    </div>
-  </nav>
+  <!-- Shared Navbar -->
+  <header id="site-header"></header>
 
   <!-- Loading -->
   <div id="loading" class="pt-24 text-center py-20">
@@ -109,6 +94,7 @@
           <!-- Badge -->
           <div class="flex items-center gap-2 mb-3">
             <span id="stock-badge" class="inline-block px-3 py-1 rounded-full text-xs font-bold"></span>
+            <span id="low-stock-alert" class="hidden inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-600 animate-pulse"><i class="ph ph-warning text-sm"></i> <span id="low-stock-text"></span></span>
           </div>
 
           <h1 id="p-name" class="text-2xl md:text-3xl font-bold text-gray-900 mb-2"></h1>
@@ -135,32 +121,49 @@
           </div>
 
           <!-- Buttons -->
-          <div class="flex gap-3 mb-6">
-            <button onclick="addToCartFromDetail()" class="flex-1 border-2 border-gray-300 hover:border-primary text-gray-700 hover:text-primary font-bold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2">
+          <div class="flex flex-col sm:flex-row gap-3 mb-4">
+            <button onclick="addToCartFromDetail()" class="flex-1 border-2 border-gray-300 hover:border-primary text-gray-700 hover:text-primary font-bold py-3 px-4 sm:px-6 rounded-lg transition-colors flex items-center justify-center gap-2">
               <i class="ph ph-shopping-cart text-xl"></i> เพิ่มในตะกร้า
             </button>
-            <button onclick="buyNow()" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2">
+            <button onclick="buyNow()" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 sm:px-6 rounded-lg transition-colors flex items-center justify-center gap-2">
               ซื้อเลย
+            </button>
+          </div>
+          <!-- Wishlist Button -->
+          <div class="mb-6">
+            <button id="wishlist-btn" onclick="toggleWishlist()" class="flex items-center gap-2 text-gray-500 hover:text-red-500 transition-colors text-sm font-medium">
+              <i id="wishlist-icon" class="ph ph-heart text-xl"></i> <span id="wishlist-text">เพิ่มในรายการที่ถูกใจ</span>
             </button>
           </div>
 
           <!-- Tags -->
           <div id="p-tags" class="flex flex-wrap gap-2 mb-4"></div>
 
-          <!-- Share -->
-          <div class="flex items-center gap-3 text-gray-400 pt-4 border-t border-gray-100">
-            <i class="ph ph-share-network text-lg cursor-pointer hover:text-primary"></i>
-            <i class="ph ph-heart text-lg cursor-pointer hover:text-red-500"></i>
+          <!-- ร้านค้าอื่น -->
+          <div class="pt-4 border-t border-gray-100">
+            <p class="text-xs text-gray-400 mb-2 font-medium">ช้อปได้ที่</p>
+            <div class="flex items-center gap-3">
+              <a href="https://vt.tiktok.com/ZSucFsPmo/" target="_blank" rel="noopener" class="shop-link" title="TikTok Shop">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 0010.86 4.46V13a8.28 8.28 0 005.58 2.16V11.7a4.83 4.83 0 01-3.77-1.24V6.69h3.77z"/></svg>
+              </a>
+              <a href="#" target="_blank" rel="noopener" class="shop-link" title="Shopee">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C9.24 2 7 4.24 7 7H5c-1.1 0-2 .9-2 2v10c0 1.66 1.34 3 3 3h12c1.66 0 3-1.34 3-3V9c0-1.1-.9-2-2-2h-2c0-2.76-2.24-5-5-5zm0 2c1.66 0 3 1.34 3 3H9c0-1.66 1.34-3 3-3zm0 6c1.38 0 2.5-1.12 2.5-2.5h1.5c0 2.21-1.79 4-4 4s-4-1.79-4-4h1.5C9.5 8.88 10.62 10 12 10z"/></svg>
+              </a>
+              <a href="#" target="_blank" rel="noopener" class="shop-link" title="Lazada">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7v10l10 5 10-5V7L12 2zm0 2.18L19.18 7.5 12 10.82 4.82 7.5 12 4.18zM4 8.72l7 3.5V19l-7-3.5V8.72zm16 0V15.5L13 19v-6.78l7-3.5z"/></svg>
+              </a>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Tabs Section -->
       <div class="mt-12">
-        <div class="border-b border-gray-200 flex">
+        <div class="border-b border-gray-200 flex overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
           <button class="tab-btn active" onclick="switchTab('all')">ทั้งหมด</button>
           <button class="tab-btn" onclick="switchTab('details')">รายละเอียดสินค้า</button>
           <button class="tab-btn" onclick="switchTab('specs')">คุณสมบัติสินค้า</button>
+          <button class="tab-btn" id="tracklist-tab-btn" onclick="switchTab('tracklist')" style="display:none;">รายชื่อเพลง</button>
         </div>
 
         <!-- Tab: All -->
@@ -175,6 +178,13 @@
               <table class="w-full">
                 <tbody id="specs-table-all"></tbody>
               </table>
+            </div>
+          </div>
+          <!-- Tracklist in All tab -->
+          <div id="tracklist-section-all" class="mt-10 hidden">
+            <h3 class="text-lg font-bold text-gray-900 mb-4"><i class="ph ph-music-note mr-1"></i> รายชื่อเพลง</h3>
+            <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+              <div id="tracklist-all" class="divide-y divide-gray-100"></div>
             </div>
           </div>
         </div>
@@ -192,10 +202,117 @@
             </table>
           </div>
         </div>
+
+        <!-- Tab: Tracklist -->
+        <div id="tab-tracklist" class="py-8 hidden">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-bold text-gray-900"><i class="ph ph-music-note mr-1"></i> รายชื่อเพลงทั้งหมด</h3>
+            <div class="relative">
+              <input type="text" id="tracklist-search" placeholder="ค้นหาเพลง..." class="border border-gray-200 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary transition w-48 sm:w-64" oninput="filterTracklist()">
+              <i class="ph ph-magnifying-glass absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            </div>
+          </div>
+          <p id="tracklist-count" class="text-sm text-gray-500 mb-3"></p>
+          <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+            <div id="tracklist-full" class="divide-y divide-gray-100 max-h-[600px] overflow-y-auto"></div>
+          </div>
+          <p id="tracklist-no-result" class="hidden text-center text-gray-400 py-8">ไม่พบเพลงที่ค้นหา</p>
+        </div>
+      </div>
+
+      <!-- Frequently Bought Together -->
+      <div id="frequently-bought" class="mt-12 hidden">
+        <h3 class="text-xl font-bold text-gray-900 mb-6"><i class="ph ph-lightning mr-1"></i> สินค้าที่มักซื้อคู่กัน</h3>
+        <div class="bg-white rounded-2xl border border-gray-100 p-6">
+          <div class="flex flex-col md:flex-row items-center gap-4" id="bundle-items"></div>
+          <div class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-gray-100">
+            <div>
+              <span class="text-gray-500 text-sm">ราคาเมื่อซื้อคู่กัน</span>
+              <div class="flex items-baseline gap-2">
+                <span id="bundle-price" class="text-2xl font-bold text-red-600"></span>
+                <span id="bundle-original" class="text-sm text-gray-400 line-through"></span>
+                <span id="bundle-save" class="text-sm font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded"></span>
+              </div>
+            </div>
+            <button onclick="addBundleToCart()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition-colors flex items-center gap-2">
+              <i class="ph ph-shopping-cart text-xl"></i> ซื้อคู่กันเลย
+            </button>
+          </div>
+        </div>
       </div>
 
     </div>
   </main>
+
+  <!-- Reviews Section (outside max-w container for full width bg) -->
+  <section class="bg-gray-50 py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between mb-8">
+        <div>
+          <h3 class="text-xl font-bold text-gray-900"><i class="ph ph-star mr-1"></i> รีวิวจากลูกค้า</h3>
+          <p class="text-sm text-gray-500 mt-1" id="reviews-summary"></p>
+        </div>
+        <button onclick="openReviewModal()" class="bg-primary hover:bg-amber-700 text-white font-bold py-2.5 px-5 rounded-lg transition-colors text-sm flex items-center gap-2">
+          <i class="ph ph-pencil-line"></i> เขียนรีวิว
+        </button>
+      </div>
+
+      <!-- Rating Summary Bar -->
+      <div class="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="text-center">
+            <div id="avg-rating" class="text-5xl font-bold text-gray-900">0.0</div>
+            <div id="avg-stars" class="flex justify-center my-2"></div>
+            <p class="text-sm text-gray-500">จาก <span id="total-reviews-count">0</span> รีวิว</p>
+          </div>
+          <div class="col-span-2 space-y-2" id="rating-bars"></div>
+        </div>
+      </div>
+
+      <!-- Reviews List -->
+      <div id="reviews-list" class="space-y-4"></div>
+      <div id="no-reviews" class="hidden text-center py-12">
+        <i class="ph ph-chat-circle-dots text-5xl text-gray-300 mb-3"></i>
+        <p class="text-gray-400 font-medium">ยังไม่มีรีวิว เป็นคนแรกที่รีวิวสินค้านี้!</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Review Modal -->
+  <div id="review-modal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl">
+      <div class="flex items-center justify-between p-5 border-b border-gray-100">
+        <h3 class="text-lg font-bold text-gray-900">เขียนรีวิวสินค้า</h3>
+        <button onclick="closeReviewModal()" class="text-gray-400 hover:text-gray-600"><i class="ph ph-x text-2xl"></i></button>
+      </div>
+      <div class="p-5">
+        <div class="mb-5">
+          <label class="block text-sm font-medium text-gray-700 mb-2">ให้คะแนน</label>
+          <div id="star-input" class="flex gap-1">
+            <button type="button" onclick="setRating(1)" class="text-3xl text-gray-300 hover:text-yellow-400 transition-colors"><i class="ph ph-star"></i></button>
+            <button type="button" onclick="setRating(2)" class="text-3xl text-gray-300 hover:text-yellow-400 transition-colors"><i class="ph ph-star"></i></button>
+            <button type="button" onclick="setRating(3)" class="text-3xl text-gray-300 hover:text-yellow-400 transition-colors"><i class="ph ph-star"></i></button>
+            <button type="button" onclick="setRating(4)" class="text-3xl text-gray-300 hover:text-yellow-400 transition-colors"><i class="ph ph-star"></i></button>
+            <button type="button" onclick="setRating(5)" class="text-3xl text-gray-300 hover:text-yellow-400 transition-colors"><i class="ph ph-star"></i></button>
+          </div>
+        </div>
+        <div class="mb-5">
+          <label class="block text-sm font-medium text-gray-700 mb-2">ชื่อผู้รีวิว</label>
+          <input type="text" id="review-name" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary" placeholder="ชื่อของคุณ">
+        </div>
+        <div class="mb-5">
+          <label class="block text-sm font-medium text-gray-700 mb-2">เขียนรีวิว</label>
+          <textarea id="review-text" rows="4" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none" placeholder="แชร์ประสบการณ์การใช้งานของคุณ..."></textarea>
+        </div>
+        <div class="mb-5">
+          <label class="block text-sm font-medium text-gray-700 mb-2">แนบรูปภาพ (ไม่บังคับ)</label>
+          <input type="file" id="review-image" accept="image/*" multiple class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20">
+          <div id="review-image-preview" class="flex gap-2 mt-2 flex-wrap"></div>
+        </div>
+        <button onclick="submitReview()" class="w-full bg-primary hover:bg-amber-700 text-white font-bold py-3 rounded-lg transition-colors">ส่งรีวิว</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Toast -->
   <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
@@ -207,6 +324,8 @@
   let product = null;
   let currentImageIndex = 0;
   let allImages = [];
+  let reviewRating = 0;
+  let allProducts = [];
 
   // ── Load Product ─────────────────────────────────────────────────────────────
   async function loadProduct() {
@@ -221,14 +340,28 @@
         if (!res.ok) throw new Error();
         product = await res.json();
       } catch {
-        // Fallback to products.json
         const fallback = await fetch('products.json');
         const all = await fallback.json();
         product = all.find(p => p.id === id);
       }
 
       if (!product) { showError(); return; }
+
+      // Load all products for "frequently bought together"
+      try {
+        const allRes = await fetch(`${API_BASE}/products`);
+        if (allRes.ok) allProducts = await allRes.json();
+        else throw new Error();
+      } catch {
+        try { const fb = await fetch('products.json'); allProducts = await fb.json(); } catch { allProducts = []; }
+      }
+
       renderProduct();
+      renderTracklist();
+      renderLowStock();
+      renderFrequentlyBought();
+      renderReviews();
+      updateWishlistUI();
     } catch {
       showError();
     }
@@ -306,6 +439,314 @@
     document.getElementById('product-content').classList.remove('hidden');
   }
 
+  // ── Low Stock Alert ──────────────────────────────────────────────────────────
+  function renderLowStock() {
+    if (product.stock > 0 && product.stock <= 5) {
+      const alert = document.getElementById('low-stock-alert');
+      document.getElementById('low-stock-text').textContent = `สินค้าเหลือเพียง ${product.stock} ชิ้นสุดท้าย!`;
+      alert.classList.remove('hidden');
+    }
+  }
+
+  // ── Tracklist ────────────────────────────────────────────────────────────────
+  function renderTracklist() {
+    const tracklist = product.tracklist;
+    if (!tracklist || !Array.isArray(tracklist) || tracklist.length === 0) return;
+
+    // Show tab
+    document.getElementById('tracklist-tab-btn').style.display = '';
+
+    // Render in "all" tab
+    const allSection = document.getElementById('tracklist-section-all');
+    allSection.classList.remove('hidden');
+    document.getElementById('tracklist-all').innerHTML = tracklist.slice(0, 10).map((t, i) =>
+      `<div class="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors">
+        <span class="text-xs font-bold text-gray-400 w-8">${i + 1}.</span>
+        <i class="ph ph-music-note text-primary text-sm"></i>
+        <span class="text-sm text-gray-700">${escHtml(typeof t === 'string' ? t : t.name || '')}</span>
+      </div>`
+    ).join('') + (tracklist.length > 10 ? `<div class="px-4 py-3 text-center"><button onclick="switchTab('tracklist')" class="text-primary font-semibold text-sm hover:underline">ดูเพลงทั้งหมด ${tracklist.length} เพลง →</button></div>` : '');
+
+    // Render full list
+    document.getElementById('tracklist-count').textContent = `ทั้งหมด ${tracklist.length} เพลง`;
+    renderTracklistFull(tracklist);
+  }
+
+  function renderTracklistFull(list) {
+    document.getElementById('tracklist-full').innerHTML = list.map((t, i) =>
+      `<div class="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors tracklist-item">
+        <span class="text-xs font-bold text-gray-400 w-8">${i + 1}.</span>
+        <i class="ph ph-music-note text-primary text-sm"></i>
+        <span class="text-sm text-gray-700 track-name">${escHtml(typeof t === 'string' ? t : t.name || '')}</span>
+        ${typeof t === 'object' && t.artist ? `<span class="text-xs text-gray-400 ml-auto">${escHtml(t.artist)}</span>` : ''}
+      </div>`
+    ).join('');
+    document.getElementById('tracklist-no-result').classList.add('hidden');
+  }
+
+  function filterTracklist() {
+    const q = document.getElementById('tracklist-search').value.trim().toLowerCase();
+    const tracklist = product.tracklist || [];
+    if (!q) { renderTracklistFull(tracklist); return; }
+    const filtered = tracklist.filter(t => {
+      const name = (typeof t === 'string' ? t : t.name || '').toLowerCase();
+      const artist = (typeof t === 'object' ? t.artist || '' : '').toLowerCase();
+      return name.includes(q) || artist.includes(q);
+    });
+    if (filtered.length === 0) {
+      document.getElementById('tracklist-full').innerHTML = '';
+      document.getElementById('tracklist-no-result').classList.remove('hidden');
+    } else {
+      renderTracklistFull(filtered);
+    }
+  }
+
+  // ── Frequently Bought Together ───────────────────────────────────────────────
+  function renderFrequentlyBought() {
+    if (!product || allProducts.length < 2) return;
+    // Find products in same category (excluding current)
+    const sameCat = allProducts.filter(p => p.id !== product.id && (p.categoryId === product.categoryId || p.category?.id === product.category?.id));
+    if (sameCat.length === 0) return;
+
+    const recommended = sameCat.slice(0, 2);
+    const bundleDiscount = 0.10; // 10% discount
+    const bundleProducts = [product, ...recommended];
+    const originalTotal = bundleProducts.reduce((s, p) => s + Number(p.price), 0);
+    const bundleTotal = originalTotal * (1 - bundleDiscount);
+
+    const container = document.getElementById('bundle-items');
+    container.innerHTML = bundleProducts.map((p, i) =>
+      `${i > 0 ? '<div class="text-2xl text-gray-300 font-bold">+</div>' : ''}
+      <a href="product.html?id=${p.id}" class="flex items-center gap-3 p-3 border border-gray-100 rounded-xl hover:border-primary transition-colors flex-1 min-w-0">
+        <img src="${escHtml(p.imageUrl)}" alt="" class="w-16 h-16 rounded-lg object-cover flex-shrink-0">
+        <div class="min-w-0">
+          <p class="text-sm font-semibold text-gray-900 truncate">${escHtml(p.name)}</p>
+          <p class="text-sm font-bold text-gray-600">฿${Number(p.price).toLocaleString('th-TH', { minimumFractionDigits: 2 })}</p>
+        </div>
+      </a>`
+    ).join('');
+
+    document.getElementById('bundle-price').textContent = `฿${bundleTotal.toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
+    document.getElementById('bundle-original').textContent = `฿${originalTotal.toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
+    document.getElementById('bundle-save').textContent = `ประหยัด ${Math.round(bundleDiscount * 100)}%`;
+    document.getElementById('frequently-bought').classList.remove('hidden');
+
+    // Store for cart
+    window._bundleProducts = bundleProducts;
+    window._bundleTotal = bundleTotal;
+  }
+
+  function addBundleToCart() {
+    if (!window._bundleProducts) return;
+    let cart = [];
+    try { cart = JSON.parse(localStorage.getItem('btmusicdrive_cart') || '[]'); } catch {}
+    window._bundleProducts.forEach(p => {
+      const existing = cart.find(c => c.id === p.id);
+      if (existing) { existing.quantity += 1; }
+      else {
+        cart.push({ id: p.id, name: p.name, price: p.price, image: p.imageUrl, category: p.category?.name || '', quantity: 1 });
+      }
+    });
+    localStorage.setItem('btmusicdrive_cart', JSON.stringify(cart));
+    showToast(`เพิ่ม ${window._bundleProducts.length} สินค้าเข้าตะกร้าแล้ว!`);
+  }
+
+  // ── Reviews ──────────────────────────────────────────────────────────────────
+  function getReviews() {
+    const key = `btmusicdrive_reviews_${product.id}`;
+    return JSON.parse(localStorage.getItem(key) || '[]');
+  }
+  function saveReviews(list) {
+    localStorage.setItem(`btmusicdrive_reviews_${product.id}`, JSON.stringify(list));
+  }
+
+  function renderReviews() {
+    const reviews = getReviews();
+    const list = document.getElementById('reviews-list');
+    const noReviews = document.getElementById('no-reviews');
+
+    // Summary
+    const totalFromProduct = product.reviews || 0;
+    const totalLocal = reviews.length;
+    const total = totalFromProduct + totalLocal;
+    const avgFromProduct = product.rating || 0;
+    const localAvg = totalLocal > 0 ? reviews.reduce((s, r) => s + r.rating, 0) / totalLocal : 0;
+    const avg = total > 0 ? ((avgFromProduct * totalFromProduct) + (localAvg * totalLocal)) / total : 0;
+
+    document.getElementById('avg-rating').textContent = avg.toFixed(1);
+    document.getElementById('total-reviews-count').textContent = total;
+    document.getElementById('reviews-summary').textContent = `คะแนนเฉลี่ย ${avg.toFixed(1)} จาก ${total} รีวิว`;
+
+    // Stars
+    let starsHtml = '';
+    for (let i = 1; i <= 5; i++) {
+      if (i <= Math.floor(avg)) starsHtml += '<i class="ph-fill ph-star text-yellow-400 text-xl"></i>';
+      else if (i === Math.ceil(avg) && !Number.isInteger(avg)) starsHtml += '<i class="ph-fill ph-star-half text-yellow-400 text-xl"></i>';
+      else starsHtml += '<i class="ph ph-star text-gray-300 text-xl"></i>';
+    }
+    document.getElementById('avg-stars').innerHTML = starsHtml;
+
+    // Rating bars
+    const bars = document.getElementById('rating-bars');
+    const counts = [0, 0, 0, 0, 0];
+    reviews.forEach(r => { if (r.rating >= 1 && r.rating <= 5) counts[r.rating - 1]++; });
+    bars.innerHTML = [5, 4, 3, 2, 1].map(star => {
+      const c = counts[star - 1];
+      const pct = totalLocal > 0 ? (c / totalLocal * 100) : 0;
+      return `<div class="flex items-center gap-3">
+        <span class="text-sm font-medium text-gray-600 w-6">${star} <i class="ph-fill ph-star text-yellow-400 text-xs"></i></span>
+        <div class="flex-1 h-2.5 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-yellow-400 rounded-full" style="width:${pct}%"></div></div>
+        <span class="text-xs text-gray-400 w-8 text-right">${c}</span>
+      </div>`;
+    }).join('');
+
+    // Render reviews
+    if (reviews.length === 0) {
+      list.innerHTML = '';
+      noReviews.classList.remove('hidden');
+      return;
+    }
+    noReviews.classList.add('hidden');
+    list.innerHTML = reviews.sort((a, b) => new Date(b.date) - new Date(a.date)).map(r => {
+      let rStars = '';
+      for (let i = 1; i <= 5; i++) rStars += i <= r.rating ? '<i class="ph-fill ph-star text-yellow-400 text-sm"></i>' : '<i class="ph ph-star text-gray-300 text-sm"></i>';
+      const images = (r.images || []).map(img => `<img src="${img}" class="w-16 h-16 rounded-lg object-cover cursor-pointer hover:opacity-80 transition-opacity" onclick="window.open('${img}','_blank')">`).join('');
+      return `<div class="bg-white rounded-xl border border-gray-100 p-5">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">${escHtml((r.name || 'ลูกค้า')[0])}</div>
+            <div>
+              <p class="font-semibold text-gray-900 text-sm">${escHtml(r.name || 'ลูกค้า')}</p>
+              <div class="flex">${rStars}</div>
+            </div>
+          </div>
+          <span class="text-xs text-gray-400">${new Date(r.date).toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
+        </div>
+        <p class="text-gray-600 text-sm leading-relaxed">${escHtml(r.text)}</p>
+        ${images ? `<div class="flex gap-2 mt-3">${images}</div>` : ''}
+      </div>`;
+    }).join('');
+  }
+
+  function openReviewModal() {
+    const m = document.getElementById('review-modal');
+    m.classList.remove('hidden');
+    m.classList.add('flex');
+  }
+  function closeReviewModal() {
+    const m = document.getElementById('review-modal');
+    m.classList.add('hidden');
+    m.classList.remove('flex');
+    reviewRating = 0;
+    document.querySelectorAll('#star-input button i').forEach(i => { i.className = 'ph ph-star'; });
+    document.getElementById('review-name').value = '';
+    document.getElementById('review-text').value = '';
+    document.getElementById('review-image').value = '';
+    document.getElementById('review-image-preview').innerHTML = '';
+  }
+
+  function setRating(n) {
+    reviewRating = n;
+    document.querySelectorAll('#star-input button').forEach((btn, i) => {
+      btn.querySelector('i').className = i < n ? 'ph-fill ph-star' : 'ph ph-star';
+      btn.classList.toggle('text-yellow-400', i < n);
+      btn.classList.toggle('text-gray-300', i >= n);
+    });
+  }
+
+  function submitReview() {
+    if (reviewRating === 0) { showToast('กรุณาให้คะแนนก่อน'); return; }
+    const name = document.getElementById('review-name').value.trim() || 'ลูกค้า';
+    const text = document.getElementById('review-text').value.trim();
+    if (!text) { showToast('กรุณาเขียนรีวิว'); return; }
+
+    // Handle images (convert to dataURL for localStorage)
+    const fileInput = document.getElementById('review-image');
+    const files = Array.from(fileInput.files || []);
+
+    const processAndSave = (imageUrls) => {
+      const reviews = getReviews();
+      reviews.push({ rating: reviewRating, name, text, images: imageUrls, date: new Date().toISOString() });
+      saveReviews(reviews);
+      renderReviews();
+      closeReviewModal();
+      showToast('ขอบคุณสำหรับรีวิว!');
+    };
+
+    if (files.length > 0) {
+      const urls = [];
+      let loaded = 0;
+      files.slice(0, 3).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          urls.push(e.target.result);
+          loaded++;
+          if (loaded === Math.min(files.length, 3)) processAndSave(urls);
+        };
+        reader.readAsDataURL(file);
+      });
+    } else {
+      processAndSave([]);
+    }
+  }
+
+  // Image preview for review
+  document.addEventListener('DOMContentLoaded', () => {
+    const fileInput = document.getElementById('review-image');
+    if (fileInput) {
+      fileInput.addEventListener('change', () => {
+        const preview = document.getElementById('review-image-preview');
+        preview.innerHTML = '';
+        Array.from(fileInput.files).slice(0, 3).forEach(file => {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            preview.innerHTML += `<img src="${e.target.result}" class="w-16 h-16 rounded-lg object-cover border border-gray-200">`;
+          };
+          reader.readAsDataURL(file);
+        });
+      });
+    }
+  });
+
+  // ── Wishlist ─────────────────────────────────────────────────────────────────
+  function getWishlist() { return JSON.parse(localStorage.getItem('btmusicdrive_wishlist') || '[]'); }
+  function saveWishlistData(list) { localStorage.setItem('btmusicdrive_wishlist', JSON.stringify(list)); }
+
+  function isInWishlist() {
+    return getWishlist().some(w => w.id === product.id);
+  }
+
+  function updateWishlistUI() {
+    const icon = document.getElementById('wishlist-icon');
+    const text = document.getElementById('wishlist-text');
+    if (isInWishlist()) {
+      icon.className = 'ph-fill ph-heart text-xl text-red-500';
+      text.textContent = 'เพิ่มในรายการที่ถูกใจแล้ว';
+      document.getElementById('wishlist-btn').classList.add('text-red-500');
+      document.getElementById('wishlist-btn').classList.remove('text-gray-500');
+    } else {
+      icon.className = 'ph ph-heart text-xl';
+      text.textContent = 'เพิ่มในรายการที่ถูกใจ';
+      document.getElementById('wishlist-btn').classList.remove('text-red-500');
+      document.getElementById('wishlist-btn').classList.add('text-gray-500');
+    }
+  }
+
+  function toggleWishlist() {
+    if (!product) return;
+    let list = getWishlist();
+    const idx = list.findIndex(w => w.id === product.id);
+    if (idx >= 0) {
+      list.splice(idx, 1);
+      showToast('ลบออกจากรายการที่ถูกใจแล้ว');
+    } else {
+      list.push({ id: product.id, name: product.name, price: product.price, image: product.imageUrl });
+      showToast('เพิ่มในรายการที่ถูกใจแล้ว ❤');
+    }
+    saveWishlistData(list);
+    updateWishlistUI();
+  }
+
   // ── Gallery ──────────────────────────────────────────────────────────────────
   function renderGallery() {
     document.getElementById('main-image').src = allImages[0];
@@ -323,12 +764,8 @@
     document.querySelectorAll('.thumb').forEach((t, i) => t.classList.toggle('active', i === idx));
   }
 
-  function prevImage() {
-    selectImage((currentImageIndex - 1 + allImages.length) % allImages.length);
-  }
-  function nextImage() {
-    selectImage((currentImageIndex + 1) % allImages.length);
-  }
+  function prevImage() { selectImage((currentImageIndex - 1 + allImages.length) % allImages.length); }
+  function nextImage() { selectImage((currentImageIndex + 1) % allImages.length); }
 
   // ── Specs Table ──────────────────────────────────────────────────────────────
   function renderSpecs() {
@@ -337,10 +774,9 @@
       document.getElementById('specs-section').classList.add('hidden');
       return;
     }
-
     let rows = '';
     if (Array.isArray(specs)) {
-      rows = specs.map((s, i) =>
+      rows = specs.map((s) =>
         `<tr class="spec-row"><td class="px-6 py-3 font-semibold text-gray-800 w-1/3 border-b border-gray-100">${escHtml(s.key || s.label || '')}</td><td class="px-6 py-3 text-gray-600 border-b border-gray-100">${escHtml(s.value || '')}</td></tr>`
       ).join('');
     } else {
@@ -348,7 +784,6 @@
         `<tr class="spec-row"><td class="px-6 py-3 font-semibold text-gray-800 w-1/3 border-b border-gray-100">${escHtml(k)}</td><td class="px-6 py-3 text-gray-600 border-b border-gray-100">${escHtml(String(v))}</td></tr>`
       ).join('');
     }
-
     document.getElementById('specs-table-all').innerHTML = rows;
     document.getElementById('specs-table').innerHTML = rows;
   }
@@ -373,21 +808,13 @@
   function addToCartFromDetail() {
     if (!product) return;
     const qty = parseInt(document.getElementById('qty').value) || 1;
-    // Use localStorage cart (same as index.html)
     let cart = [];
     try { cart = JSON.parse(localStorage.getItem('btmusicdrive_cart') || '[]'); } catch {}
     const existing = cart.find(c => c.id === product.id);
     if (existing) {
       existing.quantity += qty;
     } else {
-      cart.push({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        image: product.imageUrl,
-        category: product.category?.name || '',
-        quantity: qty,
-      });
+      cart.push({ id: product.id, name: product.name, price: product.price, image: product.imageUrl, category: product.category?.name || '', quantity: qty });
     }
     localStorage.setItem('btmusicdrive_cart', JSON.stringify(cart));
     showToast(`เพิ่ม "${product.name}" ลงตะกร้าแล้ว (${qty} ชิ้น)`);
@@ -425,5 +852,10 @@
   // ── Init ─────────────────────────────────────────────────────────────────────
   loadProduct();
 </script>
+
+  <!-- Shared Footer -->
+  <div id="site-footer"></div>
+
+  <script src="components.js"></script>
 </body>
 </html>

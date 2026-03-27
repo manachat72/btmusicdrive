@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ที่อยู่สำหรับจัดส่ง — btmusicdrive</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config = { theme: { extend: { colors: { primary: '#C8A84E', secondary: '#1a1a1a' } } } };</script>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script async defer crossorigin="anonymous" src="https://connect.facebook.net/th_TH/sdk.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-gray-50 text-gray-800 antialiased">
+  <header id="site-header"></header>
+
+  <main class="pt-20 pb-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="flex flex-col lg:flex-row gap-8">
+
+        <!-- Account Sidebar -->
+        <aside class="lg:w-64 flex-shrink-0">
+          <div class="bg-white rounded-2xl border border-gray-100 p-4 mb-4">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center"><i class="ph ph-user text-2xl text-primary"></i></div>
+              <div>
+                <p class="font-semibold text-gray-900" id="sidebar-user-name">ผู้ใช้</p>
+                <p class="text-xs text-gray-500" id="sidebar-user-email">กรุณาเข้าสู่ระบบ</p>
+              </div>
+            </div>
+          </div>
+          <div class="mb-6">
+            <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">รายการ</h3>
+            <ul class="space-y-1">
+              <li><a href="orders.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"><i class="ph ph-package text-lg"></i> คำสั่งซื้อ</a></li>
+              <li><a href="wishlist.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"><i class="ph ph-heart text-lg"></i> สินค้าที่ถูกใจ</a></li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">บัญชี</h3>
+            <ul class="space-y-1">
+              <li><a href="profile.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"><i class="ph ph-user-circle text-lg"></i> ข้อมูลส่วนตัว</a></li>
+              <li><a href="address.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-primary font-semibold bg-amber-50 border-l-4 border-primary transition-colors"><i class="ph ph-map-pin text-lg"></i> ที่อยู่สำหรับจัดส่ง</a></li>
+              <li><a href="#" onclick="localStorage.removeItem('token');localStorage.removeItem('user');location.href='index.html';" class="flex items-center gap-2 px-3 py-2 rounded-lg text-red-500 hover:bg-red-50 transition-colors"><i class="ph ph-sign-out text-lg"></i> ออกจากระบบ</a></li>
+            </ul>
+          </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 min-w-0">
+          <div class="bg-white rounded-2xl border border-gray-100 p-6 sm:p-10">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-6 border-b border-gray-100">
+              <div class="flex items-center gap-3">
+                <div class="bg-violet-50 w-10 h-10 rounded-full flex items-center justify-center"><i class="ph ph-map-pin text-xl text-violet-600"></i></div>
+                <h1 class="text-2xl font-bold text-gray-900">ที่อยู่สำหรับจัดส่ง</h1>
+              </div>
+              <button onclick="openAddressModal()" class="flex items-center gap-1 bg-primary hover:bg-yellow-600 text-white text-sm font-semibold px-4 py-2.5 rounded-lg transition-colors">
+                <i class="ph ph-plus"></i> เพิ่มที่อยู่ใหม่
+              </button>
+            </div>
+
+            <!-- Address List -->
+            <div id="address-list" class="space-y-4">
+              <!-- Populated by JS -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="address-empty" class="hidden text-center py-16">
+              <i class="ph ph-map-pin text-6xl text-gray-300 mb-4"></i>
+              <p class="text-lg font-semibold text-gray-400 mb-2">ยังไม่มีที่อยู่</p>
+              <p class="text-sm text-gray-400 mb-6">เพิ่มที่อยู่สำหรับจัดส่งสินค้าได้เลย</p>
+              <button onclick="openAddressModal()" class="inline-block bg-primary hover:bg-yellow-600 text-white font-semibold px-6 py-3 rounded-lg transition-colors">เพิ่มที่อยู่ใหม่</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Address Modal -->
+  <div id="addressModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+    <div class="bg-white rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-6">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-lg font-bold text-gray-900" id="addr-modal-title">เพิ่มที่อยู่ใหม่</h2>
+        <button onclick="closeAddressModal()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100"><i class="ph ph-x text-xl"></i></button>
+      </div>
+      <form id="addressForm" onsubmit="return saveAddress(event)" class="space-y-4">
+        <input type="hidden" id="addr-id">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">ชื่อ</label>
+            <input id="addr-fname" type="text" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">นามสกุล</label>
+            <input id="addr-lname" type="text" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none">
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">เบอร์โทรศัพท์</label>
+          <input id="addr-phone" type="tel" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">ที่อยู่</label>
+          <textarea id="addr-address" rows="2" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none resize-none"></textarea>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">แขวง/ตำบล</label>
+            <input id="addr-subdistrict" type="text" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">เขต/อำเภอ</label>
+            <input id="addr-district" type="text" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none">
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">จังหวัด</label>
+            <input id="addr-province" type="text" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">รหัสไปรษณีย์</label>
+            <input id="addr-zip" type="text" required maxlength="5" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none">
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <input type="checkbox" id="addr-default" class="rounded border-gray-300">
+          <label for="addr-default" class="text-sm text-gray-700">ตั้งเป็นที่อยู่หลัก</label>
+        </div>
+        <div class="flex gap-3 pt-2">
+          <button type="submit" class="flex-1 bg-primary hover:bg-yellow-600 text-white font-semibold py-3 rounded-lg transition-colors">บันทึก</button>
+          <button type="button" onclick="closeAddressModal()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 rounded-lg transition-colors">ยกเลิก</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="site-footer"></div>
+  <script src="components.js"></script>
+  <script>
+    (function(){
+      const user = JSON.parse(localStorage.getItem('user') || 'null');
+      if(!user){ location.href='index.html'; return; }
+      document.getElementById('sidebar-user-name').textContent = (user.firstName||'') + ' ' + (user.lastName||'');
+      document.getElementById('sidebar-user-email').textContent = user.email||'';
+      renderAddresses();
+    })();
+
+    function getAddresses(){ return JSON.parse(localStorage.getItem('btmusicdrive_addresses') || '[]'); }
+    function saveAddresses(list){ localStorage.setItem('btmusicdrive_addresses', JSON.stringify(list)); }
+
+    function renderAddresses(){
+      const list = getAddresses();
+      const container = document.getElementById('address-list');
+      const empty = document.getElementById('address-empty');
+      if(!list.length){ container.innerHTML=''; empty.classList.remove('hidden'); return; }
+      empty.classList.add('hidden');
+
+      container.innerHTML = list.map((a, i) => `
+        <div class="border ${a.isDefault ? 'border-primary bg-amber-50/30' : 'border-gray-100'} rounded-xl p-4 relative">
+          ${a.isDefault ? '<span class="absolute top-3 right-3 bg-primary text-white text-xs font-bold px-2 py-0.5 rounded-full">ที่อยู่หลัก</span>' : ''}
+          <p class="font-semibold text-gray-900">${a.firstName} ${a.lastName}</p>
+          <p class="text-sm text-gray-500 mt-1">${a.phone}</p>
+          <p class="text-sm text-gray-600 mt-2">${a.address} ${a.subdistrict} ${a.district} ${a.province} ${a.zip}</p>
+          <div class="flex gap-3 mt-3 pt-3 border-t border-gray-100">
+            <button onclick="editAddress(${i})" class="text-sm text-primary hover:underline"><i class="ph ph-pencil-simple mr-1"></i>แก้ไข</button>
+            <button onclick="deleteAddress(${i})" class="text-sm text-red-500 hover:underline"><i class="ph ph-trash mr-1"></i>ลบ</button>
+            ${!a.isDefault ? `<button onclick="setDefault(${i})" class="text-sm text-gray-500 hover:underline"><i class="ph ph-star mr-1"></i>ตั้งเป็นหลัก</button>` : ''}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function openAddressModal(data){
+      document.getElementById('addr-modal-title').textContent = data ? 'แก้ไขที่อยู่' : 'เพิ่มที่อยู่ใหม่';
+      document.getElementById('addr-id').value = data ? data._idx : '';
+      document.getElementById('addr-fname').value = data?.firstName || '';
+      document.getElementById('addr-lname').value = data?.lastName || '';
+      document.getElementById('addr-phone').value = data?.phone || '';
+      document.getElementById('addr-address').value = data?.address || '';
+      document.getElementById('addr-subdistrict').value = data?.subdistrict || '';
+      document.getElementById('addr-district').value = data?.district || '';
+      document.getElementById('addr-province').value = data?.province || '';
+      document.getElementById('addr-zip').value = data?.zip || '';
+      document.getElementById('addr-default').checked = data?.isDefault || false;
+      document.getElementById('addressModal').classList.remove('hidden');
+    }
+    function closeAddressModal(){
+      document.getElementById('addressModal').classList.add('hidden');
+      document.getElementById('addressForm').reset();
+    }
+
+    function saveAddress(e){
+      e.preventDefault();
+      const list = getAddresses();
+      const idx = document.getElementById('addr-id').value;
+      const isDefault = document.getElementById('addr-default').checked;
+      const obj = {
+        firstName: document.getElementById('addr-fname').value,
+        lastName: document.getElementById('addr-lname').value,
+        phone: document.getElementById('addr-phone').value,
+        address: document.getElementById('addr-address').value,
+        subdistrict: document.getElementById('addr-subdistrict').value,
+        district: document.getElementById('addr-district').value,
+        province: document.getElementById('addr-province').value,
+        zip: document.getElementById('addr-zip').value,
+        isDefault: isDefault
+      };
+      if(isDefault) list.forEach(a => a.isDefault = false);
+      if(idx !== ''){ list[parseInt(idx)] = obj; }
+      else { list.push(obj); }
+      saveAddresses(list);
+      closeAddressModal();
+      renderAddresses();
+      return false;
+    }
+
+    function editAddress(i){
+      const list = getAddresses();
+      openAddressModal({...list[i], _idx: i});
+    }
+
+    function deleteAddress(i){
+      if(!confirm('ลบที่อยู่นี้?')) return;
+      const list = getAddresses();
+      list.splice(i, 1);
+      saveAddresses(list);
+      renderAddresses();
+    }
+
+    function setDefault(i){
+      const list = getAddresses();
+      list.forEach(a => a.isDefault = false);
+      list[i].isDefault = true;
+      saveAddresses(list);
+      renderAddresses();
+    }
+  </script>
+</body>
+</html>
