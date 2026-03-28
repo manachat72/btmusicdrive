@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Track Order — btmusicdrive</title>
+  <title>ติดตามพัสดุ — btmusicdrive</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
-      theme: { extend: { colors: { primary: '#4f46e5' } } }
+      theme: { extend: { colors: { primary: '#C8A84E' } } }
     };
   </script>
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -24,7 +24,7 @@
         <span class="text-xl font-black text-gray-900 tracking-tight">btmusicdrive</span>
       </a>
       <a href="index.html" class="text-sm text-gray-500 hover:text-primary flex items-center gap-1 transition-colors">
-        <i class="ph ph-arrow-left"></i> Back to Store
+        <i class="ph ph-arrow-left"></i> กลับไปหน้าร้าน
       </a>
     </div>
   </nav>
@@ -33,36 +33,57 @@
 
     <!-- Header -->
     <div class="text-center mb-10">
-      <div class="inline-flex items-center justify-center w-16 h-16 bg-indigo-50 rounded-2xl mb-4">
+      <div class="inline-flex items-center justify-center w-16 h-16 bg-amber-50 rounded-2xl mb-4">
         <i class="ph ph-package text-primary text-3xl"></i>
       </div>
-      <h1 class="text-3xl font-black text-gray-900">Track Your Order</h1>
-      <p class="text-gray-500 mt-2">Enter your Order ID to see the latest shipping status.</p>
+      <h1 class="text-3xl font-black text-gray-900">ติดตามพัสดุ</h1>
+      <p class="text-gray-500 mt-2">กรอกหมายเลขคำสั่งซื้อเพื่อดูสถานะการจัดส่งล่าสุด</p>
     </div>
 
     <!-- Search Form -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
-      <label class="block text-sm font-semibold text-gray-700 mb-2">Order ID</label>
-      <div class="flex gap-3">
-        <input id="order-id-input" type="text" placeholder="e.g. A1B2C3D4"
-          class="flex-1 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition uppercase font-mono" />
-        <button onclick="trackOrder()"
-          class="bg-primary hover:bg-indigo-700 text-white font-bold px-6 py-3 rounded-xl transition-colors flex items-center gap-2 whitespace-nowrap">
-          <i class="ph ph-magnifying-glass"></i> Track
-        </button>
+      <!-- Search Mode Tabs -->
+      <div class="flex gap-2 mb-4">
+        <button id="search-by-order" onclick="setSearchMode('order')" class="px-4 py-2 rounded-lg text-sm font-semibold bg-primary text-white transition-colors">หมายเลขคำสั่งซื้อ</button>
+        <button id="search-by-phone" onclick="setSearchMode('phone')" class="px-4 py-2 rounded-lg text-sm font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors">เบอร์โทรศัพท์</button>
       </div>
+
+      <div id="order-search-field">
+        <label class="block text-sm font-semibold text-gray-700 mb-2">หมายเลขคำสั่งซื้อ</label>
+        <div class="flex flex-col sm:flex-row gap-3">
+          <input id="order-id-input" type="text" placeholder="เช่น A1B2C3D4"
+            class="flex-1 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition uppercase font-mono" />
+          <button onclick="trackOrder()"
+            class="bg-primary hover:bg-amber-700 text-white font-bold px-6 py-3 rounded-xl transition-colors flex items-center gap-2 whitespace-nowrap">
+            <i class="ph ph-magnifying-glass"></i> ติดตาม
+          </button>
+        </div>
+      </div>
+
+      <div id="phone-search-field" class="hidden">
+        <label class="block text-sm font-semibold text-gray-700 mb-2">เบอร์โทรศัพท์ที่ใช้สั่งซื้อ</label>
+        <div class="flex flex-col sm:flex-row gap-3">
+          <input id="phone-input" type="tel" placeholder="เช่น 081-234-5678"
+            class="flex-1 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition font-mono" />
+          <button onclick="trackByPhone()"
+            class="bg-primary hover:bg-amber-700 text-white font-bold px-6 py-3 rounded-xl transition-colors flex items-center gap-2 whitespace-nowrap">
+            <i class="ph ph-magnifying-glass"></i> ค้นหา
+          </button>
+        </div>
+      </div>
+
       <p id="search-error" class="hidden text-red-500 text-sm mt-2 flex items-center gap-1">
         <i class="ph ph-warning-circle"></i> <span id="search-error-text"></span>
       </p>
       <p class="text-xs text-gray-400 mt-3">
-        <i class="ph ph-info mr-1"></i>You can find your Order ID in your confirmation email or on the checkout success page.
+        <i class="ph ph-info mr-1"></i>คุณสามารถดูหมายเลขคำสั่งซื้อได้จากอีเมลยืนยันหรือหน้าสั่งซื้อสำเร็จ
       </p>
     </div>
 
     <!-- Loading -->
     <div id="loading" class="hidden text-center py-10">
       <i class="ph ph-circle-notch animate-spin text-primary text-4xl"></i>
-      <p class="text-gray-400 mt-2 text-sm">Fetching order details...</p>
+      <p class="text-gray-400 mt-2 text-sm">กำลังโหลดข้อมูลคำสั่งซื้อ...</p>
     </div>
 
     <!-- Result Card -->
@@ -79,13 +100,13 @@
 
       <!-- Tracking Steps -->
       <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-        <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-5">Shipping Progress</h2>
+        <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-5">สถานะการจัดส่ง</h2>
         <div id="tracking-steps" class="space-y-0"></div>
       </div>
 
       <!-- Tracking Link -->
       <div id="tracking-link-card" class="hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-        <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Carrier Tracking</h2>
+        <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">ข้อมูลขนส่ง</h2>
         <div class="flex items-center gap-4">
           <div id="carrier-logo" class="w-12 h-12 rounded-xl flex items-center justify-center text-white text-lg font-black flex-shrink-0"></div>
           <div class="flex-1">
@@ -93,18 +114,18 @@
             <p class="text-sm text-gray-500 font-mono" id="tracking-number-display"></p>
           </div>
           <a id="tracking-external-link" href="#" target="_blank" rel="noopener"
-            class="bg-primary hover:bg-indigo-700 text-white font-bold px-4 py-2.5 rounded-xl text-sm transition-colors flex items-center gap-2 flex-shrink-0">
-            Track <i class="ph ph-arrow-square-out"></i>
+            class="bg-primary hover:bg-amber-700 text-white font-bold px-4 py-2.5 rounded-xl text-sm transition-colors flex items-center gap-2 flex-shrink-0">
+            ติดตาม <i class="ph ph-arrow-square-out"></i>
           </a>
         </div>
       </div>
 
       <!-- Order Items -->
       <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-        <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Order Items</h2>
+        <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">รายการสินค้า</h2>
         <div id="order-items-list" class="space-y-3"></div>
         <div class="border-t border-gray-100 pt-4 mt-4 flex justify-between items-center">
-          <span class="text-sm text-gray-500">Total</span>
+          <span class="text-sm text-gray-500">รวมทั้งหมด</span>
           <span class="text-lg font-black text-gray-900" id="order-total"></span>
         </div>
       </div>
@@ -118,12 +139,12 @@
       : '/api';
 
     const STATUS_CONFIG = {
-      PENDING:    { icon: 'ph-clock', color: 'bg-amber-50 border-amber-200', iconBg: 'bg-amber-100', iconColor: 'text-amber-600', label: 'Pending', message: 'Your order has been placed and is awaiting confirmation.' },
-      PROCESSING: { icon: 'ph-gear', color: 'bg-blue-50 border-blue-200', iconBg: 'bg-blue-100', iconColor: 'text-blue-600', label: 'Processing', message: 'Payment confirmed! Your order is being prepared.' },
-      PAID:       { icon: 'ph-check-circle', color: 'bg-green-50 border-green-200', iconBg: 'bg-green-100', iconColor: 'text-green-600', label: 'Paid', message: 'Payment received. Preparing your package.' },
-      SHIPPED:    { icon: 'ph-truck', color: 'bg-indigo-50 border-indigo-200', iconBg: 'bg-indigo-100', iconColor: 'text-indigo-600', label: 'Shipped', message: 'Your package is on the way!' },
-      DELIVERED:  { icon: 'ph-house', color: 'bg-emerald-50 border-emerald-200', iconBg: 'bg-emerald-100', iconColor: 'text-emerald-600', label: 'Delivered', message: 'Package delivered. Enjoy your order!' },
-      CANCELLED:  { icon: 'ph-x-circle', color: 'bg-red-50 border-red-200', iconBg: 'bg-red-100', iconColor: 'text-red-600', label: 'Cancelled', message: 'This order has been cancelled.' },
+      PENDING:    { icon: 'ph-clock', color: 'bg-amber-50 border-amber-200', iconBg: 'bg-amber-100', iconColor: 'text-amber-600', label: 'รอดำเนินการ', message: 'คำสั่งซื้อของคุณถูกบันทึกแล้ว รอการยืนยัน' },
+      PROCESSING: { icon: 'ph-gear', color: 'bg-blue-50 border-blue-200', iconBg: 'bg-blue-100', iconColor: 'text-blue-600', label: 'กำลังดำเนินการ', message: 'ชำระเงินสำเร็จ! กำลังเตรียมสินค้าของคุณ' },
+      PAID:       { icon: 'ph-check-circle', color: 'bg-green-50 border-green-200', iconBg: 'bg-green-100', iconColor: 'text-green-600', label: 'ชำระเงินแล้ว', message: 'ได้รับการชำระเงินแล้ว กำลังเตรียมพัสดุ' },
+      SHIPPED:    { icon: 'ph-truck', color: 'bg-amber-50 border-amber-200', iconBg: 'bg-amber-100', iconColor: 'text-amber-600', label: 'จัดส่งแล้ว', message: 'พัสดุของคุณกำลังอยู่ระหว่างทาง!' },
+      DELIVERED:  { icon: 'ph-house', color: 'bg-emerald-50 border-emerald-200', iconBg: 'bg-emerald-100', iconColor: 'text-emerald-600', label: 'จัดส่งสำเร็จ', message: 'พัสดุส่งถึงแล้ว ขอบคุณที่สั่งซื้อ!' },
+      CANCELLED:  { icon: 'ph-x-circle', color: 'bg-red-50 border-red-200', iconBg: 'bg-red-100', iconColor: 'text-red-600', label: 'ยกเลิก', message: 'คำสั่งซื้อนี้ถูกยกเลิกแล้ว' },
     };
 
     const STEPS = ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED'];
@@ -140,7 +161,7 @@
 
     async function trackOrder() {
       const raw = document.getElementById('order-id-input').value.trim();
-      if (!raw) { showSearchError('Please enter an Order ID.'); return; }
+      if (!raw) { showSearchError('กรุณากรอกหมายเลขคำสั่งซื้อ'); return; }
 
       // Support both short (8-char) and full UUID input
       hideSearchError();
@@ -150,7 +171,7 @@
       const token = localStorage.getItem('btmusicdrive_token');
       if (!token) {
         showLoading(false);
-        showSearchError('You must be logged in to track an order. Please sign in at the store.');
+        showSearchError('คุณต้องเข้าสู่ระบบก่อนติดตามพัสดุ กรุณาเข้าสู่ระบบที่หน้าร้าน');
         return;
       }
 
@@ -159,16 +180,16 @@
           headers: { Authorization: `Bearer ${token}` }
         });
 
-        if (res.status === 404) { showLoading(false); showSearchError('Order not found. Double-check the Order ID.'); return; }
-        if (res.status === 403) { showLoading(false); showSearchError('You do not have permission to view this order.'); return; }
-        if (!res.ok) { showLoading(false); showSearchError('Server error. Please try again.'); return; }
+        if (res.status === 404) { showLoading(false); showSearchError('ไม่พบคำสั่งซื้อ กรุณาตรวจสอบหมายเลขคำสั่งซื้ออีกครั้ง'); return; }
+        if (res.status === 403) { showLoading(false); showSearchError('คุณไม่มีสิทธิ์ดูคำสั่งซื้อนี้'); return; }
+        if (!res.ok) { showLoading(false); showSearchError('เกิดข้อผิดพลาดจากเซิร์ฟเวอร์ กรุณาลองอีกครั้ง'); return; }
 
         const order = await res.json();
         showLoading(false);
         renderOrder(order);
       } catch (e) {
         showLoading(false);
-        showSearchError('Network error. Is the backend running?');
+        showSearchError('เกิดข้อผิดพลาดเครือข่าย กรุณาลองอีกครั้ง');
       }
     }
 
@@ -197,7 +218,7 @@
           <div class="flex gap-4 ${idx < STEPS.length - 1 ? 'pb-5' : ''}">
             <div class="flex flex-col items-center">
               <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 transition-all
-                ${done ? 'bg-primary' : 'bg-gray-100'} ${active ? 'ring-4 ring-indigo-100' : ''}">
+                ${done ? 'bg-primary' : 'bg-gray-100'} ${active ? 'ring-4 ring-amber-100' : ''}">
                 <i class="ph ${done ? 'ph-check-bold' : cfg2.icon} text-sm ${done ? 'text-white' : 'text-gray-400'}"></i>
               </div>
               ${idx < STEPS.length - 1 ? `<div class="w-0.5 flex-1 mt-1 ${done ? 'bg-primary' : 'bg-gray-200'}"></div>` : ''}
@@ -215,7 +236,7 @@
         linkCard.classList.remove('hidden');
         const logo = document.getElementById('carrier-logo');
         logo.textContent = order.carrier[0];
-        logo.style.background = CARRIER_COLORS[order.carrier] || '#4f46e5';
+        logo.style.background = CARRIER_COLORS[order.carrier] || '#C8A84E';
         document.getElementById('carrier-name').textContent = `${order.carrier} Express`;
         document.getElementById('tracking-number-display').textContent = order.trackingNumber;
         const trackUrl = (CARRIER_TRACKING_URLS[order.carrier] || '') + order.trackingNumber;
@@ -228,12 +249,12 @@
       const itemsEl = document.getElementById('order-items-list');
       itemsEl.innerHTML = (order.items || []).map(item => `
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center flex-shrink-0">
+          <div class="w-10 h-10 bg-amber-50 rounded-lg flex items-center justify-center flex-shrink-0">
             <i class="ph ph-package text-primary"></i>
           </div>
           <div class="flex-1 min-w-0">
-            <p class="text-sm font-semibold text-gray-800 truncate">${escHtml(item.product?.name || 'Product')}</p>
-            <p class="text-xs text-gray-400">Qty: ${item.quantity}</p>
+            <p class="text-sm font-semibold text-gray-800 truncate">${escHtml(item.product?.name || 'สินค้า')}</p>
+            <p class="text-xs text-gray-400">จำนวน: ${item.quantity}</p>
           </div>
           <p class="text-sm font-bold text-gray-900 flex-shrink-0">฿${(Number(item.priceAtTime) * item.quantity).toFixed(2)}</p>
         </div>`).join('');
@@ -264,6 +285,67 @@
     document.getElementById('order-id-input').addEventListener('keydown', e => {
       if (e.key === 'Enter') trackOrder();
     });
+
+    document.getElementById('phone-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') trackByPhone();
+    });
+
+    function setSearchMode(mode) {
+      const orderField = document.getElementById('order-search-field');
+      const phoneField = document.getElementById('phone-search-field');
+      const orderBtn = document.getElementById('search-by-order');
+      const phoneBtn = document.getElementById('search-by-phone');
+      hideSearchError();
+      document.getElementById('result-card').classList.add('hidden');
+      if (mode === 'phone') {
+        orderField.classList.add('hidden');
+        phoneField.classList.remove('hidden');
+        orderBtn.className = 'px-4 py-2 rounded-lg text-sm font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors';
+        phoneBtn.className = 'px-4 py-2 rounded-lg text-sm font-semibold bg-primary text-white transition-colors';
+      } else {
+        orderField.classList.remove('hidden');
+        phoneField.classList.add('hidden');
+        orderBtn.className = 'px-4 py-2 rounded-lg text-sm font-semibold bg-primary text-white transition-colors';
+        phoneBtn.className = 'px-4 py-2 rounded-lg text-sm font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors';
+      }
+    }
+
+    async function trackByPhone() {
+      const phone = document.getElementById('phone-input').value.trim().replace(/[-\s]/g, '');
+      if (!phone || phone.length < 9) { showSearchError('กรุณากรอกเบอร์โทรศัพท์ที่ถูกต้อง'); return; }
+
+      hideSearchError();
+      showLoading(true);
+      document.getElementById('result-card').classList.add('hidden');
+
+      const token = localStorage.getItem('btmusicdrive_token');
+      if (!token) {
+        showLoading(false);
+        showSearchError('คุณต้องเข้าสู่ระบบก่อนติดตามพัสดุ กรุณาเข้าสู่ระบบที่หน้าร้าน');
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/orders?phone=${encodeURIComponent(phone)}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (!res.ok) { showLoading(false); showSearchError('ไม่พบคำสั่งซื้อจากเบอร์โทรนี้'); return; }
+        const orders = await res.json();
+        showLoading(false);
+
+        if (Array.isArray(orders) && orders.length > 0) {
+          // Show the latest order
+          renderOrder(orders[0]);
+        } else if (orders.id) {
+          renderOrder(orders);
+        } else {
+          showSearchError('ไม่พบคำสั่งซื้อจากเบอร์โทรนี้');
+        }
+      } catch (e) {
+        showLoading(false);
+        showSearchError('เกิดข้อผิดพลาดเครือข่าย กรุณาลองอีกครั้ง');
+      }
+    }
   </script>
 </body>
 </html>

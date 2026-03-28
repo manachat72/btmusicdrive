@@ -95,7 +95,7 @@ html {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    background-color: #10B981;
+    background-color: #C8A84E;
     color: white;
     padding: 12px 24px;
     border-radius: 8px;
@@ -112,4 +112,83 @@ html {
 .toast-notification.show {
     opacity: 1;
     transform: translateY(0);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════ */
+/* Responsive — Mobile-first fixes                                          */
+/* ══════════════════════════════════════════════════════════════════════════ */
+
+/* Ensure images and media never overflow */
+img, video, svg, iframe {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Prevent horizontal overflow */
+body {
+    overflow-x: hidden;
+}
+
+/* Touch-friendly tap targets */
+@media (max-width: 768px) {
+    /* Toast notification */
+    .toast-notification {
+        left: 16px;
+        right: 16px;
+        bottom: 16px;
+        width: auto;
+    }
+
+    /* Product card show add-to-cart on mobile (no hover) */
+    .product-card .add-to-cart-btn {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Disable hover transform on mobile */
+    .product-card:hover {
+        transform: none;
+    }
+
+    /* Tables responsive scroll */
+    table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Tabs scroll horizontal on mobile */
+    .tab-btn {
+        padding: 10px 14px;
+        font-size: 13px;
+        white-space: nowrap;
+    }
+
+    /* Extra bottom padding for mobile bottom nav */
+    body {
+        padding-bottom: 56px;
+    }
+
+    /* Toast above bottom nav */
+    .toast-notification {
+        bottom: 72px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Smaller text for very small screens */
+    h1 { font-size: 1.75rem !important; }
+    h2 { font-size: 1.35rem !important; }
+
+    /* Gallery nav buttons smaller */
+    .gallery-nav {
+        width: 32px;
+        height: 32px;
+    }
+
+    /* Quantity button larger for touch */
+    .qty-btn {
+        width: 40px;
+        height: 40px;
+    }
 }

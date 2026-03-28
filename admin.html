@@ -11,8 +11,8 @@
       --sidebar-bg:    #23282d;
       --sidebar-hover: #2c3338;
       --topbar-bg:     #1d2327;
-      --accent:        #0073aa;
-      --accent-h:      #006799;
+      --accent:        #C8A84E;
+      --accent-h:      #b5953f;
       --sidebar-txt:   #a7aaad;
       --sep:           #3c434a;
       --content-bg:    #f0f0f1;
@@ -178,7 +178,7 @@
       box-shadow: 0 1px 1px rgba(0,0,0,.04); padding: 18px 18px 16px;
       display: flex; align-items: flex-start; gap: 14px; border-left: 4px solid;
     }
-    .stat-card.c-blue   { border-left-color: #0073aa; }
+    .stat-card.c-blue   { border-left-color: #C8A84E; }
     .stat-card.c-green  { border-left-color: #00a32a; }
     .stat-card.c-orange { border-left-color: #f56e28; }
     .stat-card.c-purple { border-left-color: #8a5dc8; }
@@ -187,7 +187,7 @@
       width: 42px; height: 42px; border-radius: 6px; font-size: 17px; flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
     }
-    .stat-icon.c-blue   { background: #e6f3f8; color: #0073aa; }
+    .stat-icon.c-blue   { background: #faf6eb; color: #C8A84E; }
     .stat-icon.c-green  { background: #eaf7eb; color: #00a32a; }
     .stat-icon.c-orange { background: #fef0e8; color: #f56e28; }
     .stat-icon.c-purple { background: #f2eef9; color: #8a5dc8; }
@@ -349,8 +349,9 @@
       .sep-arrow-crumb    { display: none; }
     }
     @media (max-width: 520px) {
-      .stats-grid { gap: 10px; }
+      .stats-grid { grid-template-columns: 1fr; gap: 10px; }
       .stat-val   { font-size: 18px; }
+      .gate-box   { padding: 28px 20px; margin: 0 16px; }
     }
     /* ── Settings Form ─────────────────────────────────────────────────────── */
     .settings-grid   { display: flex; flex-direction: column; gap: 14px; }
@@ -422,13 +423,13 @@
   <div class="gate-box">
     <div class="gate-logo">
       <div class="gate-logo-icon"><i class="fa-solid fa-bolt"></i></div>
-      btmusicdrive Admin
+      btmusicdrive แอดมิน
     </div>
-    <p class="gate-sub">Sign in to access the dashboard</p>
-    <label class="gate-label" for="gate-password">Admin Password</label>
-    <input id="gate-password" type="password" class="gate-input" placeholder="Enter password…" />
-    <p id="gate-error" class="gate-error">Incorrect password. Please try again.</p>
-    <button onclick="checkPassword()" class="gate-btn">Log In</button>
+    <p class="gate-sub">เข้าสู่ระบบเพื่อจัดการแดชบอร์ด</p>
+    <label class="gate-label" for="gate-password">รหัสผ่านแอดมิน</label>
+    <input id="gate-password" type="password" class="gate-input" placeholder="กรอกรหัสผ่าน…" />
+    <p id="gate-error" class="gate-error">รหัสผ่านไม่ถูกต้อง กรุณาลองอีกครั้ง</p>
+    <button onclick="checkPassword()" class="gate-btn">เข้าสู่ระบบ</button>
   </div>
 </div>
 
@@ -441,34 +442,34 @@
       <div class="sb-brand-icon"><i class="fa-solid fa-bolt"></i></div>
       <div>
         <div class="sb-brand-name">btmusicdrive</div>
-        <div class="sb-brand-sub">Admin Panel</div>
+        <div class="sb-brand-sub">แผงควบคุม</div>
       </div>
     </div>
 
     <nav class="sb-nav">
-      <div class="sb-section-lbl">Main</div>
+      <div class="sb-section-lbl">หลัก</div>
       <div class="sb-item active" id="nav-dashboard" onclick="showSection('dashboard')">
-        <i class="fa-solid fa-gauge-high"></i><span>Dashboard</span>
+        <i class="fa-solid fa-gauge-high"></i><span>แดชบอร์ด</span>
       </div>
 
-      <div class="sb-section-lbl" style="margin-top:6px;">Store</div>
+      <div class="sb-section-lbl" style="margin-top:6px;">ร้านค้า</div>
       <div class="sb-item" id="nav-orders" onclick="showSection('orders')">
-        <i class="fa-solid fa-box"></i><span>Orders</span>
+        <i class="fa-solid fa-box"></i><span>คำสั่งซื้อ</span>
         <span class="sb-badge" id="orders-badge"></span>
       </div>
       <div class="sb-item" id="nav-products" onclick="showSection('products')">
-        <i class="fa-solid fa-tag"></i><span>Products</span>
+        <i class="fa-solid fa-tag"></i><span>สินค้า</span>
       </div>
       <div class="sb-item" id="nav-customers" onclick="showSection('customers')">
-        <i class="fa-solid fa-users"></i><span>Customers</span>
+        <i class="fa-solid fa-users"></i><span>ลูกค้า</span>
       </div>
       <div class="sb-item" id="nav-menus" onclick="showSection('menus')">
-        <i class="fa-solid fa-bars"></i><span>Menus</span>
+        <i class="fa-solid fa-bars"></i><span>เมนู</span>
       </div>
 
       <div class="sb-sep"></div>
       <div class="sb-item" id="nav-settings" onclick="showSection('settings')">
-        <i class="fa-solid fa-gear"></i><span>Settings</span>
+        <i class="fa-solid fa-gear"></i><span>ตั้งค่า</span>
       </div>
     </nav>
 
@@ -486,18 +487,18 @@
     <div class="topbar-crumb">
       <span class="site-name">btmusicdrive</span>
       <span class="sep-arrow">›</span>
-      <span id="topbar-title">Dashboard</span>
+      <span id="topbar-title">แดชบอร์ด</span>
     </div>
     <div class="topbar-right">
       <a href="index.html" class="tb-btn">
-        <i class="fa-solid fa-store"></i><span>View Store</span>
+        <i class="fa-solid fa-store"></i><span>ดูหน้าร้าน</span>
       </a>
       <div class="tb-divider"></div>
       <div class="tb-btn" style="cursor:default;">
-        <i class="fa-solid fa-circle-user"></i><span>Admin</span>
+        <i class="fa-solid fa-circle-user"></i><span>แอดมิน</span>
       </div>
       <button onclick="logout()" class="tb-btn logout">
-        <i class="fa-solid fa-right-from-bracket"></i><span>Sign Out</span>
+        <i class="fa-solid fa-right-from-bracket"></i><span>ออกจากระบบ</span>
       </button>
     </div>
   </header>
@@ -509,8 +510,8 @@
     <section id="section-dashboard">
       <div class="wp-page-hdr">
         <div>
-          <h1 class="wp-page-title">Dashboard</h1>
-          <p class="wp-page-desc">Sales overview &mdash; June 2025 (Mockup data)</p>
+          <h1 class="wp-page-title">แดชบอร์ด</h1>
+          <p class="wp-page-desc">ภาพรวมยอดขาย &mdash; มิถุนายน 2025 (ข้อมูลตัวอย่าง)</p>
         </div>
       </div>
 
@@ -520,31 +521,31 @@
           <div class="stat-icon c-blue"><i class="fa-solid fa-coins"></i></div>
           <div>
             <div class="stat-val">฿183,420</div>
-            <div class="stat-lbl">Total Revenue</div>
-            <div class="stat-trend trend-up"><i class="fa-solid fa-arrow-trend-up"></i> +12.4% vs last month</div>
+            <div class="stat-lbl">รายได้รวม</div>
+            <div class="stat-trend trend-up"><i class="fa-solid fa-arrow-trend-up"></i> +12.4% จากเดือนก่อน</div>
           </div>
         </div>
         <div class="stat-card c-green">
           <div class="stat-icon c-green"><i class="fa-solid fa-cart-shopping"></i></div>
           <div>
             <div class="stat-val">1,284</div>
-            <div class="stat-lbl">Total Orders</div>
-            <div class="stat-trend trend-up"><i class="fa-solid fa-arrow-trend-up"></i> +8.1% vs last month</div>
+            <div class="stat-lbl">คำสั่งซื้อทั้งหมด</div>
+            <div class="stat-trend trend-up"><i class="fa-solid fa-arrow-trend-up"></i> +8.1% จากเดือนก่อน</div>
           </div>
         </div>
         <div class="stat-card c-orange">
           <div class="stat-icon c-orange"><i class="fa-solid fa-receipt"></i></div>
           <div>
             <div class="stat-val">฿142.85</div>
-            <div class="stat-lbl">Avg. Order Value</div>
-            <div class="stat-trend trend-down"><i class="fa-solid fa-arrow-trend-down"></i> -2.1% vs last month</div>
+            <div class="stat-lbl">ยอดเฉลี่ยต่อออเดอร์</div>
+            <div class="stat-trend trend-down"><i class="fa-solid fa-arrow-trend-down"></i> -2.1% จากเดือนก่อน</div>
           </div>
         </div>
         <div class="stat-card c-purple">
           <div class="stat-icon c-purple"><i class="fa-solid fa-store"></i></div>
           <div>
             <div class="stat-val">4</div>
-            <div class="stat-lbl">Active Channels</div>
+            <div class="stat-lbl">ช่องทางขาย</div>
             <div class="stat-trend trend-neu">btmusicdrive · Shopee · Lazada · TikTok</div>
           </div>
         </div>
@@ -553,25 +554,25 @@
       <!-- Channel Revenue Table -->
       <div class="wp-card">
         <div class="card-hdr">
-          <h2><i class="fa-solid fa-chart-bar"></i>Revenue by Channel</h2>
-          <span class="card-tag">June 2025 &middot; Mockup</span>
+          <h2><i class="fa-solid fa-chart-bar"></i>รายได้ตามช่องทาง</h2>
+          <span class="card-tag">มิถุนายน 2025 &middot; ตัวอย่าง</span>
         </div>
         <div class="card-body nopad" style="overflow-x:auto;">
           <table class="wp-tbl">
             <thead>
               <tr>
-                <th>Channel</th>
-                <th class="r">Orders</th>
-                <th class="r">Revenue</th>
-                <th class="r">Avg. Order</th>
-                <th class="r">Share</th>
+                <th>ช่องทาง</th>
+                <th class="r">ออเดอร์</th>
+                <th class="r">รายได้</th>
+                <th class="r">เฉลี่ยต่อออเดอร์</th>
+                <th class="r">สัดส่วน</th>
                 <th style="width:110px;"></th>
               </tr>
             </thead>
             <tbody id="channel-table-body"></tbody>
             <tfoot>
               <tr>
-                <td><strong>Total</strong></td>
+                <td><strong>รวม</strong></td>
                 <td class="r"><strong>1,284</strong></td>
                 <td class="r"><strong>฿183,420</strong></td>
                 <td class="r"><strong>฿142.85</strong></td>
@@ -586,7 +587,7 @@
       <!-- Distribution bars -->
       <div class="wp-card">
         <div class="card-hdr">
-          <h2><i class="fa-solid fa-chart-pie"></i>Revenue Distribution</h2>
+          <h2><i class="fa-solid fa-chart-pie"></i>การกระจายรายได้</h2>
         </div>
         <div class="card-body" id="channel-bars"></div>
       </div>
@@ -595,22 +596,27 @@
     <!-- ── ORDERS SECTION ─────────────────────────────────────────────────── -->
     <section id="section-orders" style="display:none;">
       <div class="wp-page-hdr">
-        <h1 class="wp-page-title">Orders</h1>
-        <button onclick="loadOrders()" class="wp-btn">
-          <i class="fa-solid fa-arrows-rotate"></i> Refresh
-        </button>
+        <h1 class="wp-page-title">คำสั่งซื้อ</h1>
+        <div style="display:flex;gap:8px;">
+          <button onclick="exportOrdersCSV()" class="wp-btn">
+            <i class="fa-solid fa-file-csv"></i> Export CSV
+          </button>
+          <button onclick="loadOrders()" class="wp-btn">
+            <i class="fa-solid fa-arrows-rotate"></i> รีเฟรช
+          </button>
+        </div>
       </div>
 
       <div id="orders-loading" class="wp-card" style="display:none;">
         <div class="wp-loading-box">
           <div class="wp-spinner"></div>
-          <p style="color:var(--muted);">Loading orders…</p>
+          <p style="color:var(--muted);">กำลังโหลดคำสั่งซื้อ…</p>
         </div>
       </div>
 
       <div id="orders-error" class="wp-notice err" style="display:none;">
-        <strong>Error:</strong> <span id="orders-error-text">Failed to load orders.</span>
-        <p style="margin-top:5px;font-size:12px;opacity:.8;">Make sure you are signed in as ADMIN and the backend is running.</p>
+        <strong>ข้อผิดพลาด:</strong> <span id="orders-error-text">ไม่สามารถโหลดคำสั่งซื้อได้</span>
+        <p style="margin-top:5px;font-size:12px;opacity:.8;">ตรวจสอบว่าคุณเข้าสู่ระบบเป็น ADMIN และเซิร์ฟเวอร์ทำงานอยู่</p>
       </div>
 
       <div id="orders-table-wrapper" class="wp-card" style="display:none;">
@@ -618,12 +624,13 @@
           <table class="wp-tbl">
             <thead>
               <tr>
-                <th>Order</th>
-                <th>Customer</th>
-                <th>Status</th>
-                <th class="r">Total</th>
-                <th>Date</th>
-                <th>Update Tracking</th>
+                <th>คำสั่งซื้อ</th>
+                <th>ลูกค้า</th>
+                <th>สถานะ</th>
+                <th class="r">ยอดรวม</th>
+                <th>วันที่</th>
+                <th>อัพเดทการจัดส่ง</th>
+                <th style="width:80px;">พิมพ์</th>
               </tr>
             </thead>
             <tbody id="orders-tbody"></tbody>
@@ -633,7 +640,7 @@
 
       <div id="orders-empty" class="wp-empty-box" style="display:none;">
         <i class="fa-solid fa-box-open"></i>
-        <p>No orders yet.</p>
+        <p>ยังไม่มีคำสั่งซื้อ</p>
       </div>
     </section>
 
@@ -641,22 +648,22 @@
     <section id="section-products" style="display:none;">
       <div class="wp-page-hdr">
         <div>
-          <h1 class="wp-page-title">Products</h1>
-          <p class="wp-page-desc" id="products-count-label">Manage your store catalog</p>
+          <h1 class="wp-page-title">สินค้า</h1>
+          <p class="wp-page-desc" id="products-count-label">จัดการคาตาล็อกสินค้า</p>
         </div>
         <div style="display:flex;gap:8px;">
-          <button onclick="loadProducts()" class="wp-btn"><i class="fa-solid fa-arrows-rotate"></i> Refresh</button>
+          <button onclick="loadProducts()" class="wp-btn"><i class="fa-solid fa-arrows-rotate"></i> รีเฟรช</button>
           <button onclick="openProductModal(null)" class="wp-btn" style="background:var(--accent);color:#fff;border-color:var(--accent);">
-            <i class="fa-solid fa-plus"></i> Add Product
+            <i class="fa-solid fa-plus"></i> เพิ่มสินค้า
           </button>
         </div>
       </div>
 
       <div id="products-loading" class="wp-card" style="display:none;">
-        <div class="wp-loading-box"><div class="wp-spinner"></div><p style="color:var(--muted);">Loading products…</p></div>
+        <div class="wp-loading-box"><div class="wp-spinner"></div><p style="color:var(--muted);">กำลังโหลดสินค้า…</p></div>
       </div>
       <div id="products-error" class="wp-notice err" style="display:none;">
-        <strong>Error:</strong> <span id="products-error-text"></span>
+        <strong>ข้อผิดพลาด:</strong> <span id="products-error-text"></span>
       </div>
 
       <div id="products-table-wrapper" class="wp-card" style="display:none;">
@@ -664,12 +671,12 @@
           <table class="wp-tbl">
             <thead>
               <tr>
-                <th style="width:60px;">Image</th>
-                <th>Product</th>
-                <th>Category</th>
-                <th class="r">Price</th>
-                <th class="r">Stock</th>
-                <th style="width:120px;">Actions</th>
+                <th style="width:60px;">รูป</th>
+                <th>สินค้า</th>
+                <th>หมวดหมู่</th>
+                <th class="r">ราคา</th>
+                <th class="r">คลัง</th>
+                <th style="width:120px;">จัดการ</th>
               </tr>
             </thead>
             <tbody id="products-tbody"></tbody>
@@ -677,7 +684,7 @@
         </div>
       </div>
       <div id="products-empty" class="wp-empty-box" style="display:none;">
-        <i class="fa-solid fa-tag"></i><p>No products found.</p>
+        <i class="fa-solid fa-tag"></i><p>ไม่พบสินค้า</p>
       </div>
     </section>
 
@@ -685,36 +692,36 @@
     <section id="section-customers" style="display:none;">
       <div class="wp-page-hdr">
         <div>
-          <h1 class="wp-page-title">Customers</h1>
-          <p class="wp-page-desc" id="customers-count-label">All registered accounts</p>
+          <h1 class="wp-page-title">ลูกค้า</h1>
+          <p class="wp-page-desc" id="customers-count-label">บัญชีที่ลงทะเบียนทั้งหมด</p>
         </div>
-        <button onclick="loadCustomers()" class="wp-btn"><i class="fa-solid fa-arrows-rotate"></i> Refresh</button>
+        <button onclick="loadCustomers()" class="wp-btn"><i class="fa-solid fa-arrows-rotate"></i> รีเฟรช</button>
       </div>
       <div class="wp-card" style="margin-bottom:14px;">
         <div class="card-body" style="padding:12px 16px;">
           <div style="display:flex;gap:10px;align-items:center;">
             <i class="fa-solid fa-magnifying-glass" style="color:var(--muted);font-size:13px;"></i>
-            <input id="customer-search" type="text" placeholder="Search by name or email…" oninput="filterCustomers()"
+            <input id="customer-search" type="text" placeholder="ค้นหาชื่อหรืออีเมล…" oninput="filterCustomers()"
               style="flex:1;border:none;outline:none;font-size:13px;font-family:inherit;background:transparent;">
           </div>
         </div>
       </div>
       <div id="customers-loading" class="wp-card" style="display:none;">
-        <div class="wp-loading-box"><div class="wp-spinner"></div><p style="color:var(--muted);">Loading customers…</p></div>
+        <div class="wp-loading-box"><div class="wp-spinner"></div><p style="color:var(--muted);">กำลังโหลดลูกค้า…</p></div>
       </div>
       <div id="customers-error" class="wp-notice err" style="display:none;">
-        <strong>Error:</strong> <span id="customers-error-text"></span>
+        <strong>ข้อผิดพลาด:</strong> <span id="customers-error-text"></span>
       </div>
       <div id="customers-table-wrapper" class="wp-card" style="display:none;">
         <div class="card-body nopad" style="overflow-x:auto;">
           <table class="wp-tbl">
-            <thead><tr><th>Customer</th><th>Email</th><th>Role</th><th class="r">Orders</th><th>Joined</th></tr></thead>
+            <thead><tr><th>ลูกค้า</th><th>อีเมล</th><th>บทบาท</th><th class="r">ออเดอร์</th><th>วันที่สมัคร</th></tr></thead>
             <tbody id="customers-tbody"></tbody>
           </table>
         </div>
       </div>
       <div id="customers-empty" class="wp-empty-box" style="display:none;">
-        <i class="fa-solid fa-users"></i><p>No customers found.</p>
+        <i class="fa-solid fa-users"></i><p>ไม่พบลูกค้า</p>
       </div>
     </section>
 
@@ -722,22 +729,22 @@
     <section id="section-menus" style="display:none;">
       <div class="wp-page-hdr">
         <div>
-          <h1 class="wp-page-title">Menus</h1>
+          <h1 class="wp-page-title">เมนู</h1>
           <p class="wp-page-desc" id="menus-count-label">จัดการเมนูนำทางของหน้าร้าน</p>
         </div>
         <div style="display:flex;gap:8px;">
-          <button onclick="loadMenus()" class="wp-btn"><i class="fa-solid fa-arrows-rotate"></i> Refresh</button>
-          <button onclick="openMenuModal(null)" class="wp-btn" style="background:var(--accent);color:#fff;border-color:var(--accent);">
-            <i class="fa-solid fa-plus"></i> Add Menu
+          <button onclick="loadMenus()" class="wp-btn"><i class="fa-solid fa-arrows-rotate"></i> รีเฟรช</button>
+          <button onclick="openMenuModal(null,null)" class="wp-btn" style="background:var(--accent);color:#fff;border-color:var(--accent);">
+            <i class="fa-solid fa-plus"></i> เพิ่มเมนู
           </button>
         </div>
       </div>
 
       <div id="menus-loading" class="wp-card" style="display:none;">
-        <div class="wp-loading-box"><div class="wp-spinner"></div><p style="color:var(--muted);">Loading menus…</p></div>
+        <div class="wp-loading-box"><div class="wp-spinner"></div><p style="color:var(--muted);">กำลังโหลดเมนู…</p></div>
       </div>
       <div id="menus-error" class="wp-notice err" style="display:none;">
-        <strong>Error:</strong> <span id="menus-error-text"></span>
+        <strong>ข้อผิดพลาด:</strong> <span id="menus-error-text"></span>
       </div>
 
       <div id="menus-table-wrapper" class="wp-card" style="display:none;">
@@ -746,11 +753,11 @@
             <thead>
               <tr>
                 <th style="width:40px;">#</th>
-                <th>Label</th>
+                <th>ชื่อ</th>
                 <th>URL</th>
-                <th>Icon</th>
-                <th style="width:70px;">Active</th>
-                <th style="width:120px;">Actions</th>
+                <th>ไอคอน</th>
+                <th style="width:70px;">เปิดใช้</th>
+                <th style="width:120px;">จัดการ</th>
               </tr>
             </thead>
             <tbody id="menus-tbody"></tbody>
@@ -759,33 +766,33 @@
       </div>
 
       <div id="menus-empty" class="wp-empty-box" style="display:none;">
-        <i class="fa-solid fa-bars"></i><p>No menu items yet. Click "Add Menu" to create your first one.</p>
+        <i class="fa-solid fa-bars"></i><p>ยังไม่มีเมนู กด "เพิ่มเมนู" เพื่อสร้างเมนูแรก</p>
       </div>
     </section>
 
     <!-- ── SETTINGS ──────────────────────────────────────────────────────── -->
     <section id="section-settings" style="display:none;">
-      <div class="wp-page-hdr"><h1 class="wp-page-title">Settings</h1></div>
+      <div class="wp-page-hdr"><h1 class="wp-page-title">ตั้งค่า</h1></div>
 
       <!-- Store Info -->
       <div class="wp-card" style="margin-bottom:18px;">
-        <div class="card-hdr"><h2><i class="fa-solid fa-store"></i>Store Information</h2></div>
+        <div class="card-hdr"><h2><i class="fa-solid fa-store"></i>ข้อมูลร้านค้า</h2></div>
         <div class="card-body">
           <div class="settings-grid">
             <div class="settings-row">
-              <label class="settings-label">Store Name</label>
+              <label class="settings-label">ชื่อร้านค้า</label>
               <input type="text" id="s-store-name" class="settings-input" value="btmusicdrive">
             </div>
             <div class="settings-row">
-              <label class="settings-label">Support Email</label>
+              <label class="settings-label">อีเมลฝ่ายสนับสนุน</label>
               <input type="email" id="s-support-email" class="settings-input" placeholder="support@example.com">
             </div>
             <div class="settings-row">
-              <label class="settings-label">Store URL</label>
+              <label class="settings-label">ลิงก์ร้านค้า</label>
               <input type="text" id="s-store-url" class="settings-input" value="https://btmusicdrive.vercel.app">
             </div>
             <div class="settings-row">
-              <label class="settings-label">Currency</label>
+              <label class="settings-label">สกุลเงิน</label>
               <select id="s-currency" class="settings-input">
                 <option value="THB" selected>THB — Thai Baht (฿)</option>
                 <option value="USD">USD — US Dollar ($)</option>
@@ -793,78 +800,97 @@
               </select>
             </div>
           </div>
-          <div style="margin-top:14px;"><button onclick="saveSettings('store')" class="settings-save-btn"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button></div>
+          <div style="margin-top:14px;"><button onclick="saveSettings('store')" class="settings-save-btn"><i class="fa-solid fa-floppy-disk"></i> บันทึก</button></div>
         </div>
       </div>
 
       <!-- Shipping & Tax -->
       <div class="wp-card" style="margin-bottom:18px;">
-        <div class="card-hdr"><h2><i class="fa-solid fa-truck"></i>Shipping &amp; Tax</h2></div>
+        <div class="card-hdr"><h2><i class="fa-solid fa-truck"></i>การจัดส่ง &amp; ภาษี</h2></div>
         <div class="card-body">
           <div class="settings-grid">
             <div class="settings-row">
-              <label class="settings-label">Flat Shipping Rate (฿)</label>
+              <label class="settings-label">ค่าจัดส่งคงที่ (฿)</label>
               <input type="number" id="s-shipping" class="settings-input" value="50" min="0">
-              <p class="settings-hint">Applied to all orders at checkout.</p>
+              <p class="settings-hint">ใช้กับทุกคำสั่งซื้อที่ชำระเงิน</p>
             </div>
             <div class="settings-row">
-              <label class="settings-label">Free Shipping Threshold (฿)</label>
-              <input type="number" id="s-free-shipping" class="settings-input" placeholder="e.g. 1500 (0 = disabled)" min="0" value="0">
+              <label class="settings-label">สั่งซื้อขั้นต่ำส่งฟรี (฿)</label>
+              <input type="number" id="s-free-shipping" class="settings-input" placeholder="เช่น 1500 (0 = ปิด)" min="0" value="0">
             </div>
             <div class="settings-row">
-              <label class="settings-label">Tax Rate (%)</label>
+              <label class="settings-label">อัตราภาษี (%)</label>
               <input type="number" id="s-tax" class="settings-input" value="8" min="0" max="100" step="0.1">
             </div>
           </div>
-          <div style="margin-top:14px;"><button onclick="saveSettings('shipping')" class="settings-save-btn"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button></div>
+          <div style="margin-top:14px;"><button onclick="saveSettings('shipping')" class="settings-save-btn"><i class="fa-solid fa-floppy-disk"></i> บันทึก</button></div>
         </div>
       </div>
 
       <!-- Payment -->
       <div class="wp-card" style="margin-bottom:18px;">
-        <div class="card-hdr"><h2><i class="fa-solid fa-credit-card"></i>Payment Providers</h2></div>
+        <div class="card-hdr"><h2><i class="fa-solid fa-credit-card"></i>ผู้ให้บริการชำระเงิน</h2></div>
         <div class="card-body">
           <div class="settings-grid">
             <div class="settings-row">
-              <label class="settings-label">Stripe Publishable Key</label>
+              <label class="settings-label">คีย์ Stripe Publishable</label>
               <input type="text" id="s-stripe-pk" class="settings-input" placeholder="pk_live_…">
             </div>
             <div class="settings-row">
-              <label class="settings-label">Stripe Secret Key</label>
+              <label class="settings-label">คีย์ Stripe Secret</label>
               <input type="password" id="s-stripe-sk" class="settings-input" placeholder="sk_live_…">
-              <p class="settings-hint">Stored securely on the server — never exposed to the browser.</p>
+              <p class="settings-hint">เก็บไว้อย่างปลอดภัยบนเซิร์ฟเวอร์ — ไม่เปิดเผยทางเบราว์เซอร์</p>
             </div>
             <div class="settings-row" style="align-items:center;flex-direction:row;gap:10px;">
-              <label class="settings-label" style="margin:0;flex:none;">Cash on Delivery</label>
+              <label class="settings-label" style="margin:0;flex:none;">เก็บเงินปลายทาง</label>
               <label class="toggle-switch">
                 <input type="checkbox" id="s-cod" checked>
                 <span class="toggle-track"><span class="toggle-thumb"></span></span>
               </label>
             </div>
           </div>
-          <div style="margin-top:14px;"><button onclick="saveSettings('payment')" class="settings-save-btn"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button></div>
+          <div style="margin-top:14px;"><button onclick="saveSettings('payment')" class="settings-save-btn"><i class="fa-solid fa-floppy-disk"></i> บันทึก</button></div>
+        </div>
+      </div>
+
+      <!-- LINE Notify -->
+      <div class="wp-card" style="margin-bottom:18px;">
+        <div class="card-hdr"><h2><i class="fa-solid fa-bell"></i>LINE Notify</h2></div>
+        <div class="card-body">
+          <p style="font-size:12px;color:var(--muted);margin-bottom:14px;">เชื่อมต่อ LINE Notify เพื่อรับแจ้งเตือนคำสั่งซื้อใหม่ผ่าน LINE &mdash; สร้าง Token ได้ที่ <a href="https://notify-bot.line.me/my/" target="_blank" style="color:var(--accent);text-decoration:underline;">notify-bot.line.me</a></p>
+          <div class="settings-grid">
+            <div class="settings-row">
+              <label class="settings-label">LINE Notify Token</label>
+              <input type="text" id="s-line-token" class="settings-input" placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx">
+              <p class="settings-hint">Token จาก LINE Notify — จะเก็บไว้ใน Browser นี้เท่านั้น</p>
+            </div>
+          </div>
+          <div style="margin-top:14px;display:flex;gap:8px;">
+            <button onclick="saveLineToken()" class="settings-save-btn"><i class="fa-solid fa-floppy-disk"></i> บันทึก</button>
+            <button onclick="testLineNotify()" id="line-test-btn" class="wp-btn"><i class="fa-solid fa-paper-plane"></i> ทดสอบ</button>
+          </div>
         </div>
       </div>
 
       <!-- Security -->
       <div class="wp-card">
-        <div class="card-hdr"><h2><i class="fa-solid fa-shield-halved"></i>Admin Security</h2></div>
+        <div class="card-hdr"><h2><i class="fa-solid fa-shield-halved"></i>ความปลอดภัยแอดมิน</h2></div>
         <div class="card-body">
           <div class="settings-grid">
             <div class="settings-row">
-              <label class="settings-label">Current Password</label>
-              <input type="password" id="s-pw-current" class="settings-input" placeholder="Enter current password">
+              <label class="settings-label">รหัสผ่านปัจจุบัน</label>
+              <input type="password" id="s-pw-current" class="settings-input" placeholder="กรอกรหัสผ่านปัจจุบัน">
             </div>
             <div class="settings-row">
-              <label class="settings-label">New Password</label>
-              <input type="password" id="s-pw-new" class="settings-input" placeholder="Minimum 8 characters">
+              <label class="settings-label">รหัสผ่านใหม่</label>
+              <input type="password" id="s-pw-new" class="settings-input" placeholder="อย่างน้อย 8 ตัวอักษร">
             </div>
             <div class="settings-row">
-              <label class="settings-label">Confirm New Password</label>
-              <input type="password" id="s-pw-confirm" class="settings-input" placeholder="Repeat new password">
+              <label class="settings-label">ยืนยันรหัสผ่านใหม่</label>
+              <input type="password" id="s-pw-confirm" class="settings-input" placeholder="กรอกรหัสผ่านใหม่อีกครั้ง">
             </div>
           </div>
-          <div style="margin-top:14px;"><button onclick="changeAdminPassword()" class="settings-save-btn"><i class="fa-solid fa-key"></i> Change Password</button></div>
+          <div style="margin-top:14px;"><button onclick="changeAdminPassword()" class="settings-save-btn"><i class="fa-solid fa-key"></i> เปลี่ยนรหัสผ่าน</button></div>
         </div>
       </div>
     </section>
@@ -876,29 +902,29 @@
 <div id="product-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;align-items:center;justify-content:center;">
   <div style="background:#fff;border-radius:6px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3);margin:16px;">
     <div style="padding:16px 20px;border-bottom:1px solid var(--card-border);display:flex;align-items:center;justify-content:space-between;">
-      <h2 id="modal-title" style="font-size:15px;font-weight:700;">Add Product</h2>
+      <h2 id="modal-title" style="font-size:15px;font-weight:700;">เพิ่มสินค้า</h2>
       <button onclick="closeProductModal()" style="background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;line-height:1;">&#x2715;</button>
     </div>
     <div style="padding:20px;">
       <input type="hidden" id="pm-id">
       <div class="settings-grid">
         <div class="settings-row">
-          <label class="settings-label">Product Name <span style="color:#d63638;">*</span></label>
+          <label class="settings-label">ชื่อสินค้า <span style="color:#d63638;">*</span></label>
           <input type="text" id="pm-name" class="settings-input" placeholder="e.g. KZZI K75 PRO+">
         </div>
         <div style="display:flex;gap:10px;">
           <div class="settings-row" style="flex:1;">
-            <label class="settings-label">Price (฿) <span style="color:#d63638;">*</span></label>
+            <label class="settings-label">ราคา (฿) <span style="color:#d63638;">*</span></label>
             <input type="number" id="pm-price" class="settings-input" placeholder="0" min="0" step="1">
           </div>
           <div class="settings-row" style="flex:1;">
-            <label class="settings-label">Original Price (฿)</label>
+            <label class="settings-label">ราคาเดิม (฿)</label>
             <input type="number" id="pm-original-price" class="settings-input" placeholder="ราคาเดิม (ถ้ามี)" min="0" step="1">
           </div>
         </div>
         <div style="display:flex;gap:10px;">
           <div class="settings-row" style="flex:1;">
-            <label class="settings-label">Brand</label>
+            <label class="settings-label">แบรนด์</label>
             <input type="text" id="pm-brand" class="settings-input" placeholder="e.g. KZZI">
           </div>
           <div class="settings-row" style="flex:1;">
@@ -908,41 +934,41 @@
         </div>
         <div style="display:flex;gap:10px;">
           <div class="settings-row" style="flex:1;">
-            <label class="settings-label">Category</label>
-            <input type="text" id="pm-category" class="settings-input" placeholder="e.g. Keyboard">
+            <label class="settings-label">หมวดหมู่</label>
+            <input type="text" id="pm-category" class="settings-input" placeholder="เช่น คีย์บอร์ด">
           </div>
           <div class="settings-row" style="flex:1;">
-            <label class="settings-label">Stock</label>
+            <label class="settings-label">คลัง</label>
             <input type="number" id="pm-stock" class="settings-input" placeholder="0" min="0">
           </div>
         </div>
         <div class="settings-row">
-          <label class="settings-label">Main Image URL</label>
+          <label class="settings-label">รูปหลัก</label>
           <input type="text" id="pm-image" class="settings-input" placeholder="เช่น /images/product1.jpg หรือ Google Drive link" oninput="autoConvertDriveLink(this)">
           <p class="settings-hint">ก๊อปรูปไว้ในโฟลเดอร์ images/ แล้วใส่ path เช่น /images/watch.jpg — หรือวาง Google Drive link ก็ได้</p>
         </div>
         <div class="settings-row">
-          <label class="settings-label">Additional Images <span style="color:var(--muted);font-weight:400;">(one URL per line)</span></label>
+          <label class="settings-label">รูปเพิ่มเติม <span style="color:var(--muted);font-weight:400;">(บรรทัดละ 1 URL)</span></label>
           <textarea id="pm-images" class="settings-input" rows="3" placeholder="/images/product1-2.jpg&#10;/images/product1-3.jpg&#10;หรือ Google Drive link ก็ได้" style="resize:vertical;font-size:12px;" oninput="autoConvertDriveLinks(this)"></textarea>
           <p class="settings-hint">ใส่ path รูปบรรทัดละ 1 รูป เช่น /images/xxx.jpg หรือ Google Drive link</p>
         </div>
         <div class="settings-row">
-          <label class="settings-label">Tags <span style="color:var(--muted);font-weight:400;">(comma separated)</span></label>
+          <label class="settings-label">แท็ก <span style="color:var(--muted);font-weight:400;">(คั่นด้วยจุลภาค)</span></label>
           <input type="text" id="pm-tags" class="settings-input" placeholder="e.g. KEYBOARD, KZZI, MECHANICAL">
         </div>
         <div class="settings-row">
-          <label class="settings-label">Description</label>
+          <label class="settings-label">รายละเอียด</label>
           <textarea id="pm-description" class="settings-input" rows="3" placeholder="รายละเอียดสินค้า…" style="resize:vertical;"></textarea>
         </div>
         <div class="settings-row">
-          <label class="settings-label">Specifications <span style="color:var(--muted);font-weight:400;">(key=value, one per line)</span></label>
+          <label class="settings-label">สเปค <span style="color:var(--muted);font-weight:400;">(key=value, บรรทัดละ 1 รายการ)</span></label>
           <textarea id="pm-specs" class="settings-input" rows="5" placeholder="Brand=KZZI&#10;Switch Name=MOMENT LINEAR SWITCH&#10;Connectivity=WIRELESS / BLUETOOTH / WIRED&#10;Lighting=RGB" style="resize:vertical;font-size:12px;"></textarea>
         </div>
       </div>
       <div id="pm-error" style="display:none;color:#d63638;font-size:12px;margin-top:10px;padding:8px 12px;background:#fcf0f1;border-radius:3px;border-left:3px solid #d63638;"></div>
       <div style="margin-top:16px;display:flex;gap:8px;justify-content:flex-end;">
-        <button onclick="closeProductModal()" class="wp-btn">Cancel</button>
-        <button onclick="saveProduct()" id="pm-save-btn" class="settings-save-btn"><i class="fa-solid fa-floppy-disk"></i> Save Product</button>
+        <button onclick="closeProductModal()" class="wp-btn">ยกเลิก</button>
+        <button onclick="saveProduct()" id="pm-save-btn" class="settings-save-btn"><i class="fa-solid fa-floppy-disk"></i> บันทึกสินค้า</button>
       </div>
     </div>
   </div>
@@ -954,12 +980,12 @@
     <div style="width:52px;height:52px;border-radius:50%;background:#fef2f2;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
       <i class="fa-solid fa-trash" style="color:#d63638;font-size:20px;"></i>
     </div>
-    <h3 style="font-size:16px;font-weight:700;margin-bottom:6px;">Delete Product?</h3>
-    <p id="confirm-text" style="font-size:13px;color:var(--muted);margin-bottom:20px;">This action cannot be undone.</p>
+    <h3 style="font-size:16px;font-weight:700;margin-bottom:6px;">ลบสินค้า?</h3>
+    <p id="confirm-text" style="font-size:13px;color:var(--muted);margin-bottom:20px;">การกระทำนี้ไม่สามารถย้อนกลับได้</p>
     <div style="display:flex;gap:8px;justify-content:center;">
-      <button onclick="closeConfirm()" class="wp-btn">Cancel</button>
+      <button onclick="closeConfirm()" class="wp-btn">ยกเลิก</button>
       <button onclick="confirmDelete()" id="confirm-delete-btn" style="background:#d63638;color:#fff;border:none;border-radius:3px;padding:7px 18px;font-size:13px;font-weight:600;cursor:pointer;">
-        <i class="fa-solid fa-trash"></i> Delete
+        <i class="fa-solid fa-trash"></i> ลบ
       </button>
     </div>
   </div>
@@ -969,33 +995,40 @@
 <div id="menu-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;align-items:center;justify-content:center;">
   <div style="background:#fff;border-radius:6px;width:100%;max-width:440px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3);margin:16px;">
     <div style="padding:16px 20px;border-bottom:1px solid var(--card-border);display:flex;align-items:center;justify-content:space-between;">
-      <h2 id="menu-modal-title" style="font-size:15px;font-weight:700;">Add Menu</h2>
+      <h2 id="menu-modal-title" style="font-size:15px;font-weight:700;">เพิ่มเมนู</h2>
       <button onclick="closeMenuModal()" style="background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;line-height:1;">&#x2715;</button>
     </div>
     <div style="padding:20px;">
       <input type="hidden" id="mm-id">
       <div class="settings-grid">
         <div class="settings-row">
-          <label class="settings-label">Label <span style="color:#d63638;">*</span></label>
-          <input type="text" id="mm-label" class="settings-input" placeholder="e.g. หน้าแรก">
+          <label class="settings-label">ชื่อ <span style="color:#d63638;">*</span></label>
+          <input type="text" id="mm-label" class="settings-input" placeholder="เช่น หน้าแรก">
         </div>
         <div class="settings-row">
           <label class="settings-label">URL <span style="color:#d63638;">*</span></label>
           <input type="text" id="mm-url" class="settings-input" placeholder="e.g. # or /shop or https://...">
         </div>
+        <div class="settings-row">
+          <label class="settings-label">เมนูหลัก <span style="color:var(--muted);font-weight:400;">(ไม่บังคับ — เลือกเพื่อเป็นเมนูย่อย)</span></label>
+          <select id="mm-parent" class="settings-input">
+            <option value="">— ไม่มี (เมนูหลัก) —</option>
+          </select>
+          <p class="settings-hint">เลือกเมนูหลักเพื่อทำให้เป็นเมนูย่อย (dropdown)</p>
+        </div>
         <div style="display:flex;gap:10px;">
           <div class="settings-row" style="flex:1;">
-            <label class="settings-label">Icon Class <span style="color:var(--muted);font-weight:400;">(optional)</span></label>
-            <input type="text" id="mm-icon" class="settings-input" placeholder="e.g. ph ph-house">
-            <p class="settings-hint">Phosphor Icons class name</p>
+            <label class="settings-label">คลาสไอคอน <span style="color:var(--muted);font-weight:400;">(ไม่บังคับ)</span></label>
+            <input type="text" id="mm-icon" class="settings-input" placeholder="เช่น ph ph-house">
+            <p class="settings-hint">ชื่อคลาส Phosphor Icons</p>
           </div>
           <div class="settings-row" style="flex:1;">
-            <label class="settings-label">Sort Order</label>
+            <label class="settings-label">ลำดับ</label>
             <input type="number" id="mm-sort" class="settings-input" value="0" min="0">
           </div>
         </div>
         <div class="settings-row" style="flex-direction:row;align-items:center;gap:10px;">
-          <label class="settings-label" style="margin:0;flex:none;">Active</label>
+          <label class="settings-label" style="margin:0;flex:none;">เปิดใช้</label>
           <label class="toggle-switch">
             <input type="checkbox" id="mm-active" checked>
             <span class="toggle-track"><span class="toggle-thumb"></span></span>
@@ -1004,8 +1037,8 @@
       </div>
       <div id="mm-error" style="display:none;color:#d63638;font-size:12px;margin-top:10px;padding:8px 12px;background:#fcf0f1;border-radius:3px;border-left:3px solid #d63638;"></div>
       <div style="margin-top:16px;display:flex;gap:8px;justify-content:flex-end;">
-        <button onclick="closeMenuModal()" class="wp-btn">Cancel</button>
-        <button onclick="saveMenu()" id="mm-save-btn" class="settings-save-btn"><i class="fa-solid fa-floppy-disk"></i> Save Menu</button>
+        <button onclick="closeMenuModal()" class="wp-btn">ยกเลิก</button>
+        <button onclick="saveMenu()" id="mm-save-btn" class="settings-save-btn"><i class="fa-solid fa-floppy-disk"></i> บันทึกเมนู</button>
       </div>
     </div>
   </div>
@@ -1017,12 +1050,12 @@
     <div style="width:52px;height:52px;border-radius:50%;background:#fef2f2;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
       <i class="fa-solid fa-trash" style="color:#d63638;font-size:20px;"></i>
     </div>
-    <h3 style="font-size:16px;font-weight:700;margin-bottom:6px;">Delete Menu?</h3>
-    <p id="menu-confirm-text" style="font-size:13px;color:var(--muted);margin-bottom:20px;">This action cannot be undone.</p>
+    <h3 style="font-size:16px;font-weight:700;margin-bottom:6px;">ลบเมนู?</h3>
+    <p id="menu-confirm-text" style="font-size:13px;color:var(--muted);margin-bottom:20px;">การกระทำนี้ไม่สามารถย้อนกลับได้</p>
     <div style="display:flex;gap:8px;justify-content:center;">
-      <button onclick="closeMenuConfirm()" class="wp-btn">Cancel</button>
+      <button onclick="closeMenuConfirm()" class="wp-btn">ยกเลิก</button>
       <button onclick="confirmDeleteMenu()" id="menu-confirm-delete-btn" style="background:#d63638;color:#fff;border:none;border-radius:3px;padding:7px 18px;font-size:13px;font-weight:600;cursor:pointer;">
-        <i class="fa-solid fa-trash"></i> Delete
+        <i class="fa-solid fa-trash"></i> ลบ
       </button>
     </div>
   </div>
@@ -1056,8 +1089,8 @@
 
   const SECTIONS = ['dashboard', 'orders', 'products', 'customers', 'menus', 'settings'];
   const SECTION_TITLES = {
-    dashboard: 'Dashboard', orders: 'Orders', products: 'Products',
-    customers: 'Customers', menus: 'Menus', settings: 'Settings'
+    dashboard: 'แดชบอร์ด', orders: 'คำสั่งซื้อ', products: 'สินค้า',
+    customers: 'ลูกค้า', menus: 'เมนู', settings: 'ตั้งค่า'
   };
 
   // ── Gate ──────────────────────────────────────────────────────────────────
@@ -1169,6 +1202,8 @@
   }
 
   // ── Orders ────────────────────────────────────────────────────────────────
+  let _orders = [];
+
   function vis(id, show) {
     const el = document.getElementById(id);
     if (el) el.style.display = show ? 'block' : 'none';
@@ -1184,14 +1219,15 @@
       const res = await fetch(`${API_BASE}/orders`, { headers: adminHeaders(false) });
       vis('orders-loading', false);
       if (res.status === 403) {
-        document.getElementById('orders-error-text').textContent = 'Your account does not have ADMIN role.';
+        document.getElementById('orders-error-text').textContent = 'บัญชีของคุณไม่มีสิทธิ์แอดมิน';
         vis('orders-error', true); return;
       }
       if (!res.ok) {
-        document.getElementById('orders-error-text').textContent = 'Server error. Is the backend running?';
+        document.getElementById('orders-error-text').textContent = 'เซิร์ฟเวอร์ผิดพลาด กรุณาตรวจสอบว่า backend ทำงานอยู่';
         vis('orders-error', true); return;
       }
       const orders = await res.json();
+      _orders = orders;
 
       const pending = orders.filter(o => o.status === 'PENDING' || o.status === 'PROCESSING').length;
       const badge = document.getElementById('orders-badge');
@@ -1203,23 +1239,23 @@
       vis('orders-table-wrapper', true);
     } catch {
       vis('orders-loading', false);
-      document.getElementById('orders-error-text').textContent = 'Network error. Is the backend running?';
+      document.getElementById('orders-error-text').textContent = 'เครือข่ายผิดพลาด กรุณาตรวจสอบว่า backend ทำงานอยู่';
       vis('orders-error', true);
     }
   }
 
   function renderOrdersTable(orders) {
-    document.getElementById('orders-tbody').innerHTML = orders.map(order => {
+    document.getElementById('orders-tbody').innerHTML = orders.map((order, idx) => {
       const date = new Date(order.createdAt).toLocaleDateString('th-TH', { day: '2-digit', month: 'short', year: 'numeric' });
       const shortId = '#' + order.id.slice(-8).toUpperCase();
-      const name  = order.user?.name || order.user?.email?.split('@')[0] || 'Unknown';
+      const name  = order.user?.name || order.user?.email?.split('@')[0] || 'ไม่ทราบ';
       const email = order.user?.email || '';
       const shipped = order.status === 'SHIPPED' || order.status === 'DELIVERED';
       return `
         <tr>
           <td>
             <div style="font-family:monospace;font-weight:700;font-size:12px;">${shortId}</div>
-            <div style="font-size:11px;color:var(--muted);margin-top:2px;">${order.items?.length || 0} item(s)</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px;">${order.items?.length || 0} รายการ</div>
           </td>
           <td>
             <div style="font-weight:600;">${escHtml(name)}</div>
@@ -1233,21 +1269,26 @@
           <td style="white-space:nowrap;color:var(--muted);font-size:12px;">${date}</td>
           <td>
             ${shipped
-              ? `<div class="track-done"><i class="fa-solid fa-circle-check"></i> Tracking set</div>`
+              ? `<div class="track-done"><i class="fa-solid fa-circle-check"></i> ตั้งค่าพัสดุแล้ว</div>`
               : `<form class="track-form" onsubmit="submitTracking(event,'${order.id}')">
                   <select name="carrier" required>
-                    <option value="">Select Carrier…</option>
+                    <option value="">เลือกขนส่ง…</option>
                     <option value="Kerry">Kerry Express</option>
                     <option value="Flash">Flash Express</option>
                   </select>
                   <div class="track-form-row">
-                    <input type="text" name="trackingNumber" placeholder="Tracking number" required />
+                    <input type="text" name="trackingNumber" placeholder="หมายเลขพัสดุ" required />
                     <button type="submit" class="ship-btn">
-                      <i class="fa-solid fa-truck"></i> Ship
+                      <i class="fa-solid fa-truck"></i> จัดส่ง
                     </button>
                   </div>
                 </form>`
             }
+          </td>
+          <td>
+            <button class="action-btn" onclick="printShippingLabel(${idx})" title="พิมพ์ใบปะหน้า">
+              <i class="fa-solid fa-print"></i>
+            </button>
           </td>
         </tr>`;
     }).join('');
@@ -1268,18 +1309,18 @@
         body: JSON.stringify({ carrier, trackingNumber })
       });
       if (res.ok) {
-        showToast(`Shipped via ${carrier} — tracking email sent!`);
+        showToast(`จัดส่งผ่าน ${carrier} แล้ว — ส่งอีเมลแจ้งพัสดุแล้ว!`);
         loadOrders();
       } else {
         const data = await res.json().catch(() => ({}));
-        showToast(data.error || 'Failed to update tracking.', true);
+        showToast(data.error || 'อัปเดตพัสดุไม่สำเร็จ', true);
         btn.disabled = false;
-        btn.innerHTML = '<i class="fa-solid fa-truck"></i> Ship';
+        btn.innerHTML = '<i class="fa-solid fa-truck"></i> จัดส่ง';
       }
     } catch {
-      showToast('Network error.', true);
+      showToast('เครือข่ายผิดพลาด', true);
       btn.disabled = false;
-      btn.innerHTML = '<i class="fa-solid fa-truck"></i> Ship';
+      btn.innerHTML = '<i class="fa-solid fa-truck"></i> จัดส่ง';
     }
   }
 
@@ -1362,7 +1403,7 @@
 
     vis('products-loading', false);
     document.getElementById('products-count-label').textContent =
-      `${_products.length} product${_products.length !== 1 ? 's' : ''} in your catalog`;
+      `${_products.length} สินค้าในคาตาล็อก`;
 
     if (!_products.length) { vis('products-empty', true); return; }
     renderProductsTable(_products);
@@ -1387,7 +1428,7 @@
           </span>
         </td>
         <td style="white-space:nowrap;">
-          <button class="action-btn" onclick='openProductModal(${JSON.stringify(p)})'><i class="fa-solid fa-pen"></i> Edit</button>
+          <button class="action-btn" onclick='openProductModal(${JSON.stringify(p)})'><i class="fa-solid fa-pen"></i> แก้ไข</button>
           <button class="action-btn del" onclick="askDeleteProduct('${escHtml(p.id)}','${escHtml(p.name)}')" style="margin-left:4px;"><i class="fa-solid fa-trash"></i></button>
         </td>
       </tr>`).join('');
@@ -1420,7 +1461,7 @@
       }
     }
     document.getElementById('pm-specs').value = specsText;
-    document.getElementById('modal-title').textContent = product ? 'Edit Product' : 'Add Product';
+    document.getElementById('modal-title').textContent = product ? 'แก้ไขสินค้า' : 'เพิ่มสินค้า';
     document.getElementById('product-modal').style.display = 'flex';
   }
 
@@ -1434,8 +1475,8 @@
     const price = document.getElementById('pm-price').value;
     const errEl = document.getElementById('pm-error');
 
-    if (!name)  { errEl.textContent = 'Product name is required.'; errEl.style.display = 'block'; return; }
-    if (!price) { errEl.textContent = 'Price is required.'; errEl.style.display = 'block'; return; }
+    if (!name)  { errEl.textContent = 'กรุณากรอกชื่อสินค้า'; errEl.style.display = 'block'; return; }
+    if (!price) { errEl.textContent = 'กรุณากรอกราคา'; errEl.style.display = 'block'; return; }
 
     // Parse images (one URL per line)
     const imagesRaw = document.getElementById('pm-images').value.trim();
@@ -1469,7 +1510,7 @@
     };
 
     const btn = document.getElementById('pm-save-btn');
-    btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Saving…';
+    btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> กำลังบันทึก…';
     errEl.style.display = 'none';
 
     try {
@@ -1482,24 +1523,24 @@
       });
       if (res.ok) {
         closeProductModal();
-        showToast(id ? 'Product updated!' : 'Product created!');
+        showToast(id ? 'อัปเดตสินค้าแล้ว!' : 'เพิ่มสินค้าแล้ว!');
         loadProducts();
       } else {
         const data = await res.json().catch(() => ({}));
-        errEl.textContent = data.error || 'Failed to save product.';
+        errEl.textContent = data.error || 'บันทึกสินค้าไม่สำเร็จ';
         errEl.style.display = 'block';
       }
     } catch {
-      errEl.textContent = 'Network error. Is the backend running?';
+      errEl.textContent = 'เครือข่ายผิดพลาด กรุณาตรวจสอบว่า backend ทำงานอยู่';
       errEl.style.display = 'block';
     }
 
-    btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Product';
+    btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> บันทึกสินค้า';
   }
 
   function askDeleteProduct(id, name) {
     _deleteProductId = id;
-    document.getElementById('confirm-text').textContent = `"${name}" will be permanently deleted.`;
+    document.getElementById('confirm-text').textContent = `"จะลบ "${name}" อย่างถาวร`;
     document.getElementById('confirm-modal').style.display = 'flex';
   }
 
@@ -1518,15 +1559,15 @@
         headers: adminHeaders(false)
       });
       if (res.ok) {
-        closeConfirm(); showToast('Product deleted.'); loadProducts();
+        closeConfirm(); showToast('ลบสินค้าแล้ว'); loadProducts();
       } else {
         const data = await res.json().catch(() => ({}));
-        showToast(data.error || 'Failed to delete product.', true);
-        btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-trash"></i> Delete';
+        showToast(data.error || 'ลบสินค้าไม่สำเร็จ', true);
+        btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-trash"></i> ลบ';
       }
     } catch {
-      showToast('Network error.', true);
-      btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-trash"></i> Delete';
+      showToast('เครือข่ายผิดพลาด', true);
+      btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-trash"></i> ลบ';
     }
   }
 
@@ -1549,22 +1590,22 @@
       const res = await fetch(`${API_BASE}/users`, { headers: adminHeaders(false) });
       vis('customers-loading', false);
       if (res.status === 403) {
-        document.getElementById('customers-error-text').textContent = 'Your account does not have ADMIN role.';
+        document.getElementById('customers-error-text').textContent = 'บัญชีของคุณไม่มีสิทธิ์แอดมิน';
         vis('customers-error', true); return;
       }
       if (!res.ok) {
-        document.getElementById('customers-error-text').textContent = 'Server error. Is the backend running?';
+        document.getElementById('customers-error-text').textContent = 'เซิร์ฟเวอร์ผิดพลาด กรุณาตรวจสอบว่า backend ทำงานอยู่';
         vis('customers-error', true); return;
       }
       _customers = await res.json();
       document.getElementById('customers-count-label').textContent =
-        `${_customers.length} registered customer${_customers.length !== 1 ? 's' : ''}`;
+        `ลูกค้าที่ลงทะเบียน ${_customers.length} คน`;
       if (!_customers.length) { vis('customers-empty', true); return; }
       renderCustomersTable(_customers);
       vis('customers-table-wrapper', true);
     } catch {
       vis('customers-loading', false);
-      document.getElementById('customers-error-text').textContent = 'Network error. Is the backend running?';
+      document.getElementById('customers-error-text').textContent = 'เครือข่ายผิดพลาด กรุณาตรวจสอบว่า backend ทำงานอยู่';
       vis('customers-error', true);
     }
   }
@@ -1608,29 +1649,40 @@
   // SETTINGS
   // ══════════════════════════════════════════════════════════════════════════
   function saveSettings(section) {
-    const labels = { store: 'Store settings', shipping: 'Shipping & tax settings', payment: 'Payment settings' };
-    showToast(`${labels[section] || 'Settings'} saved!`);
+    const labels = { store: 'ข้อมูลร้านค้า', shipping: 'การจัดส่ง & ภาษี', payment: 'ผู้ให้บริการชำระเงิน' };
+    showToast(`บันทึก${labels[section] || 'การตั้งค่า'}แล้ว!`);
   }
 
   function changeAdminPassword() {
     const current = document.getElementById('s-pw-current').value;
     const next    = document.getElementById('s-pw-new').value;
     const confirm = document.getElementById('s-pw-confirm').value;
-    if (!current) { showToast('Enter your current password.', true); return; }
-    if (current !== ADMIN_PASSWORD) { showToast('Current password is incorrect.', true); return; }
-    if (next.length < 8) { showToast('New password must be at least 8 characters.', true); return; }
-    if (next !== confirm) { showToast('Passwords do not match.', true); return; }
-    showToast('Password changed successfully!');
+    if (!current) { showToast('กรุณากรอกรหัสผ่านปัจจุบัน', true); return; }
+    if (current !== ADMIN_PASSWORD) { showToast('รหัสผ่านปัจจุบันไม่ถูกต้อง', true); return; }
+    if (next.length < 8) { showToast('รหัสผ่านใหม่ต้องมีอย่างน้อย 8 ตัวอักษร', true); return; }
+    if (next !== confirm) { showToast('รหัสผ่านไม่ตรงกัน', true); return; }
+    showToast('เปลี่ยนรหัสผ่านสำเร็จ!');
     document.getElementById('s-pw-current').value = '';
     document.getElementById('s-pw-new').value = '';
     document.getElementById('s-pw-confirm').value = '';
   }
 
   // ══════════════════════════════════════════════════════════════════════════
-  // MENUS
+  // MENUS  (with localStorage fallback when backend is offline)
   // ══════════════════════════════════════════════════════════════════════════
   let _menus = [];
   let _deleteMenuId = null;
+  let _menusOffline = false;   // true when API unreachable
+
+  const LS_MENUS_KEY = 'btmusicdrive_menus';
+
+  function _lsGetMenus() {
+    try { return JSON.parse(localStorage.getItem(LS_MENUS_KEY)) || []; } catch { return []; }
+  }
+  function _lsSaveMenus(menus) {
+    localStorage.setItem(LS_MENUS_KEY, JSON.stringify(menus));
+  }
+  function _uuid() { return 'local-' + Date.now() + '-' + Math.random().toString(36).slice(2, 9); }
 
   async function loadMenus() {
     vis('menus-loading', true);
@@ -1642,24 +1694,27 @@
       const res = await fetch(`${API_BASE}/menus/all`, { headers: adminHeaders(false) });
       vis('menus-loading', false);
       if (res.status === 403) {
-        document.getElementById('menus-error-text').textContent = 'Your account does not have ADMIN role.';
+        document.getElementById('menus-error-text').textContent = 'บัญชีของคุณไม่มีสิทธิ์แอดมิน';
         vis('menus-error', true); return;
       }
-      if (!res.ok) {
-        document.getElementById('menus-error-text').textContent = 'Server error. Is the backend running?';
-        vis('menus-error', true); return;
-      }
+      if (!res.ok) throw new Error('server');
       _menus = await res.json();
-      document.getElementById('menus-count-label').textContent =
-        `${_menus.length} menu item${_menus.length !== 1 ? 's' : ''}`;
-      if (!_menus.length) { vis('menus-empty', true); return; }
-      renderMenusTable(_menus);
-      vis('menus-table-wrapper', true);
+      _menusOffline = false;
+      // sync to localStorage
+      _lsSaveMenus(_menus);
     } catch {
+      // ── FALLBACK: localStorage ──
       vis('menus-loading', false);
-      document.getElementById('menus-error-text').textContent = 'Network error. Is the backend running?';
-      vis('menus-error', true);
+      _menusOffline = true;
+      _menus = _lsGetMenus();
     }
+
+    document.getElementById('menus-count-label').textContent =
+      _menus.length + ' รายการเมนู' + (_menusOffline ? ' (โหมดออฟไลน์ — ข้อมูลเก็บใน Browser)' : '');
+
+    if (!_menus.length) { vis('menus-empty', true); return; }
+    renderMenusTable(_menus);
+    vis('menus-table-wrapper', true);
   }
 
   function renderMenusTable(menus) {
@@ -1681,49 +1736,63 @@
       : '<span style="color:#d63638;font-weight:700;">✗</span>';
     const iconHtml = m.icon ? `<i class="${escHtml(m.icon)}"></i> <code style="font-size:11px;">${escHtml(m.icon)}</code>` : '<span style="color:var(--muted);">—</span>';
     const indent = isChild ? 'padding-left:28px;color:var(--muted);font-size:12px;' : '';
+    const addSubBtn = !isChild ? `<button class="action-btn" onclick="openMenuModal(null,'${m.id}')" title="เพิ่มเมนูย่อย"><i class="fa-solid fa-plus"></i> ย่อย</button>` : '';
     return `<tr>
       <td style="${indent}">${num}</td>
-      <td style="${isChild ? 'padding-left:28px;' : ''}"><strong>${escHtml(m.label)}</strong></td>
+      <td style="${isChild ? 'padding-left:28px;' : ''}"><strong>${isChild ? '<i class="fa-solid fa-turn-up" style="transform:rotate(90deg);font-size:10px;color:var(--muted);margin-right:6px;"></i>' : ''}${escHtml(m.label)}</strong></td>
       <td><code style="font-size:12px;">${escHtml(m.url)}</code></td>
       <td>${iconHtml}</td>
       <td style="text-align:center;">${activeHtml}</td>
       <td>
-        <button class="action-btn" onclick="openMenuModal('${m.id}')"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
+        <button class="action-btn" onclick="openMenuModal('${m.id}')"><i class="fa-solid fa-pen-to-square"></i> แก้ไข</button>
+        ${addSubBtn}
         <button class="action-btn del" onclick="askDeleteMenu('${m.id}','${escHtml(m.label)}')"><i class="fa-solid fa-trash"></i></button>
       </td>
     </tr>`;
   }
 
-  function openMenuModal(id) {
+  function _populateParentSelect(editingId, preselect) {
+    const sel = document.getElementById('mm-parent');
+    sel.innerHTML = '<option value="">— ไม่มี (เมนูหลัก) —</option>';
+    _menus.forEach(m => {
+      if (m.id === editingId) return;
+      sel.innerHTML += `<option value="${m.id}"${preselect === m.id ? ' selected' : ''}>${escHtml(m.label)}</option>`;
+    });
+  }
+
+  function openMenuModal(id, presetParentId) {
     const modal = document.getElementById('menu-modal');
     const errEl = document.getElementById('mm-error');
     errEl.style.display = 'none';
 
     if (id) {
       let item = null;
+      let parentId = null;
       for (const m of _menus) {
         if (m.id === id) { item = m; break; }
         if (m.children) {
           const child = m.children.find(c => c.id === id);
-          if (child) { item = child; break; }
+          if (child) { item = child; parentId = m.id; break; }
         }
       }
-      if (!item) { showToast('Menu not found', true); return; }
-      document.getElementById('menu-modal-title').textContent = 'Edit Menu';
+      if (!item) { showToast('ไม่พบเมนู', true); return; }
+      document.getElementById('menu-modal-title').textContent = 'แก้ไขเมนู';
       document.getElementById('mm-id').value = item.id;
       document.getElementById('mm-label').value = item.label;
       document.getElementById('mm-url').value = item.url;
       document.getElementById('mm-icon').value = item.icon || '';
       document.getElementById('mm-sort').value = item.sortOrder || 0;
       document.getElementById('mm-active').checked = item.isActive;
+      _populateParentSelect(item.id, item.parentId || parentId || '');
     } else {
-      document.getElementById('menu-modal-title').textContent = 'Add Menu';
+      document.getElementById('menu-modal-title').textContent = presetParentId ? 'เพิ่มเมนูย่อย' : 'เพิ่มเมนู';
       document.getElementById('mm-id').value = '';
       document.getElementById('mm-label').value = '';
       document.getElementById('mm-url').value = '';
       document.getElementById('mm-icon').value = '';
       document.getElementById('mm-sort').value = _menus.length;
       document.getElementById('mm-active').checked = true;
+      _populateParentSelect(null, presetParentId || '');
     }
     modal.style.display = 'flex';
   }
@@ -1734,7 +1803,7 @@
 
   function askDeleteMenu(id, label) {
     _deleteMenuId = id;
-    document.getElementById('menu-confirm-text').textContent = `Delete "${label}"? This cannot be undone.`;
+    document.getElementById('menu-confirm-text').textContent = `ลบ "${label}"? การกระทำนี้ไม่สามารถย้อนกลับได้`;
     document.getElementById('menu-confirm-modal').style.display = 'flex';
   }
 
@@ -1750,20 +1819,79 @@
     const icon = document.getElementById('mm-icon').value.trim();
     const sortOrder = parseInt(document.getElementById('mm-sort').value) || 0;
     const isActive = document.getElementById('mm-active').checked;
+    const parentId = document.getElementById('mm-parent').value || null;
     const errEl = document.getElementById('mm-error');
 
     if (!label || !url) {
-      errEl.textContent = 'Label and URL are required.';
+      errEl.textContent = 'กรุณากรอกชื่อและ URL';
       errEl.style.display = 'block'; return;
     }
     errEl.style.display = 'none';
 
     const btn = document.getElementById('mm-save-btn');
     btn.disabled = true;
-    btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Saving…';
+    btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> กำลังบันทึก…';
 
-    const body = { label, url, icon: icon || null, sortOrder, isActive };
+    const body = { label, url, icon: icon || null, sortOrder, isActive, parentId };
 
+    // ── OFFLINE mode: save to localStorage ──
+    if (_menusOffline) {
+      if (id) {
+        // Update existing
+        _menus = _lsGetMenus();
+        let found = false;
+        for (const m of _menus) {
+          if (m.id === id) { Object.assign(m, body); found = true; break; }
+          if (m.children) {
+            const ci = m.children.findIndex(c => c.id === id);
+            if (ci !== -1) { Object.assign(m.children[ci], body); found = true; break; }
+          }
+        }
+        // Handle re-parenting
+        if (found && parentId) {
+          // Remove from old location
+          _menus = _menus.filter(m => m.id !== id);
+          _menus.forEach(m => { if (m.children) m.children = m.children.filter(c => c.id !== id); });
+          // Add to new parent
+          const parent = _menus.find(m => m.id === parentId);
+          if (parent) { if (!parent.children) parent.children = []; parent.children.push({ ...body, id, children: [] }); }
+        } else if (found && !parentId) {
+          // Might need to move to root
+          let item = null;
+          _menus.forEach(m => {
+            if (m.children) {
+              const ci = m.children.findIndex(c => c.id === id);
+              if (ci !== -1) { item = m.children.splice(ci, 1)[0]; }
+            }
+          });
+          if (item) { _menus.push({ ...item, ...body, parentId: null, children: [] }); }
+        }
+      } else {
+        // Create new
+        const newItem = { ...body, id: _uuid(), children: [], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+        if (parentId) {
+          const parent = _lsGetMenus().find(m => m.id === parentId) || _menus.find(m => m.id === parentId);
+          _menus = _lsGetMenus();
+          const p = _menus.find(m => m.id === parentId);
+          if (p) { if (!p.children) p.children = []; p.children.push(newItem); }
+        } else {
+          _menus = _lsGetMenus();
+          _menus.push(newItem);
+        }
+      }
+      // Sort by sortOrder
+      _menus.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+      _menus.forEach(m => { if (m.children) m.children.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)); });
+      _lsSaveMenus(_menus);
+      closeMenuModal();
+      showToast(id ? 'อัปเดตเมนูแล้ว! (ออฟไลน์)' : 'เพิ่มเมนูแล้ว! (ออฟไลน์)');
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> บันทึกเมนู';
+      loadMenus();
+      return;
+    }
+
+    // ── ONLINE mode: API call ──
     try {
       const endpoint = id ? `${API_BASE}/menus/${id}` : `${API_BASE}/menus`;
       const method = id ? 'PATCH' : 'POST';
@@ -1774,19 +1902,19 @@
       });
       if (res.ok) {
         closeMenuModal();
-        showToast(id ? 'Menu updated!' : 'Menu created!');
+        showToast(id ? 'อัปเดตเมนูแล้ว!' : 'เพิ่มเมนูแล้ว!');
         loadMenus();
       } else {
         const data = await res.json().catch(() => ({}));
-        errEl.textContent = data.error || 'Failed to save menu.';
+        errEl.textContent = data.error || 'บันทึกเมนูไม่สำเร็จ';
         errEl.style.display = 'block';
       }
     } catch {
-      errEl.textContent = 'Network error.';
+      errEl.textContent = 'เครือข่ายผิดพลาด';
       errEl.style.display = 'block';
     } finally {
       btn.disabled = false;
-      btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Menu';
+      btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> บันทึกเมนู';
     }
   }
 
@@ -1794,27 +1922,227 @@
     if (!_deleteMenuId) return;
     const btn = document.getElementById('menu-confirm-delete-btn');
     btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>';
+
+    // ── OFFLINE mode ──
+    if (_menusOffline) {
+      _menus = _lsGetMenus();
+      _menus = _menus.filter(m => m.id !== _deleteMenuId);
+      _menus.forEach(m => { if (m.children) m.children = m.children.filter(c => c.id !== _deleteMenuId); });
+      _lsSaveMenus(_menus);
+      closeMenuConfirm(); showToast('ลบเมนูแล้ว (ออฟไลน์)'); loadMenus();
+      btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-trash"></i> ลบ';
+      return;
+    }
+
+    // ── ONLINE mode ──
     try {
       const res = await fetch(`${API_BASE}/menus/${_deleteMenuId}`, {
         method: 'DELETE',
         headers: adminHeaders(false)
       });
       if (res.ok) {
-        closeMenuConfirm(); showToast('Menu deleted.'); loadMenus();
+        closeMenuConfirm(); showToast('ลบเมนูแล้ว'); loadMenus();
       } else {
         const data = await res.json().catch(() => ({}));
-        showToast(data.error || 'Failed to delete menu.', true);
-        btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-trash"></i> Delete';
+        showToast(data.error || 'ลบเมนูไม่สำเร็จ', true);
+        btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-trash"></i> ลบ';
       }
     } catch {
-      showToast('Network error.', true);
-      btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-trash"></i> Delete';
+      showToast('เครือข่ายผิดพลาด', true);
+      btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-trash"></i> ลบ';
     }
   }
 
   // Close menu modals on backdrop click
   document.getElementById('menu-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeMenuModal(); });
   document.getElementById('menu-confirm-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeMenuConfirm(); });
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // PRINT SHIPPING LABELS
+  // ══════════════════════════════════════════════════════════════════════════
+  function printShippingLabel(idx) {
+    const order = _orders[idx];
+    if (!order) { showToast('ไม่พบข้อมูลคำสั่งซื้อ', true); return; }
+
+    const shortId = '#' + order.id.slice(-8).toUpperCase();
+    const name = order.user?.name || order.user?.email?.split('@')[0] || 'ไม่ทราบ';
+    const email = order.user?.email || '';
+    const phone = order.shippingPhone || order.user?.phone || '';
+    const address = order.shippingAddress || order.address || '';
+    const carrier = order.carrier || '—';
+    const tracking = order.trackingNumber || '—';
+    const date = new Date(order.createdAt).toLocaleDateString('th-TH', { day: '2-digit', month: 'short', year: 'numeric' });
+    const items = order.items || [];
+
+    const win = window.open('', '_blank', 'width=500,height=700');
+    win.document.write(`<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>ใบปะหน้าพัสดุ ${shortId}</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: 'Segoe UI', sans-serif; padding:20px; color:#1d2327; }
+  .label { border:2px solid #000; padding:20px; max-width:420px; margin:0 auto; }
+  .label-header { text-align:center; border-bottom:2px solid #000; padding-bottom:12px; margin-bottom:14px; }
+  .label-header h1 { font-size:18px; margin-bottom:4px; }
+  .label-header p { font-size:11px; color:#666; }
+  .section { margin-bottom:14px; }
+  .section-title { font-size:11px; font-weight:700; text-transform:uppercase; color:#666; letter-spacing:1px; margin-bottom:6px; border-bottom:1px dashed #ccc; padding-bottom:3px; }
+  .row { display:flex; gap:8px; margin-bottom:4px; font-size:13px; }
+  .row .lbl { font-weight:600; min-width:80px; flex-shrink:0; }
+  .items-table { width:100%; font-size:12px; border-collapse:collapse; margin-top:6px; }
+  .items-table th, .items-table td { text-align:left; padding:4px 6px; border-bottom:1px solid #eee; }
+  .items-table th { font-size:10px; text-transform:uppercase; color:#666; }
+  .barcode { text-align:center; font-family:monospace; font-size:20px; letter-spacing:4px; margin:10px 0; padding:8px; background:#f5f5f5; border:1px solid #ddd; }
+  .print-btn { display:block; margin:20px auto 0; padding:10px 30px; font-size:14px; background:#C8A84E; color:#fff; border:none; border-radius:4px; cursor:pointer; }
+  .print-btn:hover { background:#b5953f; }
+  @media print {
+    .print-btn { display:none !important; }
+    body { padding:0; }
+  }
+</style></head><body>
+<div class="label">
+  <div class="label-header">
+    <h1>btmusicdrive</h1>
+    <p>ใบปะหน้าพัสดุ</p>
+  </div>
+  <div class="section">
+    <div class="section-title">ผู้ส่ง</div>
+    <div class="row"><span class="lbl">ร้าน:</span> btmusicdrive</div>
+    <div class="row"><span class="lbl">เว็บ:</span> www.btmusicdrive.com</div>
+  </div>
+  <div class="section">
+    <div class="section-title">ผู้รับ</div>
+    <div class="row"><span class="lbl">ชื่อ:</span> ${escHtml(name)}</div>
+    ${phone ? `<div class="row"><span class="lbl">โทร:</span> ${escHtml(phone)}</div>` : ''}
+    ${email ? `<div class="row"><span class="lbl">อีเมล:</span> ${escHtml(email)}</div>` : ''}
+    ${address ? `<div class="row"><span class="lbl">ที่อยู่:</span> ${escHtml(address)}</div>` : ''}
+  </div>
+  <div class="section">
+    <div class="section-title">รายละเอียดคำสั่งซื้อ</div>
+    <div class="row"><span class="lbl">เลขที่:</span> ${shortId}</div>
+    <div class="row"><span class="lbl">วันที่:</span> ${date}</div>
+    <div class="row"><span class="lbl">ยอดรวม:</span> ฿${Number(order.totalAmount).toFixed(2)}</div>
+    ${items.length ? `<table class="items-table">
+      <thead><tr><th>สินค้า</th><th style="text-align:right;">จำนวน</th><th style="text-align:right;">ราคา</th></tr></thead>
+      <tbody>${items.map(it => `<tr><td>${escHtml(it.product?.name || it.name || '—')}</td><td style="text-align:right;">${it.quantity || 1}</td><td style="text-align:right;">฿${Number(it.price || 0).toFixed(2)}</td></tr>`).join('')}</tbody>
+    </table>` : ''}
+  </div>
+  <div class="section">
+    <div class="section-title">การจัดส่ง</div>
+    <div class="row"><span class="lbl">ขนส่ง:</span> ${escHtml(carrier)}</div>
+    <div class="row"><span class="lbl">เลขพัสดุ:</span> ${escHtml(tracking)}</div>
+    ${tracking !== '—' ? `<div class="barcode">${escHtml(tracking)}</div>` : ''}
+  </div>
+</div>
+<button class="print-btn" onclick="window.print()"><i class="fa-solid fa-print"></i> พิมพ์ใบปะหน้า</button>
+</body></html>`);
+    win.document.close();
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // EXPORT CSV
+  // ══════════════════════════════════════════════════════════════════════════
+  function exportOrdersCSV() {
+    if (!_orders || !_orders.length) { showToast('ไม่มีข้อมูลคำสั่งซื้อให้ส่งออก', true); return; }
+
+    const BOM = '\uFEFF';
+    const headers = ['Order ID', 'Customer', 'Email', 'Phone', 'Address', 'Status', 'Carrier', 'Tracking', 'Items', 'Total (THB)', 'Date'];
+    const rows = _orders.map(o => {
+      const name = o.user?.name || o.user?.email?.split('@')[0] || '';
+      const email = o.user?.email || '';
+      const phone = o.shippingPhone || o.user?.phone || '';
+      const address = o.shippingAddress || o.address || '';
+      const itemsSummary = (o.items || []).map(it => `${it.product?.name || it.name || '?'} x${it.quantity || 1}`).join('; ');
+      const date = new Date(o.createdAt).toLocaleDateString('th-TH');
+      return [
+        o.id, name, email, phone, address,
+        o.status, o.carrier || '', o.trackingNumber || '',
+        itemsSummary, Number(o.totalAmount).toFixed(2), date
+      ];
+    });
+
+    const csvContent = BOM + [headers, ...rows]
+      .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+      .join('\r\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `btmusicdrive-orders-${new Date().toISOString().slice(0,10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast(`ส่งออก ${_orders.length} คำสั่งซื้อเป็น CSV แล้ว`);
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // LINE NOTIFY
+  // ══════════════════════════════════════════════════════════════════════════
+  const LS_LINE_TOKEN = 'btmusicdrive_line_token';
+
+  function getLineToken() { return localStorage.getItem(LS_LINE_TOKEN) || ''; }
+  function saveLineToken() {
+    const token = document.getElementById('s-line-token').value.trim();
+    localStorage.setItem(LS_LINE_TOKEN, token);
+    showToast(token ? 'บันทึก LINE Notify Token แล้ว' : 'ลบ LINE Notify Token แล้ว');
+  }
+
+  async function testLineNotify() {
+    const token = document.getElementById('s-line-token').value.trim() || getLineToken();
+    if (!token) { showToast('กรุณากรอก LINE Notify Token ก่อน', true); return; }
+
+    const btn = document.getElementById('line-test-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> กำลังส่ง…';
+
+    try {
+      const res = await fetch('https://notify-api.line.me/api/notify', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: 'message=' + encodeURIComponent('\n🔔 ทดสอบการแจ้งเตือนจาก btmusicdrive Admin\n✅ เชื่อมต่อสำเร็จ!')
+      });
+      if (res.ok) {
+        showToast('ส่งข้อความทดสอบ LINE แล้ว!');
+      } else {
+        showToast('ส่งไม่สำเร็จ — ตรวจสอบ Token', true);
+      }
+    } catch {
+      showToast('ไม่สามารถเชื่อมต่อ LINE Notify API (อาจถูก CORS บล็อก — ใช้ผ่าน Backend แทน)', true);
+    }
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> ทดสอบ';
+  }
+
+  async function sendLineOrderNotify(order) {
+    const token = getLineToken();
+    if (!token) return;
+
+    const shortId = '#' + order.id.slice(-8).toUpperCase();
+    const name = order.user?.name || order.user?.email?.split('@')[0] || 'ไม่ทราบ';
+    const total = Number(order.totalAmount).toFixed(2);
+    const msg = `\n🛒 คำสั่งซื้อใหม่!\nเลขที่: ${shortId}\nลูกค้า: ${name}\nยอด: ฿${total}\nสถานะ: ${order.status}`;
+
+    try {
+      await fetch('https://notify-api.line.me/api/notify', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: 'message=' + encodeURIComponent(msg)
+      });
+    } catch { /* silently fail — notifications are non-critical */ }
+  }
+
+  // Init LINE Token field on settings load
+  (function initLineField() {
+    const el = document.getElementById('s-line-token');
+    if (el) el.value = getLineToken();
+  })();
 </script>
 </body>
 </html>

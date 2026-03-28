@@ -1,8 +1,3 @@
-// API base URL — auto-detects dev vs production
-const API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
-  ? 'http://localhost:5000/api'
-  : '/api';
-
 // Product Data State (Fetched from API)
 let products = [];
 // Cart State
@@ -129,7 +124,8 @@ const DEFAULT_MENUS = [
     { label: 'หน้าแรก', url: '#', icon: null },
     { label: 'สินค้า', url: '#shop', icon: null },
     { label: 'หมวดหมู่', url: '#categories', icon: null },
-    { label: 'เกี่ยวกับ', url: '#about', icon: null },
+    { label: 'เกี่ยวกับ', url: 'about.html', icon: null },
+    { label: 'ติดต่อเรา', url: 'contact.html', icon: 'ph ph-envelope' },
     { label: 'ติดตามพัสดุ', url: 'track-order.html', icon: 'ph ph-package' },
 ];
 
@@ -238,6 +234,15 @@ function renderProducts() {
         const badgeHtml = product.badge ? 
             `<span class="absolute top-4 left-4 bg-white px-3 py-1 rounded-full text-xs font-bold text-gray-900 shadow-sm">${product.badge}</span>` : '';
 
+        // Low stock HTML
+        const lowStockHtml = (product.stock > 0 && product.stock <= 5) ?
+            `<div class="text-xs font-bold text-red-600 flex items-center gap-1 mt-1"><i class="ph ph-warning"></i> เหลือเพียง ${product.stock} ชิ้นสุดท้าย!</div>` : '';
+
+        // Check wishlist status
+        const wishlist = JSON.parse(localStorage.getItem('btmusicdrive_wishlist') || '[]');
+        const isWishlisted = wishlist.some(w => w.id === product.id);
+        const heartClass = isWishlisted ? 'ph-fill ph-heart text-xl text-red-500' : 'ph ph-heart text-xl';
+
         productCard.innerHTML = `
             <a href="product.html?id=${product.id}" class="block relative h-64 overflow-hidden group cursor-pointer">
                 <img src="${product.imageUrl}" alt="${product.name}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
@@ -247,8 +252,8 @@ function renderProducts() {
                         <i class="ph ph-shopping-cart mr-2 text-lg"></i> Add to Cart
                     </button>
                 </div>
-                <button class="absolute top-4 right-4 bg-white p-2 rounded-full text-gray-400 hover:text-red-500 shadow-sm transition-colors z-10" onclick="event.preventDefault();event.stopPropagation();">
-                    <i class="ph ph-heart text-xl"></i>
+                <button class="absolute top-4 right-4 bg-white p-2 rounded-full text-gray-400 hover:text-red-500 shadow-sm transition-colors z-10" data-wishlist="${product.id}" onclick="event.preventDefault();event.stopPropagation();">
+                    <i class="${heartClass}"></i>
                 </button>
             </a>
             <div class="p-5">
@@ -262,10 +267,11 @@ function renderProducts() {
                 </div>
                 <div class="flex items-center justify-between">
                     <span class="text-xl font-bold text-gray-900">฿${product.price.toFixed(2)}</span>
-                    <button class="md:hidden add-to-cart-btn-mobile text-primary hover:text-indigo-800 p-2" data-id="${product.id}">
+                    <button class="md:hidden add-to-cart-btn-mobile text-primary hover:text-amber-700 p-2" data-id="${product.id}">
                         <i class="ph-fill ph-plus-circle text-3xl"></i>
                     </button>
                 </div>
+                ${lowStockHtml}
             </div>
         `;
         

@@ -1,18 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
+﻿<!DOCTYPE html>
+<html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout - btmusicdrive</title>
+    <title>ชำระเงิน - btmusicdrive</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Omise -->
+    <script src="https://cdn.omise.co/omise.js"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        primary: '#4f46e5',
-                        secondary: '#1e293b',
+                        primary: '#C8A84E',
+                        secondary: '#1a1a1a',
                     }
                 }
             }
@@ -36,8 +38,8 @@
             outline: none;
         }
         .input-field:focus {
-            border-color: #4f46e5;
-            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+            border-color: #C8A84E;
+            box-shadow: 0 0 0 2px rgba(200, 168, 78, 0.2);
         }
         .label {
             display: block;
@@ -62,34 +64,34 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <a href="index.html" class="flex items-center gap-2 text-gray-700 hover:text-primary transition-colors">
                 <i class="ph ph-arrow-left text-xl"></i>
-                <span class="text-sm font-medium">Back to Shop</span>
+                <span class="text-sm font-medium">กลับไปหน้าร้าน</span>
             </a>
             <div class="flex items-center gap-2 cursor-pointer" onclick="window.location='index.html'">
-                <i class="ph-fill ph-shopping-bag text-primary text-2xl"></i>
+                <img src="images/logo (60 x 60 px) (1).png" alt="btmusicdrive" class="h-8 w-8 rounded-full">
                 <span class="font-bold text-lg tracking-tight">btmusicdrive</span>
             </div>
-            <div class="flex items-center gap-2 text-sm text-gray-500">
+            <div class="flex items-center gap-2 text-sm text-gray-500 hidden sm:flex">
                 <i class="ph ph-lock-key text-primary"></i>
-                <span>Secure Checkout</span>
+                <span>ชำระเงินอย่างปลอดภัย</span>
             </div>
         </div>
         <!-- Progress Bar -->
         <div class="border-t border-gray-100">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-                <div class="flex items-center justify-center gap-2 text-sm">
+                <div class="flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm">
                     <span class="flex items-center gap-1.5 text-primary font-semibold">
                         <span class="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold">1</span>
-                        Cart
+                        ตะกร้า
                     </span>
-                    <div class="w-16 h-0.5 bg-primary"></div>
+                    <div class="w-8 sm:w-16 h-0.5 bg-primary"></div>
                     <span class="flex items-center gap-1.5 text-primary font-semibold">
                         <span class="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold">2</span>
-                        Checkout
+                        ชำระเงิน
                     </span>
-                    <div class="w-16 h-0.5 bg-gray-200"></div>
+                    <div class="w-8 sm:w-16 h-0.5 bg-gray-200"></div>
                     <span class="flex items-center gap-1.5 text-gray-400">
                         <span class="w-6 h-6 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">3</span>
-                        Confirmation
+                        ยืนยัน
                     </span>
                 </div>
             </div>
@@ -100,8 +102,8 @@
     <div id="auth-guard" class="hidden bg-amber-50 border-b border-amber-200 px-4 py-3 text-center">
         <p class="text-amber-800 text-sm">
             <i class="ph ph-warning mr-1"></i>
-            You must be logged in to checkout.
-            <button onclick="window.location='index.html'" class="font-bold underline hover:text-amber-900 ml-1">Sign in here</button>
+            คุณต้องเข้าสู่ระบบก่อนชำระเงิน
+            <button onclick="window.location='index.html'" class="font-bold underline hover:text-amber-900 ml-1">เข้าสู่ระบบที่นี่</button>
         </p>
     </div>
 
@@ -115,29 +117,29 @@
                 <!-- Contact Info -->
                 <div class="section-card">
                     <div class="flex items-center gap-3 mb-5">
-                        <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center">
+                        <div class="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center">
                             <i class="ph ph-user text-primary text-base"></i>
                         </div>
-                        <h2 class="text-lg font-bold text-gray-900">Contact Information</h2>
+                        <h2 class="text-lg font-bold text-gray-900">ข้อมูลติดต่อ</h2>
                     </div>
                     <div class="space-y-4">
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label class="label">First Name</label>
-                                <input type="text" id="first-name" class="input-field" placeholder="John">
+                                <label class="label">ชื่อ</label>
+                                <input type="text" id="first-name" class="input-field" placeholder="ชื่อ">
                             </div>
                             <div>
-                                <label class="label">Last Name</label>
-                                <input type="text" id="last-name" class="input-field" placeholder="Doe">
+                                <label class="label">นามสกุล</label>
+                                <input type="text" id="last-name" class="input-field" placeholder="นามสกุล">
                             </div>
                         </div>
                         <div>
-                            <label class="label">Email Address</label>
-                            <input type="email" id="email" class="input-field" placeholder="john@example.com" readonly>
+                            <label class="label">อีเมล</label>
+                            <input type="email" id="email" class="input-field" placeholder="email@example.com" readonly>
                         </div>
                         <div>
-                            <label class="label">Phone Number</label>
-                            <input type="tel" id="phone" class="input-field" placeholder="+1 (555) 000-0000">
+                            <label class="label">เบอร์โทรศัพท์</label>
+                            <input type="tel" id="phone" class="input-field" placeholder="08X-XXX-XXXX">
                         </div>
                     </div>
                 </div>
@@ -145,47 +147,47 @@
                 <!-- Shipping Address -->
                 <div class="section-card">
                     <div class="flex items-center gap-3 mb-5">
-                        <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center">
+                        <div class="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center">
                             <i class="ph ph-map-pin text-primary text-base"></i>
                         </div>
-                        <h2 class="text-lg font-bold text-gray-900">Shipping Address</h2>
+                        <h2 class="text-lg font-bold text-gray-900">ที่อยู่จัดส่ง</h2>
                     </div>
                     <div class="space-y-4">
                         <div>
-                            <label class="label">Street Address</label>
-                            <input type="text" id="address" class="input-field" placeholder="123 Main St">
+                            <label class="label">ที่อยู่</label>
+                            <input type="text" id="address" class="input-field" placeholder="บ้านเลขที่ ถนน ซอย">
                         </div>
                         <div>
-                            <label class="label">Apartment, suite, etc. (optional)</label>
-                            <input type="text" id="address2" class="input-field" placeholder="Apt 4B">
+                            <label class="label">อาคาร / ห้อง (ไม่บังคับ)</label>
+                            <input type="text" id="address2" class="input-field" placeholder="อาคาร ชั้น ห้อง">
                         </div>
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label class="label">City</label>
-                                <input type="text" id="city" class="input-field" placeholder="New York">
+                                <label class="label">เขต / อำเภอ</label>
+                                <input type="text" id="city" class="input-field" placeholder="เขต / อำเภอ">
                             </div>
                             <div>
-                                <label class="label">State / Province</label>
-                                <input type="text" id="state" class="input-field" placeholder="NY">
+                                <label class="label">จังหวัด</label>
+                                <input type="text" id="state" class="input-field" placeholder="จังหวัด">
                             </div>
                         </div>
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label class="label">ZIP / Postal Code</label>
-                                <input type="text" id="zip" class="input-field" placeholder="10001">
+                                <label class="label">รหัสไปรษณีย์</label>
+                                <input type="text" id="zip" class="input-field" placeholder="10xxx">
                             </div>
                             <div>
-                                <label class="label">Country</label>
+                                <label class="label">ประเทศ</label>
                                 <select id="country" class="input-field">
-                                    <option value="US">United States</option>
-                                    <option value="TH">Thailand</option>
-                                    <option value="GB">United Kingdom</option>
-                                    <option value="AU">Australia</option>
-                                    <option value="CA">Canada</option>
-                                    <option value="DE">Germany</option>
-                                    <option value="FR">France</option>
-                                    <option value="JP">Japan</option>
-                                    <option value="SG">Singapore</option>
+                                    <option value="TH">ไทย</option>
+                                    <option value="US">สหรัฐอเมริกา</option>
+                                    <option value="GB">อังกฤษ</option>
+                                    <option value="AU">ออสเตรเลีย</option>
+                                    <option value="CA">แคนาดา</option>
+                                    <option value="DE">เยอรมนี</option>
+                                    <option value="FR">ฝรั่งเศส</option>
+                                    <option value="JP">ญี่ปุ่น</option>
+                                    <option value="SG">สิงคโปร์</option>
                                 </select>
                             </div>
                         </div>
@@ -195,18 +197,18 @@
                 <!-- Shipping Method -->
                 <div class="section-card">
                     <div class="flex items-center gap-3 mb-5">
-                        <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center">
+                        <div class="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center">
                             <i class="ph ph-truck text-primary text-base"></i>
                         </div>
-                        <h2 class="text-lg font-bold text-gray-900">Shipping Method</h2>
+                        <h2 class="text-lg font-bold text-gray-900">วิธีการจัดส่ง</h2>
                     </div>
                     <div class="space-y-3">
-                        <div class="flex items-center gap-4 p-4 border-2 border-primary rounded-xl bg-indigo-50/50">
+                        <div class="flex items-center gap-4 p-4 border-2 border-primary rounded-xl bg-amber-50/50">
                             <div class="flex-1">
-                                <p class="font-semibold text-gray-900 text-sm">Standard Shipping</p>
-                                <p class="text-xs text-gray-500">5-7 business days</p>
+                                <p class="font-semibold text-gray-900 text-sm">จัดส่งมาตรฐาน</p>
+                                <p class="text-xs text-gray-500">5-7 วันทำการ</p>
                             </div>
-                            <span class="font-bold text-gray-900">฿50.00</span>
+                            <span class="font-bold text-gray-900">à¸¿50.00</span>
                         </div>
                     </div>
                 </div>
@@ -214,81 +216,38 @@
                 <!-- Payment -->
                 <div class="section-card">
                     <div class="flex items-center gap-3 mb-5">
-                        <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center">
+                        <div class="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center">
                             <i class="ph ph-credit-card text-primary text-base"></i>
                         </div>
-                        <h2 class="text-lg font-bold text-gray-900">Payment Method</h2>
+                        <h2 class="text-lg font-bold text-gray-900">วิธีการชำระเงิน</h2>
                     </div>
 
-                    <!-- Payment Tabs -->
-                    <div class="flex border border-gray-200 rounded-xl p-1 mb-5 bg-gray-50">
-                        <button onclick="switchPayment('card')" id="tab-card" class="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-all bg-white shadow-sm text-primary">
-                            <i class="ph ph-credit-card"></i> Card
-                        </button>
-                        <button onclick="switchPayment('paypal')" id="tab-paypal" class="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-all text-gray-500 hover:text-gray-700">
-                            <i class="ph ph-paypal-logo"></i> PayPal
-                        </button>
-                        <button onclick="switchPayment('cod')" id="tab-cod" class="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-all text-gray-500 hover:text-gray-700">
-                            <i class="ph ph-money"></i> Cash on Delivery
-                        </button>
-                    </div>
-
-                    <!-- Credit Card Form -->
-                    <div id="payment-card" class="space-y-4">
-                        <div>
-                            <label class="label">Card Number</label>
-                            <div class="relative">
-                                <input type="text" id="card-number" class="input-field pr-12" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCardNumber(this)">
-                                <i class="ph ph-credit-card absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg"></i>
-                            </div>
+                    <!-- Omise Payment Info -->
+                    <div class="text-center py-6">
+                        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-50 mb-4">
+                            <i class="ph ph-shield-check text-primary text-3xl"></i>
                         </div>
-                        <div>
-                            <label class="label">Cardholder Name</label>
-                            <input type="text" id="card-name" class="input-field" placeholder="JOHN DOE">
+                        <p class="text-gray-700 font-medium mb-2">ชำระเงินอย่างปลอดภัยผ่าน Omise</p>
+                        <p class="text-sm text-gray-500 max-w-sm mx-auto">คุณจะถูกนำไปยังหน้าชำระเงินที่ปลอดภัยของ Omise รองรับบัตรเครดิต/เดบิต, PromptPay และ TrueMoney Wallet</p>
+                        <div class="flex items-center justify-center gap-3 mt-4 text-gray-400">
+                            <i class="ph ph-credit-card text-2xl"></i>
+                            <i class="ph ph-qr-code text-2xl"></i>
+                            <i class="ph ph-device-mobile text-2xl"></i>
                         </div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="label">Expiry Date</label>
-                                <input type="text" id="card-expiry" class="input-field" placeholder="MM / YY" maxlength="7" oninput="formatExpiry(this)">
-                            </div>
-                            <div>
-                                <label class="label">CVV</label>
-                                <div class="relative">
-                                    <input type="password" id="card-cvv" class="input-field pr-10" placeholder="•••" maxlength="4">
-                                    <i class="ph ph-question absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 cursor-help" title="3-4 digit code on back of card"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <label class="flex items-center gap-2 cursor-pointer mt-1">
-                            <input type="checkbox" class="rounded text-primary w-4 h-4">
-                            <span class="text-sm text-gray-600">Save card for future purchases</span>
-                        </label>
-                    </div>
-
-                    <!-- PayPal -->
-                    <div id="payment-paypal" class="hidden text-center py-8">
-                        <i class="ph ph-paypal-logo text-5xl text-blue-600 mb-3"></i>
-                        <p class="text-gray-600 text-sm">You will be redirected to PayPal to complete payment after reviewing your order.</p>
-                    </div>
-
-                    <!-- Cash on Delivery -->
-                    <div id="payment-cod" class="hidden text-center py-8">
-                        <i class="ph ph-money text-5xl text-green-600 mb-3"></i>
-                        <p class="text-gray-600 text-sm">Pay with cash when your order is delivered. Available for select locations only.</p>
                     </div>
 
                     <!-- Security Note -->
                     <div class="mt-4 flex items-center gap-2 text-xs text-gray-400 pt-4 border-t border-gray-100">
                         <i class="ph ph-shield-check text-green-500 text-base"></i>
-                        Your payment info is encrypted and secure. We never store your card details.
+                        ข้อมูลการชำระเงินของคุณถูกเข้ารหัสและปลอดภัยผ่านระบบของ Omise เราไม่เก็บข้อมูลบัตรของคุณ
                     </div>
                 </div>
 
                 <!-- Place Order Button (mobile only) -->
                 <div class="lg:hidden">
-                    <button id="place-order-btn-mobile" onclick="placeOrder()" class="w-full bg-primary hover:bg-indigo-700 text-white font-bold py-4 px-6 rounded-xl transition-colors text-base flex items-center justify-center gap-2 shadow-lg">
+                    <button id="place-order-btn-mobile" onclick="placeOrder()" class="w-full bg-primary hover:bg-amber-700 text-white font-bold py-4 px-6 rounded-xl transition-colors text-base flex items-center justify-center gap-2 shadow-lg">
                         <i class="ph ph-lock-key"></i>
-                        Place Order
+                        สั่งซื้อ
                     </button>
                 </div>
 
@@ -300,7 +259,7 @@
 
                     <!-- Order Summary Card -->
                     <div class="section-card">
-                        <h2 class="text-lg font-bold text-gray-900 mb-5">Order Summary</h2>
+                        <h2 class="text-lg font-bold text-gray-900 mb-5">สรุปคำสั่งซื้อ</h2>
 
                         <!-- Cart Items -->
                         <div id="order-items" class="space-y-4 mb-5 max-h-72 overflow-y-auto pr-1">
@@ -308,7 +267,7 @@
                             <div class="flex items-center justify-center py-8 text-gray-400">
                                 <div class="text-center">
                                     <i class="ph ph-spinner animate-spin text-3xl mb-2"></i>
-                                    <p class="text-sm">Loading cart...</p>
+                                    <p class="text-sm">กำลังโหลดตะกร้า...</p>
                                 </div>
                             </div>
                         </div>
@@ -316,26 +275,26 @@
                         <!-- Divider -->
                         <div class="border-t border-gray-100 pt-4 space-y-2.5">
                             <div class="flex justify-between text-sm text-gray-600">
-                                <span>Subtotal (<span id="item-count">0</span> items)</span>
-                                <span id="subtotal-price">$0.00</span>
+                                <span>ยอดรวม (<span id="item-count">0</span> ชิ้น)</span>
+                                <span id="subtotal-price">฿0.00</span>
                             </div>
                             <div class="flex justify-between text-sm text-gray-600" id="shipping-row">
-                                <span>Shipping</span>
-                                <span class="text-green-600 font-medium">Free</span>
+                                <span>ค่าจัดส่ง</span>
+                                <span class="text-green-600 font-medium">ฟรี</span>
                             </div>
                             <div class="flex justify-between text-sm text-gray-600">
-                                <span>Tax (8%)</span>
+                                <span>ภาษี (8%)</span>
                                 <span id="tax-price">$0.00</span>
                             </div>
                             <div id="discount-row" class="hidden flex justify-between text-sm font-semibold text-green-600">
-                                <span class="flex items-center gap-1"><i class="ph ph-tag-simple"></i> Discount</span>
+                                <span class="flex items-center gap-1"><i class="ph ph-tag-simple"></i> ส่วนลด</span>
                                 <span></span>
                             </div>
                         </div>
 
                         <!-- Total -->
                         <div class="border-t border-gray-200 mt-4 pt-4 flex justify-between items-center">
-                            <span class="text-lg font-bold text-gray-900">Total</span>
+                            <span class="text-lg font-bold text-gray-900">รวมทั้งหมด</span>
                             <span class="text-2xl font-extrabold text-primary" id="total-price">$0.00</span>
                         </div>
 
@@ -344,11 +303,11 @@
                             <div class="flex gap-2">
                                 <input type="text" id="promo-input"
                                     class="input-field flex-1 uppercase tracking-wider font-mono"
-                                    placeholder="Promo code"
+                                    placeholder="รหัสส่วนลด"
                                     onkeydown="if(event.key==='Enter') applyPromo()">
                                 <button onclick="applyPromo()"
                                     class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:border-primary hover:text-primary transition-colors whitespace-nowrap">
-                                    Apply
+                                    ใช้โค้ด
                                 </button>
                             </div>
 
@@ -375,9 +334,9 @@
                         </div>
 
                         <!-- Place Order Button (desktop) -->
-                        <button id="place-order-btn" onclick="placeOrder()" class="hidden lg:flex w-full mt-5 bg-primary hover:bg-indigo-700 text-white font-bold py-4 px-6 rounded-xl transition-colors text-base items-center justify-center gap-2 shadow-lg shadow-indigo-200">
+                        <button id="place-order-btn" onclick="placeOrder()" class="hidden lg:flex w-full mt-5 bg-primary hover:bg-amber-700 text-white font-bold py-4 px-6 rounded-xl transition-colors text-base items-center justify-center gap-2 shadow-lg shadow-amber-200">
                             <i class="ph ph-lock-key"></i>
-                            Place Order
+                            สั่งซื้อ
                         </button>
 
                         <!-- Error Message -->
@@ -392,15 +351,15 @@
                         <div class="grid grid-cols-3 gap-3 text-center">
                             <div class="text-gray-500">
                                 <i class="ph ph-shield-check text-2xl text-green-500 mb-1 block"></i>
-                                <p class="text-xs font-medium">Secure Payment</p>
+                                <p class="text-xs font-medium">ชำระเงินปลอดภัย</p>
                             </div>
                             <div class="text-gray-500">
                                 <i class="ph ph-arrow-counter-clockwise text-2xl text-blue-500 mb-1 block"></i>
-                                <p class="text-xs font-medium">30-Day Returns</p>
+                                <p class="text-xs font-medium">คืนสินค้าได้ 30 วัน</p>
                             </div>
                             <div class="text-gray-500">
                                 <i class="ph ph-headset text-2xl text-purple-500 mb-1 block"></i>
-                                <p class="text-xs font-medium">24/7 Support</p>
+                                <p class="text-xs font-medium">บริการ 24/7</p>
                             </div>
                         </div>
                     </div>
@@ -417,15 +376,15 @@
             <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">
                 <i class="ph ph-check-circle text-green-500 text-5xl"></i>
             </div>
-            <h2 class="text-2xl font-bold text-gray-900 mb-2">Order Placed!</h2>
-            <p class="text-gray-500 mb-1" id="order-id-display">Your order has been received.</p>
-            <p class="text-sm text-gray-400 mb-6">A confirmation email will be sent to your email address.</p>
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">สั่งซื้อสำเร็จ!</h2>
+            <p class="text-gray-500 mb-1" id="order-id-display">เราได้รับคำสั่งซื้อของคุณแล้ว</p>
+            <p class="text-sm text-gray-400 mb-6">อีเมลยืนยันจะถูกส่งไปยังอีเมลของคุณ</p>
             <div class="space-y-3">
-                <button onclick="window.location='index.html'" class="w-full bg-primary hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-xl transition-colors flex items-center justify-center gap-2">
-                    <i class="ph ph-storefront"></i> Continue Shopping
+                <button onclick="window.location='index.html'" class="w-full bg-primary hover:bg-amber-700 text-white font-bold py-3 px-6 rounded-xl transition-colors flex items-center justify-center gap-2">
+                    <i class="ph ph-storefront"></i> เลือกซื้อสินค้าต่อ
                 </button>
                 <button onclick="window.location='track-order.html'" class="w-full bg-white border-2 border-gray-200 hover:border-primary text-gray-700 hover:text-primary font-bold py-3 px-6 rounded-xl transition-colors flex items-center justify-center gap-2">
-                    <i class="ph ph-package"></i> Track My Order
+                    <i class="ph ph-package"></i> ติดตามคำสั่งซื้อ
                 </button>
             </div>
         </div>
