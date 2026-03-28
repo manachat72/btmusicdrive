@@ -101,8 +101,8 @@ function renderOrderSummary() {
         container.innerHTML = `
             <div class="flex flex-col items-center justify-center py-10 text-gray-400">
                 <i class="ph ph-shopping-cart text-4xl mb-2"></i>
-                <p class="text-sm">Your cart is empty.</p>
-                <a href="index.html" class="mt-3 text-sm text-primary font-medium hover:underline">Browse products</a>
+                <p class="text-sm">ตะกร้าของคุณว่างอยู่</p>
+                <a href="index.html" class="mt-3 text-sm text-primary font-medium hover:underline">เลือกดูสินค้า</a>
             </div>`;
         updateTotals();
         return;
@@ -113,13 +113,13 @@ function renderOrderSummary() {
             <div class="relative flex-shrink-0">
                 ${item.image
                     ? `<img src="${item.image}" alt="${escapeHtml(item.name)}" class="w-16 h-16 object-cover rounded-lg border border-gray-100">`
-                    : `<div class="w-16 h-16 bg-indigo-50 rounded-lg flex items-center justify-center"><i class="ph ph-package text-primary text-2xl"></i></div>`
+                    : `<div class="w-16 h-16 bg-amber-50 rounded-lg flex items-center justify-center"><i class="ph ph-package text-primary text-2xl"></i></div>`
                 }
                 <span class="absolute -top-2 -right-2 w-5 h-5 bg-primary text-white rounded-full text-xs flex items-center justify-center font-bold">${item.quantity}</span>
             </div>
             <div class="flex-1 min-w-0">
                 <p class="text-sm font-semibold text-gray-800 truncate">${escapeHtml(item.name)}</p>
-                <p class="text-xs text-gray-400">Qty: ${item.quantity}</p>
+                <p class="text-xs text-gray-400">จำนวน: ${item.quantity}</p>
             </div>
             <p class="text-sm font-bold text-gray-900 flex-shrink-0">฿${(item.price * item.quantity).toFixed(2)}</p>
         </div>
@@ -197,7 +197,7 @@ async function applyPromo() {
     if (!code) return;
 
     if (appliedPromo) {
-        showPromoError('A promo code is already applied. Remove it first.');
+        showPromoError('มีโค้ดส่วนลดถูกใช้อยู่แล้ว กรุณาลบออกก่อน');
         return;
     }
 
@@ -216,15 +216,15 @@ async function applyPromo() {
                 'Content-Type': 'application/json',
                 ...(token ? { Authorization: `Bearer ${token}` } : {})
             },
-            body: JSON.stringify({ code, cartTotal: subtotal })
+            body: JSON.stringify({ code, subtotal })
         });
 
         const data = await res.json();
 
         if (!res.ok) {
-            showPromoError(data.error || `Promo code "${code}" is not valid.`);
+            showPromoError(data.error || `โค้ดส่วนลด "${code}" ไม่ถูกต้อง`);
             btn.disabled = false;
-            btn.textContent = 'Apply';
+            btn.textContent = 'ใช้โค้ด';
             return;
         }
 
@@ -245,9 +245,9 @@ async function applyPromo() {
             renderPromoApplied();
             updateTotals();
         } else {
-            showPromoError(`Promo code "${code}" is not valid.`);
+            showPromoError(`โค้ดส่วนลด "${code}" ไม่ถูกต้อง`);
             btn.disabled = false;
-            btn.textContent = 'Apply';
+            btn.textContent = 'ใช้โค้ด';
         }
     }
 }
@@ -262,7 +262,7 @@ function removePromo() {
     clearPromoError();
     const btn = document.querySelector('[onclick="applyPromo()"]');
     btn.disabled = false;
-    btn.textContent = 'Apply';
+    btn.textContent = 'ใช้โค้ด';
     updateTotals();
 }
 
@@ -273,7 +273,7 @@ function renderPromoApplied() {
     document.getElementById('promo-input').disabled = true;
     const btn = document.querySelector('[onclick="applyPromo()"]');
     btn.disabled = true;
-    btn.textContent = 'Applied';
+    btn.textContent = 'ใช้แล้ว';
 }
 
 function calcDiscount(subtotal) {
@@ -297,34 +297,23 @@ function clearPromoError() {
 
 function validateForm() {
     const required = [
-        { id: 'first-name', label: 'First name' },
-        { id: 'last-name', label: 'Last name' },
-        { id: 'email', label: 'Email' },
-        { id: 'phone', label: 'Phone number' },
-        { id: 'address', label: 'Street address' },
-        { id: 'city', label: 'City' },
-        { id: 'state', label: 'State' },
-        { id: 'zip', label: 'ZIP code' },
+        { id: 'first-name', label: 'ชื่อ' },
+        { id: 'last-name', label: 'นามสกุล' },
+        { id: 'email', label: 'อีเมล' },
+        { id: 'phone', label: 'เบอร์โทรศัพท์' },
+        { id: 'address', label: 'ที่อยู่' },
+        { id: 'city', label: 'เขต/อำเภอ' },
+        { id: 'state', label: 'จังหวัด' },
+        { id: 'zip', label: 'รหัสไปรษณีย์' },
     ];
 
     for (const field of required) {
         const el = document.getElementById(field.id);
         if (!el || !el.value.trim()) {
             el?.focus();
-            showError(`${field.label} is required.`);
+            showError(`กรุณากรอก${field.label}`);
             return false;
         }
-    }
-
-    const paymentCardVisible = !document.getElementById('payment-card').classList.contains('hidden');
-    if (paymentCardVisible) {
-        const cardNum = document.getElementById('card-number').value.replace(/\s/g, '');
-        if (cardNum.length < 16) { showError('Enter a valid 16-digit card number.'); return false; }
-        if (!document.getElementById('card-name').value.trim()) { showError('Cardholder name is required.'); return false; }
-        const expiry = document.getElementById('card-expiry').value.replace(/\s/g, '');
-        if (expiry.length < 4) { showError('Enter a valid expiry date.'); return false; }
-        const cvv = document.getElementById('card-cvv').value;
-        if (cvv.length < 3) { showError('Enter a valid CVV.'); return false; }
     }
 
     return true;
@@ -332,22 +321,54 @@ function validateForm() {
 
 // ── Place Order ───────────────────────────────────────────────────────────────
 
+// Initialize Omise
+OmiseCard.configure({
+    publicKey: 'pkey_test_674nw670v7znhhl0h6x', // Omise Public Key
+    defaultPaymentMethod: 'credit_card',
+    otherPaymentMethods: ['promptpay', 'truemoney']
+});
+
 async function placeOrder() {
     hideError();
 
     const token = localStorage.getItem('btmusicdrive_token');
     if (!token) {
-        showError('You must be logged in to place an order.');
+        showError('คุณต้องเข้าสู่ระบบก่อนสั่งซื้อ');
         return;
     }
 
     if (cart.length === 0) {
-        showError('Your cart is empty.');
+        showError('ตะกร้าของคุณว่างอยู่');
         return;
     }
 
     if (!validateForm()) return;
 
+    const btn = document.getElementById('place-order-btn');
+    const btnMobile = document.getElementById('place-order-btn-mobile');
+    
+    const totalText = document.getElementById('total-price').textContent.replace('฿', '').replace(/,/g, '');
+    const amountInSatangs = Math.round(parseFloat(totalText) * 100);
+
+    OmiseCard.open({
+        amount: amountInSatangs,
+        currency: 'THB',
+        onCreateTokenSuccess: (nonce) => {
+            if (nonce.startsWith('tok_') || nonce.startsWith('src_')) {
+                processCheckout(nonce);
+            } else {
+                showError('เกิดข้อผิดพลาดในการประมวลผลการชำระเงิน');
+            }
+        },
+        onFormClosed: () => {
+            setLoading(btn, false);
+            setLoading(btnMobile, false);
+        }
+    });
+}
+
+async function processCheckout(omiseToken) {
+    const token = localStorage.getItem('btmusicdrive_token');
     const btn = document.getElementById('place-order-btn');
     const btnMobile = document.getElementById('place-order-btn-mobile');
     setLoading(btn, true);
@@ -370,6 +391,8 @@ async function placeOrder() {
                 Authorization: `Bearer ${token}`
             },
             body: JSON.stringify({
+                omiseToken,
+                shippingAddress,
                 ...(appliedPromo ? { promoCode: appliedPromo.code } : {})
             })
         });
@@ -377,18 +400,21 @@ async function placeOrder() {
         const data = await res.json();
 
         if (!res.ok) {
-            showError(data.error || 'Failed to initiate checkout. Please try again.');
+            showError(data.error || 'ไม่สามารถชำระเงินได้ กรุณาลองอีกครั้ง');
             setLoading(btn, false);
             setLoading(btnMobile, false);
             return;
         }
 
-        // Redirect to Stripe Checkout URL
-        window.location.href = data.url;
+        if (data.authorizeUri) {
+            window.location.href = data.authorizeUri;
+        } else if (data.orderId) {
+            window.location.href = `checkout.html?status=success&invoice_no=${encodeURIComponent(data.invoiceNo)}`;
+        }
 
     } catch (e) {
         console.error('Checkout error:', e);
-        showError('Network error. Please check your connection and try again.');
+        showError('เกิดข้อผิดพลาดเครือข่าย กรุณาตรวจสอบการเชื่อมต่อและลองอีกครั้ง');
         setLoading(btn, false);
         setLoading(btnMobile, false);
     }
@@ -399,26 +425,31 @@ async function placeOrder() {
 async function checkPaymentStatus() {
     const urlParams = new URLSearchParams(window.location.search);
     const status = urlParams.get('status');
-    const sessionId = urlParams.get('session_id');
+    const invoiceNo = urlParams.get('invoice_no');
 
-    if (status === 'success' && sessionId) {
+    if ((status === 'success' || status === 'pending') && invoiceNo) {
         // Clean up URL immediately
         window.history.replaceState({}, document.title, window.location.pathname);
 
         // Confirm payment with backend to create the DB order
         const token = localStorage.getItem('btmusicdrive_token');
-        let orderId = sessionId.slice(-8).toUpperCase();
+        let orderId = invoiceNo.slice(-8).toUpperCase();
+        let isPending = status === 'pending';
 
         if (token) {
             try {
                 const res = await fetch(`${API_BASE}/payment/confirm`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-                    body: JSON.stringify({ sessionId })
+                    body: JSON.stringify({ invoiceNo })
                 });
                 if (res.ok) {
-                    const order = await res.json();
-                    orderId = order.id ? order.id.slice(-8).toUpperCase() : orderId;
+                    const data = await res.json();
+                    if (data.status === 'pending') {
+                        isPending = true;
+                    } else {
+                        orderId = data.id ? data.id.slice(-8).toUpperCase() : orderId;
+                    }
                 }
             } catch (e) {
                 console.warn('Could not confirm order with backend:', e);
@@ -429,13 +460,29 @@ async function checkPaymentStatus() {
         cart = [];
         localStorage.removeItem('cart');
 
-        // Show success modal
-        document.getElementById('order-id-display').textContent = `Order #${orderId}`;
-        document.getElementById('success-modal').classList.remove('hidden');
-        document.getElementById('success-modal').classList.add('flex');
+        if (isPending) {
+            // Show pending modal for QR / async payment
+            const modalContent = document.querySelector('#success-modal .text-center') || document.querySelector('#success-modal > div > div');
+            if (modalContent) {
+                const icon = modalContent.querySelector('.ph-check-circle, .ph-seal-check');
+                if (icon) { icon.className = 'ph ph-clock-countdown text-5xl text-yellow-500'; }
+                const title = modalContent.querySelector('h2');
+                if (title) { title.textContent = 'กำลังตรวจสอบการชำระเงิน'; }
+                const desc = modalContent.querySelector('p');
+                if (desc) { desc.textContent = 'กำลังตรวจสอบการชำระเงินของคุณ คุณจะได้รับอีเมลยืนยันเมื่อการชำระเงินสำเร็จ'; }
+            }
+            document.getElementById('order-id-display').textContent = 'รอการชำระเงิน';
+            document.getElementById('success-modal').classList.remove('hidden');
+            document.getElementById('success-modal').classList.add('flex');
+        } else {
+            // Show success modal
+            document.getElementById('order-id-display').textContent = `คำสั่งซื้อ #${orderId}`;
+            document.getElementById('success-modal').classList.remove('hidden');
+            document.getElementById('success-modal').classList.add('flex');
+        }
 
     } else if (status === 'cancelled') {
-        showError('Payment was cancelled. You can try again when you are ready.');
+        showError('การชำระเงินถูกยกเลิก คุณสามารถลองอีกครั้งเมื่อพร้อม');
         window.history.replaceState({}, document.title, window.location.pathname);
     }
 }
@@ -456,11 +503,11 @@ function setLoading(btn, loading) {
     if (!btn) return;
     if (loading) {
         btn.disabled = true;
-        btn.innerHTML = '<i class="ph ph-spinner animate-spin mr-2"></i> Processing...';
+        btn.innerHTML = '<i class="ph ph-spinner animate-spin mr-2"></i> กำลังดำเนินการ...';
         btn.classList.add('opacity-75', 'cursor-not-allowed');
     } else {
         btn.disabled = false;
-        btn.innerHTML = '<i class="ph ph-lock-key mr-2"></i> Place Order';
+        btn.innerHTML = '<i class="ph ph-lock-key mr-2"></i> สั่งซื้อ';
         btn.classList.remove('opacity-75', 'cursor-not-allowed');
     }
 }

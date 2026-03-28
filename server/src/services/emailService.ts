@@ -53,7 +53,7 @@ function buildOrderEmailHtml(data: OrderEmailData): string {
         <p style="margin:0 0 4px;font-size:13px;color:#374151;">Carrier: <strong>${data.carrier}</strong></p>
         <p style="margin:0 0 16px;font-size:13px;color:#374151;">Tracking Number: <strong>${data.trackingNumber}</strong></p>
         <a href="${getTrackingUrl(data.carrier, data.trackingNumber)}"
-           style="display:inline-block;background:#4f46e5;color:#fff;text-decoration:none;padding:12px 28px;border-radius:8px;font-weight:700;font-size:14px;">
+           style="display:inline-block;background:#C8A84E;color:#fff;text-decoration:none;padding:12px 28px;border-radius:8px;font-weight:700;font-size:14px;">
           Track My Package →
         </a>
       </div>`
@@ -69,9 +69,9 @@ function buildOrderEmailHtml(data: OrderEmailData): string {
 <body style="margin:0;padding:0;background:#f9fafb;font-family:'Segoe UI',Arial,sans-serif;">
   <div style="max-width:580px;margin:32px auto;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.06);">
     <!-- Header -->
-    <div style="background:linear-gradient(135deg,#4f46e5,#7c3aed);padding:32px 40px;text-align:center;">
+    <div style="background:linear-gradient(135deg,#C8A84E,#b5953f);padding:32px 40px;text-align:center;">
       <h1 style="margin:0;color:#fff;font-size:26px;font-weight:800;letter-spacing:-0.5px;">btmusicdrive</h1>
-      <p style="margin:6px 0 0;color:#c7d2fe;font-size:14px;">Order Confirmation</p>
+      <p style="margin:6px 0 0;color:#fef3c7;font-size:14px;">Order Confirmation</p>
     </div>
     <!-- Body -->
     <div style="padding:32px 40px;">

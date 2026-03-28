@@ -264,6 +264,7 @@ router.get('/me', authenticateToken, async (req: AuthRequest, res: Response) => 
       select: {
         id: true,
         email: true,
+        name: true,
         role: true,
         createdAt: true
       }
