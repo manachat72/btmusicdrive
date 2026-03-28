@@ -241,20 +241,99 @@ function _mobileBottomNavHTML() {
       </button>
     </div>
   </nav>
-  <!-- Account dropdown for bottom nav -->
-  <div id="bnav-account-menu" class="hidden fixed bottom-14 right-0 w-56 bg-white rounded-t-xl shadow-2xl border border-gray-100 z-50 md:hidden overflow-hidden">
-    <div class="py-2">
-      <div class="px-4 py-3 border-b border-gray-100" id="bnav-user-info">
-        <p class="font-semibold text-gray-900 text-sm" id="bnav-user-name">ยังไม่ได้เข้าสู่ระบบ</p>
+
+  <!-- Mobile Account Sidebar Drawer -->
+  <div id="bnav-account-overlay" class="fixed inset-0 bg-black/50 z-[55] hidden transition-opacity duration-300 md:hidden"></div>
+  <div id="bnav-account-menu" class="fixed inset-y-0 right-0 w-[85%] max-w-sm bg-white z-[56] transform translate-x-full transition-transform duration-300 ease-in-out md:hidden flex flex-col shadow-2xl">
+    <!-- Header -->
+    <div class="bg-secondary text-white p-5 pb-6 relative">
+      <button id="bnav-drawer-close" class="absolute top-3 right-3 text-white/70 hover:text-white transition-colors">
+        <i class="ph ph-x text-2xl"></i>
+      </button>
+      <div class="flex items-center gap-3 mt-2">
+        <div class="w-14 h-14 rounded-full bg-white/20 flex items-center justify-center overflow-hidden" id="bnav-avatar">
+          <i class="ph ph-user text-3xl text-white/80"></i>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="font-bold text-base truncate" id="bnav-user-name">ยังไม่ได้เข้าสู่ระบบ</p>
+          <p class="text-white/60 text-xs truncate" id="bnav-user-email"></p>
+        </div>
       </div>
-      <a href="orders.html" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"><i class="ph ph-package text-lg"></i> คำสั่งซื้อ</a>
-      <a href="wishlist.html" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"><i class="ph ph-heart text-lg"></i> สินค้าที่ถูกใจ</a>
-      <a href="profile.html" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"><i class="ph ph-user-circle text-lg"></i> ข้อมูลส่วนตัว</a>
-      <a href="address.html" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"><i class="ph ph-map-pin text-lg"></i> ที่อยู่สำหรับจัดส่ง</a>
-      <div class="border-t border-gray-100">
-        <a href="#" id="bnav-logout-btn" class="flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50"><i class="ph ph-sign-out text-lg"></i> ออกจากระบบ</a>
-        <a href="#" id="bnav-login-btn" class="flex items-center gap-3 px-4 py-2.5 text-sm text-primary hover:bg-amber-50 font-semibold"><i class="ph ph-sign-in text-lg"></i> เข้าสู่ระบบ</a>
+      <!-- Stats -->
+      <div class="flex gap-4 mt-4" id="bnav-stats">
+        <div class="text-center flex-1">
+          <p class="text-lg font-bold text-primary" id="bnav-order-count">0</p>
+          <p class="text-[10px] text-white/60">คำสั่งซื้อ</p>
+        </div>
+        <div class="text-center flex-1">
+          <p class="text-lg font-bold text-primary" id="bnav-wishlist-count">0</p>
+          <p class="text-[10px] text-white/60">รายการที่ถูกใจ</p>
+        </div>
+        <div class="text-center flex-1">
+          <p class="text-lg font-bold text-primary" id="bnav-review-count">0</p>
+          <p class="text-[10px] text-white/60">รีวิว</p>
+        </div>
       </div>
+    </div>
+
+    <!-- Menu Items -->
+    <div class="flex-1 overflow-y-auto">
+      <!-- รายการ -->
+      <div class="px-4 pt-4 pb-1">
+        <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">รายการ</p>
+      </div>
+      <a href="orders.html" class="flex items-center gap-3 px-5 py-3 text-sm text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-colors">
+        <i class="ph ph-package text-xl text-gray-400"></i> คำสั่งซื้อ
+        <i class="ph ph-caret-right text-gray-300 ml-auto"></i>
+      </a>
+      <a href="wishlist.html" class="flex items-center gap-3 px-5 py-3 text-sm text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-colors">
+        <i class="ph ph-heart text-xl text-gray-400"></i> สินค้าที่ถูกใจ
+        <i class="ph ph-caret-right text-gray-300 ml-auto"></i>
+      </a>
+      <a href="track-order.html" class="flex items-center gap-3 px-5 py-3 text-sm text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-colors">
+        <i class="ph ph-truck text-xl text-gray-400"></i> ติดตามพัสดุ
+        <i class="ph ph-caret-right text-gray-300 ml-auto"></i>
+      </a>
+
+      <div class="h-px bg-gray-100 mx-4 my-2"></div>
+
+      <!-- บัญชี -->
+      <div class="px-4 pt-2 pb-1">
+        <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">บัญชี</p>
+      </div>
+      <a href="profile.html" class="flex items-center gap-3 px-5 py-3 text-sm text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-colors">
+        <i class="ph ph-user-circle text-xl text-gray-400"></i> ข้อมูลส่วนตัว
+        <i class="ph ph-caret-right text-gray-300 ml-auto"></i>
+      </a>
+      <a href="address.html" class="flex items-center gap-3 px-5 py-3 text-sm text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-colors">
+        <i class="ph ph-map-pin text-xl text-gray-400"></i> ที่อยู่สำหรับจัดส่ง
+        <i class="ph ph-caret-right text-gray-300 ml-auto"></i>
+      </a>
+
+      <div class="h-px bg-gray-100 mx-4 my-2"></div>
+
+      <!-- ช่วยเหลือ -->
+      <div class="px-4 pt-2 pb-1">
+        <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">ช่วยเหลือ</p>
+      </div>
+      <a href="contact.html" class="flex items-center gap-3 px-5 py-3 text-sm text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-colors">
+        <i class="ph ph-chat-circle-dots text-xl text-gray-400"></i> ติดต่อเรา
+        <i class="ph ph-caret-right text-gray-300 ml-auto"></i>
+      </a>
+      <a href="about.html" class="flex items-center gap-3 px-5 py-3 text-sm text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-colors">
+        <i class="ph ph-info text-xl text-gray-400"></i> เกี่ยวกับเรา
+        <i class="ph ph-caret-right text-gray-300 ml-auto"></i>
+      </a>
+    </div>
+
+    <!-- Bottom: Logout / Login -->
+    <div class="border-t border-gray-100 p-4">
+      <a href="#" id="bnav-logout-btn" class="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-semibold text-red-500 bg-red-50 hover:bg-red-100 active:bg-red-200 transition-colors">
+        <i class="ph ph-sign-out text-lg"></i> ออกจากระบบ
+      </a>
+      <a href="#" id="bnav-login-btn" class="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-semibold text-white bg-primary hover:bg-amber-600 active:bg-amber-700 transition-colors">
+        <i class="ph ph-sign-in text-lg"></i> เข้าสู่ระบบ
+      </a>
     </div>
   </div>`;
 }
@@ -496,18 +575,47 @@ function _updateUserUI() {
 
 function _updateBnavAccountState() {
   const nameEl = document.getElementById('bnav-user-name');
+  const emailEl = document.getElementById('bnav-user-email');
   const logoutBtn = document.getElementById('bnav-logout-btn');
   const loginBtn = document.getElementById('bnav-login-btn');
+  const avatarEl = document.getElementById('bnav-avatar');
+  const statsEl = document.getElementById('bnav-stats');
   if (!nameEl) return;
   const user = _currentUser || JSON.parse(localStorage.getItem('user') || 'null');
   if (user) {
-    nameEl.textContent = (user.firstName || user.email?.split('@')[0] || '') + (user.lastName ? ' ' + user.lastName : '');
+    const displayName = (user.firstName || user.name || user.email?.split('@')[0] || '') + (user.lastName ? ' ' + user.lastName : '');
+    nameEl.textContent = displayName;
+    if (emailEl) emailEl.textContent = user.email || '';
+    if (avatarEl && user.avatar) {
+      avatarEl.innerHTML = `<img src="${user.avatar}" class="w-full h-full object-cover rounded-full" alt="">`;
+    }
+    if (statsEl) statsEl.style.display = '';
     if (logoutBtn) logoutBtn.style.display = '';
     if (loginBtn) loginBtn.style.display = 'none';
   } else {
     nameEl.textContent = 'ยังไม่ได้เข้าสู่ระบบ';
+    if (emailEl) emailEl.textContent = '';
+    if (statsEl) statsEl.style.display = 'none';
     if (logoutBtn) logoutBtn.style.display = 'none';
     if (loginBtn) loginBtn.style.display = '';
+  }
+}
+
+function _toggleAccountDrawer(forceOpen) {
+  const drawer = document.getElementById('bnav-account-menu');
+  const overlay = document.getElementById('bnav-account-overlay');
+  if (!drawer) return;
+  const isOpen = !drawer.classList.contains('translate-x-full');
+  const shouldOpen = forceOpen !== undefined ? forceOpen : !isOpen;
+  if (shouldOpen) {
+    _updateBnavAccountState();
+    overlay?.classList.remove('hidden');
+    drawer.classList.remove('translate-x-full');
+    document.body.style.overflow = 'hidden';
+  } else {
+    drawer.classList.add('translate-x-full');
+    overlay?.classList.add('hidden');
+    document.body.style.overflow = '';
   }
 }
 
@@ -640,13 +748,16 @@ function _setupSharedEvents() {
   bnavCartBtn?.addEventListener('click', _toggleCart);
   bnavAccountBtn?.addEventListener('click', (e) => {
     e.stopPropagation();
-    bnavAccountMenu?.classList.toggle('hidden');
-    _updateBnavAccountState();
+    _toggleAccountDrawer();
   });
+
+  const bnavOverlay = document.getElementById('bnav-account-overlay');
+  const bnavClose = document.getElementById('bnav-drawer-close');
+  bnavOverlay?.addEventListener('click', () => _toggleAccountDrawer(false));
+  bnavClose?.addEventListener('click', () => _toggleAccountDrawer(false));
+
   document.addEventListener('click', (e) => {
-    if (bnavAccountMenu && !bnavAccountMenu.contains(e.target) && e.target !== bnavAccountBtn && !bnavAccountBtn?.contains(e.target)) {
-      bnavAccountMenu.classList.add('hidden');
-    }
+    // No-op: drawer uses overlay
   });
   bnavLogoutBtn?.addEventListener('click', (e) => {
     e.preventDefault();
@@ -654,12 +765,12 @@ function _setupSharedEvents() {
     localStorage.removeItem('user');
     _currentUser = null;
     _checkAuthState();
-    bnavAccountMenu?.classList.add('hidden');
+    _toggleAccountDrawer(false);
     location.href = 'index.html';
   });
   bnavLoginBtn?.addEventListener('click', (e) => {
     e.preventDefault();
-    bnavAccountMenu?.classList.add('hidden');
+    _toggleAccountDrawer(false);
     _toggleAuthModal();
   });
 
