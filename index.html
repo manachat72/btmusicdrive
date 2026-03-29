@@ -13,8 +13,8 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: '#C8A84E', // Gold
-                        secondary: '#1a1a1a', // Black
+                        primary: '#8B7355', // Bronze
+                        secondary: '#0F172A', // Slate
                     }
                 }
             }
@@ -58,7 +58,7 @@
                 <span class="inline-block py-1 px-3 rounded-full bg-amber-100 text-amber-700 text-sm font-semibold tracking-wide">สินค้าขายดี 2026</span>
                 <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight text-gray-900">
                     แฟลชไดร์ฟเพลง MP3 <br>
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 to-amber-500">รวมฮิตทุกแนวที่คุณคิดถึง</span>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-secondary to-primary">รวมฮิตทุกแนวที่คุณคิดถึง</span>
                 </h1>
                 <p class="text-lg text-gray-600 md:max-w-md">
                     เสียบปุ๊บ ฟังปั๊บ! รวมเพลงฮิตคุณภาพเสียง HD ลูกทุ่ง หมอลำ สตริง เพื่อชีวิต สากล พร้อมฟังทันทีในรถยนต์และเครื่องเสียง
@@ -83,7 +83,7 @@
             </div>
             
             <div class="md:w-1/2 relative">
-                <div class="absolute inset-0 bg-gradient-to-tr from-amber-500 to-yellow-300 rounded-3xl transform rotate-3 scale-105 opacity-20 animate-pulse-slow"></div>
+                <div class="absolute inset-0 bg-gradient-to-tr from-secondary to-primary rounded-3xl transform rotate-3 scale-105 opacity-20 animate-pulse-slow"></div>
                 <img src="images/hero-banner.png" alt="แฟลชไดร์ฟเพลง MP3 เสียบฟังในรถยนต์" class="relative rounded-3xl shadow-2xl object-cover h-[280px] sm:h-[380px] md:h-[450px] lg:h-[500px] w-full z-10">
                 
                 <!-- Floating Card -->
@@ -101,7 +101,7 @@
     </section>
 
     <!-- Flash Sale Countdown -->
-    <section id="flash-sale" class="py-12 bg-gradient-to-r from-red-600 to-red-700 relative overflow-hidden">
+    <section id="flash-sale" class="py-12 bg-gradient-to-r from-secondary to-slate-800 relative overflow-hidden">
         <div class="absolute inset-0 opacity-10">
             <div class="absolute -top-10 -right-10 w-64 h-64 bg-white rounded-full"></div>
             <div class="absolute -bottom-10 -left-10 w-48 h-48 bg-white rounded-full"></div>
@@ -109,31 +109,31 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="text-center mb-8">
                 <div class="inline-flex items-center gap-2 bg-white/20 px-4 py-1.5 rounded-full mb-4">
-                    <i class="ph-fill ph-lightning text-yellow-300 text-lg"></i>
+                    <i class="ph-fill ph-lightning text-amber-200 text-lg"></i>
                     <span class="text-white font-bold text-sm tracking-wider uppercase">Flash Sale</span>
                 </div>
                 <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-3">🔥 ลดราคาแรง! เฉพาะวันนี้</h2>
-                <p class="text-red-100 text-lg">เวลาจำกัด! สินค้าลดราคาพิเศษ หมดเขตเที่ยงคืนนี้</p>
+                <p class="text-slate-200 text-lg">ข้อเสนอคัดสรรพิเศษ พร้อมจัดส่งทั่วไทยภายในเวลาจำกัด</p>
             </div>
             <!-- Countdown Timer -->
             <div class="flex justify-center gap-3 sm:gap-5 mb-8">
                 <div class="bg-white/15 backdrop-blur-sm rounded-xl p-3 sm:p-4 min-w-[70px] text-center border border-white/20">
                     <div id="countdown-hours" class="text-3xl sm:text-4xl font-black text-white">00</div>
-                    <div class="text-red-200 text-xs font-medium mt-1">ชั่วโมง</div>
+                    <div class="text-slate-300 text-xs font-medium mt-1">ชั่วโมง</div>
                 </div>
                 <div class="text-white text-3xl font-bold self-center">:</div>
                 <div class="bg-white/15 backdrop-blur-sm rounded-xl p-3 sm:p-4 min-w-[70px] text-center border border-white/20">
                     <div id="countdown-minutes" class="text-3xl sm:text-4xl font-black text-white">00</div>
-                    <div class="text-red-200 text-xs font-medium mt-1">นาที</div>
+                    <div class="text-slate-300 text-xs font-medium mt-1">นาที</div>
                 </div>
                 <div class="text-white text-3xl font-bold self-center">:</div>
                 <div class="bg-white/15 backdrop-blur-sm rounded-xl p-3 sm:p-4 min-w-[70px] text-center border border-white/20">
                     <div id="countdown-seconds" class="text-3xl sm:text-4xl font-black text-white">00</div>
-                    <div class="text-red-200 text-xs font-medium mt-1">วินาที</div>
+                    <div class="text-slate-300 text-xs font-medium mt-1">วินาที</div>
                 </div>
             </div>
             <div class="text-center">
-                <a href="#shop" class="inline-flex items-center gap-2 bg-white hover:bg-gray-100 text-red-600 font-bold py-3 px-8 rounded-full transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                <a href="#shop" class="inline-flex items-center gap-2 bg-white hover:bg-gray-100 text-secondary font-bold py-3 px-8 rounded-full transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
                     <i class="ph ph-shopping-cart text-xl"></i> ช้อปเลย!
                 </a>
             </div>

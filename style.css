@@ -1,5 +1,13 @@
 /* Custom styles to supplement Tailwind */
 
+:root {
+    --brand-primary: #8B7355;
+    --brand-primary-strong: #735E43;
+    --brand-secondary: #0F172A;
+    --brand-surface: #F4EFE8;
+    --brand-surface-strong: #E8DED1;
+}
+
 /* Custom Animations */
 @keyframes pulse-slow {
     0%, 100% { opacity: 0.2; transform: scale(1.05) rotate(3deg); }
@@ -95,7 +103,7 @@ html {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    background-color: #C8A84E;
+    background-color: var(--brand-primary);
     color: white;
     padding: 12px 24px;
     border-radius: 8px;
@@ -107,6 +115,42 @@ html {
     opacity: 0;
     transform: translateY(20px);
     transition: all 0.3s ease;
+}
+
+/* Brand utility overrides for the muted premium palette */
+.bg-amber-50 {
+    background-color: var(--brand-surface) !important;
+}
+
+.bg-amber-50\/50 {
+    background-color: rgba(244, 239, 232, 0.7) !important;
+}
+
+.bg-amber-100,
+.bg-amber-100\/20 {
+    background-color: var(--brand-surface-strong) !important;
+}
+
+.ring-amber-100 {
+    --tw-ring-color: var(--brand-surface-strong) !important;
+}
+
+.text-amber-600,
+.text-amber-700 {
+    color: var(--brand-primary) !important;
+}
+
+.border-amber-200 {
+    border-color: var(--brand-surface-strong) !important;
+}
+
+.hover\:bg-amber-700:hover,
+.hover\:bg-yellow-600:hover {
+    background-color: var(--brand-primary-strong) !important;
+}
+
+.hover\:text-amber-700:hover {
+    color: var(--brand-secondary) !important;
 }
 
 .toast-notification.show {

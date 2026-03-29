@@ -1,10 +1,3 @@
-// API base URL — use from components.js if already defined, else define here
-if (typeof API_BASE === 'undefined') {
-  var API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
-    ? 'http://localhost:5000/api'
-    : '/api';
-}
-
 // Product Data State (Fetched from API)
 let products = [];
 // Cart State
@@ -182,7 +175,7 @@ function renderNavMenus(menus) {
             ).join('');
         }
         return html;
-    }).join('') + `<a href="admin.html" id="admin-nav-link-mobile" class="hidden px-3 py-2 rounded-md text-base font-medium text-amber-600 hover:text-amber-700 hover:bg-amber-50 flex items-center gap-2"><i class="ph ph-shield-check"></i> Admin Dashboard</a>`;
+    }).join('') + `<a href="admin.html" id="admin-nav-link-mobile" class="hidden px-3 py-2 rounded-md text-base font-medium text-secondary hover:text-primary hover:bg-amber-50 flex items-center gap-2"><i class="ph ph-shield-check"></i> Admin Dashboard</a>`;
 }
 
 // Fetch Products from API or fallback to local JSON
@@ -274,7 +267,7 @@ function renderProducts() {
                 </div>
                 <div class="flex items-center justify-between">
                     <span class="text-xl font-bold text-gray-900">฿${product.price.toFixed(2)}</span>
-                    <button class="md:hidden add-to-cart-btn-mobile text-primary hover:text-amber-700 p-2" data-id="${product.id}">
+                    <button class="md:hidden add-to-cart-btn-mobile text-primary hover:text-secondary p-2" data-id="${product.id}">
                         <i class="ph-fill ph-plus-circle text-3xl"></i>
                     </button>
                 </div>

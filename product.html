@@ -10,8 +10,8 @@
       theme: {
         extend: {
           colors: {
-            primary: '#C8A84E',
-            secondary: '#1a1a1a',
+            primary: '#8B7355',
+            secondary: '#0F172A',
           }
         }
       }
@@ -25,11 +25,11 @@
   <style>
     body { font-family: 'Inter', sans-serif; }
     .thumb { border: 2px solid transparent; cursor: pointer; transition: border-color .2s; border-radius: 8px; overflow: hidden; }
-    .thumb.active { border-color: #C8A84E; }
-    .thumb:hover { border-color: #d4b970; }
+    .thumb.active { border-color: #8B7355; }
+    .thumb:hover { border-color: #A28B69; }
     .tab-btn { position: relative; padding: 12px 24px; font-weight: 600; color: #64748b; transition: color .2s; }
-    .tab-btn.active { color: #1a1a1a; }
-    .tab-btn.active::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: #C8A84E; border-radius: 3px 3px 0 0; }
+    .tab-btn.active { color: #0F172A; }
+    .tab-btn.active::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: #8B7355; border-radius: 3px 3px 0 0; }
     .tab-btn:hover { color: #334155; }
     .spec-row:nth-child(even) { background: #f8fafc; }
     .tag { display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; transition: opacity .2s; }
@@ -41,7 +41,7 @@
     .gallery-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,.85); box-shadow: 0 2px 8px rgba(0,0,0,.12); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background .2s; z-index: 5; }
     .gallery-nav:hover { background: #fff; }
     .shop-link { display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; border: 1.5px solid #e2e8f0; color: #64748b; transition: all .2s; cursor: pointer; }
-    .shop-link:hover { border-color: #C8A84E; color: #C8A84E; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(200,168,78,.18); }
+    .shop-link:hover { border-color: #8B7355; color: #8B7355; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(139,115,85,.18); }
     .shop-link svg { width: 20px; height: 20px; }
   </style>
 </head>
@@ -125,7 +125,7 @@
             <button onclick="addToCartFromDetail()" class="flex-1 border-2 border-gray-300 hover:border-primary text-gray-700 hover:text-primary font-bold py-3 px-4 sm:px-6 rounded-lg transition-colors flex items-center justify-center gap-2">
               <i class="ph ph-shopping-cart text-xl"></i> เพิ่มในตะกร้า
             </button>
-            <button onclick="buyNow()" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 sm:px-6 rounded-lg transition-colors flex items-center justify-center gap-2">
+            <button onclick="buyNow()" class="flex-1 bg-secondary hover:bg-slate-800 text-white font-bold py-3 px-4 sm:px-6 rounded-lg transition-colors flex items-center justify-center gap-2">
               ซื้อเลย
             </button>
           </div>
@@ -234,7 +234,7 @@
                 <span id="bundle-save" class="text-sm font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded"></span>
               </div>
             </div>
-            <button onclick="addBundleToCart()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition-colors flex items-center gap-2">
+            <button onclick="addBundleToCart()" class="bg-secondary hover:bg-slate-800 text-white font-bold py-3 px-6 rounded-lg transition-colors flex items-center gap-2">
               <i class="ph ph-shopping-cart text-xl"></i> ซื้อคู่กันเลย
             </button>
           </div>
@@ -318,7 +318,7 @@
   <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
 <script>
-  const API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
+  const PRODUCT_API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
     ? 'http://localhost:5000/api' : '/api';
 
   let product = null;
@@ -336,7 +336,7 @@
     try {
       let res;
       try {
-        res = await fetch(`${API_BASE}/products/${id}`);
+        res = await fetch(`${PRODUCT_API_BASE}/products/${id}`);
         if (!res.ok) throw new Error();
         product = await res.json();
       } catch {
@@ -349,7 +349,7 @@
 
       // Load all products for "frequently bought together"
       try {
-        const allRes = await fetch(`${API_BASE}/products`);
+        const allRes = await fetch(`${PRODUCT_API_BASE}/products`);
         if (allRes.ok) allProducts = await allRes.json();
         else throw new Error();
       } catch {

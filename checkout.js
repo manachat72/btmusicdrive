@@ -113,7 +113,7 @@ function renderOrderSummary() {
             <div class="relative flex-shrink-0">
                 ${item.image
                     ? `<img src="${item.image}" alt="${escapeHtml(item.name)}" class="w-16 h-16 object-cover rounded-lg border border-gray-100">`
-                    : `<div class="w-16 h-16 bg-amber-50 rounded-lg flex items-center justify-center"><i class="ph ph-package text-primary text-2xl"></i></div>`
+                    : `<div class="w-16 h-16 bg-stone-100 rounded-lg flex items-center justify-center"><i class="ph ph-package text-primary text-2xl"></i></div>`
                 }
                 <span class="absolute -top-2 -right-2 w-5 h-5 bg-primary text-white rounded-full text-xs flex items-center justify-center font-bold">${item.quantity}</span>
             </div>
@@ -373,6 +373,7 @@ async function processCheckout(omiseToken) {
     const btnMobile = document.getElementById('place-order-btn-mobile');
     setLoading(btn, true);
     setLoading(btnMobile, true);
+    const normalizedPhone = document.getElementById('phone').value.trim().replace(/\D/g, '');
 
     const shippingAddress = [
         document.getElementById('address').value.trim(),
@@ -392,6 +393,7 @@ async function processCheckout(omiseToken) {
             },
             body: JSON.stringify({
                 omiseToken,
+                phone: normalizedPhone,
                 shippingAddress,
                 ...(appliedPromo ? { promoCode: appliedPromo.code } : {})
             })
@@ -465,7 +467,7 @@ async function checkPaymentStatus() {
             const modalContent = document.querySelector('#success-modal .text-center') || document.querySelector('#success-modal > div > div');
             if (modalContent) {
                 const icon = modalContent.querySelector('.ph-check-circle, .ph-seal-check');
-                if (icon) { icon.className = 'ph ph-clock-countdown text-5xl text-yellow-500'; }
+                if (icon) { icon.className = 'ph ph-clock-countdown text-5xl text-primary'; }
                 const title = modalContent.querySelector('h2');
                 if (title) { title.textContent = 'กำลังตรวจสอบการชำระเงิน'; }
                 const desc = modalContent.querySelector('p');

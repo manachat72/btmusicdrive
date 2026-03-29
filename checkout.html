@@ -13,8 +13,8 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: '#C8A84E',
-                        secondary: '#1a1a1a',
+                        primary: '#8B7355',
+                        secondary: '#0F172A',
                     }
                 }
             }
@@ -38,8 +38,8 @@
             outline: none;
         }
         .input-field:focus {
-            border-color: #C8A84E;
-            box-shadow: 0 0 0 2px rgba(200, 168, 78, 0.2);
+            border-color: #8B7355;
+            box-shadow: 0 0 0 2px rgba(139, 115, 85, 0.18);
         }
         .label {
             display: block;
@@ -245,7 +245,7 @@
 
                 <!-- Place Order Button (mobile only) -->
                 <div class="lg:hidden">
-                    <button id="place-order-btn-mobile" onclick="placeOrder()" class="w-full bg-primary hover:bg-amber-700 text-white font-bold py-4 px-6 rounded-xl transition-colors text-base flex items-center justify-center gap-2 shadow-lg">
+                    <button id="place-order-btn-mobile" onclick="placeOrder()" class="w-full bg-secondary hover:bg-slate-800 text-white font-bold py-4 px-6 rounded-xl transition-colors text-base flex items-center justify-center gap-2 shadow-lg">
                         <i class="ph ph-lock-key"></i>
                         สั่งซื้อ
                     </button>
@@ -334,7 +334,7 @@
                         </div>
 
                         <!-- Place Order Button (desktop) -->
-                        <button id="place-order-btn" onclick="placeOrder()" class="hidden lg:flex w-full mt-5 bg-primary hover:bg-amber-700 text-white font-bold py-4 px-6 rounded-xl transition-colors text-base items-center justify-center gap-2 shadow-lg shadow-amber-200">
+                        <button id="place-order-btn" onclick="placeOrder()" class="hidden lg:flex w-full mt-5 bg-secondary hover:bg-slate-800 text-white font-bold py-4 px-6 rounded-xl transition-colors text-base items-center justify-center gap-2 shadow-lg shadow-slate-200">
                             <i class="ph ph-lock-key"></i>
                             สั่งซื้อ
                         </button>
@@ -380,7 +380,7 @@
             <p class="text-gray-500 mb-1" id="order-id-display">เราได้รับคำสั่งซื้อของคุณแล้ว</p>
             <p class="text-sm text-gray-400 mb-6">อีเมลยืนยันจะถูกส่งไปยังอีเมลของคุณ</p>
             <div class="space-y-3">
-                <button onclick="window.location='index.html'" class="w-full bg-primary hover:bg-amber-700 text-white font-bold py-3 px-6 rounded-xl transition-colors flex items-center justify-center gap-2">
+                <button onclick="window.location='index.html'" class="w-full bg-secondary hover:bg-slate-800 text-white font-bold py-3 px-6 rounded-xl transition-colors flex items-center justify-center gap-2">
                     <i class="ph ph-storefront"></i> เลือกซื้อสินค้าต่อ
                 </button>
                 <button onclick="window.location='track-order.html'" class="w-full bg-white border-2 border-gray-200 hover:border-primary text-gray-700 hover:text-primary font-bold py-3 px-6 rounded-xl transition-colors flex items-center justify-center gap-2">

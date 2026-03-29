@@ -7,7 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
-      theme: { extend: { colors: { primary: '#C8A84E' } } }
+      theme: { extend: { colors: { primary: '#8B7355' } } }
     };
   </script>
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -236,7 +236,7 @@
         linkCard.classList.remove('hidden');
         const logo = document.getElementById('carrier-logo');
         logo.textContent = order.carrier[0];
-        logo.style.background = CARRIER_COLORS[order.carrier] || '#C8A84E';
+        logo.style.background = CARRIER_COLORS[order.carrier] || '#8B7355';
         document.getElementById('carrier-name').textContent = `${order.carrier} Express`;
         document.getElementById('tracking-number-display').textContent = order.trackingNumber;
         const trackUrl = (CARRIER_TRACKING_URLS[order.carrier] || '') + order.trackingNumber;

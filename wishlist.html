@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>สินค้าที่ถูกใจ — btmusicdrive</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>tailwind.config = { theme: { extend: { colors: { primary: '#C8A84E', secondary: '#1a1a1a' } } } };</script>
+  <script>tailwind.config = { theme: { extend: { colors: { primary: '#8B7355', secondary: '#0F172A' } } } };</script>
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script async defer crossorigin="anonymous" src="https://connect.facebook.net/th_TH/sdk.js"></script>
@@ -16,12 +16,12 @@
 <body class="bg-gray-50 text-gray-800 antialiased">
   <header id="site-header"></header>
 
-  <main class="pt-20 pb-16">
+  <main class="pt-20 pb-20 md:pb-16">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div class="flex flex-col lg:flex-row gap-8">
 
-        <!-- Account Sidebar -->
-        <aside class="lg:w-64 flex-shrink-0">
+        <!-- Account Sidebar (desktop only, mobile uses bottom nav drawer) -->
+        <aside class="hidden lg:block lg:w-64 flex-shrink-0">
           <div class="bg-white rounded-2xl border border-gray-100 p-4 mb-4">
             <div class="flex items-center gap-3 mb-4">
               <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center"><i class="ph ph-user text-2xl text-primary"></i></div>
