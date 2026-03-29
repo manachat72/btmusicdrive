@@ -160,7 +160,36 @@ function updateTotals() {
 
 // ── Payment Tabs ──────────────────────────────────────────────────────────────
 
+function selectPaymentMethod(method) {
+    const methods = ['card', 'promptpay', 'truemoney'];
+    
+    methods.forEach(m => {
+        const box = document.getElementById(`payment-box-${m}`);
+        const labelText = box.querySelector('span');
+        
+        if (m === method) {
+            box.classList.remove('border-gray-200', 'opacity-70');
+            box.classList.add('border-2', 'border-primary', 'shadow-sm');
+            labelText.classList.remove('text-gray-700');
+            labelText.classList.add('text-gray-900');
+        } else {
+            box.classList.remove('border-2', 'border-primary', 'shadow-sm');
+            box.classList.add('border-gray-200', 'opacity-70');
+            labelText.classList.add('text-gray-700');
+            labelText.classList.remove('text-gray-900');
+        }
+    });
+
+    const cardForm = document.getElementById('inline-card-form');
+    if (method === 'card') {
+        cardForm.classList.remove('hidden');
+    } else {
+        cardForm.classList.add('hidden');
+    }
+}
+
 function switchPayment(method) {
+    // This is the old tab function, kept for backward compatibility if used anywhere else
     ['card', 'paypal', 'cod'].forEach(m => {
         document.getElementById(`payment-${m}`).classList.add('hidden');
         const tab = document.getElementById(`tab-${m}`);
@@ -322,11 +351,7 @@ function validateForm() {
 // ── Place Order ───────────────────────────────────────────────────────────────
 
 // Initialize Omise
-OmiseCard.configure({
-    publicKey: 'pkey_test_674nw670v7znhhl0h6x', // Omise Public Key
-    defaultPaymentMethod: 'credit_card',
-    otherPaymentMethods: ['promptpay', 'truemoney']
-});
+Omise.setPublicKey('pkey_test_674nw670v7znhhl0h6x');
 
 async function placeOrder() {
     hideError();
@@ -350,21 +375,57 @@ async function placeOrder() {
     const totalText = document.getElementById('total-price').textContent.replace('฿', '').replace(/,/g, '');
     const amountInSatangs = Math.round(parseFloat(totalText) * 100);
 
-    OmiseCard.open({
-        amount: amountInSatangs,
-        currency: 'THB',
-        onCreateTokenSuccess: (nonce) => {
-            if (nonce.startsWith('tok_') || nonce.startsWith('src_')) {
-                processCheckout(nonce);
-            } else {
-                showError('เกิดข้อผิดพลาดในการประมวลผลการชำระเงิน');
-            }
-        },
-        onFormClosed: () => {
+    const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+
+    setLoading(btn, true);
+    setLoading(btnMobile, true);
+
+    if (paymentMethod === 'card') {
+        const num = document.getElementById('cc-number').value.replace(/\s+/g, '');
+        const name = document.getElementById('cc-name').value;
+        const expiry = document.getElementById('cc-expiry').value.split('/');
+        const month = expiry[0] ? expiry[0].trim() : '';
+        const yearVal = expiry[1] ? expiry[1].trim() : '';
+        const year = yearVal.length === 2 ? '20' + yearVal : yearVal; // Convert YY to YYYY
+        const cvv = document.getElementById('cc-cvv').value;
+
+        if (!num || !name || !month || !year || !cvv) {
+            showError('กรุณากรอกข้อมูลบัตรให้ครบถ้วน');
             setLoading(btn, false);
             setLoading(btnMobile, false);
+            return;
         }
-    });
+
+        Omise.createToken('card', {
+            name: name,
+            number: num,
+            expiration_month: month,
+            expiration_year: year,
+            security_code: cvv
+        }, (statusCode, response) => {
+            if (statusCode === 200) {
+                processCheckout(response.id);
+            } else {
+                showError(response.message || 'เกิดข้อผิดพลาดกับข้อมูลบัตรของคุณ');
+                setLoading(btn, false);
+                setLoading(btnMobile, false);
+            }
+        });
+    } else {
+        // PromptPay or TrueMoney
+        Omise.createSource(paymentMethod, {
+            amount: amountInSatangs,
+            currency: 'THB'
+        }, (statusCode, response) => {
+            if (statusCode === 200) {
+                processCheckout(response.id);
+            } else {
+                showError(response.message || 'เกิดข้อผิดพลาดในการสร้างรายการชำระเงิน');
+                setLoading(btn, false);
+                setLoading(btnMobile, false);
+            }
+        });
+    }
 }
 
 async function processCheckout(omiseToken) {

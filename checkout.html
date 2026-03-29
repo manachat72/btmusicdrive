@@ -222,17 +222,59 @@
                         <h2 class="text-lg font-bold text-gray-900">วิธีการชำระเงิน</h2>
                     </div>
 
-                    <!-- Omise Payment Info -->
-                    <div class="text-center py-6">
-                        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-50 mb-4">
-                            <i class="ph ph-shield-check text-primary text-3xl"></i>
+                    <!-- Inline Payment Form -->
+                    <div class="space-y-3">
+                        <!-- Option 1: Credit/Debit Card -->
+                        <div class="border-2 border-primary rounded-xl overflow-hidden bg-white shadow-sm transition-all" id="payment-box-card">
+                            <label class="flex items-center gap-3 p-4 cursor-pointer">
+                                <input type="radio" name="payment_method" value="card" class="w-5 h-5 text-primary focus:ring-primary border-gray-300" checked onchange="selectPaymentMethod('card')">
+                                <span class="font-semibold text-gray-900">Credit / Debit</span>
+                                <div class="ml-auto text-gray-400"><i class="ph ph-credit-card text-2xl"></i></div>
+                            </label>
+                            <div class="p-4 pt-0 border-t border-gray-100 mt-2" id="inline-card-form">
+                                <div class="space-y-4 pt-4">
+                                    <div>
+                                        <label class="block text-sm text-gray-500 mb-1">Card number</label>
+                                        <input type="text" id="cc-number" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-sm" placeholder="0000 0000 0000 0000" maxlength="19" oninput="formatCardNumber(this)">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm text-gray-500 mb-1">Name on card</label>
+                                        <input type="text" id="cc-name" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-sm" placeholder="John Doe">
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm text-gray-500 mb-1">Expiry date</label>
+                                            <input type="text" id="cc-expiry" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-sm" placeholder="MM/YY" maxlength="5" oninput="formatExpiry(this)">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm text-gray-500 mb-1">Security code</label>
+                                            <input type="password" id="cc-cvv" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-sm" placeholder="123" maxlength="4">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <p class="text-gray-700 font-medium mb-2">ชำระเงินอย่างปลอดภัยผ่าน Omise</p>
-                        <p class="text-sm text-gray-500 max-w-sm mx-auto">คุณจะถูกนำไปยังหน้าชำระเงินที่ปลอดภัยของ Omise รองรับบัตรเครดิต/เดบิต, PromptPay และ TrueMoney Wallet</p>
-                        <div class="flex items-center justify-center gap-3 mt-4 text-gray-400">
-                            <i class="ph ph-credit-card text-2xl"></i>
-                            <i class="ph ph-qr-code text-2xl"></i>
-                            <i class="ph ph-device-mobile text-2xl"></i>
+
+                        <!-- Option 2: PromptPay -->
+                        <div class="border border-gray-200 rounded-xl overflow-hidden bg-white hover:border-gray-300 transition-all opacity-70" id="payment-box-promptpay">
+                            <label class="flex items-center gap-3 p-4 cursor-pointer">
+                                <input type="radio" name="payment_method" value="promptpay" class="w-5 h-5 text-primary focus:ring-primary border-gray-300" onchange="selectPaymentMethod('promptpay')">
+                                <span class="font-semibold text-gray-700">PromptPay</span>
+                                <div class="ml-auto flex items-center justify-center p-1 rounded">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/PromptPay-logo.png/1200px-PromptPay-logo.png" class="h-5 object-contain" alt="PromptPay">
+                                </div>
+                            </label>
+                        </div>
+
+                        <!-- Option 3: TrueMoney -->
+                        <div class="border border-gray-200 rounded-xl overflow-hidden bg-white hover:border-gray-300 transition-all opacity-70" id="payment-box-truemoney">
+                            <label class="flex items-center gap-3 p-4 cursor-pointer">
+                                <input type="radio" name="payment_method" value="truemoney" class="w-5 h-5 text-primary focus:ring-primary border-gray-300" onchange="selectPaymentMethod('truemoney')">
+                                <span class="font-semibold text-gray-700">TrueMoney</span>
+                                <div class="ml-auto flex items-center justify-center p-1 rounded">
+                                    <img src="https://www.truemoney.com/wp-content/uploads/2020/12/truemoneywallet-logo-1.png" class="h-5 object-contain" alt="TrueMoney Wallet">
+                                </div>
+                            </label>
                         </div>
                     </div>
 
@@ -240,6 +282,24 @@
                     <div class="mt-4 flex items-center gap-2 text-xs text-gray-400 pt-4 border-t border-gray-100">
                         <i class="ph ph-shield-check text-green-500 text-base"></i>
                         ข้อมูลการชำระเงินของคุณถูกเข้ารหัสและปลอดภัยผ่านระบบของ Omise เราไม่เก็บข้อมูลบัตรของคุณ
+                    </div>
+                </div>
+
+                <!-- Trust Badges -->
+                <div class="section-card">
+                    <div class="grid grid-cols-3 gap-3 text-center">
+                        <div class="text-gray-500">
+                            <i class="ph ph-shield-check text-2xl text-green-500 mb-1 block"></i>
+                            <p class="text-xs font-medium">ชำระเงินปลอดภัย</p>
+                        </div>
+                        <div class="text-gray-500">
+                            <i class="ph ph-arrow-counter-clockwise text-2xl text-blue-500 mb-1 block"></i>
+                            <p class="text-xs font-medium">คืนสินค้าได้ 30 วัน</p>
+                        </div>
+                        <div class="text-gray-500">
+                            <i class="ph ph-headset text-2xl text-purple-500 mb-1 block"></i>
+                            <p class="text-xs font-medium">บริการ 24/7</p>
+                        </div>
                     </div>
                 </div>
 
@@ -343,24 +403,6 @@
                         <div id="checkout-error" class="hidden mt-3 bg-red-50 border border-red-200 text-red-700 text-sm p-3 rounded-lg flex items-center gap-2">
                             <i class="ph ph-warning-circle text-base flex-shrink-0"></i>
                             <span id="checkout-error-text"></span>
-                        </div>
-                    </div>
-
-                    <!-- Trust Badges -->
-                    <div class="section-card">
-                        <div class="grid grid-cols-3 gap-3 text-center">
-                            <div class="text-gray-500">
-                                <i class="ph ph-shield-check text-2xl text-green-500 mb-1 block"></i>
-                                <p class="text-xs font-medium">ชำระเงินปลอดภัย</p>
-                            </div>
-                            <div class="text-gray-500">
-                                <i class="ph ph-arrow-counter-clockwise text-2xl text-blue-500 mb-1 block"></i>
-                                <p class="text-xs font-medium">คืนสินค้าได้ 30 วัน</p>
-                            </div>
-                            <div class="text-gray-500">
-                                <i class="ph ph-headset text-2xl text-purple-500 mb-1 block"></i>
-                                <p class="text-xs font-medium">บริการ 24/7</p>
-                            </div>
                         </div>
                     </div>
 
