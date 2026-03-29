@@ -160,17 +160,17 @@ function _footerHTML() {
           </div>
           <!-- ช้อปได้ที่ -->
           <div class="mt-5">
-            <p class="text-xs text-gray-400 mb-2 font-semibold">ช้อปได้ที่</p>
+            <p class="text-xs text-gray-400 mb-2 font-semibold">\u0E0A\u0E49\u0E2D\u0E1B\u0E44\u0E14\u0E49\u0E17\u0E35\u0E48</p>
             <div class="flex flex-wrap gap-2 sm:space-x-3 sm:gap-0">
-              <a href="#" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-200 text-gray-500 hover:border-primary hover:text-primary transition-all text-xs font-medium">
+              <a href="https://www.tiktok.com/@buytrrm1992" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-200 text-gray-500 hover:border-primary hover:text-primary transition-all text-xs font-medium">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 0010.86 4.46V13a8.28 8.28 0 005.58 2.16V11.7a4.83 4.83 0 01-3.77-1.24V6.69h3.77z"/></svg>
                 TikTok Shop
               </a>
-              <a href="#" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-200 text-gray-500 hover:border-[#ee4d2d] hover:text-[#ee4d2d] transition-all text-xs font-medium">
+              <a href="https://shopee.co.th/shop/134575937" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-200 text-gray-500 hover:border-[#ee4d2d] hover:text-[#ee4d2d] transition-all text-xs font-medium">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C9.24 2 7 4.24 7 7H5c-1.1 0-2 .9-2 2v10c0 1.66 1.34 3 3 3h12c1.66 0 3-1.34 3-3V9c0-1.1-.9-2-2-2h-2c0-2.76-2.24-5-5-5zm0 2c1.66 0 3 1.34 3 3H9c0-1.66 1.34-3 3-3zm0 6c1.38 0 2.5-1.12 2.5-2.5h1.5c0 2.21-1.79 4-4 4s-4-1.79-4-4h1.5C9.5 8.88 10.62 10 12 10z"/></svg>
                 Shopee
               </a>
-              <a href="#" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-200 text-gray-500 hover:border-[#0f146d] hover:text-[#0f146d] transition-all text-xs font-medium">
+              <a href="https://www.lazada.co.th/shop/buythrrm1992/" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-200 text-gray-500 hover:border-[#0f146d] hover:text-[#0f146d] transition-all text-xs font-medium">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7v10l10 5 10-5V7L12 2zm0 2.18L19.18 7.5 12 10.82 4.82 7.5 12 4.18zM4 8.72l7 3.5V19l-7-3.5V8.72zm16 0V15.5L13 19v-6.78l7-3.5z"/></svg>
                 Lazada
               </a>
