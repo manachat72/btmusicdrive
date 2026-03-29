@@ -161,7 +161,7 @@ function updateTotals() {
 // ── Payment Tabs ──────────────────────────────────────────────────────────────
 
 function selectPaymentMethod(method) {
-    const methods = ['card', 'promptpay', 'truemoney'];
+    const methods = ['card', 'promptpay', 'truemoney', 'cod'];
     
     methods.forEach(m => {
         const box = document.getElementById(`payment-box-${m}`);
@@ -380,7 +380,10 @@ async function placeOrder() {
     setLoading(btn, true);
     setLoading(btnMobile, true);
 
-    if (paymentMethod === 'card') {
+    if (paymentMethod === 'cod') {
+        // Cash on delivery bypasses Omise directly
+        processCheckout('cod');
+    } else if (paymentMethod === 'card') {
         const num = document.getElementById('cc-number').value.replace(/\s+/g, '');
         const name = document.getElementById('cc-name').value;
         const expiry = document.getElementById('cc-expiry').value.split('/');

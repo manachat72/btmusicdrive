@@ -272,7 +272,18 @@
                                 <input type="radio" name="payment_method" value="truemoney" class="w-5 h-5 text-primary focus:ring-primary border-gray-300" onchange="selectPaymentMethod('truemoney')">
                                 <span class="font-semibold text-gray-700">TrueMoney</span>
                                 <div class="ml-auto flex items-center justify-center p-1 rounded">
-                                    <img src="https://www.truemoney.com/wp-content/uploads/2020/12/truemoneywallet-logo-1.png" class="h-5 object-contain" alt="TrueMoney Wallet">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/TrueMoney_Wallet_logo.png/1200px-TrueMoney_Wallet_logo.png" class="h-6 object-contain" alt="TrueMoney Wallet" onerror="this.onerror=null; this.src='https://cdn.iconscout.com/icon/free/png-256/free-true-money-logo-icon-download-in-svg-png-gif-file-formats--wallet-payment-brand-logos-icons-2673859.png';">
+                                </div>
+                            </label>
+                        </div>
+
+                        <!-- Option 4: Cash on Delivery -->
+                        <div class="border border-gray-200 rounded-xl overflow-hidden bg-white hover:border-gray-300 transition-all opacity-70" id="payment-box-cod">
+                            <label class="flex items-center gap-3 p-4 cursor-pointer">
+                                <input type="radio" name="payment_method" value="cod" class="w-5 h-5 text-primary focus:ring-primary border-gray-300" onchange="selectPaymentMethod('cod')">
+                                <span class="font-semibold text-gray-700">เก็บเงินปลายทาง (Cash on Delivery)</span>
+                                <div class="ml-auto flex items-center justify-center text-gray-500">
+                                    <i class="ph ph-truck text-2xl"></i>
                                 </div>
                             </label>
                         </div>
