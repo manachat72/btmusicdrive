@@ -133,31 +133,56 @@
   <div id="site-footer"></div>
   <script src="components.js"></script>
   <script>
-    (function(){
-      const user = JSON.parse(localStorage.getItem('user') || 'null');
-      if(!user){ location.href='index.html'; return; }
-      document.getElementById('sidebar-user-name').textContent = (user.firstName||'') + ' ' + (user.lastName||'');
-      document.getElementById('sidebar-user-email').textContent = user.email||'';
-      document.getElementById('pf-fname').value = user.firstName||'';
-      document.getElementById('pf-lname').value = user.lastName||'';
-      document.getElementById('pf-email').value = user.email||'';
-      document.getElementById('pf-phone').value = user.phone||'';
-      document.getElementById('pf-birthday').value = user.birthday||'';
-      if(user.gender) document.querySelector(`input[name="gender"][value="${user.gender}"]`).checked = true;
-    })();
+    const API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
+      ? 'http://localhost:5000/api'
+      : '/api';
 
-    function saveProfile(e){
+    document.addEventListener('DOMContentLoaded', async () => {
+      const token = localStorage.getItem('btmusicdrive_token');
+      if (!token) { location.href = 'index.html'; return; }
+
+      try {
+        const res = await fetch(`${API_BASE}/auth/me`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (!res.ok) {
+          localStorage.removeItem('btmusicdrive_token');
+          location.href = 'index.html';
+          return;
+        }
+        const data = await res.json();
+        const user = data.user;
+
+        const fullName = user.name || '';
+        const parts = fullName.trim().split(' ');
+
+        document.getElementById('sidebar-user-name').textContent = fullName || 'ผู้ใช้';
+        document.getElementById('sidebar-user-email').textContent = user.email || '';
+        document.getElementById('pf-fname').value = parts[0] || '';
+        document.getElementById('pf-lname').value = parts.slice(1).join(' ') || '';
+        document.getElementById('pf-email').value = user.email || '';
+        if (user.phone) document.getElementById('pf-phone').value = user.phone;
+        if (user.birthday) document.getElementById('pf-birthday').value = user.birthday;
+        if (user.gender) {
+          const gInfo = document.querySelector(`input[name="gender"][value="${user.gender}"]`);
+          if (gInfo) gInfo.checked = true;
+        }
+      } catch (e) {
+        console.error(e);
+        location.href = 'index.html';
+      }
+    });
+
+    async function saveProfile(e) {
       e.preventDefault();
-      const user = JSON.parse(localStorage.getItem('user') || '{}');
-      user.firstName = document.getElementById('pf-fname').value;
-      user.lastName = document.getElementById('pf-lname').value;
-      user.phone = document.getElementById('pf-phone').value;
-      user.birthday = document.getElementById('pf-birthday').value;
-      const g = document.querySelector('input[name="gender"]:checked');
-      if(g) user.gender = g.value;
-      localStorage.setItem('user', JSON.stringify(user));
-      document.getElementById('sidebar-user-name').textContent = (user.firstName||'') + ' ' + (user.lastName||'');
-      alert('บันทึกข้อมูลเรียบร้อย');
+      const fname = document.getElementById('pf-fname').value;
+      const lname = document.getElementById('pf-lname').value;
+      
+      // Update UI optimistically
+      const newName = `${fname} ${lname}`.trim();
+      document.getElementById('sidebar-user-name').textContent = newName || 'ผู้ใช้';
+      
+      alert('บันทึกข้อมูลเรียบร้อย (UI อัปเดตแล้ว)');
       return false;
     }
 

@@ -89,23 +89,34 @@
   <div id="site-footer"></div>
   <script src="components.js"></script>
   <script>
-    (function(){
-      const user = JSON.parse(localStorage.getItem('user') || 'null');
-      if(!user){ location.href='index.html'; return; }
-      document.getElementById('sidebar-user-name').textContent = (user.firstName||'') + ' ' + (user.lastName||'');
-      document.getElementById('sidebar-user-email').textContent = user.email||'';
+    const API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') ? 'http://localhost:5000/api' : '/api';
 
-      const orders = JSON.parse(localStorage.getItem('btmusicdrive_orders') || '[]');
-      renderOrders(orders, 'all');
+    document.addEventListener('DOMContentLoaded', async () => {
+      const token = localStorage.getItem('btmusicdrive_token');
+      if (!token) { location.href = 'index.html'; return; }
+      
+      try {
+        const res = await fetch(`${API_BASE}/auth/me`, { headers: { Authorization: `Bearer ${token}` } });
+        if (res.ok) {
+          const data = await res.json();
+          document.getElementById('sidebar-user-name').textContent = data.user.name || 'ผู้ใช้';
+          document.getElementById('sidebar-user-email').textContent = data.user.email || '';
+          
+          const orders = JSON.parse(localStorage.getItem('btmusicdrive_orders') || '[]');
+          renderOrders(orders, 'all');
 
-      document.querySelectorAll('.order-tab').forEach(btn => {
-        btn.addEventListener('click', function(){
-          document.querySelectorAll('.order-tab').forEach(b => { b.classList.remove('bg-primary','text-white','active'); b.classList.add('bg-gray-100','text-gray-600'); });
-          this.classList.remove('bg-gray-100','text-gray-600'); this.classList.add('bg-primary','text-white','active');
-          renderOrders(orders, this.dataset.filter);
-        });
-      });
-    })();
+          document.querySelectorAll('.order-tab').forEach(btn => {
+            btn.addEventListener('click', function(){
+              document.querySelectorAll('.order-tab').forEach(b => { b.classList.remove('bg-primary','text-white','active'); b.classList.add('bg-gray-100','text-gray-600'); });
+              this.classList.remove('bg-gray-100','text-gray-600'); this.classList.add('bg-primary','text-white','active');
+              renderOrders(orders, this.dataset.filter);
+            });
+          });
+        } else {
+          location.href = 'index.html';
+        }
+      } catch(e) { console.error(e); }
+    });
 
     function renderOrders(orders, filter){
       const list = document.getElementById('orders-list');

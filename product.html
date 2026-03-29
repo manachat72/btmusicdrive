@@ -25,11 +25,11 @@
   <style>
     body { font-family: 'Inter', sans-serif; }
     .thumb { border: 2px solid transparent; cursor: pointer; transition: border-color .2s; border-radius: 8px; overflow: hidden; }
-    .thumb.active { border-color: #8B7355; }
-    .thumb:hover { border-color: #A28B69; }
+    .thumb.active { border-color: var(--brand-primary); }
+    .thumb:hover { border-color: var(--brand-primary); opacity: .85; }
     .tab-btn { position: relative; padding: 12px 24px; font-weight: 600; color: #64748b; transition: color .2s; }
-    .tab-btn.active { color: #0F172A; }
-    .tab-btn.active::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: #8B7355; border-radius: 3px 3px 0 0; }
+    .tab-btn.active { color: var(--brand-secondary); }
+    .tab-btn.active::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: var(--brand-primary); border-radius: 3px 3px 0 0; }
     .tab-btn:hover { color: #334155; }
     .spec-row:nth-child(even) { background: #f8fafc; }
     .tag { display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; transition: opacity .2s; }
@@ -41,7 +41,7 @@
     .gallery-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,.85); box-shadow: 0 2px 8px rgba(0,0,0,.12); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background .2s; z-index: 5; }
     .gallery-nav:hover { background: #fff; }
     .shop-link { display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; border: 1.5px solid #e2e8f0; color: #64748b; transition: all .2s; cursor: pointer; }
-    .shop-link:hover { border-color: #8B7355; color: #8B7355; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(139,115,85,.18); }
+    .shop-link:hover { border-color: var(--brand-primary); color: var(--brand-primary); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(139,115,85,.18); }
     .shop-link svg { width: 20px; height: 20px; }
   </style>
 </head>

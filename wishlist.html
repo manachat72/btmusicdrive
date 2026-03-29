@@ -78,14 +78,24 @@
   <div id="site-footer"></div>
   <script src="components.js"></script>
   <script>
-    (function(){
-      const user = JSON.parse(localStorage.getItem('user') || 'null');
-      if(!user){ location.href='index.html'; return; }
-      document.getElementById('sidebar-user-name').textContent = (user.firstName||'') + ' ' + (user.lastName||'');
-      document.getElementById('sidebar-user-email').textContent = user.email||'';
+    const API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') ? 'http://localhost:5000/api' : '/api';
 
-      renderWishlist();
-    })();
+    document.addEventListener('DOMContentLoaded', async () => {
+      const token = localStorage.getItem('btmusicdrive_token');
+      if (!token) { location.href = 'index.html'; return; }
+      
+      try {
+        const res = await fetch(`${API_BASE}/auth/me`, { headers: { Authorization: `Bearer ${token}` } });
+        if (res.ok) {
+          const data = await res.json();
+          document.getElementById('sidebar-user-name').textContent = data.user.name || 'ผู้ใช้';
+          document.getElementById('sidebar-user-email').textContent = data.user.email || '';
+          renderWishlist();
+        } else {
+          location.href = 'index.html';
+        }
+      } catch(e) { console.error(e); }
+    });
 
     function getWishlist(){
       return JSON.parse(localStorage.getItem('btmusicdrive_wishlist') || '[]');
