@@ -335,6 +335,53 @@ function _mobileBottomNavHTML() {
   </div>`;
 }
 
+function _desktopSidebarHTML() {
+  return `
+  <aside id="desktop-sidebar" class="hidden md:flex fixed left-0 top-0 bottom-0 w-[72px] bg-white border-r border-gray-100 z-40 flex-col items-center pt-5 pb-6 shadow-sm">
+    <a href="index.html" class="mb-6 flex-shrink-0">
+      <img src="images/logo (60 x 60 px) (1).png" alt="btmusicdrive" class="h-10 w-10 rounded-full hover:scale-110 transition-transform">
+    </a>
+    <nav class="flex-1 flex flex-col items-center gap-1 w-full px-2">
+      <a href="index.html" class="sidebar-link flex flex-col items-center justify-center w-full py-2.5 rounded-xl text-gray-400 hover:text-primary hover:bg-primary/10 transition-all" data-page="index">
+        <i class="ph ph-house text-[22px]"></i>
+        <span class="text-[10px] mt-1 font-medium leading-none">หน้าแรก</span>
+      </a>
+      <a href="shop.html" class="sidebar-link flex flex-col items-center justify-center w-full py-2.5 rounded-xl text-gray-400 hover:text-primary hover:bg-primary/10 transition-all" data-page="shop">
+        <i class="ph ph-squares-four text-[22px]"></i>
+        <span class="text-[10px] mt-1 font-medium leading-none">หมวดหมู่</span>
+      </a>
+      <button id="sidebar-cart-btn" class="sidebar-link flex flex-col items-center justify-center w-full py-2.5 rounded-xl text-gray-400 hover:text-primary hover:bg-primary/10 transition-all relative">
+        <i class="ph ph-shopping-cart text-[22px]"></i>
+        <span id="sidebar-cart-count" class="absolute top-1 right-2 bg-red-500 text-white text-[9px] font-bold rounded-full h-4 w-4 flex items-center justify-center">0</span>
+        <span class="text-[10px] mt-1 font-medium leading-none">ตะกร้า</span>
+      </button>
+      <button id="sidebar-account-btn" class="sidebar-link flex flex-col items-center justify-center w-full py-2.5 rounded-xl text-gray-400 hover:text-primary hover:bg-primary/10 transition-all">
+        <i class="ph ph-user-circle text-[22px]"></i>
+        <span class="text-[10px] mt-1 font-medium leading-none">บัญชี</span>
+      </button>
+    </nav>
+  </aside>
+  <style>
+    @media (min-width: 768px) {
+      body { padding-left: 72px; }
+      #navbar { left: 72px; width: calc(100% - 72px); }
+    }
+    .sidebar-link.active { color: #8B7355; background-color: rgba(139, 115, 85, 0.1); }
+  </style>`;
+}
+
+function _highlightActiveSidebar() {
+  const path = window.location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.sidebar-link[data-page]').forEach(link => {
+    const page = link.getAttribute('data-page');
+    if (path.startsWith(page)) link.classList.add('active');
+    else link.classList.remove('active');
+  });
+  // Also highlight bottom nav
+  const bnavHome = document.getElementById('bnav-home');
+  if (bnavHome && path.startsWith('index')) bnavHome.classList.add('text-primary');
+}
+
 // ── Inject into page ────────────────────────────────────────────────────────
 (function injectComponents() {
   const h = document.getElementById('site-header');
@@ -354,6 +401,12 @@ function _mobileBottomNavHTML() {
   if (!document.getElementById('mobile-bottom-nav')) {
     document.body.insertAdjacentHTML('beforeend', _mobileBottomNavHTML());
   }
+
+  // Desktop Sidebar Navigation
+  if (!document.getElementById('desktop-sidebar')) {
+    document.body.insertAdjacentHTML('beforeend', _desktopSidebarHTML());
+  }
+  _highlightActiveSidebar();
 })();
 
 // ── Dynamic Navigation Menus ────────────────────────────────────────────────
@@ -723,6 +776,10 @@ function _updateCartUI() {
   const bnavCount = document.getElementById('bnav-cart-count');
   if (bnavCount) bnavCount.textContent = totalItems;
 
+  // Update sidebar cart count
+  const sidebarCount = document.getElementById('sidebar-cart-count');
+  if (sidebarCount) sidebarCount.textContent = totalItems;
+
   if (_cart.length === 0) {
     if (emptyMsg) emptyMsg.style.display = 'block';
     if (container) { container.innerHTML = ''; container.appendChild(emptyMsg); }
@@ -828,6 +885,15 @@ function _setupSharedEvents() {
   bnavAccountBtn?.addEventListener('click', (e) => {
     e.stopPropagation();
     _toggleAccountDrawer();
+  });
+
+  // Desktop sidebar events
+  const sidebarCartBtn = document.getElementById('sidebar-cart-btn');
+  const sidebarAccountBtn = document.getElementById('sidebar-account-btn');
+  sidebarCartBtn?.addEventListener('click', _toggleCart);
+  sidebarAccountBtn?.addEventListener('click', () => {
+    if (_currentUser) _handleLogout();
+    else _toggleAuthModal();
   });
 
   const bnavOverlay = document.getElementById('bnav-account-overlay');
