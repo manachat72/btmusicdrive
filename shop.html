@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ร้านค้า — btmusicdrive | สินค้าทั้งหมด</title>
+    <title>ร้านค้า — btmusicdrive | สินค้า</title>
     <meta name="description" content="ร้านค้า btmusicdrive รวมสินค้าแฟลชไดร์ฟเพลง MP3 ทุกหมวดหมู่ ลูกทุ่ง หมอลำ สตริง เพื่อชีวิต สากล เพลงยุค 90s">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -44,11 +44,11 @@
             <nav class="mb-4 text-sm text-gray-500">
                 <a href="index.html" class="hover:text-primary transition-colors">หน้าแรก</a>
                 <span class="mx-2">/</span>
-                <span class="text-gray-700 font-medium" id="breadcrumb-current">สินค้าทั้งหมด</span>
+                <span class="text-gray-700 font-medium" id="breadcrumb-current">สินค้า</span>
             </nav>
             <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
                 <div>
-                    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900" id="page-title">สินค้าทั้งหมด</h1>
+                    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900" id="page-title">สินค้า</h1>
                     <p class="text-gray-500 mt-1" id="product-count-text">กำลังโหลด...</p>
                 </div>
                 <div class="flex items-center gap-3">
@@ -161,8 +161,7 @@
     <script src="components.js"></script>
     <script>
     // ── Shop Page Logic ──────────────────────────────────────────────
-    const API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
-        ? 'http://localhost:5000/api' : '/api';
+    // API_BASE is already defined in components.js
 
     let shopProducts = [];
     let allCategories = [];
