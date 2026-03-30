@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ร้านค้า — btmusicdrive | สินค้าทั้งหมด</title>
+    <meta name="description" content="ร้านค้า btmusicdrive รวมสินค้าแฟลชไดร์ฟเพลง MP3 ทุกหมวดหมู่ ลูกทุ่ง หมอลำ สตริง เพื่อชีวิต สากล เพลงยุค 90s">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#8B7355',
+                        secondary: '#0F172A',
+                    }
+                }
+            }
+        };
+    </script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/th_TH/sdk.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Kanit', 'Inter', sans-serif; }
+        .category-chip { transition: all .2s; }
+        .category-chip.active { background-color: #8B7355; color: #fff; border-color: #8B7355; }
+        .category-chip:not(.active):hover { border-color: #8B7355; color: #8B7355; }
+        .sort-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%236b7280' viewBox='0 0 256 256'%3E%3Cpath d='M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z'%3E%3C/path%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased overflow-x-hidden">
+
+    <!-- Shared Navbar -->
+    <header id="site-header"></header>
+
+    <!-- Page Header -->
+    <section class="pt-24 pb-8 md:pt-28 md:pb-10 bg-white border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Breadcrumb -->
+            <nav class="mb-4 text-sm text-gray-500">
+                <a href="index.html" class="hover:text-primary transition-colors">หน้าแรก</a>
+                <span class="mx-2">/</span>
+                <span class="text-gray-700 font-medium" id="breadcrumb-current">สินค้าทั้งหมด</span>
+            </nav>
+            <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+                <div>
+                    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900" id="page-title">สินค้าทั้งหมด</h1>
+                    <p class="text-gray-500 mt-1" id="product-count-text">กำลังโหลด...</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <!-- Search -->
+                    <div class="relative">
+                        <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input type="text" id="search-input" placeholder="ค้นหาสินค้า..." class="pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary focus:border-primary w-48 md:w-64 transition-colors">
+                    </div>
+                    <!-- Sort -->
+                    <select id="sort-select" class="sort-select border border-gray-200 rounded-xl py-2.5 pl-4 pr-10 text-sm text-gray-700 focus:ring-2 focus:ring-primary focus:border-primary">
+                        <option value="default">เรียงตาม: แนะนำ</option>
+                        <option value="price-asc">ราคา: ต่ำ → สูง</option>
+                        <option value="price-desc">ราคา: สูง → ต่ำ</option>
+                        <option value="rating">คะแนนสูงสุด</option>
+                        <option value="name">ชื่อ ก-ฮ</option>
+                    </select>
+                    <!-- View toggle -->
+                    <div class="hidden md:flex items-center border border-gray-200 rounded-xl overflow-hidden">
+                        <button id="view-grid" class="p-2.5 bg-gray-100 text-gray-700" title="แสดงแบบตาราง"><i class="ph ph-squares-four text-lg"></i></button>
+                        <button id="view-list" class="p-2.5 text-gray-400 hover:text-gray-700 transition-colors" title="แสดงแบบรายการ"><i class="ph ph-list text-lg"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <section class="py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col lg:flex-row gap-8">
+                
+                <!-- Sidebar Filters (Desktop) -->
+                <aside class="lg:w-64 flex-shrink-0">
+                    <div class="bg-white rounded-2xl border border-gray-100 p-5 sticky top-24">
+                        <h3 class="font-bold text-gray-900 mb-4 flex items-center gap-2"><i class="ph ph-funnel text-primary"></i> ตัวกรอง</h3>
+                        
+                        <!-- Categories -->
+                        <div class="mb-6">
+                            <h4 class="text-sm font-semibold text-gray-700 mb-3">หมวดหมู่</h4>
+                            <div class="space-y-2" id="sidebar-categories">
+                                <!-- Generated by JS -->
+                            </div>
+                        </div>
+
+                        <!-- Price Range -->
+                        <div class="mb-6">
+                            <h4 class="text-sm font-semibold text-gray-700 mb-3">ช่วงราคา</h4>
+                            <div class="flex items-center gap-2">
+                                <input type="number" id="price-min" placeholder="฿ ต่ำสุด" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-primary">
+                                <span class="text-gray-400">-</span>
+                                <input type="number" id="price-max" placeholder="฿ สูงสุด" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-primary">
+                            </div>
+                            <button id="apply-price-filter" class="mt-2 w-full text-sm text-primary font-semibold hover:text-amber-700 transition-colors">ใช้ตัวกรองราคา</button>
+                        </div>
+
+                        <!-- Rating Filter -->
+                        <div class="mb-4">
+                            <h4 class="text-sm font-semibold text-gray-700 mb-3">คะแนน</h4>
+                            <div class="space-y-2" id="rating-filters">
+                                <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-600 hover:text-gray-900">
+                                    <input type="radio" name="rating-filter" value="0" checked class="text-primary focus:ring-primary"> ทั้งหมด
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-600 hover:text-gray-900">
+                                    <input type="radio" name="rating-filter" value="4" class="text-primary focus:ring-primary">
+                                    <span class="flex"><i class="ph-fill ph-star text-yellow-400"></i><i class="ph-fill ph-star text-yellow-400"></i><i class="ph-fill ph-star text-yellow-400"></i><i class="ph-fill ph-star text-yellow-400"></i></span> 4 ขึ้นไป
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-600 hover:text-gray-900">
+                                    <input type="radio" name="rating-filter" value="3" class="text-primary focus:ring-primary">
+                                    <span class="flex"><i class="ph-fill ph-star text-yellow-400"></i><i class="ph-fill ph-star text-yellow-400"></i><i class="ph-fill ph-star text-yellow-400"></i></span> 3 ขึ้นไป
+                                </label>
+                            </div>
+                        </div>
+
+                        <button id="clear-filters" class="w-full py-2.5 text-sm font-semibold text-gray-500 hover:text-red-500 border border-gray-200 rounded-xl hover:border-red-200 transition-colors">
+                            <i class="ph ph-x mr-1"></i> ล้างตัวกรองทั้งหมด
+                        </button>
+                    </div>
+                </aside>
+
+                <!-- Products Grid -->
+                <div class="flex-1">
+                    <!-- Category Chips (Mobile-friendly) -->
+                    <div class="flex flex-wrap gap-2 mb-6" id="category-chips">
+                        <!-- Generated by JS -->
+                    </div>
+
+                    <!-- Products -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="shop-products">
+                        <!-- Loading -->
+                        <div class="col-span-full text-center py-16">
+                            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+                            <p class="mt-4 text-gray-500">กำลังโหลดสินค้า...</p>
+                        </div>
+                    </div>
+
+                    <!-- No Results -->
+                    <div id="no-results" class="hidden text-center py-16">
+                        <i class="ph ph-magnifying-glass text-6xl text-gray-300 mb-4"></i>
+                        <p class="text-xl font-bold text-gray-700 mb-2">ไม่พบสินค้า</p>
+                        <p class="text-gray-500">ลองเปลี่ยนคำค้นหาหรือตัวกรอง</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Shared Footer -->
+    <div id="site-footer"></div>
+
+    <script src="components.js"></script>
+    <script>
+    // ── Shop Page Logic ──────────────────────────────────────────────
+    const API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
+        ? 'http://localhost:5000/api' : '/api';
+
+    let shopProducts = [];
+    let allCategories = [];
+    let activeCategory = 'all';
+    let currentSort = 'default';
+    let searchQuery = '';
+    let priceMin = null;
+    let priceMax = null;
+    let ratingFilter = 0;
+    let viewMode = 'grid';
+
+    // Read category from URL param
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlCategory = urlParams.get('category');
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        await loadShopProducts();
+        setupShopEvents();
+    });
+
+    async function loadShopProducts() {
+        try {
+            let response;
+            try {
+                response = await fetch(`${API_BASE}/products`);
+                if (!response.ok) throw new Error('API failed');
+            } catch {
+                response = await fetch('products.json');
+            }
+            if (!response.ok) throw new Error('Failed to fetch');
+            shopProducts = await response.json();
+
+            // Extract unique categories
+            const catMap = new Map();
+            shopProducts.forEach(p => {
+                const catName = p.category?.name || p.category || 'อื่นๆ';
+                const catId = p.categoryId || p.category?.id || catName;
+                if (!catMap.has(catName)) catMap.set(catName, catId);
+            });
+            allCategories = Array.from(catMap.entries()).map(([name, id]) => ({ id, name }));
+
+            // Set active category from URL
+            if (urlCategory) {
+                const found = allCategories.find(c => c.name === urlCategory || c.id === urlCategory);
+                if (found) {
+                    activeCategory = found.name;
+                    document.getElementById('page-title').textContent = found.name;
+                    document.getElementById('breadcrumb-current').textContent = found.name;
+                }
+            }
+
+            renderCategoryChips();
+            renderSidebarCategories();
+            renderShopProducts();
+        } catch (err) {
+            console.error(err);
+            document.getElementById('shop-products').innerHTML = '<div class="col-span-full text-center py-16 text-red-500"><i class="ph ph-warning-circle text-5xl mb-3"></i><p class="font-semibold">ไม่สามารถโหลดสินค้าได้</p></div>';
+        }
+    }
+
+    function renderCategoryChips() {
+        const container = document.getElementById('category-chips');
+        let html = `<button class="category-chip px-4 py-2 rounded-full border border-gray-200 text-sm font-medium ${activeCategory === 'all' ? 'active' : ''}" data-cat="all">ทั้งหมด</button>`;
+        allCategories.forEach(c => {
+            html += `<button class="category-chip px-4 py-2 rounded-full border border-gray-200 text-sm font-medium ${activeCategory === c.name ? 'active' : ''}" data-cat="${c.name}">${c.name}</button>`;
+        });
+        container.innerHTML = html;
+    }
+
+    function renderSidebarCategories() {
+        const container = document.getElementById('sidebar-categories');
+        let html = `<label class="flex items-center gap-2 cursor-pointer text-sm"><input type="radio" name="sidebar-cat" value="all" ${activeCategory === 'all' ? 'checked' : ''} class="text-primary focus:ring-primary"> ทั้งหมด</label>`;
+        allCategories.forEach(c => {
+            const count = shopProducts.filter(p => (p.category?.name || p.category) === c.name).length;
+            html += `<label class="flex items-center gap-2 cursor-pointer text-sm"><input type="radio" name="sidebar-cat" value="${c.name}" ${activeCategory === c.name ? 'checked' : ''} class="text-primary focus:ring-primary"> ${c.name} <span class="text-gray-400">(${count})</span></label>`;
+        });
+        container.innerHTML = html;
+    }
+
+    function getFilteredProducts() {
+        let filtered = [...shopProducts];
+
+        // Category filter
+        if (activeCategory !== 'all') {
+            filtered = filtered.filter(p => (p.category?.name || p.category) === activeCategory);
+        }
+
+        // Search filter
+        if (searchQuery) {
+            const q = searchQuery.toLowerCase();
+            filtered = filtered.filter(p =>
+                p.name.toLowerCase().includes(q) ||
+                (p.description || '').toLowerCase().includes(q) ||
+                (p.tags || []).some(t => t.toLowerCase().includes(q))
+            );
+        }
+
+        // Price filter
+        if (priceMin !== null) filtered = filtered.filter(p => p.price >= priceMin);
+        if (priceMax !== null) filtered = filtered.filter(p => p.price <= priceMax);
+
+        // Rating filter
+        if (ratingFilter > 0) filtered = filtered.filter(p => (p.rating || 0) >= ratingFilter);
+
+        // Sort
+        switch (currentSort) {
+            case 'price-asc': filtered.sort((a, b) => a.price - b.price); break;
+            case 'price-desc': filtered.sort((a, b) => b.price - a.price); break;
+            case 'rating': filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0)); break;
+            case 'name': filtered.sort((a, b) => a.name.localeCompare(b.name, 'th')); break;
+        }
+
+        return filtered;
+    }
+
+    function renderShopProducts() {
+        const container = document.getElementById('shop-products');
+        const noResults = document.getElementById('no-results');
+        const filtered = getFilteredProducts();
+
+        // Update count
+        document.getElementById('product-count-text').textContent = `แสดง ${filtered.length} จาก ${shopProducts.length} รายการ`;
+
+        if (filtered.length === 0) {
+            container.innerHTML = '';
+            noResults.classList.remove('hidden');
+            return;
+        }
+        noResults.classList.add('hidden');
+
+        // Grid or list
+        if (viewMode === 'grid') {
+            container.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6';
+        } else {
+            container.className = 'flex flex-col gap-4';
+        }
+
+        container.innerHTML = filtered.map((product, index) => {
+            const rating = product.rating || 0;
+            const reviews = product.reviews || 0;
+            let starsHtml = '';
+            for (let i = 1; i <= 5; i++) {
+                if (i <= Math.floor(rating)) starsHtml += `<i class="ph-fill ph-star text-yellow-400 text-sm"></i>`;
+                else if (i === Math.ceil(rating) && !Number.isInteger(rating)) starsHtml += `<i class="ph-fill ph-star-half text-yellow-400 text-sm"></i>`;
+                else starsHtml += `<i class="ph ph-star text-gray-300 text-sm"></i>`;
+            }
+
+            const wishlist = JSON.parse(localStorage.getItem('btmusicdrive_wishlist') || '[]');
+            const isWishlisted = wishlist.some(w => w.id === product.id);
+            const heartClass = isWishlisted ? 'ph-fill ph-heart text-xl text-red-500' : 'ph ph-heart text-xl';
+
+            const discountHtml = product.originalPrice ? `<span class="text-sm text-gray-400 line-through ml-2">฿${product.originalPrice.toFixed(2)}</span><span class="ml-2 text-xs font-bold text-red-500 bg-red-50 px-2 py-0.5 rounded-full">-${Math.round((1 - product.price / product.originalPrice) * 100)}%</span>` : '';
+
+            if (viewMode === 'list') {
+                return `
+                <div class="bg-white rounded-2xl border border-gray-100 flex overflow-hidden hover:shadow-lg transition-shadow animate-fade-in-up" style="animation-delay:${index * 0.05}s">
+                    <a href="product.html?id=${product.id}" class="w-48 h-48 flex-shrink-0 overflow-hidden">
+                        <img src="${product.imageUrl}" alt="${product.name}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </a>
+                    <div class="p-5 flex-1 flex flex-col justify-between">
+                        <div>
+                            <div class="text-xs text-gray-500 font-medium uppercase tracking-wider mb-1">${product.category?.name || product.category || ''}</div>
+                            <a href="product.html?id=${product.id}" class="block"><h3 class="text-lg font-bold text-gray-900 hover:text-primary transition-colors">${product.name}</h3></a>
+                            <div class="flex items-center mt-2">${starsHtml}<span class="text-xs text-gray-500 ml-2">(${reviews} รีวิว)</span></div>
+                        </div>
+                        <div class="flex items-center justify-between mt-3">
+                            <div class="flex items-center"><span class="text-xl font-bold text-gray-900">฿${product.price.toFixed(2)}</span>${discountHtml}</div>
+                            <button class="shop-add-cart bg-primary hover:bg-secondary text-white font-semibold py-2 px-5 rounded-lg text-sm transition-colors" data-id="${product.id}"><i class="ph ph-shopping-cart mr-1"></i> เพิ่มลงตะกร้า</button>
+                        </div>
+                    </div>
+                </div>`;
+            }
+
+            return `
+            <div class="bg-white rounded-2xl overflow-hidden border border-gray-100 hover:shadow-lg transition-shadow animate-fade-in-up" style="animation-delay:${index * 0.05}s">
+                <a href="product.html?id=${product.id}" class="block relative h-64 overflow-hidden group cursor-pointer">
+                    <img src="${product.imageUrl}" alt="${product.name}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-black bg-opacity-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                        <button class="shop-add-cart bg-white text-gray-900 hover:bg-primary hover:text-white font-bold py-3 px-6 rounded-full shadow-lg transition-colors flex items-center" data-id="${product.id}" onclick="event.preventDefault();event.stopPropagation();">
+                            <i class="ph ph-shopping-cart mr-2 text-lg"></i> เพิ่มลงตะกร้า
+                        </button>
+                    </div>
+                    <button class="absolute top-4 right-4 bg-white p-2 rounded-full text-gray-400 hover:text-red-500 shadow-sm transition-colors z-10" data-wishlist="${product.id}" onclick="event.preventDefault();event.stopPropagation();">
+                        <i class="${heartClass}"></i>
+                    </button>
+                    ${product.originalPrice ? `<span class="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-sm">-${Math.round((1 - product.price / product.originalPrice) * 100)}%</span>` : ''}
+                </a>
+                <div class="p-5">
+                    <div class="text-xs text-gray-500 font-medium mb-1 uppercase tracking-wider">${product.category?.name || product.category || ''}</div>
+                    <a href="product.html?id=${product.id}" class="block"><h3 class="text-lg font-bold text-gray-900 mb-2 truncate hover:text-primary transition-colors">${product.name}</h3></a>
+                    <div class="flex items-center mb-3">
+                        <div class="flex mr-2">${starsHtml}</div>
+                        <span class="text-xs text-gray-500">(${reviews})</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div><span class="text-xl font-bold text-gray-900">฿${product.price.toFixed(2)}</span>${discountHtml}</div>
+                        <button class="md:hidden shop-add-cart text-primary hover:text-secondary p-2" data-id="${product.id}">
+                            <i class="ph-fill ph-plus-circle text-3xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    function setupShopEvents() {
+        // Category chips
+        document.getElementById('category-chips').addEventListener('click', e => {
+            const chip = e.target.closest('.category-chip');
+            if (!chip) return;
+            activeCategory = chip.dataset.cat;
+            document.getElementById('page-title').textContent = activeCategory === 'all' ? 'สินค้าทั้งหมด' : activeCategory;
+            document.getElementById('breadcrumb-current').textContent = activeCategory === 'all' ? 'สินค้าทั้งหมด' : activeCategory;
+            renderCategoryChips();
+            renderSidebarCategories();
+            renderShopProducts();
+            // Update URL
+            const url = new URL(window.location);
+            if (activeCategory === 'all') url.searchParams.delete('category');
+            else url.searchParams.set('category', activeCategory);
+            history.replaceState(null, '', url);
+        });
+
+        // Sidebar category radios
+        document.getElementById('sidebar-categories').addEventListener('change', e => {
+            if (e.target.name === 'sidebar-cat') {
+                activeCategory = e.target.value;
+                document.getElementById('page-title').textContent = activeCategory === 'all' ? 'สินค้าทั้งหมด' : activeCategory;
+                document.getElementById('breadcrumb-current').textContent = activeCategory === 'all' ? 'สินค้าทั้งหมด' : activeCategory;
+                renderCategoryChips();
+                renderShopProducts();
+            }
+        });
+
+        // Search
+        let searchTimeout;
+        document.getElementById('search-input').addEventListener('input', e => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                searchQuery = e.target.value.trim();
+                renderShopProducts();
+            }, 300);
+        });
+
+        // Sort
+        document.getElementById('sort-select').addEventListener('change', e => {
+            currentSort = e.target.value;
+            renderShopProducts();
+        });
+
+        // Price filter
+        document.getElementById('apply-price-filter').addEventListener('click', () => {
+            const min = document.getElementById('price-min').value;
+            const max = document.getElementById('price-max').value;
+            priceMin = min ? Number(min) : null;
+            priceMax = max ? Number(max) : null;
+            renderShopProducts();
+        });
+
+        // Rating filter
+        document.getElementById('rating-filters').addEventListener('change', e => {
+            if (e.target.name === 'rating-filter') {
+                ratingFilter = Number(e.target.value);
+                renderShopProducts();
+            }
+        });
+
+        // Clear filters
+        document.getElementById('clear-filters').addEventListener('click', () => {
+            activeCategory = 'all';
+            searchQuery = '';
+            currentSort = 'default';
+            priceMin = null;
+            priceMax = null;
+            ratingFilter = 0;
+            document.getElementById('search-input').value = '';
+            document.getElementById('sort-select').value = 'default';
+            document.getElementById('price-min').value = '';
+            document.getElementById('price-max').value = '';
+            document.getElementById('page-title').textContent = 'สินค้าทั้งหมด';
+            document.getElementById('breadcrumb-current').textContent = 'สินค้าทั้งหมด';
+            const url = new URL(window.location);
+            url.searchParams.delete('category');
+            history.replaceState(null, '', url);
+            renderCategoryChips();
+            renderSidebarCategories();
+            renderShopProducts();
+            document.querySelectorAll('input[name="rating-filter"]').forEach(r => r.checked = r.value === '0');
+        });
+
+        // View toggle
+        document.getElementById('view-grid')?.addEventListener('click', () => {
+            viewMode = 'grid';
+            document.getElementById('view-grid').className = 'p-2.5 bg-gray-100 text-gray-700';
+            document.getElementById('view-list').className = 'p-2.5 text-gray-400 hover:text-gray-700 transition-colors';
+            renderShopProducts();
+        });
+        document.getElementById('view-list')?.addEventListener('click', () => {
+            viewMode = 'list';
+            document.getElementById('view-list').className = 'p-2.5 bg-gray-100 text-gray-700';
+            document.getElementById('view-grid').className = 'p-2.5 text-gray-400 hover:text-gray-700 transition-colors';
+            renderShopProducts();
+        });
+
+        // Add to cart (delegated)
+        document.addEventListener('click', e => {
+            const btn = e.target.closest('.shop-add-cart');
+            if (!btn) return;
+            e.preventDefault();
+            e.stopPropagation();
+            const productId = btn.dataset.id;
+            if (typeof addToCart === 'function') {
+                addToCart(productId);
+            } else if (typeof _addToCart === 'function') {
+                _addToCart(productId);
+            } else {
+                // Fallback: use localStorage
+                let cart = JSON.parse(localStorage.getItem('btmusicdrive_cart') || '[]');
+                const existing = cart.find(c => c.id === productId);
+                if (existing) existing.quantity++;
+                else cart.push({ id: productId, quantity: 1 });
+                localStorage.setItem('btmusicdrive_cart', JSON.stringify(cart));
+                if (typeof _showToast === 'function') _showToast('เพิ่มสินค้าลงตะกร้าแล้ว');
+            }
+        });
+
+        // Wishlist (delegated)
+        document.addEventListener('click', e => {
+            const heartBtn = e.target.closest('[data-wishlist]');
+            if (!heartBtn) return;
+            e.preventDefault();
+            e.stopPropagation();
+            const pid = heartBtn.getAttribute('data-wishlist');
+            if (!pid) return;
+            let wishlist = JSON.parse(localStorage.getItem('btmusicdrive_wishlist') || '[]');
+            const idx = wishlist.findIndex(w => w.id === pid);
+            const icon = heartBtn.querySelector('i');
+            if (idx >= 0) {
+                wishlist.splice(idx, 1);
+                if (icon) icon.className = 'ph ph-heart text-xl';
+                if (typeof _showToast === 'function') _showToast('ลบออกจากรายการที่ถูกใจ');
+            } else {
+                const product = shopProducts.find(p => p.id === pid);
+                if (product) wishlist.push({ id: product.id, name: product.name, price: product.price, image: product.imageUrl || product.image });
+                if (icon) icon.className = 'ph-fill ph-heart text-xl text-red-500';
+                if (typeof _showToast === 'function') _showToast('เพิ่มในรายการที่ถูกใจแล้ว ❤');
+            }
+            localStorage.setItem('btmusicdrive_wishlist', JSON.stringify(wishlist));
+        });
+    }
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>

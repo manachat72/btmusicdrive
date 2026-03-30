@@ -180,9 +180,9 @@ function _footerHTML() {
         <div>
           <h4 class="font-bold text-gray-900 mb-6 text-lg">หมวดหมู่สินค้า</h4>
           <ul class="space-y-3">
-            <li><a href="index.html#shop" class="text-gray-500 hover:text-primary transition-colors">สินค้าทั้งหมด</a></li>
-            <li><a href="index.html#categories" class="text-gray-500 hover:text-primary transition-colors">หมวดหมู่</a></li>
-            <li><a href="index.html#shop" class="text-gray-500 hover:text-primary transition-colors">สินค้ามาใหม่</a></li>
+            <li><a href="shop.html" class="text-gray-500 hover:text-primary transition-colors">สินค้าทั้งหมด</a></li>
+            <li><a href="shop.html" class="text-gray-500 hover:text-primary transition-colors">หมวดหมู่</a></li>
+            <li><a href="shop.html" class="text-gray-500 hover:text-primary transition-colors">สินค้ามาใหม่</a></li>
           </ul>
         </div>
         <div>
@@ -223,7 +223,7 @@ function _mobileBottomNavHTML() {
         <i class="ph ph-house text-xl"></i>
         <span class="text-[10px] mt-0.5">หน้าแรก</span>
       </a>
-      <a href="index.html#categories" class="flex flex-col items-center justify-center flex-1 py-1 text-gray-500 hover:text-primary transition-colors">
+      <a href="shop.html" class="flex flex-col items-center justify-center flex-1 py-1 text-gray-500 hover:text-primary transition-colors">
         <i class="ph ph-squares-four text-xl"></i>
         <span class="text-[10px] mt-0.5">หมวดหมู่</span>
       </a>
@@ -359,8 +359,14 @@ function _mobileBottomNavHTML() {
 // ── Dynamic Navigation Menus ────────────────────────────────────────────────
 const _DEFAULT_MENUS = [
   { label: '\u0E2B\u0E19\u0E49\u0E32\u0E41\u0E23\u0E01', url: 'index.html', icon: null },
-  { label: '\u0E2A\u0E34\u0E19\u0E04\u0E49\u0E32', url: 'index.html#shop', icon: null },
-  { label: '\u0E2B\u0E21\u0E27\u0E14\u0E2B\u0E21\u0E39\u0E48', url: 'index.html#categories', icon: null },
+  { label: '\u0E23\u0E49\u0E32\u0E19\u0E04\u0E49\u0E32', url: 'shop.html', icon: 'ph ph-storefront' },
+  { label: '\u0E2B\u0E21\u0E27\u0E14\u0E2B\u0E21\u0E39\u0E48', url: 'shop.html', icon: 'ph ph-squares-four', children: [
+    { label: '\u0E2A\u0E34\u0E19\u0E04\u0E49\u0E32\u0E17\u0E31\u0E49\u0E07\u0E2B\u0E21\u0E14', url: 'shop.html', icon: 'ph ph-package' },
+    { label: '\u0E40\u0E1E\u0E37\u0E48\u0E2D\u0E0A\u0E35\u0E27\u0E34\u0E15', url: 'shop.html?category=\u0E40\u0E1E\u0E37\u0E48\u0E2D\u0E0A\u0E35\u0E27\u0E34\u0E15', icon: 'ph ph-microphone-stage' },
+    { label: '\u0E23\u0E2D\u0E07\u0E40\u0E17\u0E49\u0E32', url: 'shop.html?category=\u0E23\u0E2D\u0E07\u0E40\u0E17\u0E49\u0E32', icon: 'ph ph-sneaker' },
+    { label: '\u0E40\u0E2A\u0E37\u0E49\u0E2D\u0E1C\u0E49\u0E32', url: 'shop.html?category=\u0E40\u0E2A\u0E37\u0E49\u0E2D\u0E1C\u0E49\u0E32', icon: 'ph ph-t-shirt' },
+    { label: '\u0E40\u0E04\u0E23\u0E37\u0E48\u0E2D\u0E07\u0E1B\u0E23\u0E30\u0E14\u0E31\u0E1A', url: 'shop.html?category=\u0E40\u0E04\u0E23\u0E37\u0E48\u0E2D\u0E07\u0E1B\u0E23\u0E30\u0E14\u0E31\u0E1A', icon: 'ph ph-watch' },
+  ]},
   { label: '\u0E40\u0E01\u0E35\u0E48\u0E22\u0E27\u0E01\u0E31\u0E1A', url: 'about.html', icon: null },
   { label: '\u0E15\u0E34\u0E14\u0E15\u0E32\u0E21\u0E1E\u0E31\u0E2A\u0E14\u0E38', url: 'track-order.html', icon: 'ph ph-package' },
 ];
