@@ -7,7 +7,6 @@
     --brand-surface: #F4EFE8;
     --brand-surface-strong: #E8DED1;
 }
-
 /* ── Shared Form & Card Styles ────────────────────────────────────────────── */
 .input-field {
     width: 100%;
@@ -15,7 +14,7 @@
     border: 1px solid #d1d5db;
     border-radius: 0.5rem;
     background: #fff;
-    font-size: 0.875rem;
+    font-size: 0.875rem;F
     color: #1f2937;
     transition: border-color 0.15s, box-shadow 0.15s;
     outline: none;
