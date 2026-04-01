@@ -33,38 +33,38 @@
 <body class="bg-gray-50 text-gray-800 antialiased">
 
     <!-- Navbar -->
-    <nav class="bg-white shadow-sm sticky top-0 z-50">
+    <nav class="bg-secondary shadow-sm sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <a href="index.html" class="flex items-center gap-2 text-gray-700 hover:text-primary transition-colors">
+            <a href="index.html" class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors">
                 <i class="ph ph-arrow-left text-xl"></i>
                 <span class="text-sm font-medium">กลับไปหน้าร้าน</span>
             </a>
             <div class="flex items-center gap-2 cursor-pointer" onclick="window.location='index.html'">
                 <img src="images/logo (60 x 60 px) (1).png" alt="btmusicdrive" class="h-8 w-8 rounded-full">
-                <span class="font-bold text-lg tracking-tight">btmusicdrive</span>
+                <span class="font-bold text-lg tracking-tight text-white">btmusicdrive</span>
             </div>
-            <div class="flex items-center gap-2 text-sm text-gray-500 hidden sm:flex">
+            <div class="flex items-center gap-2 text-sm text-gray-400 hidden sm:flex">
                 <i class="ph ph-lock-key text-primary"></i>
                 <span>ชำระเงินอย่างปลอดภัย</span>
             </div>
         </div>
         <!-- Progress Bar -->
-        <div class="border-t border-gray-100">
+        <div class="border-t border-gray-700">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
                 <div class="flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm">
                     <span class="flex items-center gap-1.5 text-primary font-semibold">
                         <span class="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold">1</span>
-                        ตะกร้า
+                        <span class="text-gray-300">ตะกร้า</span>
                     </span>
                     <div class="w-8 sm:w-16 h-0.5 bg-primary"></div>
                     <span class="flex items-center gap-1.5 text-primary font-semibold">
                         <span class="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold">2</span>
-                        ชำระเงิน
+                        <span class="text-gray-300">ชำระเงิน</span>
                     </span>
-                    <div class="w-8 sm:w-16 h-0.5 bg-gray-200"></div>
-                    <span class="flex items-center gap-1.5 text-gray-400">
-                        <span class="w-6 h-6 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">3</span>
-                        ยืนยัน
+                    <div class="w-8 sm:w-16 h-0.5 bg-gray-600"></div>
+                    <span class="flex items-center gap-1.5 text-gray-500">
+                        <span class="w-6 h-6 rounded-full bg-gray-600 text-gray-400 flex items-center justify-center text-xs font-bold">3</span>
+                        <span class="text-gray-500">ยืนยัน</span>
                     </span>
                 </div>
             </div>
@@ -415,6 +415,31 @@
             </div>
         </div>
     </div>
+
+    <!-- Footer -->
+    <footer class="bg-secondary mt-12 py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="flex items-center gap-2">
+                    <img src="images/logo (60 x 60 px) (1).png" alt="btmusicdrive" class="h-7 w-7 rounded-full">
+                    <span class="font-bold text-white tracking-tight">btmusicdrive</span>
+                </div>
+                <div class="flex items-center gap-6 text-gray-400 text-xs">
+                    <a href="terms.html" class="hover:text-white transition-colors">ข้อกำหนดการใช้งาน</a>
+                    <a href="privacy.html" class="hover:text-white transition-colors">นโยบายความเป็นส่วนตัว</a>
+                    <a href="refund.html" class="hover:text-white transition-colors">นโยบายคืนเงิน</a>
+                </div>
+                <div class="flex items-center gap-3">
+                    <i class="ph ph-credit-card text-2xl text-gray-500"></i>
+                    <i class="ph ph-qr-code text-2xl text-gray-500"></i>
+                    <i class="ph ph-shield-check text-2xl text-green-500"></i>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-6 pt-4 text-center">
+                <p class="text-gray-500 text-xs">&copy; 2026 btmusicdrive. สงวนลิขสิทธิ์ทุกประการ</p>
+            </div>
+        </div>
+    </footer>
 
     <script src="checkout.js"></script>
 </body>

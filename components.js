@@ -145,60 +145,60 @@ function _footerHTML() {
   return `
   <footer class="bg-gray-50 pt-16 pb-8 border-t border-gray-200">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
-        <div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 mb-12">
+        <div class="col-span-2 md:col-span-1">
           <div class="flex items-center mb-6 cursor-pointer">
             <img src="images/logo (60 x 60 px) (1).png" alt="btmusicdrive" class="h-9 w-9 rounded-full mr-2">
             <span class="font-bold text-2xl tracking-tight text-gray-900">btmusicdrive</span>
           </div>
-          <p class="text-gray-500 mb-6">ร้านขายแฟลชไดร์ฟเพลง MP3 คุณภาพเสียง HD รวมเพลงฮิตทุกแนว เสียบปุ๊บฟังปั๊บ</p>
-          <div class="flex space-x-4">
-            <a href="#" class="text-gray-400 hover:text-primary transition-colors"><i class="ph-fill ph-facebook-logo text-2xl"></i></a>
-            <a href="#" class="text-gray-400 hover:text-primary transition-colors"><i class="ph-fill ph-tiktok-logo text-2xl"></i></a>
-            <a href="#" class="text-gray-400 hover:text-primary transition-colors"><i class="ph-fill ph-instagram-logo text-2xl"></i></a>
-            <a href="#" class="text-gray-400 hover:text-primary transition-colors"><i class="ph-fill ph-youtube-logo text-2xl"></i></a>
-          </div>
+          <p class="text-gray-500 mb-6 text-sm">ร้านขายแฟลชไดร์ฟเพลง MP3 คุณภาพเสียง HD รวมเพลงฮิตทุกแนว เสียบปุ๊บฟังปั๊บ</p>
           <!-- ช้อปได้ที่ -->
-          <div class="mt-5">
+          <div>
             <p class="text-xs text-gray-400 mb-2 font-semibold">\u0E0A\u0E49\u0E2D\u0E1B\u0E44\u0E14\u0E49\u0E17\u0E35\u0E48</p>
-            <div class="flex flex-wrap gap-2 sm:space-x-3 sm:gap-0">
+            <div class="flex flex-wrap gap-2">
               <a href="https://www.tiktok.com/@buytrrm1992" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-200 text-gray-500 hover:border-primary hover:text-primary transition-all text-xs font-medium">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 0010.86 4.46V13a8.28 8.28 0 005.58 2.16V11.7a4.83 4.83 0 01-3.77-1.24V6.69h3.77z"/></svg>
+                <img src="images/tiktok.png" alt="TikTok" class="w-4 h-4 object-contain">
                 TikTok Shop
               </a>
               <a href="https://shopee.co.th/shop/134575937" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-200 text-gray-500 hover:border-[#ee4d2d] hover:text-[#ee4d2d] transition-all text-xs font-medium">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C9.24 2 7 4.24 7 7H5c-1.1 0-2 .9-2 2v10c0 1.66 1.34 3 3 3h12c1.66 0 3-1.34 3-3V9c0-1.1-.9-2-2-2h-2c0-2.76-2.24-5-5-5zm0 2c1.66 0 3 1.34 3 3H9c0-1.66 1.34-3 3-3zm0 6c1.38 0 2.5-1.12 2.5-2.5h1.5c0 2.21-1.79 4-4 4s-4-1.79-4-4h1.5C9.5 8.88 10.62 10 12 10z"/></svg>
+                <img src="images/shopeer.png" alt="Shopee" class="w-4 h-4 object-contain">
                 Shopee
               </a>
               <a href="https://www.lazada.co.th/shop/buythrrm1992/" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-200 text-gray-500 hover:border-[#0f146d] hover:text-[#0f146d] transition-all text-xs font-medium">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7v10l10 5 10-5V7L12 2zm0 2.18L19.18 7.5 12 10.82 4.82 7.5 12 4.18zM4 8.72l7 3.5V19l-7-3.5V8.72zm16 0V15.5L13 19v-6.78l7-3.5z"/></svg>
+                <img src="images/lazada.png" alt="Lazada" class="w-4 h-4 object-contain">
                 Lazada
               </a>
             </div>
           </div>
         </div>
         <div>
-          <h4 class="font-bold text-gray-900 mb-6 text-lg">หมวดหมู่สินค้า</h4>
-          <ul class="space-y-3" id="footer-categories">
-            <li><a href="shop.html" class="text-gray-500 hover:text-primary transition-colors">สินค้าทั้งหมด</a></li>
+          <h4 class="font-bold text-gray-900 mb-4 md:mb-6 text-base md:text-lg">หมวดหมู่สินค้า</h4>
+          <ul class="space-y-2 md:space-y-3" id="footer-categories">
+            <li><a href="shop.html" class="text-gray-500 hover:text-primary transition-colors text-sm">สินค้าทั้งหมด</a></li>
           </ul>
         </div>
         <div>
-          <h4 class="font-bold text-gray-900 mb-6 text-lg">ช่วยเหลือ</h4>
-          <ul class="space-y-3">
-            <li><a href="track-order.html" class="text-gray-500 hover:text-primary transition-colors">ติดตามพัสดุ</a></li>
-            <li><a href="contact.html" class="text-gray-500 hover:text-primary transition-colors">ติดต่อเรา</a></li>
-            <li><a href="about.html" class="text-gray-500 hover:text-primary transition-colors">เกี่ยวกับเรา</a></li>
+          <h4 class="font-bold text-gray-900 mb-4 md:mb-6 text-base md:text-lg">ช่วยเหลือ</h4>
+          <ul class="space-y-2 md:space-y-3">
+            <li><a href="track-order.html" class="text-gray-500 hover:text-primary transition-colors text-sm">ติดตามพัสดุ</a></li>
+            <li><a href="contact.html" class="text-gray-500 hover:text-primary transition-colors text-sm">ติดต่อเรา</a></li>
+            <li><a href="about.html" class="text-gray-500 hover:text-primary transition-colors text-sm">เกี่ยวกับเรา</a></li>
           </ul>
         </div>
-        <div>
-          <h4 class="font-bold text-gray-900 mb-6 text-lg">ติดต่อเรา</h4>
-          <ul class="space-y-4 text-gray-500">
-            <li class="flex items-start"><i class="ph ph-map-pin text-xl text-primary mr-3 mt-1"></i><span>กรุงเทพมหานคร<br>ประเทศไทย</span></li>
-            <li class="flex items-center"><i class="ph ph-phone text-xl text-primary mr-3"></i><span>08X-XXX-XXXX</span></li>
-            <li class="flex items-center"><i class="ph ph-chat-circle-dots text-xl text-primary mr-3"></i><span>Line ID: @btmusicdrive</span></li>
-            <li class="flex items-center"><i class="ph ph-envelope text-xl text-primary mr-3"></i><span>contact@btmusicdrive.com</span></li>
+        <div class="col-span-2 md:col-span-1">
+          <h4 class="font-bold text-gray-900 mb-4 md:mb-6 text-base md:text-lg">ติดต่อเรา</h4>
+          <ul class="space-y-3 text-gray-500 text-sm">
+            <li class="flex items-start"><i class="ph ph-map-pin text-lg text-primary mr-3 mt-0.5"></i><span>กรุงเทพมหานคร<br>ประเทศไทย</span></li>
+            <li class="flex items-center"><i class="ph ph-phone text-lg text-primary mr-3"></i><span>08X-XXX-XXXX</span></li>
+            <li class="flex items-center"><i class="ph ph-chat-circle-dots text-lg text-primary mr-3"></i><span>Line ID: @btmusicdrive</span></li>
+            <li class="flex items-center"><i class="ph ph-envelope text-lg text-primary mr-3"></i><span>contact@btmusicdrive.com</span></li>
           </ul>
+          <div class="flex space-x-3 mt-4">
+            <a href="#" class="text-gray-400 hover:text-primary transition-colors"><i class="ph-fill ph-facebook-logo text-xl"></i></a>
+            <a href="#" class="text-gray-400 hover:text-primary transition-colors"><i class="ph-fill ph-tiktok-logo text-xl"></i></a>
+            <a href="#" class="text-gray-400 hover:text-primary transition-colors"><i class="ph-fill ph-instagram-logo text-xl"></i></a>
+            <a href="#" class="text-gray-400 hover:text-primary transition-colors"><i class="ph-fill ph-youtube-logo text-xl"></i></a>
+          </div>
         </div>
       </div>
       <div class="border-t border-gray-200 pt-8 flex flex-col md:flex-row justify-between items-center">
@@ -806,6 +806,7 @@ function _updateWishlistBadge() {
 
 function _removeFromCart(id) {
   _cart = _cart.filter(i => i.id !== id);
+  _saveCartToStorage();
   _updateCartUI();
 }
 window._removeFromCart = _removeFromCart;
@@ -815,9 +816,20 @@ function _updateQty(id, delta) {
   if (!item) return;
   item.quantity += delta;
   if (item.quantity < 1) { _removeFromCart(id); return; }
+  _saveCartToStorage();
   _updateCartUI();
 }
 window._updateQty = _updateQty;
+
+function _loadCartFromStorage() {
+  try { _cart = JSON.parse(localStorage.getItem('btmusicdrive_cart') || '[]'); } catch { _cart = []; }
+}
+window._loadCartFromStorage = _loadCartFromStorage;
+
+function _saveCartToStorage() {
+  localStorage.setItem('btmusicdrive_cart', JSON.stringify(_cart));
+}
+window._saveCartToStorage = _saveCartToStorage;
 
 // ── Toast ────────────────────────────────────────────────────────────────────
 
@@ -911,6 +923,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await _loadNavMenus();
   _setupSharedEvents();
   _checkAuthState();
+  _loadCartFromStorage();
   _updateCartUI();
   _updateWishlistBadge();
 });
