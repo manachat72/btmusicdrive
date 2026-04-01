@@ -18,36 +18,36 @@ let _googleInitialized = false;
 
 function _navbarHTML() {
   return `
-  <nav class="bg-white shadow-sm fixed w-full z-50 top-0 transition-all duration-300" id="navbar">
+  <nav class="bg-secondary shadow-sm fixed w-full z-50 top-0 transition-all duration-300" id="navbar">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between h-16 items-center">
         <a href="index.html" class="flex-shrink-0 flex items-center cursor-pointer no-underline">
           <img src="images/logo (60 x 60 px) (1).png" alt="btmusicdrive" class="h-9 w-9 rounded-full mr-2">
-          <span class="font-bold text-xl tracking-tight text-gray-900">btmusicdrive</span>
+          <span class="font-bold text-xl tracking-tight text-white">btmusicdrive</span>
         </a>
         <div class="hidden md:flex items-center gap-1" id="desktop-nav"></div>
         <div class="hidden md:flex items-center">
-          <a href="admin.html" id="admin-nav-link" class="hidden text-secondary hover:text-primary transition-colors font-medium flex items-center gap-1 text-sm ml-4">
+          <a href="admin.html" id="admin-nav-link" class="hidden text-gray-300 hover:text-primary transition-colors font-medium flex items-center gap-1 text-sm ml-4">
             <i class="ph ph-shield-check text-base"></i> Admin
           </a>
         </div>
         <div class="flex items-center space-x-4">
-          <button class="text-gray-600 hover:text-primary transition-colors"><i class="ph ph-magnifying-glass text-2xl"></i></button>
-          <button class="hidden md:block text-gray-600 hover:text-primary transition-colors relative group" id="auth-btn">
+          <button class="text-gray-300 hover:text-primary transition-colors"><i class="ph ph-magnifying-glass text-2xl"></i></button>
+          <button class="hidden md:block text-gray-300 hover:text-primary transition-colors relative group" id="auth-btn">
             <i class="ph ph-user text-2xl"></i>
-            <span id="user-greeting" class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs font-medium text-gray-900 hidden whitespace-nowrap bg-white px-2 py-1 rounded shadow-sm"></span>
+            <span id="user-greeting" class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs font-medium text-white hidden whitespace-nowrap bg-gray-800 px-2 py-1 rounded shadow-sm"></span>
           </button>
-          <button class="hidden md:block text-gray-600 hover:text-primary transition-colors relative" id="cart-btn">
+          <button class="hidden md:block text-gray-300 hover:text-primary transition-colors relative" id="cart-btn">
             <i class="ph ph-shopping-cart text-2xl"></i>
             <span id="cart-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">0</span>
           </button>
-          <button class="md:hidden text-gray-600 hover:text-primary transition-colors" id="mobile-menu-btn">
+          <button class="md:hidden text-gray-300 hover:text-primary transition-colors" id="mobile-menu-btn">
             <i class="ph ph-list text-2xl"></i>
           </button>
         </div>
       </div>
     </div>
-    <div class="md:hidden hidden bg-white border-t border-gray-100 absolute w-full" id="mobile-menu">
+    <div class="md:hidden hidden bg-secondary border-t border-gray-700 absolute w-full" id="mobile-menu">
       <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 shadow-lg" id="mobile-nav"></div>
     </div>
   </nav>`;
@@ -143,28 +143,28 @@ function _authModalHTML() {
 
 function _footerHTML() {
   return `
-  <footer class="bg-gray-50 pt-16 pb-8 border-t border-gray-200">
+  <footer class="bg-secondary pt-16 pb-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 mb-12">
         <div class="col-span-2 md:col-span-1">
           <div class="flex items-center mb-6 cursor-pointer">
             <img src="images/logo (60 x 60 px) (1).png" alt="btmusicdrive" class="h-9 w-9 rounded-full mr-2">
-            <span class="font-bold text-2xl tracking-tight text-gray-900">btmusicdrive</span>
+            <span class="font-bold text-2xl tracking-tight text-white">btmusicdrive</span>
           </div>
-          <p class="text-gray-500 mb-6 text-sm">ร้านขายแฟลชไดร์ฟเพลง MP3 คุณภาพเสียง HD รวมเพลงฮิตทุกแนว เสียบปุ๊บฟังปั๊บ</p>
+          <p class="text-gray-400 mb-6 text-sm">ร้านขายแฟลชไดร์ฟเพลง MP3 คุณภาพเสียง HD รวมเพลงฮิตทุกแนว เสียบปุ๊บฟังปั๊บ</p>
           <!-- ช้อปได้ที่ -->
           <div>
-            <p class="text-xs text-gray-400 mb-2 font-semibold">\u0E0A\u0E49\u0E2D\u0E1B\u0E44\u0E14\u0E49\u0E17\u0E35\u0E48</p>
+            <p class="text-xs text-gray-500 mb-2 font-semibold">\u0E0A\u0E49\u0E2D\u0E1B\u0E44\u0E14\u0E49\u0E17\u0E35\u0E48</p>
             <div class="flex flex-wrap gap-2">
-              <a href="https://www.tiktok.com/@buytrrm1992" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-200 text-gray-500 hover:border-primary hover:text-primary transition-all text-xs font-medium">
+              <a href="https://www.tiktok.com/@buytrrm1992" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-600 text-gray-400 hover:border-primary hover:text-primary transition-all text-xs font-medium">
                 <img src="images/tiktok.png" alt="TikTok" class="w-5 h-5 object-contain">
                 TikTok Shop
               </a>
-              <a href="https://shopee.co.th/shop/134575937" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-200 text-gray-500 hover:border-[#ee4d2d] hover:text-[#ee4d2d] transition-all text-xs font-medium">
+              <a href="https://shopee.co.th/shop/134575937" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-600 text-gray-400 hover:border-[#ee4d2d] hover:text-[#ee4d2d] transition-all text-xs font-medium">
                 <img src="images/shopeer.png" alt="Shopee" class="w-5 h-5 object-contain">
                 Shopee
               </a>
-              <a href="https://www.lazada.co.th/shop/buythrrm1992/" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-200 text-gray-500 hover:border-[#0f146d] hover:text-[#0f146d] transition-all text-xs font-medium">
+              <a href="https://www.lazada.co.th/shop/buythrrm1992/" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-600 text-gray-400 hover:border-[#0f146d] hover:text-[#0f146d] transition-all text-xs font-medium">
                 <img src="images/lazada.png" alt="Lazada" class="w-5 h-5 object-contain">
                 Lazada
               </a>
@@ -172,41 +172,41 @@ function _footerHTML() {
           </div>
         </div>
         <div>
-          <h4 class="font-bold text-gray-900 mb-4 md:mb-6 text-base md:text-lg">หมวดหมู่สินค้า</h4>
+          <h4 class="font-bold text-white mb-4 md:mb-6 text-base md:text-lg">หมวดหมู่สินค้า</h4>
           <ul class="space-y-2 md:space-y-3" id="footer-categories">
-            <li><a href="shop.html" class="text-gray-500 hover:text-primary transition-colors text-sm">สินค้าทั้งหมด</a></li>
+            <li><a href="shop.html" class="text-gray-400 hover:text-primary transition-colors text-sm">สินค้าทั้งหมด</a></li>
           </ul>
         </div>
         <div>
-          <h4 class="font-bold text-gray-900 mb-4 md:mb-6 text-base md:text-lg">ช่วยเหลือ</h4>
+          <h4 class="font-bold text-white mb-4 md:mb-6 text-base md:text-lg">ช่วยเหลือ</h4>
           <ul class="space-y-2 md:space-y-3">
-            <li><a href="track-order.html" class="text-gray-500 hover:text-primary transition-colors text-sm">ติดตามพัสดุ</a></li>
-            <li><a href="contact.html" class="text-gray-500 hover:text-primary transition-colors text-sm">ติดต่อเรา</a></li>
-            <li><a href="about.html" class="text-gray-500 hover:text-primary transition-colors text-sm">เกี่ยวกับเรา</a></li>
+            <li><a href="track-order.html" class="text-gray-400 hover:text-primary transition-colors text-sm">ติดตามพัสดุ</a></li>
+            <li><a href="contact.html" class="text-gray-400 hover:text-primary transition-colors text-sm">ติดต่อเรา</a></li>
+            <li><a href="about.html" class="text-gray-400 hover:text-primary transition-colors text-sm">เกี่ยวกับเรา</a></li>
           </ul>
         </div>
         <div class="col-span-2 md:col-span-1">
-          <h4 class="font-bold text-gray-900 mb-4 md:mb-6 text-base md:text-lg">ติดต่อเรา</h4>
-          <ul class="space-y-3 text-gray-500 text-sm">
+          <h4 class="font-bold text-white mb-4 md:mb-6 text-base md:text-lg">ติดต่อเรา</h4>
+          <ul class="space-y-3 text-gray-400 text-sm">
             <li class="flex items-start"><i class="ph ph-map-pin text-lg text-primary mr-3 mt-0.5"></i><span>กรุงเทพมหานคร<br>ประเทศไทย</span></li>
             <li class="flex items-center"><i class="ph ph-phone text-lg text-primary mr-3"></i><span>08X-XXX-XXXX</span></li>
             <li class="flex items-center"><i class="ph ph-chat-circle-dots text-lg text-primary mr-3"></i><span>Line ID: @btmusicdrive</span></li>
             <li class="flex items-center"><i class="ph ph-envelope text-lg text-primary mr-3"></i><span>contact@btmusicdrive.com</span></li>
           </ul>
           <div class="flex space-x-3 mt-4">
-            <a href="#" class="text-gray-400 hover:text-primary transition-colors"><i class="ph-fill ph-facebook-logo text-xl"></i></a>
-            <a href="#" class="text-gray-400 hover:text-primary transition-colors"><i class="ph-fill ph-tiktok-logo text-xl"></i></a>
-            <a href="#" class="text-gray-400 hover:text-primary transition-colors"><i class="ph-fill ph-instagram-logo text-xl"></i></a>
-            <a href="#" class="text-gray-400 hover:text-primary transition-colors"><i class="ph-fill ph-youtube-logo text-xl"></i></a>
+            <a href="#" class="text-gray-500 hover:text-primary transition-colors"><i class="ph-fill ph-facebook-logo text-xl"></i></a>
+            <a href="#" class="text-gray-500 hover:text-primary transition-colors"><i class="ph-fill ph-tiktok-logo text-xl"></i></a>
+            <a href="#" class="text-gray-500 hover:text-primary transition-colors"><i class="ph-fill ph-instagram-logo text-xl"></i></a>
+            <a href="#" class="text-gray-500 hover:text-primary transition-colors"><i class="ph-fill ph-youtube-logo text-xl"></i></a>
           </div>
         </div>
       </div>
-      <div class="border-t border-gray-200 pt-8 flex flex-col md:flex-row justify-between items-center">
+      <div class="border-t border-gray-700 pt-8 flex flex-col md:flex-row justify-between items-center">
         <p class="text-gray-500 text-sm mb-4 md:mb-0">&copy; 2026 btmusicdrive. สงวนลิขสิทธิ์ทุกประการ</p>
         <div class="flex space-x-4">
-          <i class="ph ph-credit-card text-3xl text-gray-400"></i>
-          <i class="ph ph-qr-code text-3xl text-gray-400"></i>
-          <i class="ph ph-bank text-3xl text-gray-400"></i>
+          <i class="ph ph-credit-card text-3xl text-gray-500"></i>
+          <i class="ph ph-qr-code text-3xl text-gray-500"></i>
+          <i class="ph ph-bank text-3xl text-gray-500"></i>
         </div>
       </div>
     </div>
@@ -432,23 +432,23 @@ function _renderNavMenus(menus) {
         `<a href="${c.url}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary">${c.icon ? `<i class="${c.icon}"></i> ` : ''}${c.label}</a>`
       ).join('');
       return `<div class="relative group">
-        <button class="text-gray-600 hover:text-primary transition-colors font-medium flex items-center gap-1 px-3 py-2 rounded-lg hover:bg-gray-50">${icon}${m.label} <i class="ph ph-caret-down text-xs ml-1"></i></button>
+        <button class="text-gray-300 hover:text-primary transition-colors font-medium flex items-center gap-1 px-3 py-2 rounded-lg hover:bg-white/10">${icon}${m.label} <i class="ph ph-caret-down text-xs ml-1"></i></button>
         <div class="absolute left-0 top-full mt-1 w-52 bg-white rounded-xl shadow-xl border border-gray-100 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">${sub}</div>
       </div>`;
     }
-    return `<a href="${m.url}" class="text-gray-600 hover:text-primary transition-colors font-medium flex items-center gap-1 px-3 py-2 rounded-lg hover:bg-gray-50">${icon}${m.label}</a>`;
+    return `<a href="${m.url}" class="text-gray-300 hover:text-primary transition-colors font-medium flex items-center gap-1 px-3 py-2 rounded-lg hover:bg-white/10">${icon}${m.label}</a>`;
   }).join('');
 
   mobile.innerHTML = menus.map(m => {
     const icon = m.icon ? `<i class="${m.icon}"></i> ` : '';
-    let html = `<a href="${m.url}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50 flex items-center gap-2">${icon}${m.label}</a>`;
+    let html = `<a href="${m.url}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-primary hover:bg-white/10 flex items-center gap-2">${icon}${m.label}</a>`;
     if (m.children && m.children.length > 0) {
       html += m.children.map(c =>
-        `<a href="${c.url}" class="block pl-8 pr-3 py-2 rounded-md text-sm text-gray-600 hover:text-primary hover:bg-gray-50">${c.icon ? `<i class="${c.icon}"></i> ` : ''}${c.label}</a>`
+        `<a href="${c.url}" class="block pl-8 pr-3 py-2 rounded-md text-sm text-gray-400 hover:text-primary hover:bg-white/10">${c.icon ? `<i class="${c.icon}"></i> ` : ''}${c.label}</a>`
       ).join('');
     }
     return html;
-  }).join('') + `<a href="admin.html" id="admin-nav-link-mobile" class="hidden px-3 py-2 rounded-md text-base font-medium text-secondary hover:text-primary hover:bg-amber-50 flex items-center gap-2"><i class="ph ph-shield-check"></i> Admin Dashboard</a>`;
+  }).join('') + `<a href="admin.html" id="admin-nav-link-mobile" class="hidden px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-primary hover:bg-white/10 flex items-center gap-2"><i class="ph ph-shield-check"></i> Admin Dashboard</a>`;
 }
 
 // ── Auth ─────────────────────────────────────────────────────────────────────
