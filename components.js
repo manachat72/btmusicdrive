@@ -179,10 +179,8 @@ function _footerHTML() {
         </div>
         <div>
           <h4 class="font-bold text-gray-900 mb-6 text-lg">หมวดหมู่สินค้า</h4>
-          <ul class="space-y-3">
+          <ul class="space-y-3" id="footer-categories">
             <li><a href="shop.html" class="text-gray-500 hover:text-primary transition-colors">สินค้าทั้งหมด</a></li>
-            <li><a href="shop.html" class="text-gray-500 hover:text-primary transition-colors">หมวดหมู่</a></li>
-            <li><a href="shop.html" class="text-gray-500 hover:text-primary transition-colors">สินค้ามาใหม่</a></li>
           </ul>
         </div>
         <div>
@@ -357,6 +355,22 @@ function _highlightActiveSidebar() {
   const f = document.getElementById('site-footer');
   if (f) f.innerHTML = _footerHTML();
 
+  // Populate footer categories dynamically
+  const footerCats = document.getElementById('footer-categories');
+  if (footerCats) {
+    try {
+      const cats = JSON.parse(localStorage.getItem('btmusicdrive_categories') || '[]')
+        .filter(c => c.isActive !== false);
+      if (cats.length > 0) {
+        cats.forEach(c => {
+          const li = document.createElement('li');
+          li.innerHTML = `<a href="category.html?cat=${encodeURIComponent(c.name)}" class="text-gray-500 hover:text-primary transition-colors">${c.name}</a>`;
+          footerCats.appendChild(li);
+        });
+      }
+    } catch {}
+  }
+
   if (!document.getElementById('cart-sidebar')) {
     document.body.insertAdjacentHTML('beforeend', _cartSidebarHTML());
   }
@@ -374,17 +388,19 @@ function _highlightActiveSidebar() {
 
 // ── Dynamic Navigation Menus ────────────────────────────────────────────────
 const _DEFAULT_MENUS = [
-  { label: '\u0E2B\u0E19\u0E49\u0E32\u0E41\u0E23\u0E01', url: 'index.html', icon: null },
-  { label: '\u0E23\u0E49\u0E32\u0E19\u0E04\u0E49\u0E32', url: 'shop.html', icon: 'ph ph-storefront' },
-  { label: '\u0E2B\u0E21\u0E27\u0E14\u0E2B\u0E21\u0E39\u0E48', url: 'shop.html', icon: 'ph ph-squares-four', children: [
-    { label: '\u0E2A\u0E34\u0E19\u0E04\u0E49\u0E32\u0E17\u0E31\u0E49\u0E07\u0E2B\u0E21\u0E14', url: 'shop.html', icon: 'ph ph-package' },
-    { label: '\u0E40\u0E1E\u0E37\u0E48\u0E2D\u0E0A\u0E35\u0E27\u0E34\u0E15', url: 'shop.html?category=\u0E40\u0E1E\u0E37\u0E48\u0E2D\u0E0A\u0E35\u0E27\u0E34\u0E15', icon: 'ph ph-microphone-stage' },
-    { label: '\u0E23\u0E2D\u0E07\u0E40\u0E17\u0E49\u0E32', url: 'shop.html?category=\u0E23\u0E2D\u0E07\u0E40\u0E17\u0E49\u0E32', icon: 'ph ph-sneaker' },
-    { label: '\u0E40\u0E2A\u0E37\u0E49\u0E2D\u0E1C\u0E49\u0E32', url: 'shop.html?category=\u0E40\u0E2A\u0E37\u0E49\u0E2D\u0E1C\u0E49\u0E32', icon: 'ph ph-t-shirt' },
-    { label: '\u0E40\u0E04\u0E23\u0E37\u0E48\u0E2D\u0E07\u0E1B\u0E23\u0E30\u0E14\u0E31\u0E1A', url: 'shop.html?category=\u0E40\u0E04\u0E23\u0E37\u0E48\u0E2D\u0E07\u0E1B\u0E23\u0E30\u0E14\u0E31\u0E1A', icon: 'ph ph-watch' },
+  { label: 'หน้าแรก', url: 'index.html', icon: null },
+  { label: 'ร้านค้า', url: 'shop.html', icon: 'ph ph-storefront' },
+  { label: 'หมวดหมู่', url: '#', icon: 'ph ph-squares-four', children: [
+    { label: 'สินค้าทั้งหมด', url: 'shop.html', icon: 'ph ph-package' },
+    { label: 'เพื่อชีวิต', url: 'category.html?cat=เพื่อชีวิต', icon: 'ph ph-microphone-stage' },
+    { label: 'เพลงสตริง', url: 'category.html?cat=เพลงสตริง', icon: 'ph ph-music-notes' },
+    { label: 'ลูกทุ่ง', url: 'category.html?cat=ลูกทุ่ง', icon: 'ph ph-vinyl-record' },
+    { label: 'หมอลำ', url: 'category.html?cat=หมอลำ', icon: 'ph ph-speaker-high' },
+    { label: 'เพลงสากล', url: 'category.html?cat=เพลงสากล', icon: 'ph ph-globe' },
+    { label: 'ลูกกรุง', url: 'category.html?cat=ลูกกรุง', icon: 'ph ph-music-note' },
   ]},
-  { label: '\u0E40\u0E01\u0E35\u0E48\u0E22\u0E27\u0E01\u0E31\u0E1A', url: 'about.html', icon: null },
-  { label: '\u0E15\u0E34\u0E14\u0E15\u0E32\u0E21\u0E1E\u0E31\u0E2A\u0E14\u0E38', url: 'track-order.html', icon: 'ph ph-package' },
+  { label: 'เกี่ยวกับ', url: 'about.html', icon: null },
+  { label: 'ติดตามพัสดุ', url: 'track-order.html', icon: 'ph ph-package' },
 ];
 
 async function _loadNavMenus() {
