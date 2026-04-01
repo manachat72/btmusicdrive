@@ -1503,7 +1503,7 @@
     try {
       let products = [];
       const res = await fetch(`${API_BASE}/products`, { headers: adminHeaders(false) });
-      if (res.ok) products = await res.json();
+      if (res.ok) { const json = await res.json(); products = Array.isArray(json) ? json : (json.data || []); }
       else throw new Error('api_fail');
       _products = products;
     } catch {
@@ -2273,7 +2273,8 @@
     try {
       let res;
       try { res = await fetch(`${API_BASE}/products`); if (!res.ok) throw new Error(); } catch { res = await fetch('products.json'); }
-      products = await res.json();
+      const pJson = await res.json();
+      products = Array.isArray(pJson) ? pJson : (pJson.data || []);
     } catch { products = []; }
 
     // Merge categories from products with saved categories

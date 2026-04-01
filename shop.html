@@ -241,7 +241,8 @@
                 response = await fetch('products.json');
             }
             if (!response.ok) throw new Error('Failed to fetch');
-            shopProducts = await response.json();
+            const json = await response.json();
+            shopProducts = Array.isArray(json) ? json : (json.data || []);
 
             // Extract unique categories
             const catMap = new Map();

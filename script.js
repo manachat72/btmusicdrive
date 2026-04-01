@@ -198,7 +198,8 @@ async function fetchProducts() {
             throw new Error('Failed to fetch products');
         }
         
-        products = await response.json();
+        const json = await response.json();
+        products = Array.isArray(json) ? json : (json.data || []);
         renderProducts();
     } catch (error) {
         console.error('Error:', error);
