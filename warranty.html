@@ -4,118 +4,212 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>การรับประกันสินค้า — btmusicdrive</title>
+  
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>tailwind.config = { theme: { extend: { colors: { primary: '#8B7355', secondary: '#0F172A' } } } };</script>
+  <script>
+    tailwind.config = { 
+        theme: { 
+            extend: { 
+                colors: { 
+                    primary: '#8B7355', 
+                    secondary: '#0F172A' 
+                } 
+            } 
+        } 
+    };
+  </script>
+  
+  <!-- Phosphor Icons -->
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  
+  <!-- External Scripts -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script async defer crossorigin="anonymous" src="https://connect.facebook.net/th_TH/sdk.js"></script>
-  <link rel="stylesheet" href="style.css">
+  
+  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="style.css">
   <style>body { font-family: 'Inter', sans-serif; }</style>
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased">
+
+  <!-- Shared Navbar -->
   <header id="site-header"></header>
 
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <!-- PAGE CONTENT — WARRANTY POLICY -->
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
   <main class="pt-20 pb-16">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div class="flex flex-col lg:flex-row gap-8">
 
-        <!-- Sidebar -->
+        <!-- ══ Sidebar ══ -->
         <aside class="lg:w-64 flex-shrink-0">
+          <!-- เกี่ยวกับเรา -->
           <div class="mb-6">
             <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">เกี่ยวกับเรา</h3>
             <ul class="space-y-1">
-              <li><a href="contact.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"><i class="ph ph-headset text-lg"></i> ติดต่อเรา</a></li>
-              <li><a href="about.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"><i class="ph ph-info text-lg"></i> เกี่ยวกับเรา</a></li>
-              <li><a href="terms.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"><i class="ph ph-file-text text-lg"></i> ข้อกำหนดและเงื่อนไข</a></li>
-              <li><a href="privacy.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"><i class="ph ph-shield-check text-lg"></i> นโยบายความเป็นส่วนตัว</a></li>
+              <li>
+                <a href="contact.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors">
+                  <i class="ph ph-headset text-lg"></i> ติดต่อเรา
+                </a>
+              </li>
+              <li>
+                <a href="about.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors">
+                  <i class="ph ph-info text-lg"></i> เกี่ยวกับเรา
+                </a>
+              </li>
+              <li>
+                <a href="terms.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors">
+                  <i class="ph ph-file-text text-lg"></i> ข้อกำหนดและเงื่อนไข
+                </a>
+              </li>
+              <li>
+                <a href="privacy.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors">
+                  <i class="ph ph-shield-check text-lg"></i> นโยบายความเป็นส่วนตัว
+                </a>
+              </li>
             </ul>
           </div>
+          <!-- บริการลูกค้า -->
           <div>
             <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">บริการลูกค้า</h3>
             <ul class="space-y-1">
-              <li><a href="returns.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"><i class="ph ph-package text-lg"></i> การคืนสินค้า</a></li>
-              <li><a href="warranty.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-primary font-semibold bg-amber-50 border-l-4 border-primary transition-colors"><i class="ph ph-seal-check text-lg"></i> การรับประกันสินค้า</a></li>
-              <li><a href="exchange.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"><i class="ph ph-arrows-clockwise text-lg"></i> เงื่อนไขการเปลี่ยน/คืนสินค้า</a></li>
-              <li><a href="refund.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"><i class="ph ph-wallet text-lg"></i> การคืนเงิน</a></li>
+              <li>
+                <a href="returns.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors">
+                  <i class="ph ph-package text-lg"></i> การคืนสินค้า
+                </a>
+              </li>
+              <li>
+                <a href="warranty.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-primary font-semibold bg-green-50 border-l-4 border-green-500 transition-colors">
+                  <i class="ph ph-seal-check text-lg"></i> การรับประกันสินค้า
+                </a>
+              </li>
+              <li>
+                <a href="exchange.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors">
+                  <i class="ph ph-arrows-clockwise text-lg"></i> เงื่อนไขการเปลี่ยน/คืนสินค้า
+                </a>
+              </li>
+              <li>
+                <a href="refund.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors">
+                  <i class="ph ph-wallet text-lg"></i> การคืนเงิน
+                </a>
+              </li>
             </ul>
           </div>
         </aside>
 
-        <!-- Main Content -->
+        <!-- ══ Main Content ══ -->
         <div class="flex-1 min-w-0">
           <div class="bg-white rounded-2xl border border-gray-100 p-6 sm:p-10">
+
+            <!-- Page Title -->
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-6 border-b border-gray-100">
               <div class="flex items-center gap-3">
-                <div class="bg-green-50 w-10 h-10 rounded-full flex items-center justify-center"><i class="ph ph-seal-check text-xl text-green-600"></i></div>
+                <div class="bg-green-50 w-10 h-10 rounded-full flex items-center justify-center">
+                  <i class="ph ph-seal-check text-xl text-green-600"></i>
+                </div>
                 <h1 class="text-2xl font-bold text-gray-900">การรับประกันสินค้า</h1>
               </div>
-              <span class="text-sm text-gray-500">อัปเดตล่าสุด: 28 มีนาคม 2026</span>
+              <span class="text-sm text-gray-500">อัปเดตล่าสุด: 2 เมษายน 2026</span>
             </div>
 
+            <!-- Content -->
             <div class="space-y-8 text-[15px] text-gray-600 leading-relaxed">
+              
               <section>
-                <p>สินค้าทุกชิ้นจาก <strong>btmusicdrive</strong> ได้รับการรับประกันคุณภาพจากทางร้าน เพื่อความมั่นใจในการใช้งานของลูกค้าทุกท่าน</p>
+                <p>สินค้าทุกชิ้นจาก <strong>btmusicdrive</strong> ได้รับการตรวจสอบและรับประกันคุณภาพจากทางร้าน เพื่อความมั่นใจในการใช้งานของลูกค้าทุกท่าน หากแฟลชไดร์ฟมีปัญหาจากการผลิต เราพร้อมดูแลเปลี่ยนตัวใหม่ให้ทันที</p>
               </section>
 
               <section>
                 <h2 class="text-lg font-bold text-gray-900 mb-3">1. ระยะเวลาการรับประกัน</h2>
-                <div class="bg-green-50 border border-green-200 rounded-xl p-4 mb-3">
-                  <p class="font-bold text-green-800"><i class="ph ph-check-circle mr-2"></i>รับประกัน 30 วัน นับจากวันที่ได้รับสินค้า</p>
+                <div class="bg-green-50 border border-green-200 rounded-xl p-4 mb-4 flex items-start gap-3">
+                  <i class="ph ph-check-circle text-2xl text-green-600 mt-0.5"></i>
+                  <div>
+                    <p class="font-bold text-green-800 text-lg">รับประกัน 30 วัน นับจากวันที่ได้รับสินค้า</p>
+                    <p class="text-green-700 text-sm mt-1">อ้างอิงจากวันที่สถานะขนส่งแจ้งว่า "จัดส่งสำเร็จ"</p>
+                  </div>
                 </div>
                 <ul class="list-disc pl-5 space-y-2">
-                  <li>แฟลชไดร์ฟเพลง — รับประกัน 30 วัน (กรณีอ่านข้อมูลไม่ได้ หรือไฟล์เสียงเสียหาย)</li>
-                  <li>อุปกรณ์เสริม (สาย OTG, Adapter) — รับประกัน 15 วัน</li>
-                  <li>นับจากวันที่ขนส่งยืนยันว่าจัดส่งสำเร็จ</li>
+                  <li><strong>แฟลชไดร์ฟเพลง:</strong> รับประกัน 30 วัน (ครอบคลุมปัญหาฮาร์ดแวร์อ่านข้อมูลไม่ได้ หรือไฟล์เพลงเสียหายจากทางร้าน)</li>
+                  <li><strong>อุปกรณ์เสริม:</strong> (เช่น สาย OTG, ตัวแปลงสัญญาณ) รับประกัน 15 วัน</li>
                 </ul>
               </section>
 
               <section>
-                <h2 class="text-lg font-bold text-gray-900 mb-3">2. สิ่งที่อยู่ในความคุ้มครอง</h2>
+                <h2 class="text-lg font-bold text-gray-900 mb-3">2. สิ่งที่อยู่ในความคุ้มครอง (สามารถเคลมได้)</h2>
                 <ul class="list-disc pl-5 space-y-2">
-                  <li>แฟลชไดร์ฟไม่สามารถอ่านข้อมูล/เพลงได้ตั้งแต่ได้รับสินค้า</li>
-                  <li>ไฟล์เพลงเสียหายหรือเสียงขาดหาย (ไม่ใช่จากการลบ/แก้ไขโดยผู้ใช้)</li>
-                  <li>อุปกรณ์ไม่ถูกตรวจพบบนเครื่องเสียงรถยนต์หรือคอมพิวเตอร์</li>
-                  <li>สินค้าผิดรุ่น ผิดความจุ ผิดรายการเพลง จากที่สั่ง</li>
+                  <li>แฟลชไดร์ฟเสีย ไม่สามารถอ่านข้อมูลได้ หรืออุปกรณ์ (คอมพิวเตอร์/เครื่องเสียง) ตรวจไม่พบแฟลชไดร์ฟตั้งแต่ครั้งแรกที่ใช้งาน</li>
+                  <li>ไฟล์เพลงสะดุด กระตุก ขาดหาย หรือไม่สามารถเล่นได้ ซึ่งเกิดจากความผิดพลาดในกระบวนการบันทึกข้อมูลของทางร้าน</li>
+                  <li>ได้รับสินค้าผิดรุ่น ผิดความจุ หรือผิดแนวเพลงจากที่ได้ทำการสั่งซื้อ</li>
                 </ul>
               </section>
 
               <section>
-                <h2 class="text-lg font-bold text-gray-900 mb-3">3. สิ่งที่ไม่อยู่ในความคุ้มครอง</h2>
+                <h2 class="text-lg font-bold text-gray-900 mb-3">3. สิ่งที่ไม่อยู่ในความคุ้มครอง (ไม่สามารถเคลมได้)</h2>
+                <p class="mb-2">ทางร้านขอสงวนสิทธิ์ยกเลิกการรับประกัน ในกรณีที่ความเสียหายเกิดจากสาเหตุดังต่อไปนี้:</p>
                 <ul class="list-disc pl-5 space-y-2">
-                  <li>ความเสียหายจากการตกกระแทก แตกหัก โดนน้ำ ไฟไหม้</li>
-                  <li>การดัดแปลง ฟอร์แมต ลบ หรือเพิ่มไฟล์ด้วยตนเอง</li>
-                  <li>การเสื่อมสภาพตามปกติจากการใช้งาน</li>
-                  <li>สินค้าที่เกินระยะเวลารับประกัน</li>
+                  <li><strong>ความเสียหายทางกายภาพ:</strong> สินค้าตกกระแทก, แตกหัก, ร้าว, บิดงอ, มีรอยขีดข่วนลึก, โดนน้ำ, หรือมีรอยไหม้</li>
+                  <li><strong>การดัดแปลงข้อมูล:</strong> มีการนำแฟลชไดร์ฟไป <strong>ฟอร์แมต (Format) ใหม่</strong>, ทำการลบเพลง, หรือพยายามเพิ่มเพลงลงไปผสมด้วยตนเองจนระบบไฟล์เดิมเสียหาย</li>
+                  <li><strong>ปัญหาจากไวรัสคอมพิวเตอร์:</strong> การนำแฟลชไดร์ฟไปเสียบกับคอมพิวเตอร์ที่มีไวรัส ทำให้ไฟล์เพลงถูกซ่อน ไฟล์เสียหาย หรือกลายเป็นชอร์ตคัต (Shortcut)</li>
+                  <li><strong>อุปกรณ์ไม่รองรับ:</strong> เครื่องเสียงรถยนต์รุ่นเก่าหรือเครื่องเล่นที่ไม่รองรับไฟล์ MP3, ไม่รองรับความจุของแฟลชไดร์ฟ (เช่น เครื่องเสียงรับได้สูงสุด 16GB แต่นำ 32GB ไปเสียบ) <em>*กรณีนี้ไม่ถือว่าแฟลชไดร์ฟเสียครับ</em></li>
                 </ul>
               </section>
 
+              <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg my-6">
+                <p class="font-semibold text-yellow-800 mb-2"><i class="ph ph-warning-circle inline-block mr-1"></i> ข้อแนะนำเพื่อความรวดเร็วในการเคลม</p>
+                <ul class="list-disc pl-5 space-y-1 text-yellow-700">
+                  <li>กรุณาถ่ายวิดีโอขณะแกะกล่องพัสดุและขณะทดสอบเสียบใช้งาน (ให้เห็นหน้าจอเครื่องเสียงว่าขึ้นข้อความ Error ใดหรือไม่) เก็บไว้เป็นหลักฐานเสมอ</li>
+                </ul>
+              </div>
+
               <section>
-                <h2 class="text-lg font-bold text-gray-900 mb-3">4. ขั้นตอนการเคลมสินค้า</h2>
+                <h2 class="text-lg font-bold text-gray-900 mb-3">4. ขั้นตอนการส่งเคลมสินค้า</h2>
                 <ol class="list-decimal pl-5 space-y-3">
-                  <li><strong>แจ้งปัญหา:</strong> ติดต่อผ่าน Line <a href="#" class="text-primary hover:underline">@btmusicdrive</a> พร้อมแนบรูปถ่ายและวิดีโอแสดงปัญหา</li>
-                  <li><strong>ส่งสินค้ากลับ:</strong> จัดส่งสินค้ามายังที่อยู่ที่เจ้าหน้าที่แจ้ง (ทางร้านรับผิดชอบค่าส่งกรณีสินค้ามีปัญหาจากร้าน)</li>
-                  <li><strong>ตรวจสอบ:</strong> ทีมงานตรวจสอบภายใน 1-3 วันทำการ</li>
-                  <li><strong>ดำเนินการ:</strong> จัดส่งสินค้าชิ้นใหม่ทดแทนภายใน 1-3 วันทำการ หลังตรวจสอบเสร็จ</li>
+                  <li><strong>แจ้งปัญหา:</strong> ถ่ายรูปสินค้า หรือถ่ายวิดีโอแสดงปัญหาการใช้งาน ส่งมาที่ Line <a href="#" class="text-primary hover:underline font-medium">@btmusicdrive</a></li>
+                  <li><strong>ประเมินปัญหา:</strong> แอดมินจะทำการตรวจสอบเบื้องต้น (หลายครั้งปัญหาเกิดจากการตั้งค่าเครื่องเสียงรถยนต์ แอดมินสามารถแนะนำวิธีแก้ให้ท่านได้ทันที)</li>
+                  <li><strong>ส่งสินค้ากลับ:</strong> หากต้องทำการเคลม แอดมินจะแจ้งที่อยู่ในการจัดส่งคืน <em>(กรณีสินค้าเสียจากการผลิต ทางร้านยินดีรับผิดชอบค่าใช้จ่ายในการส่งคืน)</em></li>
+                  <li><strong>ดำเนินการจัดส่งตัวใหม่:</strong> ทางคลังสินค้าจะจัดส่งแฟลชไดร์ฟตัวใหม่ไปให้ท่านทดแทนภายใน 1-3 วันทำการ หลังจากได้รับสินค้าตัวเดิมคืน</li>
                 </ol>
               </section>
 
               <section>
                 <h2 class="text-lg font-bold text-gray-900 mb-3">5. ติดต่อฝ่ายรับประกัน</h2>
-                <ul class="mt-2 space-y-1">
-                  <li><strong>โทรศัพท์:</strong> 02-123-4567 (จันทร์-เสาร์ 09:00 - 18:00 น.)</li>
-                  <li><strong>Line ID:</strong> @btmusicdrive</li>
-                  <li><strong>อีเมล:</strong> warranty@btmusicdrive.com</li>
-                </ul>
+                <p class="mb-3">หากพบปัญหาการใช้งาน หรือต้องการสอบถามเรื่องการรับประกัน ติดต่อเราได้ที่:</p>
+                <div class="bg-gray-50 rounded-lg p-5 border border-gray-100">
+                  <ul class="space-y-3">
+                    <li class="flex items-center gap-3">
+                      <i class="ph ph-phone text-xl text-green-600"></i>
+                      <span><strong>โทรศัพท์:</strong> 02-123-4567 (จันทร์-เสาร์ เวลา 09:00 - 18:00 น.)</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                      <i class="ph ph-chat-circle-text text-xl text-green-600"></i>
+                      <span><strong>Line ID:</strong> @btmusicdrive (มี @ ด้านหน้า)</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                      <i class="ph ph-envelope-simple text-xl text-green-600"></i>
+                      <span><strong>อีเมล:</strong> warranty@btmusicdrive.com</span>
+                    </li>
+                  </ul>
+                </div>
               </section>
+
             </div>
+
           </div>
         </div>
+
       </div>
     </div>
   </main>
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
 
+  <!-- Shared Footer -->
   <div id="site-footer"></div>
+
   <script src="components.js"></script>
 </body>
 </html>

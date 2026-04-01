@@ -68,21 +68,25 @@
     <header id="site-header"></header>
 
     <!-- Category Banner -->
-    <section class="pt-16">
+    <section class="pt-16" id="cat-banner">
+        <div class="relative min-h-[200px] md:min-h-[280px] overflow-hidden">
+            <img id="banner-img" src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80" alt="แบนเนอร์หมวดหมู่" class="absolute inset-0 w-full h-full object-cover">
+            <div class="absolute inset-0 bg-black/30"></div>
+        </div>
         <div class="bg-white border-b border-gray-100">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center">
-                <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-2">หมวดหมู่ทั้งหมด</h1>
-                <p class="text-gray-500 text-base md:text-lg mb-3 max-w-2xl mx-auto">รวมสินค้าแฟลชไดร์ฟเพลง MP3 ทุกหมวดหมู่ ทุกแนวเพลง</p>
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center">
+                <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-2" id="cat-title">หมวดหมู่</h1>
+                <p class="text-gray-500 text-base md:text-lg mb-3 max-w-2xl mx-auto" id="cat-desc">รวมสินค้าคุณภาพในหมวดหมู่นี้</p>
                 <div class="flex items-center justify-center gap-2 text-sm text-gray-400">
                     <a href="index.html" class="hover:text-primary transition-colors">หน้าแรก</a>
                     <i class="ph ph-caret-right text-xs"></i>
-                    <span class="text-gray-700 font-medium">หมวดหมู่</span>
+                    <span id="breadcrumb-cat" class="text-gray-700 font-medium">หมวดหมู่</span>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Quick Nav Chips -->
+    <!-- Sub-categories / Category Chips -->
     <section class="bg-white border-b border-gray-100 sticky top-16 z-30">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
             <div class="flex items-center gap-3 overflow-x-auto scrollbar-hide" id="cat-chips">
@@ -91,35 +95,58 @@
         </div>
     </section>
 
-    <!-- All Categories Sections -->
-    <div id="all-categories-container">
-        <div class="text-center py-16">
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-            <p class="mt-4 text-gray-500">กำลังโหลดหมวดหมู่...</p>
+    <!-- Products Grid -->
+    <section class="py-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+                <p class="text-gray-500" id="cat-product-count">กำลังโหลด...</p>
+                <div class="flex items-center gap-3">
+                    <div class="relative">
+                        <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input type="text" id="cat-search" placeholder="ค้นหาในหมวดนี้..." class="pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary focus:border-primary w-48 md:w-64 transition-colors">
+                    </div>
+                    <select id="cat-sort" class="border border-gray-200 rounded-xl py-2.5 pl-4 pr-10 text-sm text-gray-700 focus:ring-2 focus:ring-primary focus:border-primary" style="appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%236b7280' viewBox='0 0 256 256'%3E%3Cpath d='M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z'%3E%3C/path%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 12px center;padding-right:36px;">
+                        <option value="default">เรียงตาม: แนะนำ</option>
+                        <option value="price-asc">ราคา: ต่ำ → สูง</option>
+                        <option value="price-desc">ราคา: สูง → ต่ำ</option>
+                        <option value="rating">คะแนนสูงสุด</option>
+                        <option value="name">ชื่อ ก-ฮ</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6" id="cat-products">
+                <div class="col-span-full text-center py-16">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+                    <p class="mt-4 text-gray-500">กำลังโหลดสินค้า...</p>
+                </div>
+            </div>
+
+            <div id="cat-no-results" class="hidden text-center py-16">
+                <i class="ph ph-magnifying-glass text-6xl text-gray-300 mb-4"></i>
+                <p class="text-xl font-bold text-gray-700 mb-2">ไม่พบสินค้า</p>
+                <p class="text-gray-500">ลองเปลี่ยนคำค้นหาหรือดูหมวดหมู่อื่น</p>
+            </div>
         </div>
-    </div>
+    </section>
 
     <!-- Shared Footer -->
     <div id="site-footer"></div>
 
     <script src="components.js"></script>
     <script>
-    // ── All Categories Page Logic ──────────────────────────────────
+    // ── Category Page Logic ──────────────────────────────────────────
     const LS_CATEGORIES_KEY = 'btmusicdrive_categories';
+    let catProducts = [];
     let allProducts = [];
     let allCats = [];
-    let catProductsMap = new Map();
+    let activeCat = '';
+    let catSearch = '';
+    let catSort = 'default';
 
-    const DEFAULT_BANNERS = {
-        'เพื่อชีวิต': 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80',
-        'เพลงสตริง': 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80',
-        'ลูกทุ่ง': 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80',
-        'หมอลำ': 'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80',
-        'เพลงสากล': 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80',
-        'ลูกกรุง': 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80',
-        'เพลงสตริง 80': 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80',
-    };
-    const DEFAULT_BANNER = 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80';
+    // Get category from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlCat = urlParams.get('cat') || urlParams.get('category') || '';
 
     function getCategoriesFromStorage() {
         try { return JSON.parse(localStorage.getItem(LS_CATEGORIES_KEY)) || []; }
@@ -127,10 +154,12 @@
     }
 
     document.addEventListener('DOMContentLoaded', async () => {
-        await loadAllCategories();
+        await loadCategoryPage();
+        setupCatEvents();
     });
 
-    async function loadAllCategories() {
+    async function loadCategoryPage() {
+        // Load products
         try {
             let response;
             try {
@@ -145,130 +174,194 @@
             allProducts = [];
         }
 
-        // Group products by category
-        catProductsMap = new Map();
+        // Extract categories from products
+        const catMap = new Map();
         allProducts.forEach(p => {
             const catName = p.category?.name || p.category || 'อื่นๆ';
-            if (!catProductsMap.has(catName)) catProductsMap.set(catName, []);
-            catProductsMap.get(catName).push(p);
+            if (!catMap.has(catName)) catMap.set(catName, []);
+            catMap.get(catName).push(p);
         });
-        allCats = Array.from(catProductsMap.keys());
+        allCats = Array.from(catMap.keys());
 
-        renderNavChips();
-        renderAllCategorySections();
-        setupEvents();
+        // Load saved category settings
+        const savedCats = getCategoriesFromStorage();
+
+        // Determine active category
+        activeCat = urlCat || allCats[0] || '';
+
+        // Find saved category settings for the active one
+        const savedCat = savedCats.find(c => c.name === activeCat);
+
+        // Update banner
+        if (savedCat && savedCat.bannerUrl) {
+            document.getElementById('banner-img').src = savedCat.bannerUrl;
+        }
+        if (savedCat && savedCat.description) {
+            document.getElementById('cat-desc').textContent = savedCat.description;
+        }
+
+        // Update page info
+        document.getElementById('cat-title').textContent = activeCat || 'หมวดหมู่';
+        document.getElementById('breadcrumb-cat').textContent = activeCat || 'หมวดหมู่';
+        document.title = `${activeCat || 'หมวดหมู่'} — btmusicdrive`;
+
+        renderCatChips();
+        renderCatProducts();
     }
 
-    function renderNavChips() {
+    function renderCatChips() {
         const container = document.getElementById('cat-chips');
         const savedCats = getCategoriesFromStorage();
-        let html = `<a href="shop.html" class="flex-shrink-0 px-4 py-2 rounded-full border border-gray-200 text-sm font-medium text-gray-600 hover:border-primary hover:text-primary transition-all">สินค้าทั้งหมด</a>`;
+
+        let html = `<a href="shop.html" class="flex-shrink-0 px-4 py-2 rounded-full border border-gray-200 text-sm font-medium text-gray-600 hover:border-primary hover:text-primary transition-all">ทั้งหมด</a>`;
         allCats.forEach(cat => {
+            const isActive = cat === activeCat;
             const savedCat = savedCats.find(c => c.name === cat);
             const icon = savedCat?.icon || '';
-            html += `<a href="#cat-${encodeURIComponent(cat)}" class="flex-shrink-0 px-4 py-2 rounded-full border border-gray-200 text-sm font-medium text-gray-600 hover:border-primary hover:text-primary transition-all">
+            html += `<button class="flex-shrink-0 px-4 py-2 rounded-full border text-sm font-medium transition-all ${isActive ? 'bg-primary text-white border-primary' : 'border-gray-200 text-gray-600 hover:border-primary hover:text-primary'}" data-cat="${cat}">
                 ${icon ? `<i class="${icon} mr-1"></i>` : ''}${cat}
-            </a>`;
+            </button>`;
         });
         container.innerHTML = html;
     }
 
-    function renderAllCategorySections() {
-        const container = document.getElementById('all-categories-container');
-        const savedCats = getCategoriesFromStorage();
+    function getFilteredCatProducts() {
+        let filtered = allProducts.filter(p => {
+            const catName = p.category?.name || p.category || 'อื่นๆ';
+            return catName === activeCat;
+        });
 
-        let html = '';
-        allCats.forEach(catName => {
-            const products = catProductsMap.get(catName) || [];
-            const savedCat = savedCats.find(c => c.name === catName);
-            const bannerUrl = (savedCat && savedCat.bannerUrl) || DEFAULT_BANNERS[catName] || DEFAULT_BANNER;
-            const description = (savedCat && savedCat.description) || `รวมสินค้าคุณภาพในหมวด ${catName}`;
+        if (catSearch) {
+            const q = catSearch.toLowerCase();
+            filtered = filtered.filter(p =>
+                p.name.toLowerCase().includes(q) ||
+                (p.description || '').toLowerCase().includes(q) ||
+                (p.tags || []).some(t => t.toLowerCase().includes(q))
+            );
+        }
 
-            // Banner for this category
-            html += `
-            <section id="cat-${encodeURIComponent(catName)}" class="scroll-mt-28">
-                <div class="relative h-48 md:h-64 overflow-hidden">
-                    <img src="${bannerUrl}" alt="${catName}" class="w-full h-full object-cover">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
-                    <div class="absolute bottom-0 left-0 right-0 p-6 md:p-10">
-                        <div class="max-w-7xl mx-auto">
-                            <h2 class="text-2xl md:text-3xl font-extrabold text-white mb-1">${catName}</h2>
-                            <p class="text-gray-200 text-sm md:text-base">${description} · ${products.length} สินค้า</p>
-                        </div>
-                    </div>
-                </div>
+        switch (catSort) {
+            case 'price-asc': filtered.sort((a, b) => a.price - b.price); break;
+            case 'price-desc': filtered.sort((a, b) => b.price - a.price); break;
+            case 'rating': filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0)); break;
+            case 'name': filtered.sort((a, b) => a.name.localeCompare(b.name, 'th')); break;
+        }
 
-                <!-- Products for this category -->
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">`;
+        return filtered;
+    }
 
-            products.slice(0, 8).forEach((product, index) => {
-                const rating = product.rating || 0;
-                const reviews = product.reviews || 0;
-                let starsHtml = '';
-                for (let i = 1; i <= 5; i++) {
-                    if (i <= Math.floor(rating)) starsHtml += '<i class="ph-fill ph-star text-yellow-400 text-xs"></i>';
-                    else if (i === Math.ceil(rating) && !Number.isInteger(rating)) starsHtml += '<i class="ph-fill ph-star-half text-yellow-400 text-xs"></i>';
-                    else starsHtml += '<i class="ph ph-star text-gray-300 text-xs"></i>';
-                }
+    function renderCatProducts() {
+        const container = document.getElementById('cat-products');
+        const noResults = document.getElementById('cat-no-results');
+        const filtered = getFilteredCatProducts();
 
-                const wishlist = JSON.parse(localStorage.getItem('btmusicdrive_wishlist') || '[]');
-                const isWishlisted = wishlist.some(w => w.id === product.id);
-                const heartClass = isWishlisted ? 'ph-fill ph-heart text-lg text-red-500' : 'ph ph-heart text-lg';
-                const discountHtml = product.originalPrice ? `<span class="text-xs text-gray-400 line-through">฿${product.originalPrice.toLocaleString()}</span>` : '';
-                const discountBadge = product.originalPrice ? `<span class="absolute top-2 left-2 bg-red-500 text-white px-2 py-0.5 rounded-full text-[10px] font-bold">-${Math.round((1 - product.price / product.originalPrice) * 100)}%</span>` : '';
+        document.getElementById('cat-product-count').textContent = `${filtered.length} สินค้าในหมวด "${activeCat}"`;
 
-                html += `
-                    <div class="bg-white rounded-xl overflow-hidden border border-gray-100 hover:shadow-md transition-shadow animate-fade-in-up" style="animation-delay:${index * 0.05}s">
-                        <a href="product.html?id=${product.id}" class="block relative aspect-square overflow-hidden group cursor-pointer">
-                            <img src="${product.imageUrl}" alt="${product.name}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                            ${discountBadge}
-                            <button class="absolute top-2 right-2 bg-white/80 p-1.5 rounded-full text-gray-400 hover:text-red-500 shadow-sm transition-colors z-10" data-wishlist="${product.id}" onclick="event.preventDefault();event.stopPropagation();">
-                                <i class="${heartClass}"></i>
-                            </button>
-                        </a>
-                        <div class="p-3">
-                            <a href="product.html?id=${product.id}" class="block">
-                                <h3 class="text-sm font-semibold text-gray-900 mb-1 line-clamp-2 leading-tight hover:text-primary transition-colors">${product.name}</h3>
-                            </a>
-                            <div class="flex items-center gap-1 mb-2">
-                                ${starsHtml}
-                                <span class="text-[10px] text-gray-400 ml-0.5">(${reviews})</span>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <span class="text-base font-bold text-gray-900">฿${product.price.toLocaleString()}</span>
-                                    ${discountHtml ? '<br>' + discountHtml : ''}
-                                </div>
-                                <button class="cat-add-cart bg-primary hover:bg-amber-700 text-white p-2 rounded-lg transition-colors" data-id="${product.id}">
-                                    <i class="ph ph-shopping-cart text-lg"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>`;
-            });
+        if (filtered.length === 0) {
+            container.innerHTML = '';
+            noResults.classList.remove('hidden');
+            return;
+        }
+        noResults.classList.add('hidden');
 
-            html += `</div>`;
-
-            // Show "view all" link if more than 8 products
-            if (products.length > 8) {
-                html += `
-                    <div class="text-center mt-6">
-                        <a href="shop.html?category=${encodeURIComponent(catName)}" class="inline-flex items-center gap-2 px-6 py-2.5 border-2 border-primary text-primary font-semibold rounded-full hover:bg-primary hover:text-white transition-all text-sm">
-                            ดูทั้งหมดในหมวด ${catName} (${products.length}) <i class="ph ph-arrow-right"></i>
-                        </a>
-                    </div>`;
+        container.innerHTML = filtered.map((product, index) => {
+            const rating = product.rating || 0;
+            const reviews = product.reviews || 0;
+            let starsHtml = '';
+            for (let i = 1; i <= 5; i++) {
+                if (i <= Math.floor(rating)) starsHtml += `<i class="ph-fill ph-star text-yellow-400 text-xs"></i>`;
+                else if (i === Math.ceil(rating) && !Number.isInteger(rating)) starsHtml += `<i class="ph-fill ph-star-half text-yellow-400 text-xs"></i>`;
+                else starsHtml += `<i class="ph ph-star text-gray-300 text-xs"></i>`;
             }
 
-            html += `</div></section>`;
-        });
+            const wishlist = JSON.parse(localStorage.getItem('btmusicdrive_wishlist') || '[]');
+            const isWishlisted = wishlist.some(w => w.id === product.id);
+            const heartClass = isWishlisted ? 'ph-fill ph-heart text-lg text-red-500' : 'ph ph-heart text-lg';
 
-        container.innerHTML = html;
+            const discountHtml = product.originalPrice ? `<span class="text-xs text-gray-400 line-through">฿${product.originalPrice.toLocaleString()}</span>` : '';
+            const discountBadge = product.originalPrice ? `<span class="absolute top-2 left-2 bg-red-500 text-white px-2 py-0.5 rounded-full text-[10px] font-bold">-${Math.round((1 - product.price / product.originalPrice) * 100)}%</span>` : '';
+
+            return `
+            <div class="bg-white rounded-xl overflow-hidden border border-gray-100 hover:shadow-md transition-shadow animate-fade-in-up" style="animation-delay:${index * 0.05}s">
+                <a href="product.html?id=${product.id}" class="block relative aspect-square overflow-hidden group cursor-pointer">
+                    <img src="${product.imageUrl}" alt="${product.name}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                    ${discountBadge}
+                    <button class="absolute top-2 right-2 bg-white/80 p-1.5 rounded-full text-gray-400 hover:text-red-500 shadow-sm transition-colors z-10" data-wishlist="${product.id}" onclick="event.preventDefault();event.stopPropagation();">
+                        <i class="${heartClass}"></i>
+                    </button>
+                </a>
+                <div class="p-3">
+                    <a href="product.html?id=${product.id}" class="block">
+                        <h3 class="text-sm font-semibold text-gray-900 mb-1 line-clamp-2 leading-tight hover:text-primary transition-colors">${product.name}</h3>
+                    </a>
+                    <p class="text-[11px] text-gray-400 mb-1.5">${product.brand || ''} ${product.sku ? '| ' + product.sku : ''}</p>
+                    <div class="flex items-center gap-1 mb-2">
+                        ${starsHtml}
+                        <span class="text-[10px] text-gray-400 ml-0.5">(${reviews})</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <span class="text-base font-bold text-gray-900">฿${product.price.toLocaleString()}</span>
+                            ${discountHtml ? `<br>${discountHtml}` : ''}
+                        </div>
+                        <button class="cat-add-cart bg-primary hover:bg-amber-700 text-white p-2 rounded-lg transition-colors" data-id="${product.id}">
+                            <i class="ph ph-shopping-cart text-lg"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
     }
 
-    function setupEvents() {
+    function setupCatEvents() {
+        // Category chips
+        document.getElementById('cat-chips').addEventListener('click', e => {
+            const chip = e.target.closest('[data-cat]');
+            if (!chip) return;
+            activeCat = chip.dataset.cat;
+
+            const savedCats = getCategoriesFromStorage();
+            const savedCat = savedCats.find(c => c.name === activeCat);
+
+            document.getElementById('cat-title').textContent = activeCat;
+            document.getElementById('breadcrumb-cat').textContent = activeCat;
+            document.title = `${activeCat} — btmusicdrive`;
+
+            if (savedCat && savedCat.bannerUrl) {
+                document.getElementById('banner-img').src = savedCat.bannerUrl;
+            }
+            if (savedCat && savedCat.description) {
+                document.getElementById('cat-desc').textContent = savedCat.description;
+            } else {
+                document.getElementById('cat-desc').textContent = `รวมสินค้าคุณภาพในหมวด ${activeCat}`;
+            }
+
+            const url = new URL(window.location);
+            url.searchParams.set('cat', activeCat);
+            history.replaceState(null, '', url);
+
+            renderCatChips();
+            renderCatProducts();
+        });
+
+        // Search
+        let searchTimeout;
+        document.getElementById('cat-search').addEventListener('input', e => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                catSearch = e.target.value.trim();
+                renderCatProducts();
+            }, 300);
+        });
+
+        // Sort
+        document.getElementById('cat-sort').addEventListener('change', e => {
+            catSort = e.target.value;
+            renderCatProducts();
+        });
+
         // Add to cart
-        document.getElementById('all-categories-container').addEventListener('click', e => {
+        document.getElementById('cat-products').addEventListener('click', e => {
             const btn = e.target.closest('.cat-add-cart');
             if (!btn) return;
             const productId = btn.dataset.id;
@@ -277,32 +370,13 @@
         });
 
         // Wishlist
-        document.getElementById('all-categories-container').addEventListener('click', e => {
+        document.getElementById('cat-products').addEventListener('click', e => {
             const btn = e.target.closest('[data-wishlist]');
             if (!btn) return;
             const productId = btn.dataset.wishlist;
             const product = allProducts.find(p => p.id === productId);
-            if (!product) return;
-            let wishlist = JSON.parse(localStorage.getItem('btmusicdrive_wishlist') || '[]');
-            const idx = wishlist.findIndex(w => w.id === productId);
-            const icon = btn.querySelector('i');
-            if (idx >= 0) {
-                wishlist.splice(idx, 1);
-                if (icon) icon.className = 'ph ph-heart text-lg';
-            } else {
-                wishlist.push({ id: product.id, name: product.name, price: product.price, image: product.imageUrl || product.image });
-                if (icon) icon.className = 'ph-fill ph-heart text-lg text-red-500';
-            }
-            localStorage.setItem('btmusicdrive_wishlist', JSON.stringify(wishlist));
-        });
-
-        // Smooth scroll for nav chips
-        document.querySelectorAll('#cat-chips a[href^="#cat-"]').forEach(link => {
-            link.addEventListener('click', e => {
-                e.preventDefault();
-                const target = document.querySelector(decodeURIComponent(link.getAttribute('href')));
-                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            });
+            if (product && typeof toggleWishlist === 'function') toggleWishlist(product);
+            renderCatProducts();
         });
     }
     </script>
