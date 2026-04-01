@@ -21,6 +21,9 @@ model User {
   googleId     String?   @unique
   facebookId   String?   @unique
   name         String?
+  phone        String?
+  birthday     String?
+  gender       String?
   role         Role      @default(CUSTOMER)
   orders       Order[]
   cart         Cart?

@@ -175,14 +175,35 @@
 
     async function saveProfile(e) {
       e.preventDefault();
+      const token = localStorage.getItem('btmusicdrive_token');
+      if (!token) { alert('กรุณาเข้าสู่ระบบก่อน'); return false; }
+
       const fname = document.getElementById('pf-fname').value;
       const lname = document.getElementById('pf-lname').value;
-      
-      // Update UI optimistically
+      const phone = document.getElementById('pf-phone').value;
+      const birthday = document.getElementById('pf-birthday').value;
+      const genderEl = document.querySelector('input[name="gender"]:checked');
+      const gender = genderEl ? genderEl.value : '';
+
       const newName = `${fname} ${lname}`.trim();
-      document.getElementById('sidebar-user-name').textContent = newName || 'ผู้ใช้';
-      
-      alert('บันทึกข้อมูลเรียบร้อย (UI อัปเดตแล้ว)');
+
+      try {
+        const res = await fetch(`${API_BASE}/users/me`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ name: newName, phone, birthday, gender })
+        });
+        if (res.ok) {
+          document.getElementById('sidebar-user-name').textContent = newName || 'ผู้ใช้';
+          alert('บันทึกข้อมูลเรียบร้อย');
+        } else {
+          const data = await res.json();
+          alert(data.error || 'ไม่สามารถบันทึกข้อมูลได้');
+        }
+      } catch (err) {
+        console.error('Save profile error:', err);
+        alert('เกิดข้อผิดพลาด กรุณาลองอีกครั้ง');
+      }
       return false;
     }
 

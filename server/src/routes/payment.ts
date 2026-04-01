@@ -160,6 +160,46 @@ router.get('/return', async (req: Request, res: Response) => {
 });
 
 
+// ── Confirm Payment (called by frontend after redirect) ─────────────────────
+router.post('/confirm', authenticateToken, async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+
+    const { invoiceNo } = req.body;
+    if (!invoiceNo) return res.status(400).json({ error: 'Missing invoiceNo' });
+
+    const order = await prisma.order.findFirst({
+      where: { stripeSessionId: String(invoiceNo), userId },
+      include: { items: { include: { product: true } }, user: true },
+    });
+
+    if (!order) return res.status(404).json({ error: 'Order not found' });
+
+    // If already paid, just return
+    if (order.status === 'PAID') {
+      return res.json({ id: order.id, status: 'paid' });
+    }
+
+    // Check charge status via Omise
+    if (order.paymentIntentId) {
+      const charge = await omiseGet(`/charges/${order.paymentIntentId}`);
+      if (charge.status === 'successful') {
+        await prisma.order.update({ where: { id: order.id }, data: { status: 'PAID' } });
+        return res.json({ id: order.id, status: 'paid' });
+      } else if (charge.status === 'pending') {
+        return res.json({ id: order.id, status: 'pending' });
+      }
+    }
+
+    return res.json({ id: order.id, status: order.status.toLowerCase() });
+  } catch (error: any) {
+    console.error('Confirm payment error:', error);
+    return res.status(500).json({ error: 'Failed to confirm payment' });
+  }
+});
+
+
 // ── Helper functions ────────────────────────────────────────────────────────
 async function createProcessingOrder(userId: string, invoiceNo: string, chargeId: string, cart: any, promo: any, discountAmount: number, totalAmount: number) {
   const orderItems = cart.items.map((item: any) => ({

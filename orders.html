@@ -102,7 +102,31 @@
           document.getElementById('sidebar-user-name').textContent = data.user.name || 'ผู้ใช้';
           document.getElementById('sidebar-user-email').textContent = data.user.email || '';
           
-          const orders = JSON.parse(localStorage.getItem('btmusicdrive_orders') || '[]');
+          // Fetch orders from API
+          let orders = [];
+          try {
+            const ordersRes = await fetch(`${API_BASE}/orders/my`, { headers: { Authorization: `Bearer ${token}` } });
+            if (ordersRes.ok) {
+              const rawOrders = await ordersRes.json();
+              orders = rawOrders.map(o => ({
+                id: o.id ? o.id.slice(-8).toUpperCase() : '—',
+                status: (o.status || 'pending').toLowerCase(),
+                date: o.createdAt ? new Date(o.createdAt).toLocaleDateString('th-TH', { year:'numeric', month:'short', day:'numeric' }) : '',
+                total: Number(o.totalAmount) || 0,
+                items: (o.items || []).map(i => ({
+                  name: i.product?.name || 'สินค้า',
+                  qty: i.quantity || 1,
+                  price: Number(i.priceAtTime) || 0
+                }))
+              }));
+            }
+          } catch(e) { console.warn('Could not fetch orders from API, falling back to localStorage:', e); }
+
+          // Fallback to localStorage if API returned empty
+          if (!orders.length) {
+            orders = JSON.parse(localStorage.getItem('btmusicdrive_orders') || '[]');
+          }
+          
           renderOrders(orders, 'all');
 
           document.querySelectorAll('.order-tab').forEach(btn => {
