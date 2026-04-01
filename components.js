@@ -33,11 +33,11 @@ function _navbarHTML() {
         </div>
         <div class="flex items-center space-x-4">
           <button class="text-gray-600 hover:text-primary transition-colors"><i class="ph ph-magnifying-glass text-2xl"></i></button>
-          <button class="text-gray-600 hover:text-primary transition-colors relative group" id="auth-btn">
+          <button class="hidden md:block text-gray-600 hover:text-primary transition-colors relative group" id="auth-btn">
             <i class="ph ph-user text-2xl"></i>
             <span id="user-greeting" class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs font-medium text-gray-900 hidden whitespace-nowrap bg-white px-2 py-1 rounded shadow-sm"></span>
           </button>
-          <button class="text-gray-600 hover:text-primary transition-colors relative" id="cart-btn">
+          <button class="hidden md:block text-gray-600 hover:text-primary transition-colors relative" id="cart-btn">
             <i class="ph ph-shopping-cart text-2xl"></i>
             <span id="cart-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">0</span>
           </button>

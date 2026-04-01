@@ -68,16 +68,20 @@
     <header id="site-header"></header>
 
     <!-- Category Banner -->
-    <section class="cat-banner pt-16" id="cat-banner">
-        <img id="banner-img" src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80" alt="แบนเนอร์หมวดหมู่">
-        <div class="cat-banner-overlay"></div>
-        <div class="cat-banner-content">
-            <h1 class="text-4xl md:text-5xl font-extrabold mb-3 drop-shadow-lg" id="cat-title">หมวดหมู่</h1>
-            <p class="text-lg md:text-xl text-gray-200 mb-4 max-w-2xl mx-auto" id="cat-desc">รวมสินค้าคุณภาพในหมวดหมู่นี้</p>
-            <div class="flex items-center justify-center gap-2 text-sm text-gray-300">
-                <a href="index.html" class="hover:text-white transition-colors">หน้าแรก</a>
-                <i class="ph ph-caret-right text-xs"></i>
-                <span id="breadcrumb-cat" class="text-white font-medium">หมวดหมู่</span>
+    <section class="pt-16" id="cat-banner">
+        <div class="relative min-h-[200px] md:min-h-[280px] overflow-hidden">
+            <img id="banner-img" src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80" alt="แบนเนอร์หมวดหมู่" class="absolute inset-0 w-full h-full object-cover">
+            <div class="absolute inset-0 bg-black/30"></div>
+        </div>
+        <div class="bg-white border-b border-gray-100">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center">
+                <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-2" id="cat-title">หมวดหมู่</h1>
+                <p class="text-gray-500 text-base md:text-lg mb-3 max-w-2xl mx-auto" id="cat-desc">รวมสินค้าคุณภาพในหมวดหมู่นี้</p>
+                <div class="flex items-center justify-center gap-2 text-sm text-gray-400">
+                    <a href="index.html" class="hover:text-primary transition-colors">หน้าแรก</a>
+                    <i class="ph ph-caret-right text-xs"></i>
+                    <span id="breadcrumb-cat" class="text-gray-700 font-medium">หมวดหมู่</span>
+                </div>
             </div>
         </div>
     </section>
@@ -111,7 +115,7 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="cat-products">
+            <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6" id="cat-products">
                 <div class="col-span-full text-center py-16">
                     <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
                     <p class="mt-4 text-gray-500">กำลังโหลดสินค้า...</p>
@@ -265,42 +269,43 @@
             const reviews = product.reviews || 0;
             let starsHtml = '';
             for (let i = 1; i <= 5; i++) {
-                if (i <= Math.floor(rating)) starsHtml += `<i class="ph-fill ph-star text-yellow-400 text-sm"></i>`;
-                else if (i === Math.ceil(rating) && !Number.isInteger(rating)) starsHtml += `<i class="ph-fill ph-star-half text-yellow-400 text-sm"></i>`;
-                else starsHtml += `<i class="ph ph-star text-gray-300 text-sm"></i>`;
+                if (i <= Math.floor(rating)) starsHtml += `<i class="ph-fill ph-star text-yellow-400 text-xs"></i>`;
+                else if (i === Math.ceil(rating) && !Number.isInteger(rating)) starsHtml += `<i class="ph-fill ph-star-half text-yellow-400 text-xs"></i>`;
+                else starsHtml += `<i class="ph ph-star text-gray-300 text-xs"></i>`;
             }
 
             const wishlist = JSON.parse(localStorage.getItem('btmusicdrive_wishlist') || '[]');
             const isWishlisted = wishlist.some(w => w.id === product.id);
-            const heartClass = isWishlisted ? 'ph-fill ph-heart text-xl text-red-500' : 'ph ph-heart text-xl';
+            const heartClass = isWishlisted ? 'ph-fill ph-heart text-lg text-red-500' : 'ph ph-heart text-lg';
 
-            const discountHtml = product.originalPrice ? `<span class="text-sm text-gray-400 line-through ml-2">฿${product.originalPrice.toFixed(2)}</span><span class="ml-2 text-xs font-bold text-red-500 bg-red-50 px-2 py-0.5 rounded-full">-${Math.round((1 - product.price / product.originalPrice) * 100)}%</span>` : '';
+            const discountHtml = product.originalPrice ? `<span class="text-xs text-gray-400 line-through">฿${product.originalPrice.toLocaleString()}</span>` : '';
+            const discountBadge = product.originalPrice ? `<span class="absolute top-2 left-2 bg-red-500 text-white px-2 py-0.5 rounded-full text-[10px] font-bold">-${Math.round((1 - product.price / product.originalPrice) * 100)}%</span>` : '';
 
             return `
-            <div class="bg-white rounded-2xl overflow-hidden border border-gray-100 hover:shadow-lg transition-shadow animate-fade-in-up" style="animation-delay:${index * 0.05}s">
-                <a href="product.html?id=${product.id}" class="block relative h-64 overflow-hidden group cursor-pointer">
-                    <img src="${product.imageUrl}" alt="${product.name}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                    <div class="absolute inset-0 bg-black bg-opacity-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                        <button class="cat-add-cart bg-white text-gray-900 hover:bg-primary hover:text-white font-bold py-3 px-6 rounded-full shadow-lg transition-colors flex items-center" data-id="${product.id}" onclick="event.preventDefault();event.stopPropagation();">
-                            <i class="ph ph-shopping-cart mr-2 text-lg"></i> เพิ่มลงตะกร้า
-                        </button>
-                    </div>
-                    <button class="absolute top-4 right-4 bg-white p-2 rounded-full text-gray-400 hover:text-red-500 shadow-sm transition-colors z-10" data-wishlist="${product.id}" onclick="event.preventDefault();event.stopPropagation();">
+            <div class="bg-white rounded-xl overflow-hidden border border-gray-100 hover:shadow-md transition-shadow animate-fade-in-up" style="animation-delay:${index * 0.05}s">
+                <a href="product.html?id=${product.id}" class="block relative aspect-square overflow-hidden group cursor-pointer">
+                    <img src="${product.imageUrl}" alt="${product.name}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                    ${discountBadge}
+                    <button class="absolute top-2 right-2 bg-white/80 p-1.5 rounded-full text-gray-400 hover:text-red-500 shadow-sm transition-colors z-10" data-wishlist="${product.id}" onclick="event.preventDefault();event.stopPropagation();">
                         <i class="${heartClass}"></i>
                     </button>
-                    ${product.originalPrice ? `<span class="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-sm">-${Math.round((1 - product.price / product.originalPrice) * 100)}%</span>` : ''}
                 </a>
-                <div class="p-5">
-                    <div class="text-xs text-gray-500 font-medium mb-1 uppercase tracking-wider">${product.category?.name || product.category || ''}</div>
-                    <a href="product.html?id=${product.id}" class="block"><h3 class="text-lg font-bold text-gray-900 mb-2 truncate hover:text-primary transition-colors">${product.name}</h3></a>
-                    <div class="flex items-center mb-3">
-                        <div class="flex mr-2">${starsHtml}</div>
-                        <span class="text-xs text-gray-500">(${reviews})</span>
+                <div class="p-3">
+                    <a href="product.html?id=${product.id}" class="block">
+                        <h3 class="text-sm font-semibold text-gray-900 mb-1 line-clamp-2 leading-tight hover:text-primary transition-colors">${product.name}</h3>
+                    </a>
+                    <p class="text-[11px] text-gray-400 mb-1.5">${product.brand || ''} ${product.sku ? '| ' + product.sku : ''}</p>
+                    <div class="flex items-center gap-1 mb-2">
+                        ${starsHtml}
+                        <span class="text-[10px] text-gray-400 ml-0.5">(${reviews})</span>
                     </div>
                     <div class="flex items-center justify-between">
-                        <div><span class="text-xl font-bold text-gray-900">฿${product.price.toFixed(2)}</span>${discountHtml}</div>
-                        <button class="md:hidden cat-add-cart text-primary hover:text-secondary p-2" data-id="${product.id}">
-                            <i class="ph-fill ph-plus-circle text-3xl"></i>
+                        <div>
+                            <span class="text-base font-bold text-gray-900">฿${product.price.toLocaleString()}</span>
+                            ${discountHtml ? `<br>${discountHtml}` : ''}
+                        </div>
+                        <button class="cat-add-cart bg-primary hover:bg-amber-700 text-white p-2 rounded-lg transition-colors" data-id="${product.id}">
+                            <i class="ph ph-shopping-cart text-lg"></i>
                         </button>
                     </div>
                 </div>

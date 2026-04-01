@@ -439,6 +439,14 @@
     // Show
     document.getElementById('loading').classList.add('hidden');
     document.getElementById('product-content').classList.remove('hidden');
+
+    // Populate mobile sticky cart bar
+    const stickyBar = document.getElementById('mobile-sticky-cart');
+    if (stickyBar) {
+      document.getElementById('sticky-product-name').textContent = product.name;
+      document.getElementById('sticky-product-price').textContent = `฿${Number(product.price).toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
+      stickyBar.classList.remove('hidden');
+    }
   }
 
   // ── Low Stock Alert ──────────────────────────────────────────────────────────
@@ -854,6 +862,19 @@
   // ── Init ─────────────────────────────────────────────────────────────────────
   loadProduct();
 </script>
+
+  <!-- Sticky Add to Cart Bar (Mobile) -->
+  <div id="mobile-sticky-cart" class="fixed bottom-14 left-0 right-0 bg-white border-t border-gray-200 z-40 md:hidden hidden">
+    <div class="flex items-center gap-3 px-4 py-2.5">
+      <div class="flex-1 min-w-0">
+        <p id="sticky-product-name" class="text-sm font-semibold text-gray-900 truncate"></p>
+        <p id="sticky-product-price" class="text-base font-bold text-red-600"></p>
+      </div>
+      <button onclick="addToCartFromDetail()" class="bg-primary hover:bg-amber-700 text-white font-bold py-2.5 px-5 rounded-lg transition-colors flex items-center gap-2 whitespace-nowrap text-sm">
+        <i class="ph ph-shopping-cart text-lg"></i> เพิ่มในตะกร้า
+      </button>
+    </div>
+  </div>
 
   <!-- Shared Footer -->
   <div id="site-footer"></div>
