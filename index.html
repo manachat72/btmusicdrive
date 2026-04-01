@@ -176,39 +176,44 @@
                 <div class="w-16 h-1 bg-primary mx-auto rounded"></div>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Category 1: ลูกทุ่ง/หมอลำ -->
-                <a href="shop.html?category=เพื่อชีวิต" class="group relative rounded-2xl overflow-hidden h-64 md:h-80 shadow-md hover:shadow-xl transition-shadow">
-                    <img src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="แฟลชไดร์ฟเพลงลูกทุ่ง หมอลำ มันส์ๆ" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                    <div class="absolute inset-0 bg-black bg-opacity-30 group-hover:bg-opacity-40 transition-opacity"></div>
-                    <div class="absolute bottom-6 left-6">
-                        <h3 class="text-2xl font-bold text-white mb-1">เพลงลูกทุ่ง / หมอลำ</h3>
-                        <p class="text-gray-200 text-sm flex items-center">สั่งซื้อเลย <i class="ph ph-arrow-right ml-1 transition-transform group-hover:translate-x-1"></i></p>
-                    </div>
-                </a>
-                
-                <!-- Category 2: สตริง/ยุค 90s -->
-                <a href="shop.html?category=รองเท้า" class="group relative rounded-2xl overflow-hidden h-64 md:h-80 shadow-md hover:shadow-xl transition-shadow">
-                    <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="แฟลชไดร์ฟเพลงสตริง ยุค 90s" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                    <div class="absolute inset-0 bg-black bg-opacity-30 group-hover:bg-opacity-40 transition-opacity"></div>
-                    <div class="absolute bottom-6 left-6">
-                        <h3 class="text-2xl font-bold text-white mb-1">เพลงสตริง / ยุค 90s</h3>
-                        <p class="text-gray-200 text-sm flex items-center">สั่งซื้อเลย <i class="ph ph-arrow-right ml-1 transition-transform group-hover:translate-x-1"></i></p>
-                    </div>
-                </a>
-                
-                <!-- Category 3: เพื่อชีวิต/สากล -->
-                <a href="shop.html?category=เสื้อผ้า" class="group relative rounded-2xl overflow-hidden h-64 md:h-80 shadow-md hover:shadow-xl transition-shadow">
-                    <img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="แฟลชไดร์ฟเพลงเพื่อชีวิต สากล" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                    <div class="absolute inset-0 bg-black bg-opacity-30 group-hover:bg-opacity-40 transition-opacity"></div>
-                    <div class="absolute bottom-6 left-6">
-                        <h3 class="text-2xl font-bold text-white mb-1">เพื่อชีวิต / สากล</h3>
-                        <p class="text-gray-200 text-sm flex items-center">สั่งซื้อเลย <i class="ph ph-arrow-right ml-1 transition-transform group-hover:translate-x-1"></i></p>
-                    </div>
-                </a>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="categories-grid">
+                <!-- จะถูกสร้างโดย JS จาก localStorage -->
             </div>
         </div>
     </section>
+
+    <script>
+    // Dynamic categories from admin
+    (function renderDynamicCategories() {
+        const DEFAULT_CATEGORIES = [
+            { name: 'เพื่อชีวิต', description: 'รวมเพลงเพื่อชีวิตยอดฮิต', bannerUrl: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80', isActive: true },
+            { name: 'เพลงสตริง', description: 'เพลงสตริงยุค 80s-90s', bannerUrl: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80', isActive: true },
+            { name: 'เพลงลูกทุ่ง', description: 'เพลงลูกทุ่งหมอลำมันส์ๆ', bannerUrl: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80', isActive: true }
+        ];
+
+        let cats = [];
+        try { cats = JSON.parse(localStorage.getItem('btmusicdrive_categories')) || []; } catch {}
+        cats = cats.filter(c => c.isActive !== false);
+        if (cats.length === 0) cats = DEFAULT_CATEGORIES;
+
+        const grid = document.getElementById('categories-grid');
+        if (!grid) return;
+
+        grid.innerHTML = cats.map(c => {
+            const banner = c.bannerUrl || 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80';
+            const desc = c.description || c.name;
+            return `
+                <a href="category.html?cat=${encodeURIComponent(c.name)}" class="group relative rounded-2xl overflow-hidden h-64 md:h-80 shadow-md hover:shadow-xl transition-shadow">
+                    <img src="${banner}" alt="${c.name}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-black bg-opacity-30 group-hover:bg-opacity-40 transition-opacity"></div>
+                    <div class="absolute bottom-6 left-6">
+                        <h3 class="text-2xl font-bold text-white mb-1">${c.name}</h3>
+                        <p class="text-gray-200 text-sm flex items-center">${desc} <i class="ph ph-arrow-right ml-2 transition-transform group-hover:translate-x-1"></i></p>
+                    </div>
+                </a>`;
+        }).join('');
+    })();
+    </script>
 
     <!-- Trending Products Section -->
     <section id="shop" class="py-16 bg-white">

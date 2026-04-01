@@ -463,6 +463,9 @@
       <div class="sb-item" id="nav-customers" onclick="showSection('customers')">
         <i class="fa-solid fa-users"></i><span>ลูกค้า</span>
       </div>
+      <div class="sb-item" id="nav-categories" onclick="showSection('categories')">
+        <i class="fa-solid fa-layer-group"></i><span>หมวดหมู่</span>
+      </div>
       <div class="sb-item" id="nav-menus" onclick="showSection('menus')">
         <i class="fa-solid fa-bars"></i><span>เมนู</span>
       </div>
@@ -722,6 +725,44 @@
       </div>
       <div id="customers-empty" class="wp-empty-box" style="display:none;">
         <i class="fa-solid fa-users"></i><p>ไม่พบลูกค้า</p>
+      </div>
+    </section>
+
+    <!-- ── CATEGORIES ─────────────────────────────────────────────────── -->
+    <section id="section-categories" style="display:none;">
+      <div class="wp-page-hdr">
+        <div>
+          <h1 class="wp-page-title">หมวดหมู่</h1>
+          <p class="wp-page-desc" id="categories-count-label">จัดการหมวดหมู่สินค้าและแบนเนอร์</p>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button onclick="loadCategories()" class="wp-btn"><i class="fa-solid fa-arrows-rotate"></i> รีเฟรช</button>
+          <button onclick="openCategoryModal(null)" class="wp-btn" style="background:var(--accent);color:#fff;border-color:var(--accent);">
+            <i class="fa-solid fa-plus"></i> เพิ่มหมวดหมู่
+          </button>
+        </div>
+      </div>
+
+      <div id="categories-table-wrapper" class="wp-card" style="display:none;">
+        <div class="card-body nopad" style="overflow-x:auto;">
+          <table class="wp-tbl">
+            <thead>
+              <tr>
+                <th style="width:60px;">แบนเนอร์</th>
+                <th>ชื่อหมวดหมู่</th>
+                <th>คำอธิบาย</th>
+                <th>ไอคอน</th>
+                <th class="r">สินค้า</th>
+                <th style="width:70px;">เปิดใช้</th>
+                <th style="width:120px;">จัดการ</th>
+              </tr>
+            </thead>
+            <tbody id="categories-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div id="categories-empty" class="wp-empty-box" style="display:none;">
+        <i class="fa-solid fa-layer-group"></i><p>ยังไม่มีหมวดหมู่ กด "เพิ่มหมวดหมู่" เพื่อสร้างหมวดแรก</p>
       </div>
     </section>
 
@@ -1061,6 +1102,77 @@
   </div>
 </div>
 
+<!-- ── CATEGORY MODAL ──────────────────────────────────────────────────── -->
+<div id="category-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:6px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3);margin:16px;">
+    <div style="padding:16px 20px;border-bottom:1px solid var(--card-border);display:flex;align-items:center;justify-content:space-between;">
+      <h2 id="cat-modal-title" style="font-size:15px;font-weight:700;">เพิ่มหมวดหมู่</h2>
+      <button onclick="closeCategoryModal()" style="background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;line-height:1;">&#x2715;</button>
+    </div>
+    <div style="padding:20px;">
+      <input type="hidden" id="cm-id">
+      <div class="settings-grid">
+        <div class="settings-row">
+          <label class="settings-label">ชื่อหมวดหมู่ <span style="color:#d63638;">*</span></label>
+          <input type="text" id="cm-name" class="settings-input" placeholder="เช่น เพื่อชีวิต, ลูกทุ่ง, สตริง">
+        </div>
+        <div class="settings-row">
+          <label class="settings-label">คำอธิบาย</label>
+          <textarea id="cm-desc" class="settings-input" rows="2" placeholder="คำอธิบายหมวดหมู่สั้นๆ (แสดงบนแบนเนอร์)" style="resize:vertical;"></textarea>
+        </div>
+        <div class="settings-row">
+          <label class="settings-label">รูปแบนเนอร์</label>
+          <input type="text" id="cm-banner" class="settings-input" placeholder="URL รูปแบนเนอร์ เช่น images/banner-cat.jpg หรือ link รูป" oninput="previewCatBanner(this.value)">
+          <p class="settings-hint">ใส่ URL ของรูปแบนเนอร์ หรือ path ไฟล์ในโฟลเดอร์ images/</p>
+          <div id="cm-banner-preview" style="margin-top:8px;display:none;">
+            <img id="cm-banner-preview-img" style="width:100%;height:120px;object-fit:cover;border-radius:4px;border:1px solid var(--card-border);" alt="preview">
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <div class="settings-row" style="flex:1;">
+            <label class="settings-label">คลาสไอคอน</label>
+            <input type="text" id="cm-icon" class="settings-input" placeholder="เช่น ph ph-music-notes">
+            <p class="settings-hint">ชื่อคลาส Phosphor Icons</p>
+          </div>
+          <div class="settings-row" style="flex:1;">
+            <label class="settings-label">ลำดับ</label>
+            <input type="number" id="cm-sort" class="settings-input" value="0" min="0">
+          </div>
+        </div>
+        <div class="settings-row" style="flex-direction:row;align-items:center;gap:10px;">
+          <label class="settings-label" style="margin:0;flex:none;">เปิดใช้</label>
+          <label class="toggle-switch">
+            <input type="checkbox" id="cm-active" checked>
+            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          </label>
+        </div>
+      </div>
+      <div id="cm-error" style="display:none;color:#d63638;font-size:12px;margin-top:10px;padding:8px 12px;background:#fcf0f1;border-radius:3px;border-left:3px solid #d63638;"></div>
+      <div style="margin-top:16px;display:flex;gap:8px;justify-content:flex-end;">
+        <button onclick="closeCategoryModal()" class="wp-btn">ยกเลิก</button>
+        <button onclick="saveCategory()" id="cm-save-btn" class="settings-save-btn"><i class="fa-solid fa-floppy-disk"></i> บันทึกหมวดหมู่</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── CATEGORY DELETE CONFIRM MODAL ──────────────────────────────────────── -->
+<div id="cat-confirm-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:600;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:6px;width:100%;max-width:360px;padding:28px 24px;box-shadow:0 20px 60px rgba(0,0,0,.3);margin:16px;text-align:center;">
+    <div style="width:52px;height:52px;border-radius:50%;background:#fef2f2;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
+      <i class="fa-solid fa-trash" style="color:#d63638;font-size:20px;"></i>
+    </div>
+    <h3 style="font-size:16px;font-weight:700;margin-bottom:6px;">ลบหมวดหมู่?</h3>
+    <p id="cat-confirm-text" style="font-size:13px;color:var(--muted);margin-bottom:20px;">การกระทำนี้ไม่สามารถย้อนกลับได้</p>
+    <div style="display:flex;gap:8px;justify-content:center;">
+      <button onclick="closeCatConfirm()" class="wp-btn">ยกเลิก</button>
+      <button onclick="confirmDeleteCategory()" id="cat-confirm-delete-btn" style="background:#d63638;color:#fff;border:none;border-radius:3px;padding:7px 18px;font-size:13px;font-weight:600;cursor:pointer;">
+        <i class="fa-solid fa-trash"></i> ลบ
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div id="toast">
   <i id="ti" class="fa-solid fa-circle-check"></i>
@@ -1087,10 +1199,10 @@
     { name: 'TikTok Shop',  icon: 'fa-music',         color: '#2d2d2d', orders: 187, revenue: 26314, share: 14.4 },
   ];
 
-  const SECTIONS = ['dashboard', 'orders', 'products', 'customers', 'menus', 'settings'];
+  const SECTIONS = ['dashboard', 'orders', 'products', 'customers', 'categories', 'menus', 'settings'];
   const SECTION_TITLES = {
     dashboard: 'แดชบอร์ด', orders: 'คำสั่งซื้อ', products: 'สินค้า',
-    customers: 'ลูกค้า', menus: 'เมนู', settings: 'ตั้งค่า'
+    customers: 'ลูกค้า', categories: 'หมวดหมู่', menus: 'เมนู', settings: 'ตั้งค่า'
   };
 
   // ── Gate ──────────────────────────────────────────────────────────────────
@@ -1150,6 +1262,7 @@
     if (id === 'orders') loadOrders();
     if (id === 'products') loadProducts();
     if (id === 'customers') loadCustomers();
+    if (id === 'categories') loadCategories();
     if (id === 'menus') loadMenus();
   }
 
@@ -2137,6 +2250,204 @@
       });
     } catch { /* silently fail — notifications are non-critical */ }
   }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // CATEGORIES (localStorage-based, syncs with category.html)
+  // ══════════════════════════════════════════════════════════════════════════
+  const LS_CATEGORIES_KEY = 'btmusicdrive_categories';
+  let _categories = [];
+  let _deleteCategoryId = null;
+
+  function _lsGetCategories() {
+    try { return JSON.parse(localStorage.getItem(LS_CATEGORIES_KEY)) || []; } catch { return []; }
+  }
+  function _lsSaveCategories(cats) {
+    localStorage.setItem(LS_CATEGORIES_KEY, JSON.stringify(cats));
+  }
+
+  async function loadCategories() {
+    _categories = _lsGetCategories();
+
+    // Also fetch product counts from API/products.json
+    let products = [];
+    try {
+      let res;
+      try { res = await fetch(`${API_BASE}/products`); if (!res.ok) throw new Error(); } catch { res = await fetch('products.json'); }
+      products = await res.json();
+    } catch { products = []; }
+
+    // Merge categories from products with saved categories
+    const prodCatMap = new Map();
+    products.forEach(p => {
+      const catName = p.category?.name || p.categoryName || p.category || '';
+      if (catName) {
+        prodCatMap.set(catName, (prodCatMap.get(catName) || 0) + 1);
+      }
+    });
+
+    // Add product-sourced categories that aren't in saved list
+    prodCatMap.forEach((count, name) => {
+      if (!_categories.find(c => c.name === name)) {
+        _categories.push({
+          id: 'cat-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6),
+          name,
+          description: '',
+          bannerUrl: '',
+          icon: '',
+          sortOrder: _categories.length,
+          isActive: true,
+          productCount: count
+        });
+      }
+    });
+
+    // Update product counts
+    _categories.forEach(c => {
+      c.productCount = prodCatMap.get(c.name) || 0;
+    });
+
+    _lsSaveCategories(_categories);
+
+    document.getElementById('categories-count-label').textContent = `${_categories.length} หมวดหมู่`;
+
+    if (!_categories.length) {
+      vis('categories-table-wrapper', false);
+      vis('categories-empty', true);
+      return;
+    }
+
+    vis('categories-empty', false);
+    renderCategoriesTable();
+    vis('categories-table-wrapper', true);
+  }
+
+  function renderCategoriesTable() {
+    const sorted = [..._categories].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+    document.getElementById('categories-tbody').innerHTML = sorted.map(c => `
+      <tr>
+        <td>${c.bannerUrl
+          ? `<img src="${escHtml(c.bannerUrl)}" class="prod-thumb" alt="" style="width:60px;height:36px;border-radius:3px;">`
+          : `<div class="prod-thumb-placeholder" style="width:60px;height:36px;border-radius:3px;"><i class="fa-solid fa-image"></i></div>`}</td>
+        <td><strong>${escHtml(c.name)}</strong></td>
+        <td style="color:var(--muted);font-size:12px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(c.description || '—')}</td>
+        <td style="color:var(--muted);font-size:12px;">${c.icon ? `<i class="${escHtml(c.icon)}"></i> ${escHtml(c.icon)}` : '—'}</td>
+        <td class="r" style="font-weight:600;">${c.productCount || 0}</td>
+        <td>
+          <label class="toggle-switch" style="margin:0;">
+            <input type="checkbox" ${c.isActive ? 'checked' : ''} onchange="toggleCategoryActive('${escHtml(c.id)}', this.checked)">
+            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          </label>
+        </td>
+        <td style="white-space:nowrap;">
+          <button class="action-btn" onclick='openCategoryModal(${JSON.stringify(c)})'><i class="fa-solid fa-pen"></i> แก้ไข</button>
+          <button class="action-btn del" onclick="askDeleteCategory('${escHtml(c.id)}','${escHtml(c.name)}')" style="margin-left:4px;"><i class="fa-solid fa-trash"></i></button>
+        </td>
+      </tr>`).join('');
+  }
+
+  function toggleCategoryActive(id, checked) {
+    const cat = _categories.find(c => c.id === id);
+    if (cat) { cat.isActive = checked; _lsSaveCategories(_categories); }
+  }
+
+  function openCategoryModal(cat) {
+    document.getElementById('cm-error').style.display = 'none';
+    document.getElementById('cm-id').value = cat?.id || '';
+    document.getElementById('cm-name').value = cat?.name || '';
+    document.getElementById('cm-desc').value = cat?.description || '';
+    document.getElementById('cm-banner').value = cat?.bannerUrl || '';
+    document.getElementById('cm-icon').value = cat?.icon || '';
+    document.getElementById('cm-sort').value = cat?.sortOrder ?? 0;
+    document.getElementById('cm-active').checked = cat ? cat.isActive !== false : true;
+    document.getElementById('cat-modal-title').textContent = cat ? 'แก้ไขหมวดหมู่' : 'เพิ่มหมวดหมู่';
+
+    // Preview banner
+    if (cat?.bannerUrl) {
+      previewCatBanner(cat.bannerUrl);
+    } else {
+      document.getElementById('cm-banner-preview').style.display = 'none';
+    }
+
+    document.getElementById('category-modal').style.display = 'flex';
+  }
+
+  function closeCategoryModal() {
+    document.getElementById('category-modal').style.display = 'none';
+  }
+
+  function previewCatBanner(url) {
+    const preview = document.getElementById('cm-banner-preview');
+    const img = document.getElementById('cm-banner-preview-img');
+    if (url && url.trim()) {
+      img.src = url.trim();
+      preview.style.display = 'block';
+      img.onerror = () => { preview.style.display = 'none'; };
+    } else {
+      preview.style.display = 'none';
+    }
+  }
+
+  function saveCategory() {
+    const id = document.getElementById('cm-id').value;
+    const name = document.getElementById('cm-name').value.trim();
+    const errEl = document.getElementById('cm-error');
+
+    if (!name) { errEl.textContent = 'กรุณากรอกชื่อหมวดหมู่'; errEl.style.display = 'block'; return; }
+
+    // Check duplicate name (excluding self)
+    if (_categories.find(c => c.name === name && c.id !== id)) {
+      errEl.textContent = 'ชื่อหมวดหมู่ซ้ำ กรุณาใช้ชื่ออื่น'; errEl.style.display = 'block'; return;
+    }
+
+    const data = {
+      name,
+      description: document.getElementById('cm-desc').value.trim(),
+      bannerUrl: document.getElementById('cm-banner').value.trim(),
+      icon: document.getElementById('cm-icon').value.trim(),
+      sortOrder: parseInt(document.getElementById('cm-sort').value) || 0,
+      isActive: document.getElementById('cm-active').checked
+    };
+
+    if (id) {
+      // Edit existing
+      const cat = _categories.find(c => c.id === id);
+      if (cat) Object.assign(cat, data);
+    } else {
+      // Add new
+      data.id = 'cat-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6);
+      data.productCount = 0;
+      _categories.push(data);
+    }
+
+    _lsSaveCategories(_categories);
+    closeCategoryModal();
+    showToast(id ? 'อัปเดตหมวดหมู่แล้ว!' : 'เพิ่มหมวดหมู่แล้ว!');
+    loadCategories();
+  }
+
+  function askDeleteCategory(id, name) {
+    _deleteCategoryId = id;
+    document.getElementById('cat-confirm-text').textContent = `จะลบหมวดหมู่ "${name}" อย่างถาวร`;
+    document.getElementById('cat-confirm-modal').style.display = 'flex';
+  }
+
+  function closeCatConfirm() {
+    _deleteCategoryId = null;
+    document.getElementById('cat-confirm-modal').style.display = 'none';
+  }
+
+  function confirmDeleteCategory() {
+    if (!_deleteCategoryId) return;
+    _categories = _categories.filter(c => c.id !== _deleteCategoryId);
+    _lsSaveCategories(_categories);
+    closeCatConfirm();
+    showToast('ลบหมวดหมู่แล้ว');
+    loadCategories();
+  }
+
+  // Close category modals on backdrop
+  document.getElementById('category-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeCategoryModal(); });
+  document.getElementById('cat-confirm-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeCatConfirm(); });
 
   // Init LINE Token field on settings load
   (function initLineField() {
