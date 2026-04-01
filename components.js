@@ -57,22 +57,22 @@ function _cartSidebarHTML() {
   return `
   <div id="cart-sidebar" class="fixed inset-y-0 right-0 max-w-sm w-full bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
     <div class="flex items-center justify-between p-4 border-b border-gray-200">
-      <h2 class="text-lg font-bold flex items-center"><i class="ph ph-shopping-cart mr-2"></i> Your Cart</h2>
+      <h2 class="text-lg font-bold flex items-center"><i class="ph ph-shopping-cart mr-2"></i> ตะกร้าสินค้า</h2>
       <button id="close-cart-btn" class="text-gray-500 hover:text-red-500 transition-colors"><i class="ph ph-x text-2xl"></i></button>
     </div>
     <div id="cart-items-container" class="flex-1 overflow-y-auto p-4 space-y-4">
       <div class="text-center text-gray-500 mt-10" id="empty-cart-msg">
         <i class="ph ph-shopping-cart text-6xl mb-4 text-gray-300"></i>
-        <p>Your cart is empty.</p>
+        <p>ตะกร้าของคุณว่างเปล่า</p>
       </div>
     </div>
     <div class="p-4 border-t border-gray-200 bg-gray-50">
       <div class="flex justify-between text-base font-medium text-gray-900 mb-4">
-        <p>Subtotal</p><p id="cart-total">\u0E3F0.00</p>
+        <p>ยอดรวม</p><p id="cart-total">฿0.00</p>
       </div>
-      <p class="text-sm text-gray-500 mb-4">Shipping and taxes calculated at checkout.</p>
+
       <button onclick="window.location='checkout.html'" class="w-full bg-primary hover:bg-secondary text-white font-bold py-3 px-4 rounded-lg transition-colors shadow-md flex items-center justify-center gap-2">
-        <i class="ph ph-lock-key"></i> Checkout
+        <i class="ph ph-lock-key"></i> ดำเนินการชำระเงิน
       </button>
     </div>
   </div>
@@ -145,68 +145,78 @@ function _footerHTML() {
   return `
   <footer class="bg-secondary pt-16 pb-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 mb-12">
-        <div class="col-span-2 md:col-span-1">
-          <div class="flex items-center mb-6 cursor-pointer">
-            <img src="images/logo (60 x 60 px) (1).png" alt="btmusicdrive" class="h-9 w-9 rounded-full mr-2">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 md:gap-12 mb-12">
+
+        <!-- Logo + Description + Shop Links -->
+        <div>
+          <div class="flex items-center mb-4 cursor-pointer" onclick="window.location='index.html'">
+            <img src="images/logo (60 x 60 px) (1).png" alt="btmusicdrive" class="h-10 w-10 rounded-full mr-3">
             <span class="font-bold text-2xl tracking-tight text-white">btmusicdrive</span>
           </div>
-          <p class="text-gray-400 mb-6 text-sm">ร้านขายแฟลชไดร์ฟเพลง MP3 คุณภาพเสียง HD รวมเพลงฮิตทุกแนว เสียบปุ๊บฟังปั๊บ</p>
-          <!-- ช้อปได้ที่ -->
-          <div>
-            <p class="text-xs text-gray-500 mb-2 font-semibold">\u0E0A\u0E49\u0E2D\u0E1B\u0E44\u0E14\u0E49\u0E17\u0E35\u0E48</p>
-            <div class="flex flex-wrap gap-2">
-              <a href="https://www.tiktok.com/@buytrrm1992" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-600 text-gray-400 hover:border-primary hover:text-primary transition-all text-xs font-medium">
-                <img src="images/tiktok.png" alt="TikTok" class="w-5 h-5 object-contain">
-                TikTok Shop
-              </a>
-              <a href="https://shopee.co.th/shop/134575937" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-600 text-gray-400 hover:border-[#ee4d2d] hover:text-[#ee4d2d] transition-all text-xs font-medium">
-                <img src="images/shopeer.png" alt="Shopee" class="w-5 h-5 object-contain">
-                Shopee
-              </a>
-              <a href="https://www.lazada.co.th/shop/buythrrm1992/" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-600 text-gray-400 hover:border-[#0f146d] hover:text-[#0f146d] transition-all text-xs font-medium">
-                <img src="images/lazada.png" alt="Lazada" class="w-5 h-5 object-contain">
-                Lazada
-              </a>
-            </div>
+          <p class="text-gray-400 mb-5 text-sm leading-relaxed">ร้านขายแฟลชไดร์ฟเพลง MP3 คุณภาพเสียง HD รวมเพลงฮิตทุกแนว เสียบปุ๊บฟังปั๊บ</p>
+          <p class="text-xs text-gray-500 mb-2 font-semibold">ช้อปได้ที่</p>
+          <div class="flex flex-wrap gap-2">
+            <a href="https://www.tiktok.com/@buytrrm1992" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-600 text-gray-400 hover:border-primary hover:text-primary transition-all text-xs font-medium">
+              <img src="images/tiktok.png" alt="TikTok" class="w-5 h-5 object-contain"> TikTok Shop
+            </a>
+            <a href="https://shopee.co.th/shop/134575937" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-600 text-gray-400 hover:border-[#ee4d2d] hover:text-[#ee4d2d] transition-all text-xs font-medium">
+              <img src="images/shopeer.png" alt="Shopee" class="w-5 h-5 object-contain"> Shopee
+            </a>
+            <a href="https://www.lazada.co.th/shop/buythrrm1992/" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-600 text-gray-400 hover:border-[#0f146d] hover:text-[#0f146d] transition-all text-xs font-medium">
+              <img src="images/lazada.png" alt="Lazada" class="w-5 h-5 object-contain"> Lazada
+            </a>
           </div>
         </div>
+
+        <!-- บริการลูกค้า -->
         <div>
-          <h4 class="font-bold text-white mb-4 md:mb-6 text-base md:text-lg">หมวดหมู่สินค้า</h4>
-          <ul class="space-y-2 md:space-y-3" id="footer-categories">
-            <li><a href="shop.html" class="text-gray-400 hover:text-primary transition-colors text-sm">สินค้าทั้งหมด</a></li>
+          <h4 class="font-bold text-white mb-5 text-base">บริการลูกค้า</h4>
+          <ul class="space-y-3">
+            <li><a href="track-order.html" class="text-gray-400 hover:text-primary transition-colors text-sm">การจัดส่งสินค้า</a></li>
+            <li><a href="warranty.html" class="text-gray-400 hover:text-primary transition-colors text-sm">การรับประกันสินค้า</a></li>
+            <li><a href="returns.html" class="text-gray-400 hover:text-primary transition-colors text-sm">การคืนสินค้าและการคืนเงิน</a></li>
+            <li><a href="exchange.html" class="text-gray-400 hover:text-primary transition-colors text-sm">การยกเลิกการสั่งซื้อสินค้า</a></li>
+            <li><a href="track-order.html" class="text-gray-400 hover:text-primary transition-colors text-sm">เช็คสถานะการจัดส่ง</a></li>
           </ul>
         </div>
+
+        <!-- เกี่ยวกับเรา -->
         <div>
-          <h4 class="font-bold text-white mb-4 md:mb-6 text-base md:text-lg">ช่วยเหลือ</h4>
-          <ul class="space-y-2 md:space-y-3">
-            <li><a href="track-order.html" class="text-gray-400 hover:text-primary transition-colors text-sm">ติดตามพัสดุ</a></li>
+          <h4 class="font-bold text-white mb-5 text-base">เกี่ยวกับเรา</h4>
+          <ul class="space-y-3">
             <li><a href="contact.html" class="text-gray-400 hover:text-primary transition-colors text-sm">ติดต่อเรา</a></li>
             <li><a href="about.html" class="text-gray-400 hover:text-primary transition-colors text-sm">เกี่ยวกับเรา</a></li>
+            <li><a href="terms.html" class="text-gray-400 hover:text-primary transition-colors text-sm">ข้อกำหนดและเงื่อนไข</a></li>
+            <li><a href="privacy.html" class="text-gray-400 hover:text-primary transition-colors text-sm">นโยบายความเป็นส่วนตัว</a></li>
           </ul>
         </div>
-        <div class="col-span-2 md:col-span-1">
-          <h4 class="font-bold text-white mb-4 md:mb-6 text-base md:text-lg">ติดต่อเรา</h4>
+
+        <!-- ติดต่อเรา -->
+        <div>
+          <h4 class="font-bold text-white mb-5 text-base">ติดต่อเรา</h4>
           <ul class="space-y-3 text-gray-400 text-sm">
-            <li class="flex items-start"><i class="ph ph-map-pin text-lg text-primary mr-3 mt-0.5"></i><span>กรุงเทพมหานคร<br>ประเทศไทย</span></li>
-            <li class="flex items-center"><i class="ph ph-phone text-lg text-primary mr-3"></i><span>08X-XXX-XXXX</span></li>
-            <li class="flex items-center"><i class="ph ph-chat-circle-dots text-lg text-primary mr-3"></i><span>Line ID: @btmusicdrive</span></li>
-            <li class="flex items-center"><i class="ph ph-envelope text-lg text-primary mr-3"></i><span>contact@btmusicdrive.com</span></li>
+            <li class="flex items-start gap-3"><i class="ph ph-map-pin text-lg text-primary mt-0.5"></i><span>กรุงเทพมหานคร<br>ประเทศไทย</span></li>
+            <li class="flex items-center gap-3"><i class="ph ph-phone text-lg text-primary"></i><span>08X-XXX-XXXX</span></li>
+            <li class="flex items-center gap-3"><i class="ph ph-chat-circle-dots text-lg text-primary"></i><span>Line ID: @btmusicdrive</span></li>
+            <li class="flex items-center gap-3"><i class="ph ph-envelope text-lg text-primary"></i><span>contact@btmusicdrive.com</span></li>
           </ul>
-          <div class="flex space-x-3 mt-4">
-            <a href="#" class="text-gray-500 hover:text-primary transition-colors"><i class="ph-fill ph-facebook-logo text-xl"></i></a>
-            <a href="#" class="text-gray-500 hover:text-primary transition-colors"><i class="ph-fill ph-tiktok-logo text-xl"></i></a>
-            <a href="#" class="text-gray-500 hover:text-primary transition-colors"><i class="ph-fill ph-instagram-logo text-xl"></i></a>
-            <a href="#" class="text-gray-500 hover:text-primary transition-colors"><i class="ph-fill ph-youtube-logo text-xl"></i></a>
+          <div class="flex space-x-3 mt-5">
+            <a href="#" class="w-9 h-9 rounded-full bg-gray-700 hover:bg-primary flex items-center justify-center text-gray-300 hover:text-white transition-all"><i class="ph-fill ph-facebook-logo text-lg"></i></a>
+            <a href="#" class="w-9 h-9 rounded-full bg-gray-700 hover:bg-primary flex items-center justify-center text-gray-300 hover:text-white transition-all"><i class="ph-fill ph-tiktok-logo text-lg"></i></a>
+            <a href="#" class="w-9 h-9 rounded-full bg-gray-700 hover:bg-primary flex items-center justify-center text-gray-300 hover:text-white transition-all"><i class="ph-fill ph-instagram-logo text-lg"></i></a>
+            <a href="#" class="w-9 h-9 rounded-full bg-gray-700 hover:bg-primary flex items-center justify-center text-gray-300 hover:text-white transition-all"><i class="ph-fill ph-youtube-logo text-lg"></i></a>
           </div>
         </div>
+
       </div>
-      <div class="border-t border-gray-700 pt-8 flex flex-col md:flex-row justify-between items-center">
-        <p class="text-gray-500 text-sm mb-4 md:mb-0">&copy; 2026 btmusicdrive. สงวนลิขสิทธิ์ทุกประการ</p>
-        <div class="flex space-x-4">
-          <i class="ph ph-credit-card text-3xl text-gray-500"></i>
-          <i class="ph ph-qr-code text-3xl text-gray-500"></i>
-          <i class="ph ph-bank text-3xl text-gray-500"></i>
+
+      <!-- Bottom Bar -->
+      <div class="border-t border-gray-700 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
+        <p class="text-gray-500 text-sm">&copy; 2026 btmusicdrive สงวนลิขสิทธิ์ทุกประการ</p>
+        <div class="flex items-center gap-4 text-gray-500 text-xs">
+          <a href="terms.html" class="hover:text-white transition-colors">ข้อกำหนดและเงื่อนไข</a>
+          <span>|</span>
+          <a href="privacy.html" class="hover:text-white transition-colors">นโยบายความเป็นส่วนตัว</a>
         </div>
       </div>
     </div>
@@ -225,11 +235,11 @@ function _mobileBottomNavHTML() {
         <i class="ph ph-squares-four text-xl"></i>
         <span class="text-[10px] mt-0.5">หมวดหมู่</span>
       </a>
-      <button class="flex flex-col items-center justify-center flex-1 py-1 text-gray-500 hover:text-primary transition-colors relative" id="bnav-cart-btn">
+      <a href="cart.html" class="flex flex-col items-center justify-center flex-1 py-1 text-gray-500 hover:text-primary transition-colors relative" id="bnav-cart-btn">
         <i class="ph ph-shopping-cart text-xl"></i>
         <span id="bnav-cart-count" class="absolute top-0 right-1/4 bg-red-500 text-white text-[9px] font-bold rounded-full h-3.5 w-3.5 flex items-center justify-center">0</span>
         <span class="text-[10px] mt-0.5">ตะกร้า</span>
-      </button>
+      </a>
       <button class="flex flex-col items-center justify-center flex-1 py-1 text-gray-500 hover:text-primary transition-colors" id="bnav-account-btn">
         <i class="ph ph-user-circle text-xl"></i>
         <span class="text-[10px] mt-0.5">บัญชี</span>

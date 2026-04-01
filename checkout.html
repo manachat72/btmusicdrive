@@ -59,12 +59,12 @@
                     <div class="w-8 sm:w-16 h-0.5 bg-primary"></div>
                     <span class="flex items-center gap-1.5 text-primary font-semibold">
                         <span class="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold">2</span>
-                        <span class="text-gray-300">ชำระเงิน</span>
+                        <span class="text-gray-300">รายละเอียด</span>
                     </span>
                     <div class="w-8 sm:w-16 h-0.5 bg-gray-600"></div>
                     <span class="flex items-center gap-1.5 text-gray-500">
                         <span class="w-6 h-6 rounded-full bg-gray-600 text-gray-400 flex items-center justify-center text-xs font-bold">3</span>
-                        <span class="text-gray-500">ยืนยัน</span>
+                        <span class="text-gray-500">ชำระเงิน</span>
                     </span>
                 </div>
             </div>
@@ -87,84 +87,62 @@
             <!-- ========== LEFT COLUMN: Form ========== -->
             <div class="lg:col-span-7 space-y-6">
 
-                <!-- Contact Info -->
+                <!-- Shipping Address (เพิ่มที่อยู่สำหรับจัดส่ง) -->
                 <div class="section-card">
                     <div class="flex items-center gap-3 mb-5">
-                        <div class="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center">
-                            <i class="ph ph-user text-primary text-base"></i>
+                        <div class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center">
+                            <i class="ph ph-map-pin text-red-500 text-base"></i>
                         </div>
-                        <h2 class="text-lg font-bold text-gray-900">ข้อมูลติดต่อ</h2>
+                        <h2 class="text-lg font-bold text-gray-900">เพิ่มที่อยู่สำหรับจัดส่ง</h2>
                     </div>
                     <div class="space-y-4">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="label">ชื่อ</label>
-                                <input type="text" id="first-name" class="input-field" placeholder="ชื่อ">
-                            </div>
-                            <div>
-                                <label class="label">นามสกุล</label>
-                                <input type="text" id="last-name" class="input-field" placeholder="นามสกุล">
-                            </div>
-                        </div>
                         <div>
-                            <label class="label">อีเมล</label>
-                            <input type="email" id="email" class="input-field" placeholder="email@example.com" readonly>
+                            <label class="label">ชื่อ - นามสกุล</label>
+                            <input type="text" id="full-name" class="input-field" placeholder="ชื่อ - นามสกุล">
                         </div>
                         <div>
                             <label class="label">เบอร์โทรศัพท์</label>
                             <input type="tel" id="phone" class="input-field" placeholder="08X-XXX-XXXX">
                         </div>
-                    </div>
-                </div>
-
-                <!-- Shipping Address -->
-                <div class="section-card">
-                    <div class="flex items-center gap-3 mb-5">
-                        <div class="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center">
-                            <i class="ph ph-map-pin text-primary text-base"></i>
-                        </div>
-                        <h2 class="text-lg font-bold text-gray-900">ที่อยู่จัดส่ง</h2>
-                    </div>
-                    <div class="space-y-4">
                         <div>
                             <label class="label">ที่อยู่</label>
-                            <input type="text" id="address" class="input-field" placeholder="บ้านเลขที่ ถนน ซอย">
-                        </div>
-                        <div>
-                            <label class="label">อาคาร / ห้อง (ไม่บังคับ)</label>
-                            <input type="text" id="address2" class="input-field" placeholder="อาคาร ชั้น ห้อง">
+                            <input type="text" id="address" class="input-field" placeholder="บ้านเลขที่ หมู่ ถนน ซอย">
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label class="label">เขต / อำเภอ</label>
-                                <input type="text" id="city" class="input-field" placeholder="เขต / อำเภอ">
+                                <label class="label flex items-center gap-1">รหัสไปรษณีย์ <span class="text-gray-400 cursor-help" title="กรอกรหัสไปรษณีย์ 5 หลัก"><i class="ph ph-question text-sm border border-gray-300 rounded-full w-4 h-4 flex items-center justify-center"></i></span></label>
+                                <input type="text" id="zip" class="input-field" placeholder="รหัสไปรษณีย์" maxlength="5" oninput="onZipChange(this.value)">
                             </div>
                             <div>
                                 <label class="label">จังหวัด</label>
-                                <input type="text" id="state" class="input-field" placeholder="จังหวัด">
+                                <select id="province" class="input-field">
+                                    <option value="">เลือกจังหวัด</option>
+                                </select>
                             </div>
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label class="label">รหัสไปรษณีย์</label>
-                                <input type="text" id="zip" class="input-field" placeholder="10xxx">
+                                <label class="label">อำเภอ / เขต</label>
+                                <select id="district" class="input-field" disabled>
+                                    <option value="">เลือกอำเภอ / เขต</option>
+                                </select>
                             </div>
                             <div>
-                                <label class="label">ประเทศ</label>
-                                <select id="country" class="input-field">
-                                    <option value="TH">ไทย</option>
-                                    <option value="US">สหรัฐอเมริกา</option>
-                                    <option value="GB">อังกฤษ</option>
-                                    <option value="AU">ออสเตรเลีย</option>
-                                    <option value="CA">แคนาดา</option>
-                                    <option value="DE">เยอรมนี</option>
-                                    <option value="FR">ฝรั่งเศส</option>
-                                    <option value="JP">ญี่ปุ่น</option>
-                                    <option value="SG">สิงคโปร์</option>
+                                <label class="label">ตำบล / แขวง</label>
+                                <select id="subdistrict" class="input-field" disabled>
+                                    <option value="">เลือกตำบล / แขวง</option>
                                 </select>
                             </div>
                         </div>
                     </div>
+                    <!-- Hidden fields for checkout.js compatibility -->
+                    <input type="hidden" id="first-name" value="">
+                    <input type="hidden" id="last-name" value="">
+                    <input type="hidden" id="email" value="">
+                    <input type="hidden" id="city" value="">
+                    <input type="hidden" id="state" value="">
+                    <input type="hidden" id="country" value="TH">
+                    <input type="hidden" id="address2" value="">
                 </div>
 
                 <!-- Shipping Method -->
@@ -179,9 +157,9 @@
                         <div class="flex items-center gap-4 p-4 border-2 border-primary rounded-xl bg-amber-50/50">
                             <div class="flex-1">
                                 <p class="font-semibold text-gray-900 text-sm">จัดส่งมาตรฐาน</p>
-                                <p class="text-xs text-gray-500">5-7 วันทำการ</p>
+                                <p class="text-xs text-gray-500">กรุงเทพและปริมณฑล:1-2 วันทำการ</p>
                             </div>
-                            <span class="font-bold text-gray-900">à¸¿50.00</span>
+                            <span class="font-bold text-gray-900">฿50.00</span>
                         </div>
                     </div>
                 </div>
@@ -201,26 +179,26 @@
                         <div class="border-2 border-primary rounded-xl overflow-hidden bg-white shadow-sm transition-all" id="payment-box-card">
                             <label class="flex items-center gap-3 p-4 cursor-pointer">
                                 <input type="radio" name="payment_method" value="card" class="w-5 h-5 text-primary focus:ring-primary border-gray-300" checked onchange="selectPaymentMethod('card')">
-                                <span class="font-semibold text-gray-900">Credit / Debit</span>
+                                <span class="font-semibold text-gray-900">บัตรเครดิต / เดบิต</span>
                                 <div class="ml-auto text-gray-400"><i class="ph ph-credit-card text-2xl"></i></div>
                             </label>
                             <div class="p-4 pt-0 border-t border-gray-100 mt-2" id="inline-card-form">
                                 <div class="space-y-4 pt-4">
                                     <div>
-                                        <label class="block text-sm text-gray-500 mb-1">Card number</label>
+                                        <label class="block text-sm text-gray-500 mb-1">หมายเลขบัตร</label>
                                         <input type="text" id="cc-number" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-sm" placeholder="0000 0000 0000 0000" maxlength="19" oninput="formatCardNumber(this)">
                                     </div>
                                     <div>
-                                        <label class="block text-sm text-gray-500 mb-1">Name on card</label>
-                                        <input type="text" id="cc-name" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-sm" placeholder="John Doe">
+                                        <label class="block text-sm text-gray-500 mb-1">ชื่อบนบัตร</label>
+                                        <input type="text" id="cc-name" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-sm" placeholder="ชื่อ-นามสกุล">
                                     </div>
                                     <div class="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label class="block text-sm text-gray-500 mb-1">Expiry date</label>
+                                            <label class="block text-sm text-gray-500 mb-1">วันหมดอายุ</label>
                                             <input type="text" id="cc-expiry" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-sm" placeholder="MM/YY" maxlength="5" oninput="formatExpiry(this)">
                                         </div>
                                         <div>
-                                            <label class="block text-sm text-gray-500 mb-1">Security code</label>
+                                            <label class="block text-sm text-gray-500 mb-1">รหัสความปลอดภัย</label>
                                             <input type="password" id="cc-cvv" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-sm" placeholder="123" maxlength="4">
                                         </div>
                                     </div>
@@ -254,7 +232,7 @@
                         <div class="border border-gray-200 rounded-xl overflow-hidden bg-white hover:border-gray-300 transition-all opacity-70" id="payment-box-cod">
                             <label class="flex items-center gap-3 p-4 cursor-pointer">
                                 <input type="radio" name="payment_method" value="cod" class="w-5 h-5 text-primary focus:ring-primary border-gray-300" onchange="selectPaymentMethod('cod')">
-                                <span class="font-semibold text-gray-700">เก็บเงินปลายทาง (Cash on Delivery)</span>
+                                <span class="font-semibold text-gray-700">เก็บเงินปลายทาง</span>
                                 <div class="ml-auto flex items-center justify-center text-gray-500">
                                     <i class="ph ph-truck text-2xl"></i>
                                 </div>
@@ -366,7 +344,7 @@
                                 </div>
                                 <button onclick="removePromo()"
                                     class="text-green-600 hover:text-red-500 transition-colors ml-2 flex-shrink-0"
-                                    title="Remove promo code">
+                                    title="ลบรหัสส่วนลด">
                                     <i class="ph ph-x-circle text-lg"></i>
                                 </button>
                             </div>
@@ -417,26 +395,55 @@
     </div>
 
     <!-- Footer -->
-    <footer class="bg-secondary mt-12 py-8">
+    <footer class="bg-secondary mt-12 pt-12 pb-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                <div class="flex items-center gap-2">
-                    <img src="images/logo (60 x 60 px) (1).png" alt="btmusicdrive" class="h-7 w-7 rounded-full">
-                    <span class="font-bold text-white tracking-tight">btmusicdrive</span>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-10">
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <img src="images/logo (60 x 60 px) (1).png" alt="btmusicdrive" class="h-9 w-9 rounded-full">
+                        <span class="font-bold text-xl text-white tracking-tight">btmusicdrive</span>
+                    </div>
+                    <p class="text-gray-400 text-sm leading-relaxed">ร้านขายแฟลชไดร์ฟเพลง MP3 คุณภาพเสียง HD รวมเพลงฮิตทุกแนว เสียบปุ๊บฟังปั๊บ</p>
                 </div>
-                <div class="flex items-center gap-6 text-gray-400 text-xs">
-                    <a href="terms.html" class="hover:text-white transition-colors">ข้อกำหนดการใช้งาน</a>
-                    <a href="privacy.html" class="hover:text-white transition-colors">นโยบายความเป็นส่วนตัว</a>
-                    <a href="refund.html" class="hover:text-white transition-colors">นโยบายคืนเงิน</a>
+                <div>
+                    <h4 class="font-bold text-white mb-4 text-base">บริการลูกค้า</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="track-order.html" class="text-gray-400 hover:text-white transition-colors">การจัดส่งสินค้า</a></li>
+                        <li><a href="warranty.html" class="text-gray-400 hover:text-white transition-colors">การรับประกันสินค้า</a></li>
+                        <li><a href="returns.html" class="text-gray-400 hover:text-white transition-colors">การคืนสินค้าและการคืนเงิน</a></li>
+                    </ul>
                 </div>
-                <div class="flex items-center gap-3">
-                    <i class="ph ph-credit-card text-2xl text-gray-500"></i>
-                    <i class="ph ph-qr-code text-2xl text-gray-500"></i>
-                    <i class="ph ph-shield-check text-2xl text-green-500"></i>
+                <div>
+                    <h4 class="font-bold text-white mb-4 text-base">เกี่ยวกับเรา</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="contact.html" class="text-gray-400 hover:text-white transition-colors">ติดต่อเรา</a></li>
+                        <li><a href="about.html" class="text-gray-400 hover:text-white transition-colors">เกี่ยวกับเรา</a></li>
+                        <li><a href="terms.html" class="text-gray-400 hover:text-white transition-colors">ข้อกำหนดและเงื่อนไข</a></li>
+                        <li><a href="privacy.html" class="text-gray-400 hover:text-white transition-colors">นโยบายความเป็นส่วนตัว</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-white mb-4 text-base">ติดต่อเรา</h4>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li class="flex items-start gap-2"><i class="ph ph-map-pin text-primary mt-0.5"></i><span>กรุงเทพมหานคร ประเทศไทย</span></li>
+                        <li class="flex items-center gap-2"><i class="ph ph-phone text-primary"></i><span>08X-XXX-XXXX</span></li>
+                        <li class="flex items-center gap-2"><i class="ph ph-envelope text-primary"></i><span>contact@btmusicdrive.com</span></li>
+                    </ul>
+                    <div class="flex space-x-3 mt-4">
+                        <a href="#" class="w-8 h-8 rounded-full bg-gray-700 hover:bg-primary flex items-center justify-center text-gray-300 hover:text-white transition-all"><i class="ph-fill ph-facebook-logo"></i></a>
+                        <a href="#" class="w-8 h-8 rounded-full bg-gray-700 hover:bg-primary flex items-center justify-center text-gray-300 hover:text-white transition-all"><i class="ph-fill ph-tiktok-logo"></i></a>
+                        <a href="#" class="w-8 h-8 rounded-full bg-gray-700 hover:bg-primary flex items-center justify-center text-gray-300 hover:text-white transition-all"><i class="ph-fill ph-instagram-logo"></i></a>
+                        <a href="#" class="w-8 h-8 rounded-full bg-gray-700 hover:bg-primary flex items-center justify-center text-gray-300 hover:text-white transition-all"><i class="ph-fill ph-youtube-logo"></i></a>
+                    </div>
                 </div>
             </div>
-            <div class="border-t border-gray-700 mt-6 pt-4 text-center">
-                <p class="text-gray-500 text-xs">&copy; 2026 btmusicdrive. สงวนลิขสิทธิ์ทุกประการ</p>
+            <div class="border-t border-gray-700 pt-5 flex flex-col md:flex-row justify-between items-center gap-3">
+                <p class="text-gray-500 text-xs">&copy; 2026 btmusicdrive สงวนลิขสิทธิ์ทุกประการ</p>
+                <div class="flex items-center gap-4 text-gray-500 text-xs">
+                    <a href="terms.html" class="hover:text-white transition-colors">ข้อกำหนดและเงื่อนไข</a>
+                    <span>|</span>
+                    <a href="privacy.html" class="hover:text-white transition-colors">นโยบายความเป็นส่วนตัว</a>
+                </div>
             </div>
         </div>
     </footer>
