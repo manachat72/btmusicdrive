@@ -1123,9 +1123,9 @@
         <div class="settings-row">
           <label class="settings-label">รูปแบนเนอร์</label>
           <input type="text" id="cm-banner" class="settings-input" placeholder="URL รูปแบนเนอร์ เช่น images/banner-cat.jpg หรือ link รูป" oninput="previewCatBanner(this.value)">
-          <p class="settings-hint">แนะนำรูปแนวนอนสัดส่วน <strong>21:9</strong> หรือ <strong>3:1</strong> (เช่น 2100×900px) เพื่อให้แสดงผลสวยงาม</p>
+          <p class="settings-hint">ใส่ URL ของรูปแบนเนอร์ หรือ path ไฟล์ในโฟลเดอร์ images/</p>
           <div id="cm-banner-preview" style="margin-top:8px;display:none;">
-            <img id="cm-banner-preview-img" style="width:100%;aspect-ratio:21/9;object-fit:cover;border-radius:4px;border:1px solid var(--card-border);" alt="preview">
+            <img id="cm-banner-preview-img" style="width:100%;height:120px;object-fit:cover;border-radius:4px;border:1px solid var(--card-border);" alt="preview">
           </div>
         </div>
         <div style="display:flex;gap:10px;">
@@ -2326,8 +2326,8 @@
     document.getElementById('categories-tbody').innerHTML = sorted.map(c => `
       <tr>
         <td>${c.bannerUrl
-          ? `<img src="${escHtml(c.bannerUrl)}" alt="" style="width:80px;aspect-ratio:21/9;object-fit:cover;border-radius:3px;border:1px solid var(--card-border);">`
-          : `<div style="width:80px;aspect-ratio:21/9;border-radius:3px;background:#f6f7f7;border:1px solid var(--card-border);display:flex;align-items:center;justify-content:center;color:#c3c4c7;font-size:14px;"><i class="fa-solid fa-image"></i></div>`}</td>
+          ? `<img src="${escHtml(c.bannerUrl)}" class="prod-thumb" alt="" style="width:60px;height:36px;border-radius:3px;">`
+          : `<div class="prod-thumb-placeholder" style="width:60px;height:36px;border-radius:3px;"><i class="fa-solid fa-image"></i></div>`}</td>
         <td><strong>${escHtml(c.name)}</strong></td>
         <td style="color:var(--muted);font-size:12px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(c.description || '—')}</td>
         <td style="color:var(--muted);font-size:12px;">${c.icon ? `<i class="${escHtml(c.icon)}"></i> ${escHtml(c.icon)}` : '—'}</td>
