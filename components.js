@@ -6,7 +6,7 @@
 
 const API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
   ? 'http://localhost:5000/api' : '/api';
-const GOOGLE_CLIENT_ID = '46644504211-991ljdkldsbsb08d9aki6v8aeafrnp6k.apps.googleusercontent.com';
+const GOOGLE_CLIENT_ID = '46644504211-02mjffk321u1h5hbh1r5e5j5in30od93.apps.googleusercontent.com';
 
 let _currentUser = null;
 let _cart = [];
