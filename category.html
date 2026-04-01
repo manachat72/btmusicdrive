@@ -164,7 +164,8 @@
             } catch {
                 response = await fetch('products.json');
             }
-            allProducts = await response.json();
+            const json = await response.json();
+            allProducts = Array.isArray(json) ? json : (json.data || []);
         } catch {
             allProducts = [];
         }
