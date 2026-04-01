@@ -19,103 +19,147 @@ async function main() {
     console.log('Admin user already exists, skipping.');
   }
 
-  // 2. Categories
-  const accessoriesCategory = await prisma.category.upsert({
-    where: { name: 'Accessories' },
-    update: {},
-    create: { name: 'Accessories' },
-  });
+  // 2. Delete old placeholder products & categories
+  await prisma.cartItem.deleteMany({});
+  await prisma.orderItem.deleteMany({});
+  await prisma.product.deleteMany({});
+  await prisma.category.deleteMany({});
+  console.log('Cleared old products & categories.');
 
-  const shoesCategory = await prisma.category.upsert({
-    where: { name: 'Shoes' },
-    update: {},
-    create: { name: 'Shoes' },
-  });
-
-  const clothingCategory = await prisma.category.upsert({
-    where: { name: 'Clothing' },
-    update: {},
-    create: { name: 'Clothing' },
-  });
+  // 3. Categories (แนวเพลง)
+  const catPheaChiwit = await prisma.category.create({ data: { name: 'เพื่อชีวิต' } });
+  const catString = await prisma.category.create({ data: { name: 'เพลงสตริง' } });
+  const catLukthung = await prisma.category.create({ data: { name: 'ลูกทุ่ง' } });
+  const catMolam = await prisma.category.create({ data: { name: 'หมอลำ' } });
+  const catInter = await prisma.category.create({ data: { name: 'เพลงสากล' } });
+  const catLukkrung = await prisma.category.create({ data: { name: 'ลูกกรุง' } });
 
   console.log('Categories seeded.');
 
-  // 3. Products (prices in Thai Baht ฿)
+  // 4. Products (USB แฟลชไดรฟ์เพลง MP3)
   const products = [
     {
-      name: "Minimalist Leather Watch",
-      price: 4590,
-      categoryId: accessoriesCategory.id,
-      imageUrl: "https://images.unsplash.com/photo-1524805444758-089113d48a6d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-      description: "A sleek, minimalist leather watch perfect for any occasion.",
+      name: "USB แฟลชไดรฟ์ MP3 เพลงเพื่อชีวิต คาราบาว 4GB รวม 325 เพลง ครบทุกอัลบั้ม",
+      price: 199,
+      originalPrice: 319,
+      categoryId: catPheaChiwit.id,
+      imageUrl: "images/carabao-usb.png",
+      images: [
+        "https://images.unsplash.com/photo-1524805444758-089113d48a6d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+        "https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+      ],
+      brand: "btmusicdrive",
+      sku: "TC-LW-001",
+      tags: ["USB", "MP3", "เพื่อชีวิต", "คาราบาว"],
+      specs: { "แบรนด์": "btmusicdrive", "รูปแบบ": "USB แฟลชไดรฟ์ 2.0", "ไฟล์เพลง": "MP3 128 kbps", "จำนวนเพลง": "325 เพลง", "รองรับ": "เครื่องเสียงรถยนต์ / คอมพิวเตอร์ / ลำโพงบลูทูธ", "ความจุ": "2GB" },
+      description: "USB แฟลชไดรฟ์ MP3 เพลงเพื่อชีวิต คาราบาว 2GB รวม 325 เพลง ครบทุกอัลบั้ม รวมเพลงคาราบาว MP3 ครบทุกอัลบั้ม ไฟล์ MP3 พร้อมใช้งาน เสียงชัด 128kbps ความจุ USB 2GB ของแท้ เสียบฟังในรถยนต์, ลำโพง, คอมฯ, ทีวี ได้เลย เหมาะเป็นของขวัญให้คนรักเพลงเพื่อชีวิต เพลงฮิตเช่น: เมดอินไทยแลนด์ / ทะเลใจ / บัวลอย / คนล่าฝัน ตรวจสอบไฟล์ก่อนจัดส่ง รับประกันสินค้า 100% หากมีปัญหาเปลี่ยนใหม่ทันที",
       stock: 50,
     },
     {
-      name: "Classic White Sneakers",
-      price: 2990,
-      categoryId: shoesCategory.id,
-      imageUrl: "https://images.unsplash.com/photo-1549298916-b41d501d3772?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-      description: "Comfortable and stylish white sneakers.",
+      name: "USB แฟลชไดร์ฟ - MP3 รวมเพลง 3 ช่าเพื่อชีวิต",
+      price: 199,
+      originalPrice: 239,
+      categoryId: catPheaChiwit.id,
+      imageUrl: "images/3cha.png",
+      images: ["images/3cha (4).png", "images/3cha (3).png", "images/3cha (2).png"],
+      brand: "btmusicdrive",
+      sku: "SU-WS-002",
+      tags: ["USB", "MP3", "เพื่อชีวิต", "3 ช่า"],
+      specs: { "แบรนด์": "btmusicdrive", "รูปแบบ": "USB แฟลชไดรฟ์ 2.0", "ไฟล์เพลง": "MP3 128 kbps", "จำนวนเพลง": "192 เพลง", "รองรับ": "เครื่องเสียงรถยนต์ / คอมพิวเตอร์ / ลำโพงบลูทูธ", "ความจุ": "2GB" },
+      description: "USB แฟลชไดร์ฟ MP3 รวมเพลง 3 ช่าเพื่อชีวิต 2GB รวม 192 เพลง ครบทุกอัลบั้ม ไฟล์ MP3 พร้อมใช้งาน เสียงชัด 128kbps เสียบฟังในรถยนต์, ลำโพง, คอมฯ, ทีวี ได้เลย รับประกันสินค้า 100% หากมีปัญหาเปลี่ยนใหม่ทันที",
       stock: 100,
     },
     {
-      name: "Cotton Essentials T-Shirt",
-      price: 590,
-      categoryId: clothingCategory.id,
-      imageUrl: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-      description: "Premium cotton t-shirt for everyday wear.",
+      name: "USB แฟลชไดรฟ์ MP3 รวมเพลงสตริงยุค 80s",
+      price: 199,
+      originalPrice: 319,
+      categoryId: catString.id,
+      imageUrl: "images/string 80_1.png",
+      images: ["images/string 80_2.png", "images/string 80_3.png", "images/string 80_4.png", "images/string 80_5.png"],
+      brand: "btmusicdrive",
+      sku: "BC-TS-003",
+      tags: ["USB", "MP3", "สตริง", "80s"],
+      specs: { "แบรนด์": "btmusicdrive", "รูปแบบ": "USB แฟลชไดรฟ์ 2.0", "ไฟล์เพลง": "MP3 128 kbps", "จำนวนเพลง": "194 เพลง", "รองรับ": "เครื่องเสียงรถยนต์ / คอมพิวเตอร์ / ลำโพงบลูทูธ", "ความจุ": "2GB" },
+      description: "USB แฟลชไดรฟ์ MP3 รวมเพลงสตริงยุค 80s 2GB รวม 194 เพลง ครบทุกอัลบั้ม ไฟล์ MP3 พร้อมใช้งาน เสียงชัด 128kbps เสียบฟังในรถยนต์, ลำโพง, คอมฯ, ทีวี ได้เลย รับประกันสินค้า 100%",
       stock: 200,
     },
     {
-      name: "Premium Denim Jacket",
-      price: 3990,
-      categoryId: clothingCategory.id,
-      imageUrl: "https://images.unsplash.com/photo-1576871337632-b9aef4c17ab9?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-      description: "High-quality denim jacket with a classic fit.",
-      stock: 30,
-    },
-    {
-      name: "Canvas Weekend Bag",
-      price: 1890,
-      categoryId: accessoriesCategory.id,
-      imageUrl: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-      description: "Durable canvas bag for weekend getaways.",
-      stock: 45,
-    },
-    {
-      name: "Polarized Sunglasses",
-      price: 1290,
-      categoryId: accessoriesCategory.id,
-      imageUrl: "https://images.unsplash.com/photo-1511499767150-a48a237f0083?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-      description: "Stylish polarized sunglasses with UV protection.",
+      name: "USB แฟลชไดรฟ์ MP3 รวมเพลงลูกทุ่งฮิตตลอดกาล",
+      price: 199,
+      originalPrice: 319,
+      categoryId: catLukthung.id,
+      imageUrl: "images/lukthung-usb.png",
+      images: [],
+      brand: "btmusicdrive",
+      sku: "BT-LT-004",
+      tags: ["USB", "MP3", "ลูกทุ่ง", "ลูกทุ่งฮิต"],
+      specs: { "แบรนด์": "btmusicdrive", "รูปแบบ": "USB แฟลชไดรฟ์ 2.0", "ไฟล์เพลง": "MP3 128 kbps", "จำนวนเพลง": "280 เพลง", "รองรับ": "เครื่องเสียงรถยนต์ / คอมพิวเตอร์ / ลำโพงบลูทูธ", "ความจุ": "2GB" },
+      description: "USB แฟลชไดรฟ์ MP3 รวมเพลงลูกทุ่งฮิตตลอดกาล 2GB รวม 280 เพลง ครบทุกศิลปินดัง ไมค์ ภิรมย์พร พุ่มพวง ดวงจันทร์ ยอดรัก สลักใจ ไฟล์ MP3 พร้อมใช้งาน เสียงชัด 128kbps เสียบฟังในรถยนต์ ลำโพง คอมฯ ทีวี ได้เลย รับประกันสินค้า 100%",
       stock: 80,
     },
     {
-      name: "Wool Blend Coat",
-      price: 6990,
-      categoryId: clothingCategory.id,
-      imageUrl: "https://images.unsplash.com/photo-1539533113208-f6df8cc8b543?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-      description: "Warm and elegant wool blend coat.",
-      stock: 20,
+      name: "USB แฟลชไดรฟ์ MP3 รวมเพลงหมอลำซิ่ง มันส์ๆ",
+      price: 199,
+      originalPrice: 299,
+      categoryId: catMolam.id,
+      imageUrl: "images/molam-usb.png",
+      images: [],
+      brand: "btmusicdrive",
+      sku: "BT-ML-005",
+      tags: ["USB", "MP3", "หมอลำ", "หมอลำซิ่ง", "อีสาน"],
+      specs: { "แบรนด์": "btmusicdrive", "รูปแบบ": "USB แฟลชไดรฟ์ 2.0", "ไฟล์เพลง": "MP3 128 kbps", "จำนวนเพลง": "250 เพลง", "รองรับ": "เครื่องเสียงรถยนต์ / คอมพิวเตอร์ / ลำโพงบลูทูธ", "ความจุ": "2GB" },
+      description: "USB แฟลชไดรฟ์ MP3 รวมเพลงหมอลำซิ่งมันส์ๆ 2GB รวม 250 เพลง หมอลำยอดฮิต หมอลำเสียงอีสาน จังหวะมันส์ เปิดในรถ เปิดในงาน ไฟล์ MP3 เสียงชัด 128kbps พร้อมใช้งานทันที รับประกัน 100%",
+      stock: 60,
     },
     {
-      name: "Leather Crossbody Bag",
-      price: 3290,
-      categoryId: accessoriesCategory.id,
-      imageUrl: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-      description: "Compact and stylish leather crossbody bag.",
-      stock: 60,
-    }
+      name: "USB แฟลชไดรฟ์ MP3 รวมเพลงสากลฮิต 90s-2000s",
+      price: 249,
+      originalPrice: 399,
+      categoryId: catInter.id,
+      imageUrl: "images/inter-usb.png",
+      images: [],
+      brand: "btmusicdrive",
+      sku: "BT-IT-006",
+      tags: ["USB", "MP3", "สากล", "90s", "2000s", "international"],
+      specs: { "แบรนด์": "btmusicdrive", "รูปแบบ": "USB แฟลชไดรฟ์ 2.0", "ไฟล์เพลง": "MP3 128 kbps", "จำนวนเพลง": "300 เพลง", "รองรับ": "เครื่องเสียงรถยนต์ / คอมพิวเตอร์ / ลำโพงบลูทูธ", "ความจุ": "4GB" },
+      description: "USB แฟลชไดรฟ์ MP3 รวมเพลงสากลฮิตยุค 90s-2000s 4GB รวม 300 เพลง Pop Rock R&B รวมศิลปินดัง Backstreet Boys, Westlife, Maroon 5 และอีกมากมาย ไฟล์ MP3 เสียงชัด 128kbps เสียบปุ๊บฟังปั๊บ รับประกัน 100%",
+      stock: 40,
+    },
+    {
+      name: "USB แฟลชไดรฟ์ MP3 รวมเพลงสตริงยุค 90s",
+      price: 199,
+      originalPrice: 319,
+      categoryId: catString.id,
+      imageUrl: "images/string90-usb.png",
+      images: [],
+      brand: "btmusicdrive",
+      sku: "BT-S9-007",
+      tags: ["USB", "MP3", "สตริง", "90s", "ยุค 90"],
+      specs: { "แบรนด์": "btmusicdrive", "รูปแบบ": "USB แฟลชไดรฟ์ 2.0", "ไฟล์เพลง": "MP3 128 kbps", "จำนวนเพลง": "310 เพลง", "รองรับ": "เครื่องเสียงรถยนต์ / คอมพิวเตอร์ / ลำโพงบลูทูธ", "ความจุ": "2GB" },
+      description: "USB แฟลชไดรฟ์ MP3 รวมเพลงสตริงยุค 90s 2GB รวม 310 เพลง ครบทุกวง Clash, Potato, Bodyslam, AB Normal, ปาล์มมี่ และอีกมากมาย ไฟล์ MP3 เสียงชัด 128kbps เสียบปุ๊บฟังปั๊บ รับประกัน 100%",
+      stock: 90,
+    },
+    {
+      name: "USB แฟลชไดรฟ์ MP3 รวมเพลงลูกกรุงอมตะ",
+      price: 199,
+      originalPrice: 299,
+      categoryId: catLukkrung.id,
+      imageUrl: "images/lukkrung-usb.png",
+      images: [],
+      brand: "btmusicdrive",
+      sku: "BT-LK-008",
+      tags: ["USB", "MP3", "ลูกกรุง", "อมตะ", "คลาสสิก"],
+      specs: { "แบรนด์": "btmusicdrive", "รูปแบบ": "USB แฟลชไดรฟ์ 2.0", "ไฟล์เพลง": "MP3 128 kbps", "จำนวนเพลง": "200 เพลง", "รองรับ": "เครื่องเสียงรถยนต์ / คอมพิวเตอร์ / ลำโพงบลูทูธ", "ความจุ": "2GB" },
+      description: "USB แฟลชไดรฟ์ MP3 รวมเพลงลูกกรุงอมตะ 2GB รวม 200 เพลง สุนทราภรณ์ ชรินทร์ นันทิดา สวลี รวมเพลงไพเราะคลาสสิกที่ไม่มีวันตาย ไฟล์ MP3 เสียงชัด 128kbps เสียบฟังในรถ ลำโพง คอมฯ รับประกัน 100%",
+      stock: 35,
+    },
   ];
 
   for (const p of products) {
-    const exists = await prisma.product.findFirst({ where: { name: p.name } });
-    if (!exists) {
-      await prisma.product.create({ data: p });
-    }
+    await prisma.product.create({ data: p });
   }
 
-  console.log('Products seeded (prices in THB).');
+  console.log('Products seeded (USB แฟลชไดรฟ์เพลง MP3).');
   console.log('Seeding finished.');
 }
 
