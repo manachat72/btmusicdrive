@@ -350,8 +350,10 @@
       // Load all products for "frequently bought together"
       try {
         const allRes = await fetch(`${PRODUCT_API_BASE}/products`);
-        if (allRes.ok) allProducts = await allRes.json();
-        else throw new Error();
+        if (allRes.ok) {
+          const json = await allRes.json();
+          allProducts = Array.isArray(json) ? json : (json.data || []);
+        } else throw new Error();
       } catch {
         try { const fb = await fetch('products.json'); allProducts = await fb.json(); } catch { allProducts = []; }
       }
