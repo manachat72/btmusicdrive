@@ -56,6 +56,15 @@ router.post('/create-checkout-session', authenticateToken, async (req: AuthReque
       return res.status(400).json({ error: 'Cart is empty' });
     }
 
+    // Validate stock availability before payment
+    for (const item of cart.items) {
+      if (item.product.stock < item.quantity) {
+        return res.status(400).json({
+          error: `Insufficient stock for "${item.product.name}". Only ${item.product.stock} available.`,
+        });
+      }
+    }
+
     const subtotal = cart.items.reduce(
       (sum, item) => sum + Number(item.product.price) * item.quantity, 0
     );

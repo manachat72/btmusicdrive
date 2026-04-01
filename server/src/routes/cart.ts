@@ -133,10 +133,21 @@ router.post('/items', authenticateToken, async (req: AuthRequest, res: Response)
       return;
     }
 
+    if (!Number.isInteger(quantity) || quantity < 1) {
+      res.status(400).json({ error: 'Quantity must be a positive integer' });
+      return;
+    }
+
     // Check if product exists
     const product = await prisma.product.findUnique({ where: { id: productId } });
     if (!product) {
       res.status(404).json({ error: 'Product not found' });
+      return;
+    }
+
+    // Check stock availability
+    if (product.stock < quantity) {
+      res.status(400).json({ error: `Insufficient stock. Only ${product.stock} available.` });
       return;
     }
 
@@ -186,7 +197,7 @@ router.put('/items/:productId', authenticateToken, async (req: AuthRequest, res:
       return;
     }
 
-    if (quantity < 1) {
+    if (!Number.isInteger(quantity) || quantity < 1) {
       res.status(400).json({ error: 'Quantity must be at least 1' });
       return;
     }

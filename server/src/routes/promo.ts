@@ -66,6 +66,128 @@ router.post('/validate', authenticateToken, async (req: AuthRequest, res: Respon
   }
 });
 
+// ── GET /api/promo ────────────────────────────────────────────────────────
+// Admin only — list all promo codes
+router.get('/', authenticateToken, async (req: AuthRequest, res: Response) => {
+  try {
+    if (req.user?.role !== 'ADMIN') {
+      return res.status(403).json({ error: 'Admin access required' });
+    }
+
+    const promos = await prisma.promoCode.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return res.json(promos);
+  } catch (error) {
+    console.error('Error fetching promos:', error);
+    return res.status(500).json({ error: 'Failed to fetch promo codes' });
+  }
+});
+
+// ── POST /api/promo ───────────────────────────────────────────────────────
+// Admin only — create a promo code
+router.post('/', authenticateToken, async (req: AuthRequest, res: Response) => {
+  try {
+    if (req.user?.role !== 'ADMIN') {
+      return res.status(403).json({ error: 'Admin access required' });
+    }
+
+    const { code, type, value, description, minOrder, maxUses, expiresAt } = req.body;
+
+    if (!code || !type || value == null) {
+      return res.status(400).json({ error: 'code, type, and value are required' });
+    }
+
+    if (!['PERCENT', 'FIXED'].includes(type)) {
+      return res.status(400).json({ error: 'type must be PERCENT or FIXED' });
+    }
+
+    if (typeof value !== 'number' || value <= 0) {
+      return res.status(400).json({ error: 'value must be a positive number' });
+    }
+
+    const promo = await prisma.promoCode.create({
+      data: {
+        code: code.trim().toUpperCase(),
+        type,
+        value,
+        description: description || null,
+        minOrder: minOrder || null,
+        maxUses: maxUses || null,
+        expiresAt: expiresAt ? new Date(expiresAt) : null,
+      },
+    });
+
+    return res.status(201).json(promo);
+  } catch (error: any) {
+    if (error.code === 'P2002') {
+      return res.status(409).json({ error: 'Promo code already exists' });
+    }
+    console.error('Error creating promo:', error);
+    return res.status(500).json({ error: 'Failed to create promo code' });
+  }
+});
+
+// ── PATCH /api/promo/:id ──────────────────────────────────────────────────
+// Admin only — update a promo code
+router.patch('/:id', authenticateToken, async (req: AuthRequest, res: Response) => {
+  try {
+    if (req.user?.role !== 'ADMIN') {
+      return res.status(403).json({ error: 'Admin access required' });
+    }
+
+    const { code, type, value, description, minOrder, maxUses, expiresAt, isActive } = req.body;
+
+    const data: any = {};
+    if (code !== undefined) data.code = code.trim().toUpperCase();
+    if (type !== undefined) {
+      if (!['PERCENT', 'FIXED'].includes(type)) {
+        return res.status(400).json({ error: 'type must be PERCENT or FIXED' });
+      }
+      data.type = type;
+    }
+    if (value !== undefined) data.value = value;
+    if (description !== undefined) data.description = description;
+    if (minOrder !== undefined) data.minOrder = minOrder;
+    if (maxUses !== undefined) data.maxUses = maxUses;
+    if (expiresAt !== undefined) data.expiresAt = expiresAt ? new Date(expiresAt) : null;
+    if (isActive !== undefined) data.isActive = isActive;
+
+    const promo = await prisma.promoCode.update({
+      where: { id: req.params.id as string },
+      data,
+    });
+
+    return res.json(promo);
+  } catch (error: any) {
+    if (error.code === 'P2025') {
+      return res.status(404).json({ error: 'Promo code not found' });
+    }
+    console.error('Error updating promo:', error);
+    return res.status(500).json({ error: 'Failed to update promo code' });
+  }
+});
+
+// ── DELETE /api/promo/:id ─────────────────────────────────────────────────
+// Admin only — delete a promo code
+router.delete('/:id', authenticateToken, async (req: AuthRequest, res: Response) => {
+  try {
+    if (req.user?.role !== 'ADMIN') {
+      return res.status(403).json({ error: 'Admin access required' });
+    }
+
+    await prisma.promoCode.delete({ where: { id: req.params.id as string } });
+    return res.json({ message: 'Promo code deleted' });
+  } catch (error: any) {
+    if (error.code === 'P2025') {
+      return res.status(404).json({ error: 'Promo code not found' });
+    }
+    console.error('Error deleting promo:', error);
+    return res.status(500).json({ error: 'Failed to delete promo code' });
+  }
+});
+
 // ── GET /api/promo/:code ──────────────────────────────────────────────────
 // Get promo code details (public, no auth)
 router.get('/:code', async (req: Request, res: Response) => {

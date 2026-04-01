@@ -10,6 +10,31 @@ const CARRIER_TRACKING_URLS: Record<string, string> = {
   Flash: 'https://www.flashexpress.co.th/tracking/?se=',
 };
 
+// ── GET /api/orders/my ────────────────────────────────────────────────────────
+// List orders for the logged-in user.
+// IMPORTANT: Must be defined BEFORE /:id to avoid being matched as an ID.
+router.get('/my', authenticateToken, async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+
+    const orders = await prisma.order.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
+      include: {
+        items: {
+          include: { product: { select: { name: true, imageUrl: true, price: true } } },
+        },
+      },
+    });
+
+    return res.json(orders);
+  } catch (error) {
+    console.error('Error fetching user orders:', error);
+    return res.status(500).json({ error: 'Failed to fetch orders' });
+  }
+});
+
 // ── GET /api/orders/:id ───────────────────────────────────────────────────────
 // Fetch a single order by ID. Accessible by the order owner or an ADMIN.
 router.get('/:id', authenticateToken, async (req: AuthRequest, res: Response) => {
@@ -52,30 +77,6 @@ router.get('/:id', authenticateToken, async (req: AuthRequest, res: Response) =>
   }
 });
 
-// ── GET /api/orders/my ────────────────────────────────────────────────────────
-// List orders for the logged-in user.
-router.get('/my', authenticateToken, async (req: AuthRequest, res: Response) => {
-  try {
-    const userId = req.user?.id;
-    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-
-    const orders = await prisma.order.findMany({
-      where: { userId },
-      orderBy: { createdAt: 'desc' },
-      include: {
-        items: {
-          include: { product: { select: { name: true, imageUrl: true, price: true } } },
-        },
-      },
-    });
-
-    return res.json(orders);
-  } catch (error) {
-    console.error('Error fetching user orders:', error);
-    return res.status(500).json({ error: 'Failed to fetch orders' });
-  }
-});
-
 // ── GET /api/orders ───────────────────────────────────────────────────────────
 // List all orders. ADMIN only.
 router.get('/', authenticateToken, async (req: AuthRequest, res: Response) => {
@@ -84,17 +85,26 @@ router.get('/', authenticateToken, async (req: AuthRequest, res: Response) => {
       return res.status(403).json({ error: 'Admin access required' });
     }
 
-    const orders = await prisma.order.findMany({
-      orderBy: { createdAt: 'desc' },
-      include: {
-        user: { select: { id: true, email: true, name: true } },
-        items: {
-          include: { product: { select: { name: true } } },
-        },
-      },
-    });
+    const page = Math.max(1, parseInt(req.query.page as string) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 50));
+    const skip = (page - 1) * limit;
 
-    return res.json(orders);
+    const [orders, total] = await Promise.all([
+      prisma.order.findMany({
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+        include: {
+          user: { select: { id: true, email: true, name: true } },
+          items: {
+            include: { product: { select: { name: true } } },
+          },
+        },
+      }),
+      prisma.order.count(),
+    ]);
+
+    return res.json({ data: orders, total, page, limit, totalPages: Math.ceil(total / limit) });
   } catch (error) {
     console.error('Error fetching orders:', error);
     return res.status(500).json({ error: 'Failed to fetch orders' });

@@ -109,7 +109,10 @@ async function main() {
   ];
 
   for (const p of products) {
-    await prisma.product.create({ data: p });
+    const exists = await prisma.product.findFirst({ where: { name: p.name } });
+    if (!exists) {
+      await prisma.product.create({ data: p });
+    }
   }
 
   console.log('Products seeded (prices in THB).');

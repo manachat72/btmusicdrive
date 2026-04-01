@@ -8,11 +8,21 @@ const router = Router();
 // Public — list all products (used by storefront + admin)
 router.get('/', async (req: Request, res: Response) => {
   try {
-    const products = await prisma.product.findMany({
-      include: { category: { select: { name: true } } },
-      orderBy: { createdAt: 'desc' },
-    });
-    return res.json(products);
+    const page = Math.max(1, parseInt(req.query.page as string) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 50));
+    const skip = (page - 1) * limit;
+
+    const [products, total] = await Promise.all([
+      prisma.product.findMany({
+        include: { category: { select: { name: true } } },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      prisma.product.count(),
+    ]);
+
+    return res.json({ data: products, total, page, limit, totalPages: Math.ceil(total / limit) });
   } catch (error) {
     console.error('Error fetching products:', error);
     return res.status(500).json({ error: 'Failed to fetch products' });

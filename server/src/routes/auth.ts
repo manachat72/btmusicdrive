@@ -31,7 +31,8 @@ router.post('/google', async (req: Request, res: Response) => {
       return;
     }
 
-    const { email, sub: googleId, name } = payload;
+    const { email: rawGoogleEmail, sub: googleId, name } = payload;
+    const email = rawGoogleEmail!.trim().toLowerCase();
 
     // Find or create user
     let user = await prisma.user.findUnique({
@@ -96,12 +97,14 @@ router.post('/facebook', async (req: Request, res: Response) => {
       return;
     }
 
-    const { id: facebookId, name, email } = fbData;
+    const { id: facebookId, name, email: rawFbEmail } = fbData;
 
-    if (!email) {
+    if (!rawFbEmail) {
       res.status(400).json({ error: 'Email permission is required. Please allow email access.' });
       return;
     }
+
+    const email = rawFbEmail.trim().toLowerCase();
 
     // Find or create user
     let user = await prisma.user.findFirst({
@@ -142,12 +145,14 @@ router.post('/facebook', async (req: Request, res: Response) => {
 // Register a new user
 router.post('/register', async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body;
+    const { email: rawEmail, password } = req.body;
 
-    if (!email || !password) {
+    if (!rawEmail || !password) {
       res.status(400).json({ error: 'Email and password are required' });
       return;
     }
+
+    const email = rawEmail.trim().toLowerCase();
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
@@ -198,12 +203,14 @@ router.post('/register', async (req: Request, res: Response) => {
 // Login
 router.post('/login', async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body;
+    const { email: rawEmail, password } = req.body;
 
-    if (!email || !password) {
+    if (!rawEmail || !password) {
       res.status(400).json({ error: 'Email and password are required' });
       return;
     }
+
+    const email = rawEmail.trim().toLowerCase();
 
     // Find user
     const user = await prisma.user.findUnique({
