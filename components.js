@@ -157,15 +157,15 @@ function _footerHTML() {
             <p class="text-xs text-gray-400 mb-2 font-semibold">\u0E0A\u0E49\u0E2D\u0E1B\u0E44\u0E14\u0E49\u0E17\u0E35\u0E48</p>
             <div class="flex flex-wrap gap-2">
               <a href="https://www.tiktok.com/@buytrrm1992" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-200 text-gray-500 hover:border-primary hover:text-primary transition-all text-xs font-medium">
-                <img src="images/tiktok.png" alt="TikTok" class="w-4 h-4 object-contain">
+                <img src="images/tiktok.png" alt="TikTok" class="w-5 h-5 object-contain">
                 TikTok Shop
               </a>
               <a href="https://shopee.co.th/shop/134575937" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-200 text-gray-500 hover:border-[#ee4d2d] hover:text-[#ee4d2d] transition-all text-xs font-medium">
-                <img src="images/shopeer.png" alt="Shopee" class="w-4 h-4 object-contain">
+                <img src="images/shopeer.png" alt="Shopee" class="w-5 h-5 object-contain">
                 Shopee
               </a>
               <a href="https://www.lazada.co.th/shop/buythrrm1992/" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-200 text-gray-500 hover:border-[#0f146d] hover:text-[#0f146d] transition-all text-xs font-medium">
-                <img src="images/lazada.png" alt="Lazada" class="w-4 h-4 object-contain">
+                <img src="images/lazada.png" alt="Lazada" class="w-5 h-5 object-contain">
                 Lazada
               </a>
             </div>
