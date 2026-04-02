@@ -1129,6 +1129,17 @@
           <textarea id="cm-desc" class="settings-input" rows="2" placeholder="คำอธิบายหมวดหมู่สั้นๆ (แสดงบนแบนเนอร์)" style="resize:vertical;"></textarea>
         </div>
 
+        <div class="settings-row">
+          <label class="settings-label">รูปแบนเนอร์ (URL)</label>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input type="text" id="cm-banner-url" class="settings-input" placeholder="https://example.com/banner.jpg" oninput="previewCategoryBanner()" style="flex:1;">
+            <div id="cm-banner-preview" style="width:72px;height:40px;border-radius:4px;border:1px solid var(--card-border);background:#f6f7f7;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#c3c4c7;font-size:16px;">
+              <i class="fa-solid fa-image"></i>
+            </div>
+          </div>
+          <p class="settings-hint">รูปแบนเนอร์แสดงในหน้าหมวดหมู่ — แนะนำอัตราส่วน 16:9</p>
+        </div>
+
         <div style="display:flex;gap:10px;">
           <div class="settings-row" style="flex:1;">
             <label class="settings-label">คลาสไอคอน</label>
@@ -1583,6 +1594,16 @@
   function previewExtraImage(input) {
     const url = input.value.trim();
     const box = input.nextElementSibling;
+    if (url) {
+      box.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<i class=\\'fa-solid fa-image-slash\\' style=\\'color:#d63638;\\'></i>'">`;
+    } else {
+      box.innerHTML = '<i class="fa-solid fa-image"></i>';
+    }
+  }
+
+  function previewCategoryBanner() {
+    const url = document.getElementById('cm-banner-url').value.trim();
+    const box = document.getElementById('cm-banner-preview');
     if (url) {
       box.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<i class=\\'fa-solid fa-image-slash\\' style=\\'color:#d63638;\\'></i>'">`;
     } else {
@@ -2369,10 +2390,9 @@
     document.getElementById('cm-icon').value = cat?.icon || '';
     document.getElementById('cm-sort').value = cat?.sortOrder ?? 0;
     document.getElementById('cm-active').checked = cat ? cat.isActive !== false : true;
+    document.getElementById('cm-banner-url').value = cat?.bannerUrl || '';
+    previewCategoryBanner();
     document.getElementById('cat-modal-title').textContent = cat ? 'แก้ไขหมวดหมู่' : 'เพิ่มหมวดหมู่';
-
-
-
     document.getElementById('category-modal').style.display = 'flex';
   }
 
@@ -2397,7 +2417,7 @@
     const data = {
       name,
       description: document.getElementById('cm-desc').value.trim(),
-      bannerUrl: '',
+      bannerUrl: document.getElementById('cm-banner-url').value.trim(),
       icon: document.getElementById('cm-icon').value.trim(),
       sortOrder: parseInt(document.getElementById('cm-sort').value) || 0,
       isActive: document.getElementById('cm-active').checked
