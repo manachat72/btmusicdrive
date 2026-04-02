@@ -10,6 +10,7 @@ import promoRoutes from './routes/promo';
 import productRoutes from './routes/product';
 import userRoutes from './routes/user';
 import menuRoutes from './routes/menu';
+import imageRoutes from './routes/images';
 
 dotenv.config();
 
@@ -55,6 +56,7 @@ app.use('/api/promo', promoRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/menus', menuRoutes);
+app.use('/api/images', imageRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
