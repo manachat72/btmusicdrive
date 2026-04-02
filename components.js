@@ -157,13 +157,13 @@ function _footerHTML() {
           <p class="text-xs text-gray-500 mb-2 font-semibold">ช้อปได้ที่</p>
           <div class="flex flex-wrap gap-2">
             <a href="https://www.tiktok.com/@buytrrm1992" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-600 text-gray-400 hover:border-primary hover:text-primary transition-all text-xs font-medium">
-              <img src="images/tiktok.png" alt="TikTok" class="w-5 h-5 object-contain"> TikTok Shop
+              <img src="images/tiktok.png" alt="TikTok" class="w-15 h-15 object-contain"> TikTok Shop
             </a>
             <a href="https://shopee.co.th/shop/134575937" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-600 text-gray-400 hover:border-[#ee4d2d] hover:text-[#ee4d2d] transition-all text-xs font-medium">
-              <img src="images/shopeer.png" alt="Shopee" class="w-5 h-5 object-contain"> Shopee
+              <img src="images/shopeer.png" alt="Shopee" class="w-15 h-15 object-contain"> Shopee
             </a>
             <a href="https://www.lazada.co.th/shop/buythrrm1992/" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-600 text-gray-400 hover:border-[#0f146d] hover:text-[#0f146d] transition-all text-xs font-medium">
-              <img src="images/lazada.png" alt="Lazada" class="w-5 h-5 object-contain"> Lazada
+              <img src="images/lazada.png" alt="Lazada" class="w-15 h-15 object-contain"> Lazada
             </a>
           </div>
         </div>
@@ -398,7 +398,7 @@ function _highlightActiveSidebar() {
 
 // ── Dynamic Navigation Menus ────────────────────────────────────────────────
 const _DEFAULT_MENUS = [
-  { label: 'หน้าแรก', url: 'index.html', icon: null },
+  { label: 'หน้าแรก', url: 'index.html', icon: 'ph ph-house' },
   { label: 'ร้านค้า', url: 'shop.html', icon: 'ph ph-storefront' },
   { label: 'หมวดหมู่', url: '#', icon: 'ph ph-squares-four', children: [
     { label: 'สินค้าทั้งหมด', url: 'shop.html', icon: 'ph ph-package' },
@@ -409,7 +409,7 @@ const _DEFAULT_MENUS = [
     { label: 'เพลงสากล', url: 'category.html?cat=เพลงสากล', icon: 'ph ph-globe' },
     { label: 'ลูกกรุง', url: 'category.html?cat=ลูกกรุง', icon: 'ph ph-music-note' },
   ]},
-  { label: 'เกี่ยวกับ', url: 'about.html', icon: null },
+  { label: 'เกี่ยวกับ', url: 'about.html', icon: 'ph ph-info' },
   { label: 'ติดตามพัสดุ', url: 'track-order.html', icon: 'ph ph-package' },
 ];
 

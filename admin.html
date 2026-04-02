@@ -674,7 +674,6 @@
           <table class="wp-tbl">
             <thead>
               <tr>
-                <th style="width:60px;">รูป</th>
                 <th>สินค้า</th>
                 <th>หมวดหมู่</th>
                 <th class="r">ราคา</th>
@@ -983,16 +982,7 @@
             <input type="number" id="pm-stock" class="settings-input" placeholder="0" min="0">
           </div>
         </div>
-        <div class="settings-row">
-          <label class="settings-label">รูปหลัก</label>
-          <input type="text" id="pm-image" class="settings-input" placeholder="เช่น /images/product1.jpg หรือ Google Drive link" oninput="autoConvertDriveLink(this)">
-          <p class="settings-hint">ก๊อปรูปไว้ในโฟลเดอร์ images/ แล้วใส่ path เช่น /images/watch.jpg — หรือวาง Google Drive link ก็ได้</p>
-        </div>
-        <div class="settings-row">
-          <label class="settings-label">รูปเพิ่มเติม <span style="color:var(--muted);font-weight:400;">(บรรทัดละ 1 URL)</span></label>
-          <textarea id="pm-images" class="settings-input" rows="3" placeholder="/images/product1-2.jpg&#10;/images/product1-3.jpg&#10;หรือ Google Drive link ก็ได้" style="resize:vertical;font-size:12px;" oninput="autoConvertDriveLinks(this)"></textarea>
-          <p class="settings-hint">ใส่ path รูปบรรทัดละ 1 รูป เช่น /images/xxx.jpg หรือ Google Drive link</p>
-        </div>
+
         <div class="settings-row">
           <label class="settings-label">แท็ก <span style="color:var(--muted);font-weight:400;">(คั่นด้วยจุลภาค)</span></label>
           <input type="text" id="pm-tags" class="settings-input" placeholder="e.g. KEYBOARD, KZZI, MECHANICAL">
@@ -1120,14 +1110,7 @@
           <label class="settings-label">คำอธิบาย</label>
           <textarea id="cm-desc" class="settings-input" rows="2" placeholder="คำอธิบายหมวดหมู่สั้นๆ (แสดงบนแบนเนอร์)" style="resize:vertical;"></textarea>
         </div>
-        <div class="settings-row">
-          <label class="settings-label">รูปแบนเนอร์</label>
-          <input type="text" id="cm-banner" class="settings-input" placeholder="URL รูปแบนเนอร์ เช่น images/banner-cat.jpg หรือ link รูป" oninput="previewCatBanner(this.value)">
-          <p class="settings-hint">ใส่ URL ของรูปแบนเนอร์ หรือ path ไฟล์ในโฟลเดอร์ images/</p>
-          <div id="cm-banner-preview" style="margin-top:8px;display:none;">
-            <img id="cm-banner-preview-img" style="width:100%;height:120px;object-fit:cover;border-radius:4px;border:1px solid var(--card-border);" alt="preview">
-          </div>
-        </div>
+
         <div style="display:flex;gap:10px;">
           <div class="settings-row" style="flex:1;">
             <label class="settings-label">คลาสไอคอน</label>
@@ -1454,38 +1437,7 @@
     return d.innerHTML;
   }
 
-  // ── Google Drive link auto-convert ──────────────────────────────────────
-  function convertDriveUrl(url) {
-    url = url.trim();
-    const match1 = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
-    if (match1) return `https://lh3.googleusercontent.com/d/${match1[1]}`;
-    const match2 = url.match(/drive\.google\.com\/open\?id=([a-zA-Z0-9_-]+)/);
-    if (match2) return `https://lh3.googleusercontent.com/d/${match2[1]}`;
-    const match3 = url.match(/drive\.google\.com\/uc\?.*id=([a-zA-Z0-9_-]+)/);
-    if (match3) return `https://lh3.googleusercontent.com/d/${match3[1]}`;
-    return url;
-  }
 
-  function autoConvertDriveLink(input) {
-    const val = input.value;
-    if (val.includes('drive.google.com')) {
-      const converted = convertDriveUrl(val);
-      if (converted !== val) input.value = converted;
-    }
-  }
-
-  function autoConvertDriveLinks(textarea) {
-    const val = textarea.value;
-    if (!val.includes('drive.google.com')) return;
-    const lines = val.split('\n');
-    let changed = false;
-    const newLines = lines.map(line => {
-      const converted = convertDriveUrl(line);
-      if (converted !== line) changed = true;
-      return converted;
-    });
-    if (changed) textarea.value = newLines.join('\n');
-  }
 
   // ── Section loading triggers ──────────────────────────────────────────────
 
@@ -1526,9 +1478,6 @@
   function renderProductsTable(products) {
     document.getElementById('products-tbody').innerHTML = products.map(p => `
       <tr>
-        <td>${p.imageUrl
-          ? `<img src="${escHtml(p.imageUrl)}" class="prod-thumb" alt="">`
-          : `<div class="prod-thumb-placeholder"><i class="fa-solid fa-tag"></i></div>`}</td>
         <td>
           <div style="font-weight:600;">${escHtml(p.name)}</div>
           <div style="font-size:11px;color:var(--muted);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(p.description || '')}</div>
@@ -1560,8 +1509,7 @@
     document.getElementById('pm-sku').value     = product?.sku || '';
     document.getElementById('pm-category').value= product?.category?.name || product?.categoryName || '';
     document.getElementById('pm-stock').value   = product?.stock ?? '';
-    document.getElementById('pm-image').value   = product?.imageUrl || '';
-    document.getElementById('pm-images').value  = Array.isArray(product?.images) ? product.images.join('\n') : '';
+
     document.getElementById('pm-tags').value    = Array.isArray(product?.tags) ? product.tags.join(', ') : '';
     document.getElementById('pm-description').value = product?.description || '';
     // Specs: convert object/array to key=value lines
@@ -1591,9 +1539,7 @@
     if (!name)  { errEl.textContent = 'กรุณากรอกชื่อสินค้า'; errEl.style.display = 'block'; return; }
     if (!price) { errEl.textContent = 'กรุณากรอกราคา'; errEl.style.display = 'block'; return; }
 
-    // Parse images (one URL per line)
-    const imagesRaw = document.getElementById('pm-images').value.trim();
-    const images = imagesRaw ? imagesRaw.split('\n').map(u => u.trim()).filter(Boolean) : [];
+    const images = [];
 
     // Parse tags (comma separated)
     const tagsRaw = document.getElementById('pm-tags').value.trim();
@@ -1617,7 +1563,7 @@
       sku: document.getElementById('pm-sku').value.trim() || null,
       categoryName: document.getElementById('pm-category').value.trim(),
       stock: parseInt(document.getElementById('pm-stock').value) || 0,
-      imageUrl: document.getElementById('pm-image').value.trim(),
+      imageUrl: '',
       images, tags, specs,
       description: document.getElementById('pm-description').value.trim(),
     };
@@ -2356,18 +2302,13 @@
     document.getElementById('cm-id').value = cat?.id || '';
     document.getElementById('cm-name').value = cat?.name || '';
     document.getElementById('cm-desc').value = cat?.description || '';
-    document.getElementById('cm-banner').value = cat?.bannerUrl || '';
+
     document.getElementById('cm-icon').value = cat?.icon || '';
     document.getElementById('cm-sort').value = cat?.sortOrder ?? 0;
     document.getElementById('cm-active').checked = cat ? cat.isActive !== false : true;
     document.getElementById('cat-modal-title').textContent = cat ? 'แก้ไขหมวดหมู่' : 'เพิ่มหมวดหมู่';
 
-    // Preview banner
-    if (cat?.bannerUrl) {
-      previewCatBanner(cat.bannerUrl);
-    } else {
-      document.getElementById('cm-banner-preview').style.display = 'none';
-    }
+
 
     document.getElementById('category-modal').style.display = 'flex';
   }
@@ -2376,17 +2317,7 @@
     document.getElementById('category-modal').style.display = 'none';
   }
 
-  function previewCatBanner(url) {
-    const preview = document.getElementById('cm-banner-preview');
-    const img = document.getElementById('cm-banner-preview-img');
-    if (url && url.trim()) {
-      img.src = url.trim();
-      preview.style.display = 'block';
-      img.onerror = () => { preview.style.display = 'none'; };
-    } else {
-      preview.style.display = 'none';
-    }
-  }
+
 
   function saveCategory() {
     const id = document.getElementById('cm-id').value;
@@ -2403,7 +2334,7 @@
     const data = {
       name,
       description: document.getElementById('cm-desc').value.trim(),
-      bannerUrl: document.getElementById('cm-banner').value.trim(),
+      bannerUrl: '',
       icon: document.getElementById('cm-icon').value.trim(),
       sortOrder: parseInt(document.getElementById('cm-sort').value) || 0,
       isActive: document.getElementById('cm-active').checked
