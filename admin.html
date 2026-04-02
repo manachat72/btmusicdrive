@@ -995,6 +995,24 @@
           <label class="settings-label">สเปค <span style="color:var(--muted);font-weight:400;">(key=value, บรรทัดละ 1 รายการ)</span></label>
           <textarea id="pm-specs" class="settings-input" rows="5" placeholder="Brand=KZZI&#10;Switch Name=MOMENT LINEAR SWITCH&#10;Connectivity=WIRELESS / BLUETOOTH / WIRED&#10;Lighting=RGB" style="resize:vertical;font-size:12px;"></textarea>
         </div>
+
+        <!-- ── รูปภาพ ───────────────────────────────────────────────────── -->
+        <div class="settings-row">
+          <label class="settings-label">รูปหลัก (URL) <span style="color:#d63638;">*</span></label>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input type="text" id="pm-image-url" class="settings-input" placeholder="https://example.com/image.jpg" oninput="previewMainImage()" style="flex:1;">
+            <div id="pm-main-preview" style="width:48px;height:48px;border-radius:4px;border:1px solid var(--card-border);background:#f6f7f7;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#c3c4c7;font-size:18px;">
+              <i class="fa-solid fa-image"></i>
+            </div>
+          </div>
+          <p class="settings-hint">URL รูปภาพหลักของสินค้า (แสดงในการ์ดสินค้า)</p>
+        </div>
+
+        <div class="settings-row">
+          <label class="settings-label">รูปภาพเพิ่มเติม <span style="color:var(--muted);font-weight:400;">(สลับดูในหน้า product)</span></label>
+          <div id="pm-images-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:6px;"></div>
+          <button type="button" onclick="addExtraImageRow('')" class="wp-btn" style="width:100%;justify-content:center;"><i class="fa-solid fa-plus"></i> เพิ่มรูป</button>
+        </div>
       </div>
       <div id="pm-error" style="display:none;color:#d63638;font-size:12px;margin-top:10px;padding:8px 12px;background:#fcf0f1;border-radius:3px;border-left:3px solid #d63638;"></div>
       <div style="margin-top:16px;display:flex;gap:8px;justify-content:flex-end;">
@@ -1522,12 +1540,54 @@
       }
     }
     document.getElementById('pm-specs').value = specsText;
+
+    // Images
+    const mainImg = product?.imageUrl || (Array.isArray(product?.images) && product.images[0]) || '';
+    document.getElementById('pm-image-url').value = mainImg;
+    previewMainImage();
+    document.getElementById('pm-images-list').innerHTML = '';
+    const extraImgs = Array.isArray(product?.images) ? product.images.filter(u => u && u !== mainImg) : [];
+    extraImgs.forEach(url => addExtraImageRow(url));
+
     document.getElementById('modal-title').textContent = product ? 'แก้ไขสินค้า' : 'เพิ่มสินค้า';
     document.getElementById('product-modal').style.display = 'flex';
   }
 
   function closeProductModal() {
     document.getElementById('product-modal').style.display = 'none';
+  }
+
+  function previewMainImage() {
+    const url = document.getElementById('pm-image-url').value.trim();
+    const box = document.getElementById('pm-main-preview');
+    if (url) {
+      box.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<i class=\\'fa-solid fa-image-slash\\' style=\\'color:#d63638;\\'></i>'">`;
+    } else {
+      box.innerHTML = '<i class="fa-solid fa-image"></i>';
+    }
+  }
+
+  function addExtraImageRow(url = '') {
+    const list = document.getElementById('pm-images-list');
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;gap:6px;align-items:center;';
+    row.innerHTML = `
+      <input type="text" class="settings-input pm-extra-img-input" placeholder="https://example.com/image2.jpg" value="${url}" style="flex:1;" oninput="previewExtraImage(this)">
+      <div class="pm-extra-preview" style="width:36px;height:36px;border-radius:4px;border:1px solid var(--card-border);background:#f6f7f7;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#c3c4c7;font-size:14px;">
+        ${url ? `<img src="${url}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<i class=\\'fa-solid fa-image-slash\\'></i>'">` : '<i class="fa-solid fa-image"></i>'}
+      </div>
+      <button type="button" onclick="this.closest('div').remove()" style="background:none;border:none;cursor:pointer;color:#d63638;font-size:14px;padding:4px;"><i class="fa-solid fa-xmark"></i></button>`;
+    list.appendChild(row);
+  }
+
+  function previewExtraImage(input) {
+    const url = input.value.trim();
+    const box = input.nextElementSibling;
+    if (url) {
+      box.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<i class=\\'fa-solid fa-image-slash\\' style=\\'color:#d63638;\\'></i>'">`;
+    } else {
+      box.innerHTML = '<i class="fa-solid fa-image"></i>';
+    }
   }
 
   async function saveProduct() {
@@ -1539,7 +1599,10 @@
     if (!name)  { errEl.textContent = 'กรุณากรอกชื่อสินค้า'; errEl.style.display = 'block'; return; }
     if (!price) { errEl.textContent = 'กรุณากรอกราคา'; errEl.style.display = 'block'; return; }
 
-    const images = [];
+    // Collect images
+    const mainImgUrl = document.getElementById('pm-image-url').value.trim();
+    const extraRows = document.querySelectorAll('#pm-images-list .pm-extra-img-input');
+    const images = [mainImgUrl, ...Array.from(extraRows).map(i => i.value.trim())].filter(Boolean);
 
     // Parse tags (comma separated)
     const tagsRaw = document.getElementById('pm-tags').value.trim();
@@ -1563,7 +1626,7 @@
       sku: document.getElementById('pm-sku').value.trim() || null,
       categoryName: document.getElementById('pm-category').value.trim(),
       stock: parseInt(document.getElementById('pm-stock').value) || 0,
-      imageUrl: '',
+      imageUrl: mainImgUrl,
       images, tags, specs,
       description: document.getElementById('pm-description').value.trim(),
     };
