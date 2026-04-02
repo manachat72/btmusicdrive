@@ -148,25 +148,13 @@ function _footerHTML() {
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 md:gap-12 mb-12">
 
         <!-- Logo + Description + Shop Links -->
-        <div>
-          <div class="flex items-center mb-4 cursor-pointer" onclick="window.location='index.html'">
-            <img src="images/logo (60 x 60 px) (1).png" alt="btmusicdrive" class="h-10 w-10 rounded-full mr-3">
-            <span class="font-bold text-2xl tracking-tight text-white">btmusicdrive</span>
-          </div>
-          <p class="text-gray-400 mb-5 text-sm leading-relaxed">ร้านขายแฟลชไดร์ฟเพลง MP3 คุณภาพเสียง HD รวมเพลงฮิตทุกแนว เสียบปุ๊บฟังปั๊บ</p>
-          <p class="text-xs text-gray-500 mb-2 font-semibold">ช้อปได้ที่</p>
-          <div class="flex flex-wrap gap-2">
-            <a href="https://www.tiktok.com/@buytrrm1992" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-600 text-gray-400 hover:border-primary hover:text-primary transition-all text-xs font-medium">
-              <img src="images/tiktok.png" alt="TikTok" class="w-15 h-15 object-contain"> TikTok Shop
-            </a>
-            <a href="https://shopee.co.th/shop/134575937" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-600 text-gray-400 hover:border-[#ee4d2d] hover:text-[#ee4d2d] transition-all text-xs font-medium">
-              <img src="images/shopeer.png" alt="Shopee" class="w-15 h-15 object-contain"> Shopee
-            </a>
-            <a href="https://www.lazada.co.th/shop/buythrrm1992/" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-600 text-gray-400 hover:border-[#0f146d] hover:text-[#0f146d] transition-all text-xs font-medium">
-              <img src="images/lazada.png" alt="Lazada" class="w-15 h-15 object-contain"> Lazada
-            </a>
-          </div>
-        </div>
+<div>
+  <div class="flex items-center mb-4 cursor-pointer" onclick="window.location='index.html'">
+    <img src="images/logo (60 x 60 px) (1).png" alt="btmusicdrive" class="h-10 w-10 rounded-full mr-3">
+    <span class="font-bold text-2xl tracking-tight text-white">btmusicdrive</span>
+  </div>
+  <p class="text-gray-400 mb-5 text-sm leading-relaxed">ร้านขายแฟลชไดร์ฟเพลง MP3 คุณภาพเสียง HD รวมเพลงฮิตทุกแนว เสียบปุ๊บฟังปั๊บ</p>
+</div>
 
         <!-- บริการลูกค้า -->
         <div>
