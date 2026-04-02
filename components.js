@@ -118,10 +118,6 @@ function _authModalHTML() {
             <div class="relative flex justify-center text-sm"><span class="px-3 bg-white text-gray-400">\u0E2B\u0E23\u0E37\u0E2D\u0E40\u0E02\u0E49\u0E32\u0E2A\u0E39\u0E48\u0E23\u0E30\u0E1A\u0E1A\u0E14\u0E49\u0E27\u0E22</span></div>
           </div>
           <div class="mt-5 space-y-3">
-            <button onclick="_loginFacebook()" id="fb-login-btn" class="w-full flex items-center justify-center gap-3 bg-[#1877F2] hover:bg-[#166FE5] text-white font-bold py-3 px-4 rounded-xl transition-colors">
-              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-              \u0E40\u0E02\u0E49\u0E32\u0E2A\u0E39\u0E48\u0E23\u0E30\u0E1A\u0E1A\u0E14\u0E49\u0E27\u0E22 Facebook
-            </button>
             <div id="google-btn-container" class="w-full">
               <div id="google-signin-button" class="w-full"></div>
             </div>
@@ -615,30 +611,6 @@ async function _initGoogleSignIn() {
   }
 }
 
-function _initFacebookSDK() {
-  window.fbAsyncInit = function() { FB.init({ appId: '1234567890', cookie: true, xfbml: true, version: 'v19.0' }); };
-}
-
-function _loginFacebook() {
-  if (typeof FB === 'undefined') { _showToast('Facebook SDK \u0E22\u0E31\u0E07\u0E44\u0E21\u0E48\u0E1E\u0E23\u0E49\u0E2D\u0E21'); return; }
-  FB.login(function(r) { if (r.authResponse) _handleFacebookLogin(r.authResponse.accessToken); }, { scope: 'email,public_profile' });
-}
-window._loginFacebook = _loginFacebook;
-
-async function _handleFacebookLogin(accessToken) {
-  _setAuthLoading(true);
-  try {
-    const res = await fetch(`${API_BASE}/auth/facebook`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ accessToken }) });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Facebook login failed');
-    localStorage.setItem('btmusicdrive_token', data.token);
-    _currentUser = data.user;
-    _updateUserUI(); _toggleAuthModal();
-    _showToast('\u0E40\u0E02\u0E49\u0E32\u0E2A\u0E39\u0E48\u0E23\u0E30\u0E1A\u0E1A\u0E14\u0E49\u0E27\u0E22 Facebook \u0E2A\u0E33\u0E40\u0E23\u0E47\u0E08!');
-  } catch (err) { _showAuthError(err.message); }
-  finally { _setAuthLoading(false); }
-}
-
 async function _checkAuthState() {
   const token = localStorage.getItem('btmusicdrive_token');
   if (!token) return;
@@ -916,7 +888,6 @@ function _setupSharedEvents() {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-  _initFacebookSDK();
   _initGoogleSignIn();
   await _loadNavMenus();
   _setupSharedEvents();

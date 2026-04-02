@@ -40,68 +40,11 @@ let currentUser = null;
 
 // Initialize App
 document.addEventListener('DOMContentLoaded', async () => {
-    initFacebookSDK();
     await loadNavMenus();
     await fetchProducts();
     setupEventListeners();
     updateCartUI();
 });
-
-// ── Facebook SDK Init ──────────────────────────────────────────────────────
-function initFacebookSDK() {
-    window.fbAsyncInit = function() {
-        FB.init({
-            appId: '1234567890', // TODO: Replace with your Facebook App ID
-            cookie: true,
-            xfbml: true,
-            version: 'v19.0'
-        });
-    };
-}
-
-function loginWithFacebook() {
-    if (typeof FB === 'undefined') {
-        showToast('Facebook SDK ยังไม่พร้อม กรุณาลองใหม่');
-        return;
-    }
-    FB.login(function(response) {
-        if (response.authResponse) {
-            handleFacebookLogin(response.authResponse.accessToken);
-        }
-    }, { scope: 'email,public_profile' });
-}
-
-async function handleFacebookLogin(accessToken) {
-    authSubmitText.classList.add('opacity-0');
-    authSpinner.classList.remove('hidden');
-    authSubmitBtn.disabled = true;
-    authError.classList.add('hidden');
-
-    try {
-        const res = await fetch(`${API_BASE}/auth/facebook`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ accessToken })
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Facebook login failed');
-
-        localStorage.setItem('btmusicdrive_token', data.token);
-        currentUser = data.user;
-        updateUserUI();
-        toggleAuthModal();
-        showToast('เข้าสู่ระบบด้วย Facebook สำเร็จ!');
-        await syncLocalCartToDatabase();
-    } catch (error) {
-        authErrorText.textContent = error.message;
-        authError.classList.remove('hidden');
-    } finally {
-        authSubmitText.classList.remove('opacity-0');
-        authSpinner.classList.add('hidden');
-        authSubmitBtn.disabled = false;
-    }
-}
-window.loginWithFacebook = loginWithFacebook;
 
 // ── Password Toggle ────────────────────────────────────────────────────────
 function togglePasswordVisibility() {

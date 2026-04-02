@@ -19,7 +19,6 @@ model User {
   email        String    @unique
   passwordHash String?
   googleId     String?   @unique
-  facebookId   String?   @unique
   name         String?
   phone        String?
   birthday     String?

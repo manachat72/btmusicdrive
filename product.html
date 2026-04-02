@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
@@ -19,7 +19,6 @@
   </script>
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script async defer crossorigin="anonymous" src="https://connect.facebook.net/th_TH/sdk.js"></script>
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
@@ -243,7 +242,7 @@
       <!-- Same Category Products -->
       <div id="frequently-bought" class="mt-12 hidden">
         <h3 class="text-xl font-bold text-gray-900 mb-6"><i class="ph ph-squares-four mr-1"></i> สินค้าในหมวดหมู่เดียวกัน</h3>
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-4" id="same-category-grid"></div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="same-category-grid"></div>
       </div>
 
     </div>
@@ -522,7 +521,7 @@
     const sameCat = allProducts.filter(p => p.id !== product.id && (p.categoryId === product.categoryId || p.category?.id === product.category?.id));
     if (sameCat.length === 0) return;
 
-    const recommended = sameCat.slice(0, 6);
+    const recommended = sameCat.slice(0, 4);
     const container = document.getElementById('same-category-grid');
     container.innerHTML = recommended.map(p =>
       `<a href="product.html?id=${p.id}" class="bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-md transition-shadow group">
