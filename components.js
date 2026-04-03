@@ -180,8 +180,8 @@ function _footerHTML() {
           <h4 class="font-bold text-white mb-5 text-base">ติดต่อเรา</h4>
           <ul class="space-y-3 text-gray-400 text-sm">
             <li class="flex items-start gap-3"><i class="ph ph-map-pin text-lg text-primary mt-0.5"></i><span>กรุงเทพมหานคร<br>ประเทศไทย</span></li>
-            <li class="flex items-center gap-3"><i class="ph ph-phone text-lg text-primary"></i><span>08X-XXX-XXXX</span></li>
-            <li class="flex items-center gap-3"><i class="ph ph-chat-circle-dots text-lg text-primary"></i><span>Line ID: @btmusicdrive</span></li>
+            <li class="flex items-center gap-3"><i class="ph ph-phone text-lg text-primary"></i><span>0-XXX-XXXX</span></li>
+            <li class="flex items-center gap-3"><i class="ph ph-chat-circle-dots text-lg text-primary"></i><span>Line ID: @bt1992</span></li>
             <li class="flex items-center gap-3"><i class="ph ph-envelope text-lg text-primary"></i><span>contact@btmusicdrive.com</span></li>
           </ul>
           <div class="flex space-x-3 mt-5">
