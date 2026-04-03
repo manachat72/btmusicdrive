@@ -59,11 +59,11 @@
     "originalPrice": 239,
     "categoryId": "2",
     "category": { "id": "2", "name": "เพื่อชีวิต" },
-    "imageUrl": "images/3cha.png",
+    "imageUrl": "images/USB_MP3_3Cha_PeuaChiwit_Cover.png",
     "images": [
-      "images/3cha (4).png",
-      "images/3cha (3).png",
-      "images/3cha (2).png"
+      "images/USB_MP3_3Cha_PeuaChiwit_Cover (2).png",
+      "images/USB_MP3_3Cha_PeuaChiwit_Cover (3).png",
+      "images/USB_MP3.png"
     ],
     "brand": "btmusicdrive",
     "sku": "SU-WS-002",
