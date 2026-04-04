@@ -385,7 +385,17 @@ function _highlightActiveSidebar() {
 const _DEFAULT_MENUS = [
   { label: 'หน้าแรก', url: 'index.html', icon: 'ph ph-house' },
   { label: 'ร้านค้า', url: 'shop.html', icon: 'ph ph-storefront' },
-  { label: 'รายชื่อเพลง', url: 'songs.html', icon: 'ph ph-music-notes-simple' },
+  { label: 'รายชื่อเพลง', url: 'songs.html', icon: 'ph ph-music-notes-simple', children: [
+    { label: 'ดูทั้งหมด', url: 'songs.html', icon: 'ph ph-list-bullets' },
+    { label: 'เพื่อชีวิต คาราบาว', url: 'product.html?id=1', icon: 'ph ph-music-note' },
+    { label: '3 ช่าเพื่อชีวิต', url: 'product.html?id=2', icon: 'ph ph-music-note' },
+    { label: 'สตริงยุค 80s', url: 'product.html?id=3', icon: 'ph ph-music-note' },
+    { label: 'ลูกทุ่งฮิตตลอดกาล', url: 'product.html?id=4', icon: 'ph ph-music-note' },
+    { label: 'หมอลำซิ่ง มันส์ๆ', url: 'product.html?id=5', icon: 'ph ph-music-note' },
+    { label: 'สากลฮิต 90s-2000s', url: 'product.html?id=6', icon: 'ph ph-music-note' },
+    { label: 'สตริงยุค 90s', url: 'product.html?id=7', icon: 'ph ph-music-note' },
+    { label: 'ลูกกรุงอมตะ', url: 'product.html?id=8', icon: 'ph ph-music-note' },
+  ]},
   { label: 'หมวดหมู่', url: '#', icon: 'ph ph-squares-four', children: [
     { label: 'สินค้าทั้งหมด', url: 'shop.html', icon: 'ph ph-package' },
     { label: 'เพื่อชีวิต', url: 'category.html?cat=เพื่อชีวิต', icon: 'ph ph-microphone-stage' },

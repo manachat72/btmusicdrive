@@ -490,43 +490,13 @@
     document.getElementById('tracklist-full').innerHTML = list.map((t, i) => {
       const name = escHtml(typeof t === 'string' ? t : t.name || '');
       const artist = typeof t === 'object' && t.artist ? escHtml(t.artist) : '';
-      const previewUrl = typeof t === 'object' && t.previewUrl ? t.previewUrl : '';
-      const ytQuery = encodeURIComponent((typeof t === 'string' ? t : ((t.name || '') + (t.artist ? ' ' + t.artist : ''))));
-      const previewBtn = previewUrl
-        ? `<button onclick="playPreview(${JSON.stringify(previewUrl)}, this)" class="ml-auto flex items-center gap-1 text-xs font-semibold text-primary hover:text-amber-700 transition-colors preview-play-btn whitespace-nowrap" title="ทดลองฟัง"><i class="ph ph-play-circle text-base"></i> ฟัง</button>`
-        : `<a href="https://www.youtube.com/results?search_query=${ytQuery}" target="_blank" rel="noopener" class="ml-auto flex items-center gap-1 text-xs font-semibold text-red-500 hover:text-red-700 transition-colors whitespace-nowrap" title="ค้นหาบน YouTube"><i class="ph ph-youtube-logo text-base"></i> ฟัง</a>`;
       return `<div class="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors tracklist-item">
         <span class="text-xs font-bold text-gray-400 w-6 shrink-0">${i + 1}.</span>
         <i class="ph ph-music-note text-primary text-sm shrink-0"></i>
         <span class="text-sm text-gray-700 track-name flex-1 min-w-0 truncate">${name}${artist ? `<span class="text-xs text-gray-400 ml-2">${artist}</span>` : ''}</span>
-        ${previewBtn}
       </div>`;
     }).join('');
     document.getElementById('tracklist-no-result').classList.add('hidden');
-  }
-
-  let _previewAudio = null;
-  let _activePreviewBtn = null;
-
-  function playPreview(url, btn) {
-    if (_previewAudio && !_previewAudio.paused && _activePreviewBtn === btn) {
-      _previewAudio.pause();
-      btn.innerHTML = '<i class="ph ph-play-circle text-base"></i> ฟัง';
-      _activePreviewBtn = null;
-      return;
-    }
-    if (_previewAudio) { _previewAudio.pause(); }
-    if (_activePreviewBtn && _activePreviewBtn !== btn) {
-      _activePreviewBtn.innerHTML = '<i class="ph ph-play-circle text-base"></i> ฟัง';
-    }
-    _previewAudio = new Audio(url);
-    _previewAudio.play().catch(() => {});
-    btn.innerHTML = '<i class="ph ph-pause-circle text-base"></i> หยุด';
-    _activePreviewBtn = btn;
-    _previewAudio.onended = () => {
-      btn.innerHTML = '<i class="ph ph-play-circle text-base"></i> ฟัง';
-      _activePreviewBtn = null;
-    };
   }
 
   function filterTracklist() {

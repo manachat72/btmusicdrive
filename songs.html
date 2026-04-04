@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>รายชื่อเพลงทั้งหมด — btmusicdrive</title>
-  <meta name="description" content="รวมรายชื่อเพลงทั้งหมดในแฟลชไดร์ฟเพลง btmusicdrive พร้อมทดลองฟังสั้นๆ">
+  <meta name="description" content="รวมรายชื่อเพลงทั้งหมดในแฟลชไดร์ฟเพลง btmusicdrive">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -30,9 +30,7 @@
     .cat-chip:not(.active):hover { background: #e2e8f0; }
     .track-row { transition: background .15s; }
     .track-row:hover { background: #f8fafc; }
-    .preview-btn { transition: all .2s; }
-    .preview-btn:hover { transform: scale(1.05); }
-    .playing { background: #fef3c7 !important; }
+
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased">
@@ -55,7 +53,7 @@
         <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-3">
           <i class="ph ph-music-notes-simple text-primary"></i> รายชื่อเพลงทั้งหมด
         </h1>
-        <p class="text-gray-500 text-lg">เลือกดูรายชื่อเพลงแต่ละชุด พร้อมทดลองฟังสั้นๆ</p>
+        <p class="text-gray-500 text-lg">เลือกดูรายชื่อเพลงแต่ละชุด</p>
         <p id="total-count" class="text-sm text-gray-400 mt-2"></p>
       </div>
 
@@ -107,8 +105,6 @@
 
     let allProducts = [];
     let activeCategory = 'all';
-    let _previewAudio = null;
-    let _activeBtn = null;
 
     // ── Load ─────────────────────────────────────────────────────────────────
     async function loadAllSongs() {
@@ -207,17 +203,11 @@
             ${tracks.map((t, i) => {
               const name = esc(typeof t === 'string' ? t : t.name || '');
               const originalIndex = product.tracklist.indexOf(t);
-              const ytQuery = encodeURIComponent(typeof t === 'string' ? t : (t.name || ''));
               return `
               <div class="track-row flex items-center gap-3 px-4 py-3" data-track="${name.toLowerCase()}">
                 <span class="text-xs font-bold text-gray-400 w-7 text-right shrink-0">${originalIndex + 1}</span>
                 <i class="ph ph-music-note text-primary text-sm shrink-0"></i>
                 <span class="text-sm text-gray-700 flex-1 min-w-0 truncate font-medium">${name}</span>
-                <a href="https://www.youtube.com/results?search_query=${ytQuery}" target="_blank" rel="noopener" 
-                  class="preview-btn flex items-center gap-1.5 text-xs font-semibold text-red-500 hover:text-red-700 whitespace-nowrap px-3 py-1.5 rounded-full border border-red-200 hover:border-red-400 hover:bg-red-50 transition-all" 
-                  title="ทดลองฟังบน YouTube">
-                  <i class="ph ph-youtube-logo text-base"></i> ทดลองฟัง
-                </a>
               </div>`;
             }).join('')}
           </div>
