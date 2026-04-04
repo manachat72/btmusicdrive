@@ -351,6 +351,18 @@
 
       if (!product) { showError(); return; }
 
+      // Merge tracklist from products.json if API didn't return it
+      if (!product.tracklist || !product.tracklist.length) {
+        try {
+          const fb = await fetch('products.json');
+          const localProducts = await fb.json();
+          const local = localProducts.find(p => p.id === id);
+          if (local && local.tracklist) {
+            product.tracklist = local.tracklist;
+          }
+        } catch {}
+      }
+
       // Load all products for "frequently bought together"
       try {
         const allRes = await fetch(`${PRODUCT_API_BASE}/products`);

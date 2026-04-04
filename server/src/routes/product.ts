@@ -52,7 +52,7 @@ router.post('/', authenticateToken, async (req: AuthRequest, res: Response) => {
       return res.status(403).json({ error: 'Admin access required' });
     }
 
-    const { name, price, originalPrice, categoryName, stock, imageUrl, images, brand, sku, tags, specs, description } = req.body;
+    const { name, price, originalPrice, categoryName, stock, imageUrl, images, brand, sku, tags, tracklist, specs, description } = req.body;
 
     if (!name || price == null) {
       return res.status(400).json({ error: 'name and price are required' });
@@ -75,6 +75,7 @@ router.post('/', authenticateToken, async (req: AuthRequest, res: Response) => {
         brand: brand || null,
         sku: sku || null,
         tags: Array.isArray(tags) ? tags : [],
+        tracklist: Array.isArray(tracklist) ? tracklist : [],
         specs: specs || null,
         description: description || null,
         categoryId: category.id,
@@ -97,7 +98,7 @@ router.patch('/:id', authenticateToken, async (req: AuthRequest, res: Response) 
       return res.status(403).json({ error: 'Admin access required' });
     }
 
-    const { name, price, originalPrice, categoryName, stock, imageUrl, images, brand, sku, tags, specs, description } = req.body;
+    const { name, price, originalPrice, categoryName, stock, imageUrl, images, brand, sku, tags, tracklist, specs, description } = req.body;
 
     const data: any = {};
     if (name !== undefined) data.name = name;
@@ -109,6 +110,7 @@ router.patch('/:id', authenticateToken, async (req: AuthRequest, res: Response) 
     if (brand !== undefined) data.brand = brand || null;
     if (sku !== undefined) data.sku = sku || null;
     if (tags !== undefined) data.tags = Array.isArray(tags) ? tags : [];
+    if (tracklist !== undefined) data.tracklist = Array.isArray(tracklist) ? tracklist : [];
     if (specs !== undefined) data.specs = specs || null;
     if (description !== undefined) data.description = description || null;
 

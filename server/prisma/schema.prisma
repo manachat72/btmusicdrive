@@ -86,6 +86,7 @@ model Product {
   brand         String?
   sku           String?
   tags          String[]    @default([])
+  tracklist     String[]    @default([])
   specs         Json?
   category      Category    @relation(fields: [categoryId], references: [id])
   categoryId    String
