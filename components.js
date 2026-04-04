@@ -170,6 +170,7 @@ function _footerHTML() {
           <ul class="space-y-3">
             <li><a href="contact.html" class="text-gray-400 hover:text-primary transition-colors text-sm">ติดต่อเรา</a></li>
             <li><a href="about.html" class="text-gray-400 hover:text-primary transition-colors text-sm">เกี่ยวกับเรา</a></li>
+            <li><a href="faq.html" class="text-gray-400 hover:text-primary transition-colors text-sm">คำถามที่พบบ่อย</a></li>
             <li><a href="terms.html" class="text-gray-400 hover:text-primary transition-colors text-sm">ข้อกำหนดและเงื่อนไข</a></li>
             <li><a href="privacy.html" class="text-gray-400 hover:text-primary transition-colors text-sm">นโยบายความเป็นส่วนตัว</a></li>
           </ul>
