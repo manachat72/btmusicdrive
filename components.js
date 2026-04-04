@@ -385,6 +385,7 @@ function _highlightActiveSidebar() {
 const _DEFAULT_MENUS = [
   { label: 'หน้าแรก', url: 'index.html', icon: 'ph ph-house' },
   { label: 'ร้านค้า', url: 'shop.html', icon: 'ph ph-storefront' },
+  { label: 'รายชื่อเพลง', url: 'songs.html', icon: 'ph ph-music-notes-simple' },
   { label: 'หมวดหมู่', url: '#', icon: 'ph ph-squares-four', children: [
     { label: 'สินค้าทั้งหมด', url: 'shop.html', icon: 'ph ph-package' },
     { label: 'เพื่อชีวิต', url: 'category.html?cat=เพื่อชีวิต', icon: 'ph ph-microphone-stage' },
