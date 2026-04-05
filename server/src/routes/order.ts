@@ -78,10 +78,40 @@ router.get('/:id', authenticateToken, async (req: AuthRequest, res: Response) =>
 });
 
 // ── GET /api/orders ───────────────────────────────────────────────────────────
-// List all orders. ADMIN only.
+// List all orders (ADMIN only). Supports ?phone= for customer self-lookup.
 router.get('/', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
-    if (req.user?.role !== 'ADMIN') {
+    const userId = req.user?.id;
+    const role = req.user?.role;
+    const phoneQuery = req.query.phone as string | undefined;
+
+    // Allow any authenticated user to search orders by their own phone number
+    if (phoneQuery) {
+      const normalizedPhone = phoneQuery.replace(/[-\s]/g, '');
+      const user = await prisma.user.findFirst({
+        where: { phone: { contains: normalizedPhone } }
+      });
+
+      if (!user) return res.json([]);
+
+      // Customers can only see their own orders; admins can see any
+      if (role !== 'ADMIN' && user.id !== userId) {
+        return res.json([]);
+      }
+
+      const orders = await prisma.order.findMany({
+        where: { userId: user.id },
+        orderBy: { createdAt: 'desc' },
+        include: {
+          items: {
+            include: { product: { select: { name: true, imageUrl: true, price: true } } },
+          },
+        },
+      });
+      return res.json(orders);
+    }
+
+    if (role !== 'ADMIN') {
       return res.status(403).json({ error: 'Admin access required' });
     }
 

@@ -198,18 +198,8 @@ function selectPaymentMethod(method) {
 }
 
 function switchPayment(method) {
-    // This is the old tab function, kept for backward compatibility if used anywhere else
-    ['card', 'paypal', 'cod'].forEach(m => {
-        document.getElementById(`payment-${m}`).classList.add('hidden');
-        const tab = document.getElementById(`tab-${m}`);
-        tab.classList.remove('bg-white', 'shadow-sm', 'text-primary');
-        tab.classList.add('text-gray-500');
-    });
-
-    document.getElementById(`payment-${method}`).classList.remove('hidden');
-    const activeTab = document.getElementById(`tab-${method}`);
-    activeTab.classList.add('bg-white', 'shadow-sm', 'text-primary');
-    activeTab.classList.remove('text-gray-500');
+    // Legacy alias — delegate to selectPaymentMethod
+    selectPaymentMethod(method);
 }
 
 // ── Input Formatters ──────────────────────────────────────────────────────────
@@ -335,14 +325,13 @@ function clearPromoError() {
 
 function validateForm() {
     const required = [
-        { id: 'first-name', label: 'ชื่อ' },
-        { id: 'last-name', label: 'นามสกุล' },
-        { id: 'email', label: 'อีเมล' },
+        { id: 'full-name', label: 'ชื่อ - นามสกุล' },
         { id: 'phone', label: 'เบอร์โทรศัพท์' },
         { id: 'address', label: 'ที่อยู่' },
-        { id: 'city', label: 'เขต/อำเภอ' },
-        { id: 'state', label: 'จังหวัด' },
         { id: 'zip', label: 'รหัสไปรษณีย์' },
+        { id: 'province', label: 'จังหวัด' },
+        { id: 'district', label: 'อำเภอ / เขต' },
+        { id: 'subdistrict', label: 'ตำบล / แขวง' },
     ];
 
     for (const field of required) {

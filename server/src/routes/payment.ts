@@ -44,7 +44,7 @@ router.post('/create-checkout-session', authenticateToken, async (req: AuthReque
     const userId = req.user?.id;
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
-    const { omiseToken, promoCode } = req.body;
+    const { omiseToken, promoCode, shippingAddress, phone } = req.body;
     if (!omiseToken) return res.status(400).json({ error: 'Missing payment token' });
 
     const cart = await prisma.cart.findUnique({
@@ -122,13 +122,13 @@ router.post('/create-checkout-session', authenticateToken, async (req: AuthReque
 
     // 3D Secure / redirect required
     if (charge.status === 'pending' && charge.authorize_uri) {
-      await createProcessingOrder(userId, invoiceNo, charge.id, cart, validatedPromo, discountAmount, totalAmount);
+      await createProcessingOrder(userId, invoiceNo, charge.id, cart, validatedPromo, discountAmount, totalAmount, shippingAddress, phone);
       return res.json({ authorizeUri: charge.authorize_uri, invoiceNo });
     }
 
     // Instant success
     if (charge.status === 'successful') {
-      const order = await completeOrder(userId, invoiceNo, charge.id, cart, validatedPromo, discountAmount, totalAmount);
+      const order = await completeOrder(userId, invoiceNo, charge.id, cart, validatedPromo, discountAmount, totalAmount, shippingAddress, phone);
       return res.json({ orderId: order.id, invoiceNo });
     }
 
@@ -210,7 +210,7 @@ router.post('/confirm', authenticateToken, async (req: AuthRequest, res: Respons
 
 
 // ── Helper functions ────────────────────────────────────────────────────────
-async function createProcessingOrder(userId: string, invoiceNo: string, chargeId: string, cart: any, promo: any, discountAmount: number, totalAmount: number) {
+async function createProcessingOrder(userId: string, invoiceNo: string, chargeId: string, cart: any, promo: any, discountAmount: number, totalAmount: number, shippingAddress?: string, _phone?: string) {
   const orderItems = cart.items.map((item: any) => ({
     productId: item.productId,
     quantity: item.quantity,
@@ -227,6 +227,7 @@ async function createProcessingOrder(userId: string, invoiceNo: string, chargeId
         paymentIntentId: chargeId,
         promoCode: promo?.code || null,
         discountAmount: discountAmount || 0,
+        shippingAddress: shippingAddress || null,
         items: { create: orderItems },
       },
     });
@@ -238,7 +239,7 @@ async function createProcessingOrder(userId: string, invoiceNo: string, chargeId
   return order;
 }
 
-async function completeOrder(userId: string, invoiceNo: string, chargeId: string, cart: any, promo: any, discountAmount: number, totalAmount: number) {
+async function completeOrder(userId: string, invoiceNo: string, chargeId: string, cart: any, promo: any, discountAmount: number, totalAmount: number, shippingAddress?: string, _phone?: string) {
   const orderItems = cart.items.map((item: any) => ({
     productId: item.productId,
     quantity: item.quantity,
@@ -255,6 +256,7 @@ async function completeOrder(userId: string, invoiceNo: string, chargeId: string
         paymentIntentId: chargeId,
         promoCode: promo?.code || null,
         discountAmount: discountAmount || 0,
+        shippingAddress: shippingAddress || null,
         items: { create: orderItems },
       },
       include: { items: { include: { product: true } }, user: true }
