@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
@@ -20,7 +20,7 @@
             }
         }
     </script>
-    
+
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
@@ -29,7 +29,7 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="style.css">
-    
+
     <style>
         .g_id_signin {
             display: flex;
@@ -150,7 +150,7 @@
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div class="flex flex-col items-center text-center p-4">
                     <i class="ph ph-music-note text-4xl text-primary mb-3"></i>
-                    <h3 class="font-bold text-gray-900 mb-1">เสียงใส ไม่มีสะดุด
+                    <h3 class="font-bold text-gray-900 mb-1">เสียงใส ไม่มีสะดุด</h3>
                     <p class="text-sm text-gray-500">คุณภาพเสียงคมชัดทุกเพลง</p>
                 </div>
                 <div class="flex flex-col items-center text-center p-4">
@@ -179,7 +179,7 @@
                 <h2 class="text-3xl font-bold text-gray-900 mb-4">หมวดหมู่แนวเพลง</h2>
                 <div class="w-16 h-1 bg-primary mx-auto rounded"></div>
             </div>
-            
+
             <div class="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-5 auto-rows-[200px] md:auto-rows-[220px]" id="categories-grid">
                 <!-- จะถูกสร้างโดย JS จาก localStorage -->
             </div>
@@ -209,7 +209,6 @@
         grid.innerHTML = cats.map((c, idx) => {
             const banner = c.bannerUrl || 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80';
             const desc = c.description || c.name;
-            // First card spans 2 columns + 2 rows (featured/hero bento cell)
             const featured = idx === 0;
             const spanClass = featured ? 'col-span-2 row-span-2' : 'col-span-1 row-span-1';
             const titleSize = featured ? 'text-3xl md:text-4xl' : 'text-xl';
@@ -240,7 +239,7 @@
                     ดูทั้งหมด <i class="ph ph-arrow-right ml-1"></i>
                 </a>
             </div>
-            
+
             <!-- Products Grid -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8" id="products-container">
                 <!-- Product items will be injected by JS -->
@@ -323,4 +322,3 @@
     </script>
 </body>
 </html>
-   
