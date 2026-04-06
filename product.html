@@ -95,6 +95,25 @@
     .related-card { transition: transform 0.25s ease, box-shadow 0.25s ease; }
     .related-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(139,115,85,0.15); }
 
+    /* Product Detail Tabs */
+    .ptab-btn { cursor: pointer; }
+    .ptab-btn.ptab-active { color: #8B7355; border-bottom-color: #8B7355; }
+    .ptab-btn:not(.ptab-active) { border-bottom-color: transparent; color: #64748b; }
+    .ptab-btn:not(.ptab-active):hover { color: #1e293b; background: rgba(139,115,85,0.04); }
+
+    /* Specs table rows */
+    #specs-table-all tr:nth-child(even) { background: #fafaf8; }
+    #specs-table-all td { padding: 10px 14px; font-size: 13px; }
+    #specs-table-all td:first-child { font-weight: 600; color: #374151; width: 40%; border-right: 1px solid rgba(139,115,85,0.1); }
+    #specs-table-all td:last-child { color: #4b5563; }
+
+    /* Tracklist rows */
+    #tracklist-full .tl-row { display: flex; align-items: center; gap: 10px; padding: 10px 16px; transition: background .15s; }
+    #tracklist-full .tl-row:hover { background: #fdf8f3; }
+    #tracklist-full .tl-num { font-size: 11px; font-weight: 700; color: #8B7355; min-width: 28px; text-align: right; }
+    #tracklist-full .tl-name { font-size: 13.5px; color: #374151; flex: 1; min-width: 0; }
+    #tracklist-full .tl-artist { font-size: 11px; color: #9ca3af; white-space: nowrap; }
+
     /* Shop links */
     .shop-link { display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; border: 1.5px solid #e2e8f0; color: #64748b; transition: all .2s; cursor: pointer; }
     .shop-link:hover { border-color: #8B7355; color: #8B7355; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(139,115,85,.18); }
@@ -254,67 +273,299 @@
         </div>
       </div>
 
-      <!-- Tabs Section -->
-      <div class="mt-12">
-        <div class="border-b border-gray-200 flex overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
-          <button class="tab-btn active" onclick="switchTab('all')">ทั้งหมด</button>
-          <button class="tab-btn" onclick="switchTab('details')">รายละเอียดสินค้า</button>
-          <button class="tab-btn" onclick="switchTab('specs')">คุณสมบัติสินค้า</button>
-          <button class="tab-btn" id="tracklist-tab-btn" onclick="switchTab('tracklist')" style="display:none;">รายชื่อเพลง</button>
-        </div>
-
-        <!-- Tab: All -->
-        <div id="tab-all" class="py-8">
-          <div id="desc-section" class="mb-10">
-            <h3 class="text-lg font-bold text-gray-900 mb-4">รายละเอียดสินค้า</h3>
-            <div id="p-description" class="text-gray-600 leading-relaxed whitespace-pre-line"></div>
+      <!-- ══ PRODUCT DETAIL TABS ══ -->
+      <div class="mt-14 -mx-4 sm:mx-0">
+        <!-- Tab Header -->
+        <div class="bg-white border border-primary/15 rounded-2xl overflow-hidden shadow-sm">
+          <!-- Tab Buttons -->
+          <div class="flex overflow-x-auto border-b border-primary/15 bg-gray-50/60 scroll-smooth">
+            <button id="ptab-btn-desc" onclick="switchPTab('desc')"
+              class="ptab-btn ptab-active flex items-center gap-2 px-5 py-4 text-sm font-semibold whitespace-nowrap border-b-2 border-primary text-primary transition-all shrink-0">
+              <i class="ph ph-article text-base"></i> รายละเอียดสินค้า
+            </button>
+            <button id="ptab-btn-tracklist" onclick="switchPTab('tracklist')"
+              class="ptab-btn flex items-center gap-2 px-5 py-4 text-sm font-semibold whitespace-nowrap border-b-2 border-transparent text-gray-500 hover:text-gray-800 transition-all shrink-0">
+              <i class="ph ph-music-notes text-base"></i> <span id="ptab-tracklist-label">รายชื่อเพลง / สเปค</span>
+            </button>
+            <button id="ptab-btn-shipping" onclick="switchPTab('shipping')"
+              class="ptab-btn flex items-center gap-2 px-5 py-4 text-sm font-semibold whitespace-nowrap border-b-2 border-transparent text-gray-500 hover:text-gray-800 transition-all shrink-0">
+              <i class="ph ph-truck text-base"></i> การจัดส่งและการรับประกัน
+            </button>
           </div>
-          <div id="specs-section">
-            <h3 class="text-lg font-bold text-gray-900 mb-4">คุณสมบัติสินค้า</h3>
-            <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-              <table class="w-full">
-                <tbody id="specs-table-all"></tbody>
-              </table>
+
+          <!-- ── Tab: Description ── -->
+          <div id="ptab-desc" class="p-6 md:p-8">
+            <!-- Product Description Text -->
+            <div class="mb-8">
+              <div class="flex items-center gap-2 mb-4">
+                <span class="w-1 h-5 bg-primary rounded-full"></span>
+                <h3 class="text-base font-bold text-gray-900">คำอธิบายสินค้า</h3>
+              </div>
+              <div id="p-description" class="text-gray-600 leading-[1.9] whitespace-pre-line text-[15px]"></div>
+            </div>
+
+            <!-- Product Highlights -->
+            <div class="mb-8 p-5 bg-amber-50/60 border border-primary/20 rounded-2xl">
+              <div class="flex items-center gap-2 mb-4">
+                <i class="ph ph-star text-primary text-lg"></i>
+                <h3 class="text-base font-bold text-gray-900">จุดเด่นของสินค้า</h3>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="p-highlights">
+                <div class="flex items-start gap-3">
+                  <div class="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                    <i class="ph ph-speaker-high text-sm text-primary"></i>
+                  </div>
+                  <div>
+                    <p class="text-sm font-semibold text-gray-800">เสียงใสระดับ HD</p>
+                    <p class="text-xs text-gray-500 mt-0.5">MP3 320kbps ทุกเพลง คุณภาพสูง</p>
+                  </div>
+                </div>
+                <div class="flex items-start gap-3">
+                  <div class="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                    <i class="ph ph-plug text-sm text-primary"></i>
+                  </div>
+                  <div>
+                    <p class="text-sm font-semibold text-gray-800">เสียบแล้วฟังได้เลย</p>
+                    <p class="text-xs text-gray-500 mt-0.5">ไม่ต้องลงโปรแกรมเพิ่มเติม</p>
+                  </div>
+                </div>
+                <div class="flex items-start gap-3">
+                  <div class="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                    <i class="ph ph-car text-sm text-primary"></i>
+                  </div>
+                  <div>
+                    <p class="text-sm font-semibold text-gray-800">ใช้ได้กับรถยนต์ทุกรุ่น</p>
+                    <p class="text-xs text-gray-500 mt-0.5">ระบบเสียงรถ, ลำโพงพกพา, คอมพิวเตอร์</p>
+                  </div>
+                </div>
+                <div class="flex items-start gap-3">
+                  <div class="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                    <i class="ph ph-music-note text-sm text-primary"></i>
+                  </div>
+                  <div>
+                    <p class="text-sm font-semibold text-gray-800">คัดสรรเพลงคุณภาพ</p>
+                    <p class="text-xs text-gray-500 mt-0.5">ครบทุกแนว ลูกทุ่ง หมอลำ สตริง สากล</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Specs Table inside description tab -->
+            <div id="specs-section">
+              <div class="flex items-center gap-2 mb-4">
+                <span class="w-1 h-5 bg-primary rounded-full"></span>
+                <h3 class="text-base font-bold text-gray-900">คุณสมบัติสินค้า</h3>
+              </div>
+              <div class="rounded-xl border border-primary/15 overflow-hidden">
+                <table class="w-full text-sm">
+                  <tbody id="specs-table-all"></tbody>
+                </table>
+              </div>
             </div>
           </div>
-          <!-- Tracklist in All tab -->
-          <div id="tracklist-section-all" class="mt-10 hidden">
-            <h3 class="text-lg font-bold text-gray-900 mb-4"><i class="ph ph-music-note mr-1"></i> รายชื่อเพลง</h3>
-            <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-              <div id="tracklist-all" class="divide-y divide-gray-100"></div>
+
+          <!-- ── Tab: Tracklist / Specs ── -->
+          <div id="ptab-tracklist" class="hidden">
+            <!-- Specs summary row -->
+            <div class="px-6 md:px-8 pt-6 pb-4 grid grid-cols-2 sm:grid-cols-3 gap-3 border-b border-primary/10" id="specs-summary-row">
+              <div class="flex items-center gap-2.5 p-3 bg-amber-50 rounded-xl border border-primary/15">
+                <i class="ph ph-hard-drives text-xl text-primary"></i>
+                <div>
+                  <p class="text-[10px] text-gray-400 uppercase tracking-wider">ความจุ</p>
+                  <p class="text-sm font-bold text-gray-800" id="spec-capacity">—</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2.5 p-3 bg-amber-50 rounded-xl border border-primary/15">
+                <i class="ph ph-waveform text-xl text-primary"></i>
+                <div>
+                  <p class="text-[10px] text-gray-400 uppercase tracking-wider">คุณภาพเสียง</p>
+                  <p class="text-sm font-bold text-gray-800" id="spec-quality">MP3 320kbps</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2.5 p-3 bg-amber-50 rounded-xl border border-primary/15 col-span-2 sm:col-span-1">
+                <i class="ph ph-music-notes-simple text-xl text-primary"></i>
+                <div>
+                  <p class="text-[10px] text-gray-400 uppercase tracking-wider">จำนวนเพลง</p>
+                  <p class="text-sm font-bold text-gray-800" id="spec-track-count">—</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tracklist -->
+            <div class="p-6 md:p-8" id="tracklist-section-all">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                <div>
+                  <h3 class="text-base font-bold text-gray-900"><i class="ph ph-queue text-primary mr-1.5"></i>รายชื่อเพลงทั้งหมด</h3>
+                  <p id="tracklist-count" class="text-xs text-gray-400 mt-0.5"></p>
+                </div>
+                <div class="relative">
+                  <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                  <input type="text" id="tracklist-search" placeholder="ค้นหาเพลง..."
+                    class="border border-gray-200 rounded-xl pl-9 pr-4 py-2 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition w-full sm:w-56"
+                    oninput="filterTracklist()">
+                </div>
+              </div>
+              <div class="rounded-xl border border-primary/15 overflow-hidden">
+                <div id="tracklist-full" class="divide-y divide-gray-100 max-h-[520px] overflow-y-auto"></div>
+              </div>
+              <p id="tracklist-no-result" class="hidden text-center text-gray-400 py-8 text-sm">ไม่พบเพลงที่ค้นหา</p>
+            </div>
+
+            <!-- No tracklist fallback -->
+            <div id="tracklist-empty" class="hidden px-6 md:px-8 pb-8">
+              <div class="text-center py-10 text-gray-400">
+                <i class="ph ph-music-notes text-5xl mb-3 block opacity-40"></i>
+                <p class="text-sm">ไม่มีข้อมูลรายชื่อเพลง</p>
+                <p class="text-xs mt-1">กรุณาดูรายละเอียดเพิ่มเติมในส่วนคำอธิบายสินค้า</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Tab: Shipping & Warranty ── -->
+          <div id="ptab-shipping" class="hidden p-6 md:p-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+              <!-- Warranty -->
+              <div class="p-5 border border-primary/20 rounded-2xl bg-amber-50/40">
+                <div class="flex items-center gap-3 mb-4">
+                  <div class="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center shrink-0">
+                    <i class="ph ph-shield-check text-xl text-amber-600"></i>
+                  </div>
+                  <div>
+                    <h4 class="text-sm font-bold text-gray-900">การรับประกันสินค้า</h4>
+                    <p class="text-xs text-amber-600 font-semibold">1 ปีเต็ม</p>
+                  </div>
+                </div>
+                <ul class="space-y-2.5">
+                  <li class="flex items-start gap-2 text-sm text-gray-600">
+                    <i class="ph ph-check-circle text-green-500 text-base mt-0.5 shrink-0"></i>
+                    รับประกันความเสียหายจากการผลิต ภายใน 1 ปี
+                  </li>
+                  <li class="flex items-start gap-2 text-sm text-gray-600">
+                    <i class="ph ph-check-circle text-green-500 text-base mt-0.5 shrink-0"></i>
+                    เปลี่ยนสินค้าใหม่หากพบปัญหาจากโรงงาน
+                  </li>
+                  <li class="flex items-start gap-2 text-sm text-gray-600">
+                    <i class="ph ph-check-circle text-green-500 text-base mt-0.5 shrink-0"></i>
+                    ไฟล์เพลงครบถ้วนตามที่ระบุ หรือเพิ่มให้ใหม่ฟรี
+                  </li>
+                  <li class="flex items-start gap-2 text-sm text-gray-400">
+                    <i class="ph ph-x-circle text-red-400 text-base mt-0.5 shrink-0"></i>
+                    ไม่ครอบคลุมความเสียหายจากการใช้งานผิดวิธี
+                  </li>
+                </ul>
+                <a href="warranty.html" class="mt-4 inline-flex items-center gap-1 text-xs text-primary font-semibold hover:underline">
+                  อ่านเงื่อนไขการรับประกันเพิ่มเติม <i class="ph ph-arrow-right"></i>
+                </a>
+              </div>
+
+              <!-- Returns -->
+              <div class="p-5 border border-primary/20 rounded-2xl bg-blue-50/40">
+                <div class="flex items-center gap-3 mb-4">
+                  <div class="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center shrink-0">
+                    <i class="ph ph-arrow-counter-clockwise text-xl text-blue-600"></i>
+                  </div>
+                  <div>
+                    <h4 class="text-sm font-bold text-gray-900">การคืนและเปลี่ยนสินค้า</h4>
+                    <p class="text-xs text-blue-600 font-semibold">ภายใน 7 วัน</p>
+                  </div>
+                </div>
+                <ul class="space-y-2.5">
+                  <li class="flex items-start gap-2 text-sm text-gray-600">
+                    <i class="ph ph-check-circle text-green-500 text-base mt-0.5 shrink-0"></i>
+                    เปลี่ยน/คืนสินค้าได้ภายใน 7 วันนับจากวันที่ได้รับ
+                  </li>
+                  <li class="flex items-start gap-2 text-sm text-gray-600">
+                    <i class="ph ph-check-circle text-green-500 text-base mt-0.5 shrink-0"></i>
+                    สินค้าต้องอยู่ในสภาพใหม่ ไม่มีรอยขีดข่วน
+                  </li>
+                  <li class="flex items-start gap-2 text-sm text-gray-600">
+                    <i class="ph ph-check-circle text-green-500 text-base mt-0.5 shrink-0"></i>
+                    แจ้งขอคืนผ่าน LINE หรืออีเมลของทางร้าน
+                  </li>
+                  <li class="flex items-start gap-2 text-sm text-gray-400">
+                    <i class="ph ph-x-circle text-red-400 text-base mt-0.5 shrink-0"></i>
+                    ไม่รับคืนกรณีสินค้าถูกดัดแปลงหรือลบข้อมูล
+                  </li>
+                </ul>
+                <a href="returns.html" class="mt-4 inline-flex items-center gap-1 text-xs text-primary font-semibold hover:underline">
+                  อ่านนโยบายการคืนสินค้าเพิ่มเติม <i class="ph ph-arrow-right"></i>
+                </a>
+              </div>
+
+              <!-- Shipping -->
+              <div class="p-5 border border-primary/20 rounded-2xl bg-green-50/40">
+                <div class="flex items-center gap-3 mb-4">
+                  <div class="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center shrink-0">
+                    <i class="ph ph-truck text-xl text-green-600"></i>
+                  </div>
+                  <div>
+                    <h4 class="text-sm font-bold text-gray-900">การจัดส่งสินค้า</h4>
+                    <p class="text-xs text-green-600 font-semibold">ส่งด่วนภายใน 24 ชม.</p>
+                  </div>
+                </div>
+                <ul class="space-y-2.5">
+                  <li class="flex items-start gap-2 text-sm text-gray-600">
+                    <i class="ph ph-check-circle text-green-500 text-base mt-0.5 shrink-0"></i>
+                    จัดส่งด่วนผ่าน Kerry / Flash / J&T Express
+                  </li>
+                  <li class="flex items-start gap-2 text-sm text-gray-600">
+                    <i class="ph ph-check-circle text-green-500 text-base mt-0.5 shrink-0"></i>
+                    จัดส่งฟรี เมื่อสั่งซื้อครบ 150 บาทขึ้นไป
+                  </li>
+                  <li class="flex items-start gap-2 text-sm text-gray-600">
+                    <i class="ph ph-check-circle text-green-500 text-base mt-0.5 shrink-0"></i>
+                    แพ็กสินค้าอย่างดี ป้องกันความเสียหายระหว่างขนส่ง
+                  </li>
+                  <li class="flex items-start gap-2 text-sm text-gray-600">
+                    <i class="ph ph-check-circle text-green-500 text-base mt-0.5 shrink-0"></i>
+                    มีเลขพัสดุให้ติดตามทุกออเดอร์
+                  </li>
+                </ul>
+              </div>
+
+              <!-- Payment -->
+              <div class="p-5 border border-primary/20 rounded-2xl bg-purple-50/40">
+                <div class="flex items-center gap-3 mb-4">
+                  <div class="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center shrink-0">
+                    <i class="ph ph-lock-key text-xl text-purple-600"></i>
+                  </div>
+                  <div>
+                    <h4 class="text-sm font-bold text-gray-900">การชำระเงิน</h4>
+                    <p class="text-xs text-purple-600 font-semibold">ปลอดภัย 100%</p>
+                  </div>
+                </div>
+                <ul class="space-y-2.5">
+                  <li class="flex items-start gap-2 text-sm text-gray-600">
+                    <i class="ph ph-check-circle text-green-500 text-base mt-0.5 shrink-0"></i>
+                    ชำระผ่าน Omise — ระบบรักษาความปลอดภัยระดับสากล
+                  </li>
+                  <li class="flex items-start gap-2 text-sm text-gray-600">
+                    <i class="ph ph-check-circle text-green-500 text-base mt-0.5 shrink-0"></i>
+                    รองรับบัตรเครดิต/เดบิต, พร้อมเพย์, QR Code
+                  </li>
+                  <li class="flex items-start gap-2 text-sm text-gray-600">
+                    <i class="ph ph-check-circle text-green-500 text-base mt-0.5 shrink-0"></i>
+                    ข้อมูลการชำระเงินถูกเข้ารหัสทุกครั้ง
+                  </li>
+                  <li class="flex items-start gap-2 text-sm text-gray-600">
+                    <i class="ph ph-check-circle text-green-500 text-base mt-0.5 shrink-0"></i>
+                    ไม่เก็บข้อมูลบัตรของลูกค้า
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- Tab: Details -->
-        <div id="tab-details" class="py-8 hidden">
-          <div id="p-description-2" class="text-gray-600 leading-relaxed whitespace-pre-line"></div>
-        </div>
-
-        <!-- Tab: Specs -->
-        <div id="tab-specs" class="py-8 hidden">
-          <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-            <table class="w-full">
-              <tbody id="specs-table"></tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Tab: Tracklist -->
-        <div id="tab-tracklist" class="py-8 hidden">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-bold text-gray-900"><i class="ph ph-music-note mr-1"></i> รายชื่อเพลงทั้งหมด</h3>
-            <div class="relative">
-              <input type="text" id="tracklist-search" placeholder="ค้นหาเพลง..." class="border border-gray-200 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary transition w-48 sm:w-64" oninput="filterTracklist()">
-              <i class="ph ph-magnifying-glass absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-            </div>
-          </div>
-          <p id="tracklist-count" class="text-sm text-gray-500 mb-3"></p>
-          <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-            <div id="tracklist-full" class="divide-y divide-gray-100 max-h-[600px] overflow-y-auto"></div>
-          </div>
-          <p id="tracklist-no-result" class="hidden text-center text-gray-400 py-8">ไม่พบเพลงที่ค้นหา</p>
-        </div>
+      <!-- legacy hidden elements kept for JS compatibility -->
+      <div class="hidden">
+        <div id="tab-all"></div>
+        <div id="tab-details"><div id="p-description-2"></div></div>
+        <div id="tab-specs"><table><tbody id="specs-table"></tbody></table></div>
+        <div id="tab-tracklist"></div>
+        <button id="tracklist-tab-btn"></button>
       </div>
 
       <!-- Related Products -->
@@ -561,38 +812,49 @@
   // ── Tracklist ────────────────────────────────────────────────────────────────
   function renderTracklist() {
     const tracklist = product.tracklist;
-    if (!tracklist || !Array.isArray(tracklist) || tracklist.length === 0) return;
+    const hasTracklist = tracklist && Array.isArray(tracklist) && tracklist.length > 0;
 
-    // Show tab
-    document.getElementById('tracklist-tab-btn').style.display = '';
+    // Update tab label
+    const labelEl = document.getElementById('ptab-tracklist-label');
+    if (labelEl) labelEl.textContent = hasTracklist ? `รายชื่อเพลง (${tracklist.length})` : 'รายชื่อเพลง / สเปค';
 
-    // Render in "all" tab
-    const allSection = document.getElementById('tracklist-section-all');
-    allSection.classList.remove('hidden');
-    document.getElementById('tracklist-all').innerHTML = tracklist.slice(0, 10).map((t, i) =>
-      `<div class="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors">
-        <span class="text-xs font-bold text-gray-400 w-8">${i + 1}.</span>
-        <i class="ph ph-music-note text-primary text-sm"></i>
-        <span class="text-sm text-gray-700">${escHtml(typeof t === 'string' ? t : t.name || '')}</span>
-      </div>`
-    ).join('') + (tracklist.length > 10 ? `<div class="px-4 py-3 text-center"><button onclick="switchTab('tracklist')" class="text-primary font-semibold text-sm hover:underline">ดูเพลงทั้งหมด ${tracklist.length} เพลง →</button></div>` : '');
+    // Populate specs summary cards
+    populateSpecsSummary();
 
-    // Render full list
-    document.getElementById('tracklist-count').textContent = `ทั้งหมด ${tracklist.length} เพลง`;
-    renderTracklistFull(tracklist);
+    if (hasTracklist) {
+      // Show tracklist section, hide empty state
+      const section = document.getElementById('tracklist-section-all');
+      const emptyEl = document.getElementById('tracklist-empty');
+      if (section) section.classList.remove('hidden');
+      if (emptyEl) emptyEl.classList.add('hidden');
+
+      const countEl = document.getElementById('tracklist-count');
+      if (countEl) countEl.textContent = `ทั้งหมด ${tracklist.length} เพลง`;
+
+      renderTracklistFull(tracklist);
+    } else {
+      const section = document.getElementById('tracklist-section-all');
+      const emptyEl = document.getElementById('tracklist-empty');
+      if (section) section.classList.add('hidden');
+      if (emptyEl) emptyEl.classList.remove('hidden');
+    }
   }
 
   function renderTracklistFull(list) {
-    document.getElementById('tracklist-full').innerHTML = list.map((t, i) => {
+    const el = document.getElementById('tracklist-full');
+    if (!el) return;
+    el.innerHTML = list.map((t, i) => {
       const name = escHtml(typeof t === 'string' ? t : t.name || '');
       const artist = typeof t === 'object' && t.artist ? escHtml(t.artist) : '';
-      return `<div class="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors tracklist-item">
-        <span class="text-xs font-bold text-gray-400 w-6 shrink-0">${i + 1}.</span>
-        <i class="ph ph-music-note text-primary text-sm shrink-0"></i>
-        <span class="text-sm text-gray-700 track-name flex-1 min-w-0 truncate">${name}${artist ? `<span class="text-xs text-gray-400 ml-2">${artist}</span>` : ''}</span>
+      return `<div class="tl-row tracklist-item">
+        <span class="tl-num">${i + 1}.</span>
+        <i class="ph ph-music-note text-primary/60 text-sm shrink-0"></i>
+        <span class="tl-name track-name">${name}</span>
+        ${artist ? `<span class="tl-artist">${artist}</span>` : ''}
       </div>`;
     }).join('');
-    document.getElementById('tracklist-no-result').classList.add('hidden');
+    const noResult = document.getElementById('tracklist-no-result');
+    if (noResult) noResult.classList.add('hidden');
   }
 
   function filterTracklist() {
@@ -896,13 +1158,30 @@
     document.getElementById('specs-table').innerHTML = rows;
   }
 
-  // ── Tabs ──────────────────────────────────────────────────────────────────────
+  // ── Legacy Tabs (kept for backward-compat, no longer visible) ──────────────
   function switchTab(tab) {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('[id^="tab-"]').forEach(el => el.classList.add('hidden'));
-    document.getElementById('tab-' + tab).classList.remove('hidden');
-    event.currentTarget.classList.add('active');
+    // no-op — UI now uses switchPTab
   }
+
+  // ── Product Detail Tabs ──────────────────────────────────────────────────────
+  function switchPTab(tab) {
+    // Buttons
+    document.querySelectorAll('.ptab-btn').forEach(b => {
+      b.classList.remove('ptab-active', 'text-primary', 'border-primary');
+      b.classList.add('text-gray-500', 'border-transparent');
+    });
+    const activeBtn = document.getElementById('ptab-btn-' + tab);
+    if (activeBtn) {
+      activeBtn.classList.add('ptab-active', 'text-primary', 'border-primary');
+      activeBtn.classList.remove('text-gray-500', 'border-transparent');
+    }
+    // Panels
+    ['desc', 'tracklist', 'shipping'].forEach(t => {
+      const el = document.getElementById('ptab-' + t);
+      if (el) el.classList.toggle('hidden', t !== tab);
+    });
+  }
+
 
   // ── Quantity ─────────────────────────────────────────────────────────────────
   function changeQty(delta) {
