@@ -11,6 +11,7 @@ import productRoutes from './routes/product';
 import userRoutes from './routes/user';
 import menuRoutes from './routes/menu';
 import imageRoutes from './routes/images';
+import fulfillmentRoutes from './routes/fulfillment';
 
 dotenv.config();
 
@@ -57,6 +58,7 @@ app.use('/api/products', productRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/menus', menuRoutes);
 app.use('/api/images', imageRoutes);
+app.use('/api/fulfillment', fulfillmentRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });

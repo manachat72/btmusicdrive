@@ -470,6 +470,10 @@
         <i class="fa-solid fa-bars"></i><span>เมนู</span>
       </div>
 
+      <div class="sb-section-lbl" style="margin-top:6px;">Flash Fulfillment</div>
+      <div class="sb-item" id="nav-fulfillment" onclick="showSection('fulfillment')">
+        <i class="fa-solid fa-warehouse"></i><span>แจ้งของเข้าคลัง</span>
+      </div>
       <div class="sb-sep"></div>
       <div class="sb-item" id="nav-settings" onclick="showSection('settings')">
         <i class="fa-solid fa-gear"></i><span>ตั้งค่า</span>
@@ -936,6 +940,81 @@
       </div>
     </section>
 
+    <!-- ── FLASH FULFILLMENT — INBOUND ───────────────────────────────────── -->
+    <section id="section-fulfillment" style="display:none;">
+      <div class="wp-page-hdr">
+        <h1 class="wp-page-title">Flash Fulfillment — แจ้งของเข้าคลัง</h1>
+      </div>
+
+      <!-- Create Arrival Notice -->
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-hdr" style="display:flex;align-items:center;justify-content:space-between;">
+          <span><i class="fa-solid fa-truck-ramp-box" style="color:var(--accent);margin-right:6px;"></i>สร้าง Arrival Notice</span>
+        </div>
+        <div style="padding:20px;">
+          <p style="color:var(--muted);font-size:12px;margin-bottom:16px;">เลือกสินค้าและจำนวนที่ต้องการส่งเข้าโกดัง Flash Fulfillment</p>
+
+          <!-- Items Table -->
+          <table style="width:100%;border-collapse:collapse;margin-bottom:12px;" id="inbound-items-table">
+            <thead>
+              <tr style="background:#f6f7f7;font-size:12px;color:var(--muted);">
+                <th style="padding:8px 10px;text-align:left;border:1px solid var(--card-border);">สินค้า</th>
+                <th style="padding:8px 10px;text-align:center;width:100px;border:1px solid var(--card-border);">จำนวน</th>
+                <th style="padding:8px 10px;text-align:center;width:60px;border:1px solid var(--card-border);"></th>
+              </tr>
+            </thead>
+            <tbody id="inbound-items-body">
+              <!-- rows added by JS -->
+            </tbody>
+          </table>
+
+          <button onclick="addInboundRow()" style="font-size:12px;padding:6px 14px;border:1px dashed var(--card-border);border-radius:4px;background:transparent;cursor:pointer;color:var(--muted);margin-bottom:16px;">
+            <i class="fa-solid fa-plus"></i> เพิ่มสินค้า
+          </button>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+            <div>
+              <label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px;">ประเภท</label>
+              <select id="inbound-type" style="width:100%;padding:7px 10px;border:1px solid var(--card-border);border-radius:4px;font-size:13px;">
+                <option value="1">1 — จัดซื้อ (Purchase)</option>
+                <option value="3">3 — คืนสินค้า (Return)</option>
+                <option value="4">4 — อื่นๆ (Other)</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px;">หมายเหตุ</label>
+              <input type="text" id="inbound-remark" placeholder="หมายเหตุ (ถ้ามี)" style="width:100%;padding:7px 10px;border:1px solid var(--card-border);border-radius:4px;font-size:13px;">
+            </div>
+          </div>
+
+          <div id="inbound-msg" style="display:none;padding:10px 14px;border-radius:4px;font-size:12px;margin-bottom:12px;"></div>
+
+          <button onclick="submitInbound()" id="inbound-submit-btn"
+            style="background:var(--accent);color:#fff;border:none;border-radius:4px;padding:9px 20px;font-size:13px;font-weight:600;cursor:pointer;">
+            <i class="fa-solid fa-paper-plane"></i> แจ้งของเข้าคลัง
+          </button>
+        </div>
+      </div>
+
+      <!-- Check Inbound Status -->
+      <div class="card">
+        <div class="card-hdr">
+          <i class="fa-solid fa-magnifying-glass" style="color:var(--accent);margin-right:6px;"></i>ตรวจสอบสถานะ Inbound
+        </div>
+        <div style="padding:20px;">
+          <div style="display:flex;gap:8px;margin-bottom:16px;">
+            <input type="text" id="inbound-sn-input" placeholder="กรอก Inbound SN เช่น AN2001018888"
+              style="flex:1;padding:7px 10px;border:1px solid var(--card-border);border-radius:4px;font-size:13px;">
+            <button onclick="checkInboundStatus()"
+              style="background:var(--accent);color:#fff;border:none;border-radius:4px;padding:7px 18px;font-size:13px;font-weight:600;cursor:pointer;">
+              ตรวจสอบ
+            </button>
+          </div>
+          <div id="inbound-status-result" style="display:none;"></div>
+        </div>
+      </div>
+    </section>
+
   </main>
 </div><!-- end #dashboard -->
 
@@ -1222,10 +1301,11 @@
     { name: 'TikTok Shop',  icon: 'fa-music',         color: '#2d2d2d', orders: 187, revenue: 26314, share: 14.4 },
   ];
 
-  const SECTIONS = ['dashboard', 'orders', 'products', 'customers', 'categories', 'menus', 'settings'];
+  const SECTIONS = ['dashboard', 'orders', 'products', 'customers', 'categories', 'menus', 'fulfillment', 'settings'];
   const SECTION_TITLES = {
     dashboard: 'แดชบอร์ด', orders: 'คำสั่งซื้อ', products: 'สินค้า',
-    customers: 'ลูกค้า', categories: 'หมวดหมู่', menus: 'เมนู', settings: 'ตั้งค่า'
+    customers: 'ลูกค้า', categories: 'หมวดหมู่', menus: 'เมนู',
+    fulfillment: 'Flash Fulfillment', settings: 'ตั้งค่า'
   };
 
   // ── Gate ──────────────────────────────────────────────────────────────────
@@ -1287,6 +1367,7 @@
     if (id === 'customers') loadCustomers();
     if (id === 'categories') loadCategories();
     if (id === 'menus') loadMenus();
+    if (id === 'fulfillment') initFulfillment();
   }
 
   // ── Init ──────────────────────────────────────────────────────────────────
@@ -2673,6 +2754,160 @@
     status.textContent = `อัปโหลดสำเร็จ ${ok} ไฟล์${fail ? ` (ล้มเหลว ${fail} ไฟล์)` : ''}`;
     document.getElementById('img-picker-file-input').value = '';
     await fetchPickerImages();
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // FLASH FULFILLMENT — INBOUND
+  // ══════════════════════════════════════════════════════════════════════════
+
+  let _inboundProducts = [];
+
+  async function initFulfillment() {
+    if (_inboundProducts.length) return;
+    try {
+      const res = await fetch(`${API_BASE}/products?limit=200`, {
+        headers: adminHeaders(false)
+      });
+      const data = await res.json();
+      _inboundProducts = (data.data || []).filter(p => p.sku);
+    } catch (e) {
+      console.error('Failed to load products for inbound:', e);
+    }
+    // เพิ่ม row แรกอัตโนมัติ
+    if (document.getElementById('inbound-items-body').children.length === 0) {
+      addInboundRow();
+    }
+  }
+
+  function addInboundRow() {
+    const tbody = document.getElementById('inbound-items-body');
+    const idx = tbody.children.length;
+    const options = _inboundProducts.map(p =>
+      `<option value="${p.id}" data-sku="${p.sku}">${p.name} (${p.sku})</option>`
+    ).join('');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="padding:6px 8px;border:1px solid var(--card-border);">
+        <select class="inbound-product-select" data-idx="${idx}"
+          style="width:100%;padding:5px 8px;border:1px solid var(--card-border);border-radius:4px;font-size:12px;">
+          <option value="">— เลือกสินค้า —</option>
+          ${options}
+        </select>
+      </td>
+      <td style="padding:6px 8px;border:1px solid var(--card-border);text-align:center;">
+        <input type="number" class="inbound-qty-input" min="1" value="10"
+          style="width:70px;padding:5px 8px;border:1px solid var(--card-border);border-radius:4px;font-size:12px;text-align:center;">
+      </td>
+      <td style="padding:6px 8px;border:1px solid var(--card-border);text-align:center;">
+        <button onclick="this.closest('tr').remove()"
+          style="background:none;border:none;color:#d63638;cursor:pointer;font-size:14px;" title="ลบ">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </td>`;
+    tbody.appendChild(tr);
+  }
+
+  async function submitInbound() {
+    const btn = document.getElementById('inbound-submit-btn');
+    const msg = document.getElementById('inbound-msg');
+    msg.style.display = 'none';
+
+    const rows = document.querySelectorAll('#inbound-items-body tr');
+    const items = [];
+    for (const row of rows) {
+      const productId = row.querySelector('.inbound-product-select').value;
+      const quantity = parseInt(row.querySelector('.inbound-qty-input').value) || 0;
+      if (!productId) { showInboundMsg('error', 'กรุณาเลือกสินค้าทุกแถว'); return; }
+      if (quantity < 1) { showInboundMsg('error', 'จำนวนต้องมากกว่า 0'); return; }
+      items.push({ productId, quantity });
+    }
+    if (!items.length) { showInboundMsg('error', 'กรุณาเพิ่มสินค้าอย่างน้อย 1 รายการ'); return; }
+
+    const type = parseInt(document.getElementById('inbound-type').value);
+    const remark = document.getElementById('inbound-remark').value.trim();
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังส่ง...';
+
+    try {
+      const res = await fetch(`${API_BASE}/fulfillment/inbound`, {
+        method: 'POST',
+        headers: adminHeaders(),
+        body: JSON.stringify({ items, type, remark })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        showInboundMsg('success',
+          `สร้าง Arrival Notice สำเร็จ! <strong>Inbound SN: ${data.inboundSn || '-'}</strong><br>` +
+          `Order SN: ${data.orderSn} | สินค้า ${data.items?.length || items.length} รายการ`);
+        document.getElementById('inbound-items-body').innerHTML = '';
+        document.getElementById('inbound-remark').value = '';
+        addInboundRow();
+      } else {
+        showInboundMsg('error', data.error || data.message || 'เกิดข้อผิดพลาด');
+      }
+    } catch (e) {
+      showInboundMsg('error', 'ไม่สามารถเชื่อมต่อได้: ' + e.message);
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> แจ้งของเข้าคลัง';
+    }
+  }
+
+  function showInboundMsg(type, html) {
+    const el = document.getElementById('inbound-msg');
+    el.style.display = 'block';
+    el.style.background = type === 'success' ? '#edfaef' : '#fef2f2';
+    el.style.border = `1px solid ${type === 'success' ? '#bbf7c8' : '#fecaca'}`;
+    el.style.color = type === 'success' ? '#166534' : '#991b1b';
+    el.innerHTML = `<i class="fa-solid fa-${type === 'success' ? 'check-circle' : 'triangle-exclamation'}"></i> ${html}`;
+  }
+
+  async function checkInboundStatus() {
+    const sn = document.getElementById('inbound-sn-input').value.trim();
+    const result = document.getElementById('inbound-status-result');
+    if (!sn) { result.style.display = 'none'; return; }
+
+    result.style.display = 'block';
+    result.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังโหลด...';
+
+    try {
+      const res = await fetch(`${API_BASE}/fulfillment/inbound/${encodeURIComponent(sn)}`, {
+        headers: adminHeaders(false)
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        result.innerHTML = `<div style="color:#d63638;font-size:12px;"><i class="fa-solid fa-triangle-exclamation"></i> ${data.error || 'ไม่พบข้อมูล'}</div>`;
+        return;
+      }
+      const statusColor = data.status === 50 ? '#166534' : data.status >= 30 ? '#92400e' : '#1e40af';
+      result.innerHTML = `
+        <div style="padding:12px;border:1px solid var(--card-border);border-radius:6px;background:#f9f9f9;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+            <span style="font-size:12px;font-weight:700;color:${statusColor};background:${statusColor}22;padding:3px 10px;border-radius:20px;">
+              ${data.statusLabel}
+            </span>
+            <span style="color:var(--muted);font-size:11px;">Inbound SN: ${sn}</span>
+          </div>
+          ${data.goods?.length ? `
+            <table style="width:100%;border-collapse:collapse;font-size:12px;">
+              <thead><tr style="background:#f0f0f1;">
+                <th style="padding:6px 8px;text-align:left;border:1px solid var(--card-border);">Barcode</th>
+                <th style="padding:6px 8px;text-align:center;border:1px solid var(--card-border);">จำนวนที่แจ้ง</th>
+                <th style="padding:6px 8px;text-align:center;border:1px solid var(--card-border);">จำนวนที่รับ</th>
+              </tr></thead>
+              <tbody>${data.goods.map(g => `
+                <tr>
+                  <td style="padding:6px 8px;border:1px solid var(--card-border);">${g.barCode || '-'}</td>
+                  <td style="padding:6px 8px;text-align:center;border:1px solid var(--card-border);">${g.num ?? '-'}</td>
+                  <td style="padding:6px 8px;text-align:center;border:1px solid var(--card-border);">${g.receivedNum ?? '-'}</td>
+                </tr>`).join('')}
+              </tbody>
+            </table>` : '<div style="color:var(--muted);font-size:12px;">ไม่มีข้อมูลสินค้า</div>'}
+        </div>`;
+    } catch (e) {
+      result.innerHTML = `<div style="color:#d63638;font-size:12px;">เกิดข้อผิดพลาด: ${e.message}</div>`;
+    }
   }
 </script>
 </body>

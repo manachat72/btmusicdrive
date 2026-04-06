@@ -437,14 +437,15 @@ async function processCheckout(omiseToken) {
     setLoading(btnMobile, true);
     const normalizedPhone = document.getElementById('phone').value.trim().replace(/\D/g, '');
 
-    const shippingAddress = [
-        document.getElementById('address').value.trim(),
-        document.getElementById('address2').value.trim(),
-        document.getElementById('city').value.trim(),
-        document.getElementById('state').value.trim(),
-        document.getElementById('zip').value.trim(),
-        document.getElementById('country').value
-    ].filter(Boolean).join(', ');
+    const addrLine = document.getElementById('address').value.trim();
+    const provinceVal = document.getElementById('province').value.trim();
+    const districtVal = document.getElementById('district').value.trim();
+    const subdistrictVal = document.getElementById('subdistrict').value.trim();
+    const zipVal = document.getElementById('zip').value.trim();
+    const fullNameVal = document.getElementById('full-name').value.trim();
+
+    const shippingAddress = [addrLine, subdistrictVal, districtVal, provinceVal, zipVal]
+        .filter(Boolean).join(', ');
 
     try {
         const res = await fetch(`${API_BASE}/payment/create-checkout-session`, {
@@ -456,7 +457,12 @@ async function processCheckout(omiseToken) {
             body: JSON.stringify({
                 omiseToken,
                 phone: normalizedPhone,
+                fullName: fullNameVal,
                 shippingAddress,
+                province: provinceVal,
+                city: districtVal,
+                district: subdistrictVal,
+                postalCode: zipVal,
                 ...(appliedPromo ? { promoCode: appliedPromo.code } : {})
             })
         });
