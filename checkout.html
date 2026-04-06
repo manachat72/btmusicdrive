@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ชำระเงิน - btmusicdrive</title>
+    <title>ชำระเงิน — Bt music drive</title>
+    <meta name="description" content="ชำระเงินสั่งซื้อแฟลชไดร์ฟเพลง MP3 — Bt music drive">
+    <meta name="robots" content="noindex, nofollow">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Omise -->
@@ -125,39 +127,58 @@
                     </div>
                     <div class="space-y-4">
                         <div>
-                            <label class="label">ชื่อ - นามสกุล</label>
-                            <input type="text" id="full-name" class="input-field" placeholder="ชื่อ - นามสกุล">
+                            <label for="full-name" class="label">ชื่อ - นามสกุล <span class="text-red-500" aria-hidden="true">*</span></label>
+                            <input type="text" id="full-name" name="full-name" autocomplete="name"
+                                class="input-field" placeholder="ชื่อ - นามสกุล"
+                                required aria-required="true">
                         </div>
                         <div>
-                            <label for="phone" class="label">เบอร์โทรศัพท์</label>
-                            <input type="tel" id="phone" class="input-field" placeholder="09x-xxx-xxxx"> 
+                            <label for="phone" class="label">เบอร์โทรศัพท์ <span class="text-red-500" aria-hidden="true">*</span></label>
+                            <input type="tel" id="phone" name="phone" autocomplete="tel"
+                                class="input-field" placeholder="09x-xxx-xxxx"
+                                required aria-required="true" pattern="[0-9\-]{9,10}">
                         </div>
                         <div>
-                            <label class="label">ที่อยู่</label>
-                            <input type="text" id="address" class="input-field" placeholder="บ้านเลขที่ หมู่ ถนน ซอย">
+                            <label for="address" class="label">ที่อยู่ <span class="text-red-500" aria-hidden="true">*</span></label>
+                            <input type="text" id="address" name="address" autocomplete="street-address"
+                                class="input-field" placeholder="บ้านเลขที่ หมู่ ถนน ซอย"
+                                required aria-required="true">
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label class="label flex items-center gap-1">รหัสไปรษณีย์ <span class="text-gray-400 cursor-help" title="กรอกรหัสไปรษณีย์ 5 หลัก"><i class="ph ph-question text-sm border border-gray-300 rounded-full w-4 h-4 flex items-center justify-center"></i></span></label>
-                                <input type="text" id="zip" class="input-field" placeholder="รหัสไปรษณีย์" maxlength="5" oninput="onZipChange(this.value)">
+                                <label for="zip" class="label flex items-center gap-1">
+                                    รหัสไปรษณีย์ <span class="text-red-500" aria-hidden="true">*</span>
+                                    <span class="text-gray-400 cursor-help" title="กรอกรหัสไปรษณีย์ 5 หลัก" aria-label="กรอกรหัสไปรษณีย์ 5 หลัก">
+                                        <i class="ph ph-question text-sm border border-gray-300 rounded-full w-4 h-4 flex items-center justify-center" aria-hidden="true"></i>
+                                    </span>
+                                </label>
+                                <input type="text" id="zip" name="postal-code" autocomplete="postal-code"
+                                    class="input-field" placeholder="รหัสไปรษณีย์" maxlength="5"
+                                    required aria-required="true" inputmode="numeric"
+                                    pattern="[0-9]{5}" aria-describedby="zip-hint"
+                                    oninput="onZipChange(this.value)">
+                                <p id="zip-hint" class="text-xs text-gray-400 mt-1">ตัวเลข 5 หลัก เช่น 10110</p>
                             </div>
                             <div>
-                                <label class="label">จังหวัด</label>
-                                <select id="province" class="input-field">
+                                <label for="province" class="label">จังหวัด <span class="text-red-500" aria-hidden="true">*</span></label>
+                                <select id="province" name="province" autocomplete="address-level1"
+                                    class="input-field" required aria-required="true">
                                     <option value="">เลือกจังหวัด</option>
                                 </select>
                             </div>
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label class="label">อำเภอ / เขต</label>
-                                <select id="district" class="input-field" disabled>
+                                <label for="district" class="label">อำเภอ / เขต</label>
+                                <select id="district" name="district" autocomplete="address-level2"
+                                    class="input-field" disabled aria-disabled="true">
                                     <option value="">เลือกอำเภอ / เขต</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="label">ตำบล / แขวง</label>
-                                <select id="subdistrict" class="input-field" disabled>
+                                <label for="subdistrict" class="label">ตำบล / แขวง</label>
+                                <select id="subdistrict" name="subdistrict" autocomplete="address-level3"
+                                    class="input-field" disabled aria-disabled="true">
                                     <option value="">เลือกตำบล / แขวง</option>
                                 </select>
                             </div>
@@ -213,21 +234,37 @@
                             <div class="p-4 pt-0 border-t border-amber-100 mt-2" id="inline-card-form">
                                 <div class="space-y-4 pt-4">
                                     <div>
-                                        <label class="block text-sm text-gray-500 mb-1">หมายเลขบัตร</label>
-                                        <input type="text" id="cc-number" class="input-field text-sm" placeholder="0000 0000 0000 0000" maxlength="19" oninput="formatCardNumber(this)">
+                                        <label for="cc-number" class="block text-sm font-medium text-gray-700 mb-1">หมายเลขบัตร</label>
+                                        <input type="text" id="cc-number" name="cc-number" autocomplete="cc-number"
+                                            class="input-field text-sm" placeholder="0000 0000 0000 0000"
+                                            maxlength="19" inputmode="numeric"
+                                            aria-label="หมายเลขบัตรเครดิต/เดบิต 16 หลัก"
+                                            oninput="formatCardNumber(this)">
                                     </div>
                                     <div>
-                                        <label class="block text-sm text-gray-500 mb-1">ชื่อบนบัตร</label>
-                                        <input type="text" id="cc-name" class="input-field text-sm" placeholder="ชื่อ-นามสกุล">
+                                        <label for="cc-name" class="block text-sm font-medium text-gray-700 mb-1">ชื่อบนบัตร</label>
+                                        <input type="text" id="cc-name" name="cc-name" autocomplete="cc-name"
+                                            class="input-field text-sm" placeholder="ชื่อ-นามสกุล"
+                                            aria-label="ชื่อที่ปรากฏบนบัตร">
                                     </div>
                                     <div class="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label class="block text-sm text-gray-500 mb-1">วันหมดอายุ</label>
-                                            <input type="text" id="cc-expiry" class="input-field text-sm" placeholder="MM/YY" maxlength="5" oninput="formatExpiry(this)">
+                                            <label for="cc-expiry" class="block text-sm font-medium text-gray-700 mb-1">วันหมดอายุ</label>
+                                            <input type="text" id="cc-expiry" name="cc-expiry" autocomplete="cc-exp"
+                                                class="input-field text-sm" placeholder="MM/YY" maxlength="5"
+                                                inputmode="numeric" aria-label="วันหมดอายุบัตร รูปแบบ เดือน/ปี"
+                                                oninput="formatExpiry(this)">
                                         </div>
                                         <div>
-                                            <label class="block text-sm text-gray-500 mb-1">รหัสความปลอดภัย</label>
-                                            <input type="password" id="cc-cvv" class="input-field text-sm" placeholder="123" maxlength="4">
+                                            <label for="cc-cvv" class="block text-sm font-medium text-gray-700 mb-1">
+                                                รหัสความปลอดภัย
+                                                <span class="text-gray-400 cursor-help" title="3-4 หลักด้านหลังบัตร" aria-label="CVV คือรหัส 3-4 หลักด้านหลังบัตร">
+                                                    <i class="ph ph-question text-xs border border-gray-300 rounded-full px-0.5" aria-hidden="true"></i>
+                                                </span>
+                                            </label>
+                                            <input type="password" id="cc-cvv" name="cc-cvv" autocomplete="cc-csc"
+                                                class="input-field text-sm" placeholder="123" maxlength="4"
+                                                inputmode="numeric" aria-label="รหัส CVV 3-4 หลักด้านหลังบัตร">
                                         </div>
                                     </div>
                                 </div>
@@ -269,9 +306,9 @@
                     </div>
 
                     <!-- Security Note -->
-                    <div class="mt-4 flex items-center gap-2 text-xs text-gray-400 pt-4 border-t border-gray-100">
-                        <i class="ph ph-shield-check text-green-500 text-base"></i>
-                        ข้อมูลการชำระเงินของคุณถูกเข้ารหัสและปลอดภัยผ่านระบบของ Omise เราไม่เก็บข้อมูลบัตรของคุณ
+                    <div class="mt-4 flex items-center gap-2 text-xs text-gray-600 pt-4 border-t border-gray-100" role="note">
+                        <i class="ph ph-shield-check text-green-600 text-base flex-shrink-0" aria-hidden="true"></i>
+                        <span>ข้อมูลการชำระเงินถูกเข้ารหัสและปลอดภัยผ่านระบบ <strong>Omise</strong> — เราไม่เก็บข้อมูลบัตรของคุณ</span>
                     </div>
                 </div>
 
@@ -295,9 +332,11 @@
 
                 <!-- Place Order Button (mobile only) -->
                 <div class="lg:hidden">
-                    <button id="place-order-btn-mobile" onclick="placeOrder()" class="w-full bg-secondary hover:bg-slate-800 text-white font-bold py-4 px-6 rounded-xl transition-colors text-base flex items-center justify-center gap-2 shadow-lg">
-                        <i class="ph ph-lock-key"></i>
-                        สั่งซื้อ
+                    <button id="place-order-btn-mobile" onclick="placeOrder()"
+                        aria-label="ยืนยันและสั่งซื้อสินค้า"
+                        class="w-full bg-secondary hover:bg-slate-800 text-white font-bold py-4 px-6 rounded-xl transition-colors text-base flex items-center justify-center gap-2 shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+                        <i class="ph ph-lock-key" aria-hidden="true"></i>
+                        ยืนยันและสั่งซื้อ
                     </button>
                 </div>
 
@@ -351,12 +390,16 @@
                         <!-- Promo Code -->
                         <div class="mt-4 space-y-2">
                             <div class="flex gap-2">
-                                <input type="text" id="promo-input"
+                                <label for="promo-input" class="sr-only">รหัสส่วนลด</label>
+                                <input type="text" id="promo-input" name="promo-code"
                                     class="input-field flex-1 uppercase tracking-wider font-mono"
                                     placeholder="รหัสส่วนลด"
+                                    aria-label="กรอกรหัสส่วนลด"
+                                    autocomplete="off" spellcheck="false"
                                     onkeydown="if(event.key==='Enter') applyPromo()">
                                 <button onclick="applyPromo()"
-                                    class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:border-primary hover:text-primary transition-colors whitespace-nowrap">
+                                    aria-label="ใช้รหัสส่วนลด"
+                                    class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:border-primary hover:text-primary transition-colors whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1">
                                     ใช้โค้ด
                                 </button>
                             </div>
@@ -384,9 +427,11 @@
                         </div>
 
                         <!-- Place Order Button (desktop) -->
-                        <button id="place-order-btn" onclick="placeOrder()" class="hidden lg:flex w-full mt-5 bg-secondary hover:bg-slate-800 text-white font-bold py-4 px-6 rounded-xl transition-colors text-base items-center justify-center gap-2 shadow-lg shadow-slate-200">
-                            <i class="ph ph-lock-key"></i>
-                            สั่งซื้อ
+                        <button id="place-order-btn" onclick="placeOrder()"
+                            aria-label="ยืนยันและสั่งซื้อสินค้า"
+                            class="hidden lg:flex w-full mt-5 bg-secondary hover:bg-slate-800 text-white font-bold py-4 px-6 rounded-xl transition-colors text-base items-center justify-center gap-2 shadow-lg shadow-slate-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+                            <i class="ph ph-lock-key" aria-hidden="true"></i>
+                            ยืนยันและสั่งซื้อ
                         </button>
 
                         <!-- Error Message -->

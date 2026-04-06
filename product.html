@@ -3,7 +3,31 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>สินค้า — btmusicdrive</title>
+
+  <!-- ══ SEO: Title & Description (updated dynamically by JS after product loads) ══ -->
+  <title>แฟลชไดร์ฟเพลง MP3 — Bt music drive</title>
+  <meta name="description" content="ซื้อแฟลชไดร์ฟเพลง MP3 คุณภาพสูง เสียบปุ๊บฟังปั๊บ ไม่ต้องโหลด เสียงชัด HD รองรับรถยนต์ทุกรุ่น จัดส่งทั่วไทย — Bt music drive">
+  <meta name="keywords" content="แฟลชไดร์ฟเพลง MP3, USB เพลง, เพลงลูกทุ่ง, หมอลำ, สตริง, เพลงสากล, เสียบปุ๊บฟังปั๊บ, เสียงชัด HD, ฟังเพลงในรถ">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://btmusicdrive.com/product.html">
+
+  <!-- ══ Open Graph (Facebook / LINE) ══ -->
+  <meta property="og:type" content="product">
+  <meta property="og:site_name" content="Bt music drive">
+  <meta property="og:title" content="แฟลชไดร์ฟเพลง MP3 — Bt music drive">
+  <meta property="og:description" content="รวมเพลงฮิตคุณภาพเสียง HD เสียบปุ๊บฟังปั๊บ ไม่ต้องลงโปรแกรม รองรับรถยนต์ทุกรุ่น จัดส่งด่วนทั่วไทย">
+  <meta property="og:image" content="https://btmusicdrive.com/images/og-product.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="https://btmusicdrive.com/product.html">
+  <meta property="og:locale" content="th_TH">
+
+  <!-- ══ Twitter Card ══ -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="แฟลชไดร์ฟเพลง MP3 — Bt music drive">
+  <meta name="twitter:description" content="รวมเพลงฮิตคุณภาพเสียง HD เสียบปุ๊บฟังปั๊บ จัดส่งด่วนทั่วไทย">
+  <meta name="twitter:image" content="https://btmusicdrive.com/images/og-product.jpg">
+
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -727,7 +751,50 @@
 
   // ── Render ───────────────────────────────────────────────────────────────────
   function renderProduct() {
-    document.title = `${product.name} — btmusicdrive`;
+    // ── Dynamic SEO & OG update ──────────────────────────────────────────────
+    const seoTitle = `${product.name} | แฟลชไดร์ฟเพลง MP3 — Bt music drive`;
+    const seoDesc  = product.description
+      ? product.description.substring(0, 155).replace(/\s+/g, ' ').trim() + '…'
+      : `${product.name} แฟลชไดร์ฟเพลง MP3 คุณภาพเสียง HD เสียบปุ๊บฟังปั๊บ ฟังในรถยนต์ได้ทันที — Bt music drive`;
+    const ogImage  = product.imageUrl || 'https://btmusicdrive.com/images/og-product.jpg';
+    const pageUrl  = `${location.origin}${location.pathname}?id=${product.id}`;
+
+    document.title = seoTitle;
+
+    const setMeta = (sel, val) => { const el = document.querySelector(sel); if (el) el.setAttribute('content', val); };
+    setMeta('meta[name="description"]', seoDesc);
+    setMeta('meta[property="og:title"]', seoTitle);
+    setMeta('meta[property="og:description"]', seoDesc);
+    setMeta('meta[property="og:image"]', ogImage);
+    setMeta('meta[property="og:url"]', pageUrl);
+    setMeta('meta[property="og:type"]', 'product');
+    setMeta('meta[name="twitter:title"]', seoTitle);
+    setMeta('meta[name="twitter:description"]', seoDesc);
+    setMeta('meta[name="twitter:image"]', ogImage);
+
+    // ── Schema.org Product JSON-LD ──────────────────────────────────────────
+    const ld = {
+      "@context": "https://schema.org/",
+      "@type": "Product",
+      "name": product.name,
+      "description": seoDesc,
+      "image": ogImage,
+      "brand": { "@type": "Brand", "name": "Bt music drive" },
+      "offers": {
+        "@type": "Offer",
+        "priceCurrency": "THB",
+        "price": product.price,
+        "availability": (product.stock > 0) ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+        "url": pageUrl,
+        "seller": { "@type": "Organization", "name": "Bt music drive" }
+      }
+    };
+    if (product.rating) { ld.aggregateRating = { "@type": "AggregateRating", "ratingValue": product.rating, "reviewCount": product.reviews || 1 }; }
+    let ldScript = document.getElementById('product-jsonld');
+    if (!ldScript) { ldScript = document.createElement('script'); ldScript.id = 'product-jsonld'; ldScript.type = 'application/ld+json'; document.head.appendChild(ldScript); }
+    ldScript.textContent = JSON.stringify(ld);
+    // ── End SEO update ───────────────────────────────────────────────────────
+
     document.getElementById('bc-name').textContent = product.name;
     document.getElementById('p-name').textContent = product.name;
 
