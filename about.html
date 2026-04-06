@@ -18,7 +18,7 @@
             }
         }
     </script>
-    
+
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
@@ -28,6 +28,97 @@
     <link rel="stylesheet" href="style.css">
     <style>
         body { font-family: 'Inter', sans-serif; }
+
+        /* Hero dark gradient */
+        .hero-bg {
+            background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0F172A 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-bg::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse 60% 80% at 70% 50%, rgba(139,115,85,0.18) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .hero-bg::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%238B7355' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            pointer-events: none;
+        }
+
+        /* Gold text */
+        .text-gold {
+            background: linear-gradient(135deg, #C9A84C 0%, #8B7355 50%, #C9A84C 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Values card hover */
+        .value-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            border: 1.5px solid #e5e7eb;
+        }
+        .value-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(139,115,85,0.15);
+            border-color: #8B7355;
+        }
+        .value-card:hover .value-icon-wrap {
+            background: #8B7355;
+            color: #fff;
+        }
+        .value-icon-wrap {
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        /* Glassmorphism stats */
+        .glass-stats {
+            background: linear-gradient(135deg, rgba(15,23,42,0.85) 0%, rgba(30,41,59,0.9) 100%);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(139,115,85,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        .glass-stats::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(139,115,85,0.08) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .stat-number {
+            background: linear-gradient(135deg, #C9A84C 0%, #F0D080 50%, #C9A84C 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 900;
+        }
+
+        /* Story section image */
+        .story-img {
+            border-radius: 24px;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.18), 0 8px 20px rgba(139,115,85,0.12);
+        }
+
+        /* Divider line gold */
+        .gold-line {
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, #8B7355, #C9A84C, #8B7355);
+            border-radius: 2px;
+        }
+
+        /* CTA section */
+        .cta-bg {
+            background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+            border: 1px solid rgba(139,115,85,0.3);
+        }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased overflow-x-hidden pt-16">
@@ -35,104 +126,178 @@
     <!-- Shared Navbar -->
     <header id="site-header"></header>
 
-    <!-- ══════════════════════════════════════════════════════════════════════ -->
-    <!-- PAGE CONTENT — ส่วนของ about.html -->
-    <!-- ══════════════════════════════════════════════════════════════════════ -->
-    <main class="pb-16 pt-8">
+    <main class="pb-16">
 
-        <!-- Hero -->
-        <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-            <div class="flex flex-col md:flex-row items-center gap-12">
-                <div class="md:w-1/2 space-y-6">
-                    <span class="inline-block py-1 px-3 rounded-full bg-amber-100 text-primary text-sm font-semibold">เกี่ยวกับเรา</span>
-                    <h1 class="text-4xl md:text-5xl font-extrabold leading-tight text-gray-900">
-                         <span class="text-transparent bg-clip-text bg-gradient-to-r from-secondary to-primary">Bt music drive</span>
-                    </h1><h1 class="text-xl md:text-2xl font-extrabold leading-tight text-gray-900"> เก็บทุกเพลงโปรด ไว้ในแฟลชไดร์ฟเดียว</h1>
-                    <p class="text-base sm:text-lg text-gray-600 leading-relaxed">
-                        "ยินดีต้อนรับสู่ Bt music drive ปลายทางของคนรักเสียงเพลงที่มองหาความง่ายและคุ้มค่า เราคือผู้เชี่ยวชาญด้านการคัดสรรบทเพลงลงแฟลชไดร์ฟคุณภาพสูง เพื่อให้คุณได้เพลิดเพลินกับเสียงเพลงโปรดได้ทุกที่ทุกเวลา ไม่ว่าจะบนรถ ในบ้าน หรือที่ทำงาน
-                </p>
-                </div>
-                <div class="md:w-1/2">
-                    <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                         alt="Our Team" class="rounded-3xl shadow-2xl object-cover h-[250px] sm:h-[300px] md:h-[400px] w-full">
+        <!-- ══ HERO SECTION ══ -->
+        <section class="hero-bg py-24 md:py-32 px-4 sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto relative z-10">
+                <div class="flex flex-col md:flex-row items-center gap-12 md:gap-16">
+                    <!-- Text -->
+                    <div class="md:w-1/2 space-y-6">
+                        <span class="inline-flex items-center gap-2 py-1.5 px-4 rounded-full border border-primary/40 bg-primary/10 text-amber-400 text-xs font-semibold tracking-widest uppercase">
+                            <i class="ph ph-music-note"></i> เกี่ยวกับเรา
+                        </span>
+                        <h1 class="text-4xl md:text-6xl font-extrabold leading-tight text-white">
+                            <span class="text-gold">Bt music drive</span>
+                        </h1>
+                        <p class="text-lg md:text-xl font-light text-slate-300 leading-relaxed">
+                            เก็บทุกเพลงโปรด ไว้ในแฟลชไดร์ฟเดียว
+                        </p>
+                        <p class="text-base text-slate-400 leading-relaxed">
+                            ยินดีต้อนรับสู่ Bt music drive ปลายทางของคนรักเสียงเพลงที่มองหาความง่ายและคุ้มค่า เราคือผู้เชี่ยวชาญด้านการคัดสรรบทเพลงลงแฟลชไดร์ฟคุณภาพสูง เพื่อให้คุณเพลิดเพลินกับเสียงเพลงโปรดได้ทุกที่ทุกเวลา
+                        </p>
+                        <div class="flex flex-wrap gap-3 pt-2">
+                            <a href="shop.html" class="inline-flex items-center gap-2 bg-primary hover:bg-amber-700 text-white font-semibold py-3 px-7 rounded-xl transition-all shadow-lg hover:shadow-amber-900/30 hover:-translate-y-0.5">
+                                <i class="ph ph-shopping-bag"></i> เลือกซื้อสินค้า
+                            </a>
+                            <a href="contact.html" class="inline-flex items-center gap-2 border border-slate-600 hover:border-primary text-slate-300 hover:text-primary font-semibold py-3 px-7 rounded-xl transition-all">
+                                <i class="ph ph-chat-circle-dots"></i> ติดต่อเรา
+                            </a>
+                        </div>
+                    </div>
+                    <!-- Image -->
+                    <div class="md:w-1/2">
+                        <div class="relative">
+                            <div class="absolute -inset-4 bg-gradient-to-br from-primary/20 to-transparent rounded-3xl blur-2xl"></div>
+                            <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                                 alt="Our Team" class="relative rounded-3xl shadow-2xl object-cover h-[260px] sm:h-[320px] md:h-[420px] w-full" style="border: 1px solid rgba(139,115,85,0.25);">
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- Values -->
-        <section class="bg-white py-16 border-y border-gray-100">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center mb-12">
-                    <h2 class="text-3xl font-bold text-gray-900 mb-4">สิ่งที่เราให้ความสำคัญ</h2>
-                    <div class="w-16 h-1 bg-primary mx-auto rounded"></div>
+        <!-- ══ OUR STORY SECTION ══ -->
+        <section class="py-20 px-4 sm:px-6 lg:px-8 bg-white">
+            <div class="max-w-7xl mx-auto">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-center">
+                    <!-- Image -->
+                    <div class="order-2 md:order-1">
+                        <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                             alt="บรรยากาศร้าน" class="story-img w-full h-[280px] sm:h-[360px] object-cover">
+                    </div>
+                    <!-- Text -->
+                    <div class="order-1 md:order-2 space-y-5">
+                        <div>
+                            <span class="text-xs font-bold tracking-widest uppercase text-primary">Our Story</span>
+                            <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 mt-2 leading-tight">
+                                เรื่องราวของเรา
+                            </h2>
+                            <div class="gold-line mt-4"></div>
+                        </div>
+                        <p class="text-gray-500 leading-relaxed">
+                            Bt music drive ก่อตั้งขึ้นจากความรักในเสียงเพลงและความเชื่อที่ว่าทุกคนควรเข้าถึงเพลงโปรดได้ง่าย ไม่ว่าจะอยู่ที่ไหน ไม่ต้องพึ่งอินเทอร์เน็ต
+                        </p>
+                        <p class="text-gray-500 leading-relaxed">
+                            เราคัดสรรเพลงคุณภาพสูงจากทุกแนว ทั้งลูกทุ่ง หมอลำ สตริง เพื่อชีวิต และสากล บรรจุลงแฟลชไดร์ฟที่ผ่านการตรวจสอบคุณภาพทุกชิ้น
+                        </p>
+                        <div class="grid grid-cols-2 gap-4 pt-2">
+                            <div class="p-4 bg-amber-50 rounded-xl">
+                                <i class="ph ph-music-notes text-2xl text-primary mb-2"></i>
+                                <p class="text-sm font-semibold text-gray-700">ครบทุกแนวเพลง</p>
+                                <p class="text-xs text-gray-500 mt-1">ลูกทุ่ง หมอลำ สตริง สากล</p>
+                            </div>
+                            <div class="p-4 bg-amber-50 rounded-xl">
+                                <i class="ph ph-usb text-2xl text-primary mb-2"></i>
+                                <p class="text-sm font-semibold text-gray-700">คุณภาพไฟล์สูง</p>
+                                <p class="text-xs text-gray-500 mt-1">MP3 320kbps ทุกเพลง</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div class="text-center p-8 rounded-2xl border border-gray-100 hover:shadow-lg transition-shadow bg-white">
-                        <div class="bg-amber-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <i class="ph ph-diamond text-3xl text-primary"></i>
+            </div>
+        </section>
+
+        <!-- ══ STATS SECTION (Glassmorphism) ══ -->
+        <section class="py-6 px-4 sm:px-6 lg:px-8" style="background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);">
+            <div class="max-w-7xl mx-auto">
+                <div class="glass-stats rounded-3xl px-6 py-12 md:px-12">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                        <div class="space-y-2">
+                            <p class="text-4xl md:text-5xl stat-number">10K+</p>
+                            <p class="text-slate-400 font-medium text-sm tracking-wide">ลูกค้าที่ไว้วางใจ</p>
+                        </div>
+                        <div class="space-y-2">
+                            <p class="text-4xl md:text-5xl stat-number">500+</p>
+                            <p class="text-slate-400 font-medium text-sm tracking-wide">สินค้าคุณภาพ</p>
+                        </div>
+                        <div class="space-y-2">
+                            <p class="text-4xl md:text-5xl stat-number">4.9</p>
+                            <p class="text-slate-400 font-medium text-sm tracking-wide">คะแนนรีวิว</p>
+                        </div>
+                        <div class="space-y-2">
+                            <p class="text-4xl md:text-5xl stat-number">24/7</p>
+                            <p class="text-slate-400 font-medium text-sm tracking-wide">บริการลูกค้า</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══ CORE VALUES SECTION ══ -->
+        <section class="bg-white py-20 px-4 sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto">
+                <div class="text-center mb-14">
+                    <span class="text-xs font-bold tracking-widest uppercase text-primary">What We Stand For</span>
+                    <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 mt-2 mb-4">คุณค่าหลักของเรา</h2>
+                    <div class="gold-line mx-auto"></div>
+                    <p class="text-gray-500 mt-4 max-w-xl mx-auto">สิ่งที่ขับเคลื่อนเราให้มอบประสบการณ์ที่ดีที่สุดให้กับลูกค้าทุกท่าน</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Card 1: Quality -->
+                    <div class="value-card bg-white text-center p-8 rounded-2xl">
+                        <div class="value-icon-wrap bg-amber-100 text-primary w-18 h-18 w-[72px] h-[72px] rounded-2xl flex items-center justify-center mx-auto mb-6">
+                            <i class="ph ph-diamond text-3xl"></i>
                         </div>
                         <h3 class="text-xl font-bold text-gray-900 mb-3">คุณภาพระดับพรีเมียม</h3>
-                        <p class="text-gray-600">เราคัดสรรสินค้าทุกชิ้นอย่างพิถีพิถัน เพื่อให้มั่นใจว่าคุณจะได้รับสิ่งที่ดีที่สุด</p>
-                    </div>
-                    <div class="text-center p-8 rounded-2xl border border-gray-100 hover:shadow-lg transition-shadow bg-white">
-                        <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <i class="ph ph-leaf text-3xl text-green-600"></i>
+                        <p class="text-gray-500 leading-relaxed text-sm">เราคัดสรรสินค้าทุกชิ้นอย่างพิถีพิถัน เพื่อให้มั่นใจว่าคุณจะได้รับสิ่งที่ดีที่สุดในทุกการสั่งซื้อ</p>
+                        <div class="mt-6 pt-5 border-t border-gray-100">
+                            <span class="text-xs text-primary font-semibold tracking-wider">PREMIUM QUALITY</span>
                         </div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-3">ใส่ใจสิ่งแวดล้อม</h3>
-                        <p class="text-gray-600">เราเลือกใช้วัสดุที่เป็นมิตรต่อสิ่งแวดล้อม และสนับสนุนการผลิตอย่างยั่งยืน</p>
                     </div>
-                    <div class="text-center p-8 rounded-2xl border border-gray-100 hover:shadow-lg transition-shadow bg-white">
-                        <div class="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <i class="ph ph-heart text-3xl text-orange-600"></i>
+                    <!-- Card 2: Service -->
+                    <div class="value-card bg-white text-center p-8 rounded-2xl">
+                        <div class="value-icon-wrap bg-blue-100 text-blue-600 w-[72px] h-[72px] rounded-2xl flex items-center justify-center mx-auto mb-6">
+                            <i class="ph ph-headset text-3xl"></i>
                         </div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-3">ลูกค้าคือหัวใจ</h3>
-                        <p class="text-gray-600">ทีมงานของเราพร้อมดูแลคุณตลอด 24 ชั่วโมง เพราะความพึงพอใจของคุณคือสิ่งสำคัญที่สุด</p>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">บริการเหนือระดับ</h3>
+                        <p class="text-gray-500 leading-relaxed text-sm">ทีมงานของเราพร้อมดูแลและตอบทุกคำถามตลอด 24 ชั่วโมง เพราะความพึงพอใจของคุณคือสิ่งสำคัญที่สุด</p>
+                        <div class="mt-6 pt-5 border-t border-gray-100">
+                            <span class="text-xs text-blue-600 font-semibold tracking-wider">24/7 SUPPORT</span>
+                        </div>
+                    </div>
+                    <!-- Card 3: Price -->
+                    <div class="value-card bg-white text-center p-8 rounded-2xl">
+                        <div class="value-icon-wrap bg-green-100 text-green-600 w-[72px] h-[72px] rounded-2xl flex items-center justify-center mx-auto mb-6">
+                            <i class="ph ph-currency-circle-dollar text-3xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">ราคาคุ้มค่า</h3>
+                        <p class="text-gray-500 leading-relaxed text-sm">เราเชื่อว่าเพลงดีไม่ควรแพง สินค้าทุกชิ้นผ่านการคัดเลือกให้คุ้มค่าที่สุดในราคาที่เข้าถึงได้</p>
+                        <div class="mt-6 pt-5 border-t border-gray-100">
+                            <span class="text-xs text-green-600 font-semibold tracking-wider">BEST VALUE</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Stats -->
-        <section class="py-16">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-                    <div>
-                        <p class="text-4xl font-extrabold text-primary">10K+</p>
-                        <p class="text-gray-500 mt-2 font-medium">ลูกค้าที่ไว้วางใจ</p>
-                    </div>
-                    <div>
-                        <p class="text-4xl font-extrabold text-primary">500+</p>
-                        <p class="text-gray-500 mt-2 font-medium">สินค้าคุณภาพ</p>
-                    </div>
-                    <div>
-                        <p class="text-4xl font-extrabold text-primary">4.9</p>
-                        <p class="text-gray-500 mt-2 font-medium">คะแนนรีวิว</p>
-                    </div>
-                    <div>
-                        <p class="text-4xl font-extrabold text-primary">24/7</p>
-                        <p class="text-gray-500 mt-2 font-medium">บริการลูกค้า</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- CTA -->
-        <section class="py-16 px-4">
-            <div class="max-w-4xl mx-auto bg-gray-900 rounded-3xl p-12 text-center shadow-xl">
-                <h2 class="text-3xl font-bold text-white mb-4">พร้อมที่จะเริ่มต้นแล้วหรือยัง?</h2>
-                <p class="text-gray-300 mb-8">ค้นพบสินค้าคุณภาพพรีเมียมที่จะยกระดับสไตล์ของคุณ</p>
-                <a href="index.html#shop" class="inline-block bg-primary hover:bg-amber-700 text-white font-bold py-3 px-8 rounded-lg transition-colors shadow-lg">
-                    เลือกซื้อสินค้า
+        <!-- ══ CTA SECTION ══ -->
+        <section class="py-16 px-4 sm:px-6 lg:px-8">
+            <div class="max-w-4xl mx-auto cta-bg rounded-3xl p-12 text-center shadow-2xl">
+                <i class="ph ph-music-note-simple text-5xl text-primary mb-4"></i>
+                <h2 class="text-3xl font-bold text-white mb-3">พร้อมที่จะเริ่มต้นแล้วหรือยัง?</h2>
+                <p class="text-slate-400 mb-8">ค้นพบแฟลชไดร์ฟเพลงคุณภาพสูงที่จะเติมเต็มทุกการเดินทางของคุณ</p>
+                <a href="shop.html" class="inline-flex items-center gap-2 bg-primary hover:bg-amber-700 text-white font-bold py-3.5 px-10 rounded-xl transition-all shadow-lg hover:shadow-amber-900/30 hover:-translate-y-0.5">
+                    <i class="ph ph-shopping-bag"></i> เลือกซื้อสินค้า
                 </a>
             </div>
         </section>
 
     </main>
-    <!-- ══════════════════════════════════════════════════════════════════════ -->
 
     <!-- Shared Footer -->
     <div id="site-footer"></div>
-    
+
     <script src="components.js"></script>
 </body>
 </html>

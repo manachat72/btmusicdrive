@@ -23,24 +23,81 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Inter', sans-serif; }
+
+    /* Gallery */
     .thumb { border: 2px solid transparent; cursor: pointer; transition: border-color .2s; border-radius: 8px; overflow: hidden; }
-    .thumb.active { border-color: var(--brand-primary); }
-    .thumb:hover { border-color: var(--brand-primary); opacity: .85; }
-    .tab-btn { position: relative; padding: 12px 24px; font-weight: 600; color: #64748b; transition: color .2s; }
-    .tab-btn.active { color: var(--brand-secondary); }
-    .tab-btn.active::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: var(--brand-primary); border-radius: 3px 3px 0 0; }
+    .thumb.active { border-color: #8B7355; }
+    .thumb:hover { border-color: #8B7355; opacity: .85; }
+    .gallery-main {
+      aspect-ratio: 1;
+      background: #f8fafc;
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #e2e8f0;
+      position: relative;
+    }
+    .gallery-main img {
+      max-width: 100%; max-height: 100%; object-fit: contain;
+      transition: transform 0.4s ease;
+      cursor: zoom-in;
+    }
+    .gallery-main:hover img { transform: scale(1.08); }
+    .gallery-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,.9); box-shadow: 0 2px 8px rgba(0,0,0,.14); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all .2s; z-index: 5; }
+    .gallery-nav:hover { background: #fff; box-shadow: 0 4px 16px rgba(0,0,0,.18); transform: translateY(-50%) scale(1.08); }
+
+    /* Tabs */
+    .tab-btn { position: relative; padding: 12px 24px; font-weight: 600; color: #64748b; transition: color .2s; white-space: nowrap; }
+    .tab-btn.active { color: #0F172A; }
+    .tab-btn.active::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: #8B7355; border-radius: 3px 3px 0 0; }
     .tab-btn:hover { color: #334155; }
+
+    /* Specs */
     .spec-row:nth-child(even) { background: #f8fafc; }
+
+    /* Tags */
     .tag { display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; transition: opacity .2s; }
     .tag:hover { opacity: .8; }
-    .qty-btn { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border: 1px solid #e2e8f0; font-size: 18px; cursor: pointer; transition: background .15s; }
-    .qty-btn:hover { background: #f1f5f9; }
-    .gallery-main { aspect-ratio: 1; background: #f1f5f9; border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-    .gallery-main img { max-width: 100%; max-height: 100%; object-fit: contain; }
-    .gallery-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,.85); box-shadow: 0 2px 8px rgba(0,0,0,.12); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background .2s; z-index: 5; }
-    .gallery-nav:hover { background: #fff; }
+
+    /* Quantity */
+    .qty-btn { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; transition: background .15s, color .15s; }
+    .qty-btn:hover { background: #8B7355; color: #fff; }
+
+    /* Add to Cart button animation */
+    .btn-add-cart {
+      transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1), background-color 0.2s, box-shadow 0.2s;
+    }
+    .btn-add-cart:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 8px 24px rgba(139,115,85,0.35);
+    }
+    .btn-add-cart:active { transform: scale(0.97); }
+
+    /* Buy Now button */
+    .btn-buy-now { transition: background 0.2s, transform 0.15s, box-shadow 0.2s; }
+    .btn-buy-now:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(15,23,42,0.3); }
+
+    /* Trust badges */
+    .trust-badge { transition: transform 0.2s, box-shadow 0.2s; }
+    .trust-badge:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+
+    /* Price gold */
+    .price-current {
+      background: linear-gradient(135deg, #8B7355, #C9A84C);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Related product cards */
+    .related-card { transition: transform 0.25s ease, box-shadow 0.25s ease; }
+    .related-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(139,115,85,0.15); }
+
+    /* Shop links */
     .shop-link { display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; border: 1.5px solid #e2e8f0; color: #64748b; transition: all .2s; cursor: pointer; }
-    .shop-link:hover { border-color: var(--brand-primary); color: var(--brand-primary); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(139,115,85,.18); }
+    .shop-link:hover { border-color: #8B7355; color: #8B7355; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(139,115,85,.18); }
     .shop-link svg { width: 20px; height: 20px; }
   </style>
 </head>
@@ -96,7 +153,7 @@
             <span id="low-stock-alert" class="hidden inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-600 animate-pulse"><i class="ph ph-warning text-sm"></i> <span id="low-stock-text"></span></span>
           </div>
 
-          <h1 id="p-name" class="text-2xl md:text-3xl font-bold text-gray-900 mb-2"></h1>
+          <h1 id="p-name" class="text-2xl md:text-3xl font-extrabold text-gray-900 mb-2 leading-tight"></h1>
 
           <div id="p-meta" class="text-sm text-gray-500 mb-4 flex flex-wrap gap-x-4 gap-y-1">
             <span id="p-brand-wrap" class="hidden">แบรนด์: <strong id="p-brand"></strong></span>
@@ -105,58 +162,79 @@
 
           <!-- Price -->
           <div class="flex items-baseline gap-3 mb-6">
-            <span id="p-price" class="text-3xl font-bold text-red-600"></span>
-            <span id="p-original-price" class="text-lg text-gray-400 line-through hidden"></span>
+            <span id="p-price" class="text-4xl font-extrabold price-current"></span>
+            <span id="p-original-price" class="text-xl text-gray-400 line-through hidden"></span>
           </div>
 
-          <!-- Quantity -->
-          <div class="flex items-center gap-4 mb-6">
-            <span class="text-sm font-medium text-gray-600">จำนวน</span>
-            <div class="flex items-center border border-gray-200 rounded-lg overflow-hidden">
+          <!-- Quantity + Add to Cart -->
+          <div class="flex items-center gap-3 mb-4">
+            <span class="text-sm font-semibold text-gray-600 shrink-0">จำนวน</span>
+            <div class="flex items-center border-2 border-gray-200 rounded-xl overflow-hidden">
               <button class="qty-btn" onclick="changeQty(-1)">−</button>
-              <input id="qty" type="text" value="01" class="w-12 text-center font-semibold text-sm border-x border-gray-200 py-2" readonly>
+              <input id="qty" type="text" value="01" class="w-14 text-center font-bold text-base border-x-2 border-gray-200 py-2" readonly>
               <button class="qty-btn" onclick="changeQty(1)">+</button>
             </div>
           </div>
 
           <!-- Buttons -->
           <div class="flex flex-col sm:flex-row gap-3 mb-4">
-            <button onclick="addToCartFromDetail()" class="flex-1 border-2 border-gray-300 hover:border-primary text-gray-700 hover:text-primary font-bold py-3 px-4 sm:px-6 rounded-lg transition-colors flex items-center justify-center gap-2">
+            <button onclick="addToCartFromDetail()" class="btn-add-cart flex-1 bg-primary text-white font-bold py-3.5 px-4 sm:px-6 rounded-xl flex items-center justify-center gap-2 text-base shadow-md">
               <i class="ph ph-shopping-cart text-xl"></i> เพิ่มในตะกร้า
             </button>
-            <button onclick="buyNow()" class="flex-1 bg-secondary hover:bg-slate-800 text-white font-bold py-3 px-4 sm:px-6 rounded-lg transition-colors flex items-center justify-center gap-2">
-              ซื้อเลย
+            <button onclick="buyNow()" class="btn-buy-now flex-1 bg-secondary hover:bg-slate-800 text-white font-bold py-3.5 px-4 sm:px-6 rounded-xl flex items-center justify-center gap-2 text-base shadow-md">
+              <i class="ph ph-lightning text-xl"></i> ซื้อเลย
             </button>
           </div>
+
           <!-- Wishlist Button -->
-          <div class="mb-6">
+          <div class="mb-5">
             <button id="wishlist-btn" onclick="toggleWishlist()" class="flex items-center gap-2 text-gray-500 hover:text-red-500 transition-colors text-sm font-medium">
               <i id="wishlist-icon" class="ph ph-heart text-xl"></i> <span id="wishlist-text">เพิ่มในรายการที่ถูกใจ</span>
             </button>
           </div>
 
-          <!-- Tags -->
-          <div id="p-tags" class="flex flex-wrap gap-2 mb-4"></div>
-
-          <!-- Service Guarantees -->
-          <div class="grid grid-cols-2 gap-3 mb-4">
-            <div class="flex items-center gap-2 p-2.5 bg-green-50 rounded-lg">
-              <i class="ph ph-truck text-lg text-green-600"></i>
-              <span class="text-xs font-medium text-green-700">ส่งฟรี เมื่อสั่ง ≥150฿</span>
+          <!-- Trust Badges -->
+          <div class="grid grid-cols-2 gap-2.5 mb-5 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+            <div class="trust-badge flex items-center gap-2.5 p-3 bg-white rounded-xl border border-gray-100">
+              <div class="w-9 h-9 rounded-lg bg-amber-100 flex items-center justify-center shrink-0">
+                <i class="ph ph-shield-check text-lg text-amber-600"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-gray-800">รับประกัน 1 ปี</p>
+                <p class="text-[10px] text-gray-400">สินค้าทุกชิ้น</p>
+              </div>
             </div>
-            <div class="flex items-center gap-2 p-2.5 bg-blue-50 rounded-lg">
-              <i class="ph ph-arrow-counter-clockwise text-lg text-blue-600"></i>
-              <span class="text-xs font-medium text-blue-700">เปลี่ยนคืนภายใน 7 วัน</span>
+            <div class="trust-badge flex items-center gap-2.5 p-3 bg-white rounded-xl border border-gray-100">
+              <div class="w-9 h-9 rounded-lg bg-green-100 flex items-center justify-center shrink-0">
+                <i class="ph ph-truck text-lg text-green-600"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-gray-800">ส่งด่วน 24 ชม.</p>
+                <p class="text-[10px] text-gray-400">ฟรีเมื่อสั่ง ≥150฿</p>
+              </div>
             </div>
-            <div class="flex items-center gap-2 p-2.5 bg-purple-50 rounded-lg">
-              <i class="ph ph-chat-circle-dots text-lg text-purple-600"></i>
-              <span class="text-xs font-medium text-purple-700">ตอบกลับรวดเร็ว</span>
+            <div class="trust-badge flex items-center gap-2.5 p-3 bg-white rounded-xl border border-gray-100">
+              <div class="w-9 h-9 rounded-lg bg-blue-100 flex items-center justify-center shrink-0">
+                <i class="ph ph-lock-key text-lg text-blue-600"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-gray-800">ชำระผ่าน Omise</p>
+                <p class="text-[10px] text-gray-400">ปลอดภัย 100%</p>
+              </div>
             </div>
-            <div class="flex items-center gap-2 p-2.5 bg-amber-50 rounded-lg">
-              <i class="ph ph-shield-check text-lg text-amber-600"></i>
-              <span class="text-xs font-medium text-amber-700">ชำระเงินปลอดภัย</span>
+            <div class="trust-badge flex items-center gap-2.5 p-3 bg-white rounded-xl border border-gray-100">
+              <div class="w-9 h-9 rounded-lg bg-purple-100 flex items-center justify-center shrink-0">
+                <i class="ph ph-arrow-counter-clockwise text-lg text-purple-600"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-gray-800">เปลี่ยนคืน 7 วัน</p>
+                <p class="text-[10px] text-gray-400">ไม่พอใจคืนได้เลย</p>
+              </div>
             </div>
           </div>
+
+          <!-- Tags -->
+          <div id="p-tags" class="flex flex-wrap gap-2 mb-4"></div>
 
           <!-- ร้านค้าอื่น -->
           <div class="pt-4 border-t border-gray-100">
@@ -239,9 +317,15 @@
         </div>
       </div>
 
-      <!-- Same Category Products -->
-      <div id="frequently-bought" class="mt-12 hidden">
-        <h3 class="text-xl font-bold text-gray-900 mb-6"><i class="ph ph-squares-four mr-1"></i> สินค้าในหมวดหมู่เดียวกัน</h3>
+      <!-- Related Products -->
+      <div id="frequently-bought" class="mt-14 hidden">
+        <div class="flex items-center justify-between mb-6">
+          <div>
+            <h3 class="text-xl font-extrabold text-gray-900"><i class="ph ph-squares-four text-primary mr-2"></i>สินค้าที่เกี่ยวข้อง</h3>
+            <p class="text-sm text-gray-400 mt-1">สินค้าในหมวดหมู่เดียวกันที่คุณอาจสนใจ</p>
+          </div>
+          <a href="shop.html" class="text-sm text-primary font-semibold hover:underline flex items-center gap-1">ดูทั้งหมด <i class="ph ph-arrow-right"></i></a>
+        </div>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="same-category-grid"></div>
       </div>
 
@@ -536,17 +620,24 @@
 
     const recommended = sameCat.slice(0, 4);
     const container = document.getElementById('same-category-grid');
-    container.innerHTML = recommended.map(p =>
-      `<a href="product.html?id=${p.id}" class="bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-md transition-shadow group">
-        <div class="aspect-square bg-gray-50 overflow-hidden">
-          <img src="${escHtml(p.imageUrl)}" alt="${escHtml(p.name)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+    container.innerHTML = recommended.map(p => {
+      const disc = p.originalPrice && p.originalPrice > p.price
+        ? `<span class="text-xs text-gray-400 line-through ml-1">฿${Number(p.originalPrice).toLocaleString('th-TH', {minimumFractionDigits:2})}</span>`
+        : '';
+      return `<a href="product.html?id=${p.id}" class="related-card bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.06)] group block">
+        <div class="aspect-square bg-gray-50 overflow-hidden relative">
+          <img src="${escHtml(p.imageUrl)}" alt="${escHtml(p.name)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-400">
+          ${p.originalPrice && p.originalPrice > p.price ? `<span class="absolute top-2 left-2 bg-red-500 text-white px-2 py-0.5 rounded-full text-xs font-bold">-${Math.round((1-p.price/p.originalPrice)*100)}%</span>` : ''}
         </div>
         <div class="p-3">
-          <p class="text-sm font-semibold text-gray-900 line-clamp-2 mb-1">${escHtml(p.name)}</p>
-          <p class="text-sm font-bold text-red-600">฿${Number(p.price).toLocaleString('th-TH', { minimumFractionDigits: 2 })}</p>
+          <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">${escHtml(p.category?.name || p.category || '')}</p>
+          <p class="text-sm font-bold text-gray-900 line-clamp-2 mb-2 group-hover:text-primary transition-colors">${escHtml(p.name)}</p>
+          <div class="flex items-baseline gap-1">
+            <span class="text-base font-extrabold price-current">฿${Number(p.price).toLocaleString('th-TH', { minimumFractionDigits: 2 })}</span>${disc}
+          </div>
         </div>
-      </a>`
-    ).join('');
+      </a>`;
+    }).join('');
 
     document.getElementById('frequently-bought').classList.remove('hidden');
   }
