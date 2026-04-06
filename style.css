@@ -60,6 +60,34 @@
     }
 }
 
+/* Hero floating effect for USB image */
+@keyframes float-usb {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-14px); }
+}
+
+/* Countdown glow pulse */
+@keyframes glow-pulse {
+    0%, 100% {
+        text-shadow: 0 0 8px rgba(255, 255, 255, 0.6), 0 0 20px rgba(255, 80, 80, 0.5);
+        opacity: 1;
+    }
+    50% {
+        text-shadow: 0 0 18px rgba(255, 255, 255, 0.9), 0 0 40px rgba(255, 120, 60, 0.9), 0 0 60px rgba(255, 60, 60, 0.6);
+        opacity: 0.88;
+    }
+}
+
+/* Grainy overlay for Hero */
+@keyframes grain {
+    0%, 100% { transform: translate(0, 0); }
+    10% { transform: translate(-2%, -3%); }
+    30% { transform: translate(1%, 2%); }
+    50% { transform: translate(-1%, 1%); }
+    70% { transform: translate(2%, -1%); }
+    90% { transform: translate(-1%, 3%); }
+}
+
 .animate-pulse-slow {
     animation: pulse-slow 8s infinite ease-in-out;
 }
@@ -70,6 +98,36 @@
 
 .animate-fade-in-up {
     animation: fade-in-up 0.6s ease-out forwards;
+}
+
+.animate-float {
+    animation: float-usb 4s ease-in-out infinite;
+}
+
+.countdown-glow {
+    animation: glow-pulse 1.5s ease-in-out infinite;
+}
+
+/* ── Hero Grainy Gradient ───────────────────────────────────────────── */
+.hero-grainy {
+    background: linear-gradient(135deg, #1a120b 0%, #2e1f10 30%, #4a3420 55%, #6b4f30 75%, #8B7355 100%);
+    position: relative;
+}
+
+.hero-grainy::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+    background-size: 180px 180px;
+    animation: grain 8s steps(10) infinite;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.hero-grainy > * {
+    position: relative;
+    z-index: 2;
 }
 
 /* Smooth Scrolling */
@@ -119,8 +177,8 @@ html {
 
 .product-card .add-to-cart-btn {
     opacity: 0;
-    transform: translateY(10px);
-    transition: all 0.3s ease;
+    transform: translateY(18px);
+    transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .product-card:hover .add-to-cart-btn {
@@ -217,6 +275,8 @@ body {
     .product-card .add-to-cart-btn {
         opacity: 1;
         transform: translateY(0);
+        font-size: 0.8rem;
+        padding: 0.5rem 1rem;
     }
 
     /* Disable hover transform on mobile */

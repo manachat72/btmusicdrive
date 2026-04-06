@@ -157,7 +157,7 @@ function renderProducts() {
     products.forEach((product, index) => {
         // Create product card
         const productCard = document.createElement('div');
-        productCard.className = `bg-white rounded-2xl overflow-hidden product-card border border-gray-100 animate-fade-in-up`;
+        productCard.className = `bg-white rounded-2xl overflow-hidden product-card border border-gray-100 animate-fade-in-up shadow-[0_4px_20px_rgba(0,0,0,0.07)] hover:shadow-[0_12px_36px_rgba(139,115,85,0.18)]`;
         productCard.style.animationDelay = `${index * 0.1}s`;
         
         // Generate stars HTML
@@ -189,14 +189,17 @@ function renderProducts() {
 
         productCard.innerHTML = `
             <a href="product.html?id=${product.id}" class="block relative h-64 overflow-hidden group cursor-pointer">
-                <img src="${product.imageUrl}" alt="${product.name}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                <img src="${product.imageUrl}" alt="${product.name}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
                 ${badgeHtml}
-                <div class="absolute inset-0 bg-black bg-opacity-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                    <button class="add-to-cart-btn bg-white text-gray-900 hover:bg-primary hover:text-white font-bold py-3 px-6 rounded-full shadow-lg transition-colors flex items-center" data-id="${product.id}" onclick="event.preventDefault();event.stopPropagation();">
-                        <i class="ph ph-shopping-cart mr-2 text-lg"></i> Add to Cart
+                <!-- Gradient overlay on hover -->
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <!-- Slide-up Add to Cart button -->
+                <div class="absolute bottom-0 left-0 right-0 flex justify-center pb-5">
+                    <button class="add-to-cart-btn bg-white text-gray-900 hover:bg-primary hover:text-white font-bold py-2.5 px-6 rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.3)] transition-all flex items-center gap-2 text-sm" data-id="${product.id}" onclick="event.preventDefault();event.stopPropagation();">
+                        <i class="ph ph-shopping-cart text-base"></i> หยิบใส่ตะกร้า
                     </button>
                 </div>
-                <button class="absolute top-4 right-4 bg-white p-2 rounded-full text-gray-400 hover:text-red-500 shadow-sm transition-colors z-10" data-wishlist="${product.id}" onclick="event.preventDefault();event.stopPropagation();">
+                <button class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm p-2 rounded-full text-gray-400 hover:text-red-500 shadow-sm transition-colors z-10" data-wishlist="${product.id}" onclick="event.preventDefault();event.stopPropagation();">
                     <i class="${heartClass}"></i>
                 </button>
             </a>

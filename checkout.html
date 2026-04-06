@@ -28,6 +28,34 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
+
+        /* Form focus ring — primary color */
+        .input-field:focus {
+            border-color: #8B7355;
+            box-shadow: 0 0 0 3px rgba(139, 115, 85, 0.18);
+            outline: none;
+        }
+
+        /* Payment method card — base */
+        .payment-box {
+            border: 2px solid #e5e7eb;
+            border-radius: 0.75rem;
+            background: #fff;
+            overflow: hidden;
+            transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+        }
+        .payment-box:hover {
+            border-color: #c9b89a;
+        }
+        /* Active payment card */
+        .payment-box.active {
+            border-color: #8B7355;
+            background: #fdf8f3;
+            box-shadow: 0 0 0 3px rgba(139,115,85,0.12);
+        }
+        .payment-box.active label {
+            color: #5c4a30;
+        }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased">
@@ -176,30 +204,30 @@
                     <!-- Inline Payment Form -->
                     <div class="space-y-3">
                         <!-- Option 1: Credit/Debit Card -->
-                        <div class="border-2 border-primary rounded-xl overflow-hidden bg-white shadow-sm transition-all" id="payment-box-card">
+                        <div class="payment-box active" id="payment-box-card">
                             <label class="flex items-center gap-3 p-4 cursor-pointer">
                                 <input type="radio" name="payment_method" value="card" class="w-5 h-5 text-primary focus:ring-primary border-gray-300" checked onchange="selectPaymentMethod('card')">
                                 <span class="font-semibold text-gray-900">บัตรเครดิต / เดบิต</span>
-                                <div class="ml-auto text-gray-400"><i class="ph ph-credit-card text-2xl"></i></div>
+                                <div class="ml-auto text-primary"><i class="ph ph-credit-card text-2xl"></i></div>
                             </label>
-                            <div class="p-4 pt-0 border-t border-gray-100 mt-2" id="inline-card-form">
+                            <div class="p-4 pt-0 border-t border-amber-100 mt-2" id="inline-card-form">
                                 <div class="space-y-4 pt-4">
                                     <div>
                                         <label class="block text-sm text-gray-500 mb-1">หมายเลขบัตร</label>
-                                        <input type="text" id="cc-number" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-sm" placeholder="0000 0000 0000 0000" maxlength="19" oninput="formatCardNumber(this)">
+                                        <input type="text" id="cc-number" class="input-field text-sm" placeholder="0000 0000 0000 0000" maxlength="19" oninput="formatCardNumber(this)">
                                     </div>
                                     <div>
                                         <label class="block text-sm text-gray-500 mb-1">ชื่อบนบัตร</label>
-                                        <input type="text" id="cc-name" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-sm" placeholder="ชื่อ-นามสกุล">
+                                        <input type="text" id="cc-name" class="input-field text-sm" placeholder="ชื่อ-นามสกุล">
                                     </div>
                                     <div class="grid grid-cols-2 gap-4">
                                         <div>
                                             <label class="block text-sm text-gray-500 mb-1">วันหมดอายุ</label>
-                                            <input type="text" id="cc-expiry" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-sm" placeholder="MM/YY" maxlength="5" oninput="formatExpiry(this)">
+                                            <input type="text" id="cc-expiry" class="input-field text-sm" placeholder="MM/YY" maxlength="5" oninput="formatExpiry(this)">
                                         </div>
                                         <div>
                                             <label class="block text-sm text-gray-500 mb-1">รหัสความปลอดภัย</label>
-                                            <input type="password" id="cc-cvv" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-sm" placeholder="123" maxlength="4">
+                                            <input type="password" id="cc-cvv" class="input-field text-sm" placeholder="123" maxlength="4">
                                         </div>
                                     </div>
                                 </div>
@@ -207,7 +235,7 @@
                         </div>
 
                         <!-- Option 2: PromptPay -->
-                        <div class="border border-gray-200 rounded-xl overflow-hidden bg-white hover:border-gray-300 transition-all opacity-70" id="payment-box-promptpay">
+                        <div class="payment-box" id="payment-box-promptpay">
                             <label class="flex items-center gap-3 p-4 cursor-pointer">
                                 <input type="radio" name="payment_method" value="promptpay" class="w-5 h-5 text-primary focus:ring-primary border-gray-300" onchange="selectPaymentMethod('promptpay')">
                                 <span class="font-semibold text-gray-700">PromptPay</span>
@@ -218,7 +246,7 @@
                         </div>
 
                         <!-- Option 3: TrueMoney -->
-                        <div class="border border-gray-200 rounded-xl overflow-hidden bg-white hover:border-gray-300 transition-all opacity-70" id="payment-box-truemoney">
+                        <div class="payment-box" id="payment-box-truemoney">
                             <label class="flex items-center gap-3 p-4 cursor-pointer">
                                 <input type="radio" name="payment_method" value="truemoney" class="w-5 h-5 text-primary focus:ring-primary border-gray-300" onchange="selectPaymentMethod('truemoney')">
                                 <span class="font-semibold text-gray-700">TrueMoney</span>
@@ -229,11 +257,11 @@
                         </div>
 
                         <!-- Option 4: Cash on Delivery -->
-                        <div class="border border-gray-200 rounded-xl overflow-hidden bg-white hover:border-gray-300 transition-all opacity-70" id="payment-box-cod">
+                        <div class="payment-box" id="payment-box-cod">
                             <label class="flex items-center gap-3 p-4 cursor-pointer">
                                 <input type="radio" name="payment_method" value="cod" class="w-5 h-5 text-primary focus:ring-primary border-gray-300" onchange="selectPaymentMethod('cod')">
                                 <span class="font-semibold text-gray-700">เก็บเงินปลายทาง</span>
-                                <div class="ml-auto flex items-center justify-center text-gray-500">
+                                <div class="ml-auto flex items-center justify-center text-gray-400">
                                     <i class="ph ph-truck text-2xl"></i>
                                 </div>
                             </label>

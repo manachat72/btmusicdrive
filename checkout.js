@@ -171,29 +171,22 @@ function updateTotals() {
 
 function selectPaymentMethod(method) {
     const methods = ['card', 'promptpay', 'truemoney', 'cod'];
-    
+
     methods.forEach(m => {
         const box = document.getElementById(`payment-box-${m}`);
-        const labelText = box.querySelector('span');
-        
+        if (!box) return;
         if (m === method) {
-            box.classList.remove('border-gray-200', 'opacity-70');
-            box.classList.add('border-2', 'border-primary', 'shadow-sm');
-            labelText.classList.remove('text-gray-700');
-            labelText.classList.add('text-gray-900');
+            box.classList.add('active');
         } else {
-            box.classList.remove('border-2', 'border-primary', 'shadow-sm');
-            box.classList.add('border-gray-200', 'opacity-70');
-            labelText.classList.add('text-gray-700');
-            labelText.classList.remove('text-gray-900');
+            box.classList.remove('active');
         }
     });
 
     const cardForm = document.getElementById('inline-card-form');
     if (method === 'card') {
-        cardForm.classList.remove('hidden');
+        cardForm?.classList.remove('hidden');
     } else {
-        cardForm.classList.add('hidden');
+        cardForm?.classList.add('hidden');
     }
 }
 

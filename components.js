@@ -58,7 +58,10 @@ function _cartSidebarHTML() {
   <div id="cart-sidebar" class="fixed inset-y-0 right-0 max-w-sm w-full bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
     <div class="flex items-center justify-between p-4 border-b border-gray-200">
       <h2 class="text-lg font-bold flex items-center"><i class="ph ph-shopping-cart mr-2"></i> ตะกร้าสินค้า</h2>
-      <button id="close-cart-btn" class="text-gray-500 hover:text-red-500 transition-colors"><i class="ph ph-x text-2xl"></i></button>
+      <div class="flex items-center gap-3">
+        <button id="clear-cart-btn" class="text-xs text-gray-400 hover:text-red-500 transition-colors hidden">ลบทั้งหมด</button>
+        <button id="close-cart-btn" class="text-gray-500 hover:text-red-500 transition-colors"><i class="ph ph-x text-2xl"></i></button>
+      </div>
     </div>
     <div id="cart-items-container" class="flex-1 overflow-y-auto p-4 space-y-4">
       <div class="text-center text-gray-500 mt-10" id="empty-cart-msg">
@@ -70,7 +73,6 @@ function _cartSidebarHTML() {
       <div class="flex justify-between text-base font-medium text-gray-900 mb-4">
         <p>ยอดรวม</p><p id="cart-total">฿0.00</p>
       </div>
-
       <button onclick="window.location='checkout.html'" class="w-full bg-primary hover:bg-secondary text-white font-bold py-3 px-4 rounded-lg transition-colors shadow-md flex items-center justify-center gap-2">
         <i class="ph ph-lock-key"></i> ดำเนินการชำระเงิน
       </button>
@@ -726,13 +728,17 @@ function _updateCartUI() {
   const bnavCount = document.getElementById('bnav-cart-count');
   if (bnavCount) bnavCount.textContent = totalItems;
 
+  const clearBtn = document.getElementById('clear-cart-btn');
+
   if (_cart.length === 0) {
     if (emptyMsg) emptyMsg.style.display = 'block';
     if (container) { container.innerHTML = ''; container.appendChild(emptyMsg); }
     if (totalEl) totalEl.textContent = '\u0E3F0.00';
+    if (clearBtn) clearBtn.classList.add('hidden');
     return;
   }
   if (emptyMsg) emptyMsg.style.display = 'none';
+  if (clearBtn) clearBtn.classList.remove('hidden');
   if (!container) return;
 
   let total = 0;
@@ -743,19 +749,19 @@ function _updateCartUI() {
     const el = document.createElement('div');
     el.className = 'flex gap-4 py-4 border-b border-gray-100';
     el.innerHTML = `
-      <div class="w-20 h-24 flex-shrink-0 bg-gray-100 rounded-md overflow-hidden">
+      <div class="w-20 h-20 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
         <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover">
       </div>
       <div class="flex-1 flex flex-col">
         <div class="flex justify-between">
-          <h4 class="text-sm font-bold text-gray-900 line-clamp-2 pr-4">${item.name}</h4>
-          <button class="text-gray-400 hover:text-red-500 transition-colors flex-shrink-0" onclick="_removeFromCart('${item.id}')"><i class="ph ph-trash text-lg"></i></button>
+          <h4 class="text-sm font-bold text-gray-900 line-clamp-2 pr-2">${item.name}</h4>
+          <button class="text-gray-300 hover:text-red-500 transition-colors flex-shrink-0 min-w-[44px] min-h-[44px] flex items-center justify-center -mt-2 -mr-2" onclick="_removeFromCart('${item.id}')"><i class="ph ph-trash text-base"></i></button>
         </div>
-        <div class="flex justify-between items-end mt-auto pt-2">
-          <div class="flex items-center border border-gray-200 rounded-md">
-            <button class="px-2 py-1 text-gray-500 hover:text-primary" onclick="_updateQty('${item.id}',-1)"><i class="ph ph-minus text-xs"></i></button>
-            <span class="px-2 text-sm font-medium w-8 text-center">${item.quantity}</span>
-            <button class="px-2 py-1 text-gray-500 hover:text-primary" onclick="_updateQty('${item.id}',1)"><i class="ph ph-plus text-xs"></i></button>
+        <div class="flex justify-between items-center mt-auto pt-1">
+          <div class="flex items-center border border-gray-200 rounded-lg overflow-hidden">
+            <button class="min-w-[44px] min-h-[44px] flex items-center justify-center text-gray-500 hover:text-primary hover:bg-gray-50 transition-colors" onclick="_updateQty('${item.id}',-1)"><i class="ph ph-minus text-sm"></i></button>
+            <span class="px-3 text-sm font-bold text-gray-900 min-w-[32px] text-center">${item.quantity}</span>
+            <button class="min-w-[44px] min-h-[44px] flex items-center justify-center text-gray-500 hover:text-primary hover:bg-gray-50 transition-colors" onclick="_updateQty('${item.id}',1)"><i class="ph ph-plus text-sm"></i></button>
           </div>
           <span class="font-bold text-gray-900">\u0E3F${sub.toFixed(2)}</span>
         </div>
@@ -834,6 +840,15 @@ function _setupSharedEvents() {
   closeCart?.addEventListener('click', _toggleCart);
   cartOverlay?.addEventListener('click', () => { _toggleCart(); });
 
+  document.getElementById('clear-cart-btn')?.addEventListener('click', () => {
+    if (_cart.length === 0) return;
+    if (confirm('ลบสินค้าทั้งหมดในตะกร้า?')) {
+      _cart = [];
+      _saveCartToStorage();
+      _updateCartUI();
+    }
+  });
+
   authBtn?.addEventListener('click', () => { if (_currentUser) _handleLogout(); else _toggleAuthModal(); });
   closeAuth?.addEventListener('click', _toggleAuthModal);
   authModal?.addEventListener('click', e => { if (e.target === authModal) _toggleAuthModal(); });
@@ -845,13 +860,11 @@ function _setupSharedEvents() {
   // Bottom nav events
   const bnavCartBtn = document.getElementById('bnav-cart-btn');
   const bnavAccountBtn = document.getElementById('bnav-account-btn');
-  const bnavAccountMenu = document.getElementById('bnav-account-menu');
   const bnavLogoutBtn = document.getElementById('bnav-logout-btn');
   const bnavLoginBtn = document.getElementById('bnav-login-btn');
 
   bnavCartBtn?.addEventListener('click', _toggleCart);
-  bnavAccountBtn?.addEventListener('click', (e) => {
-    e.stopPropagation();
+  bnavAccountBtn?.addEventListener('click', () => {
     _toggleAccountDrawer();
   });
 
@@ -882,9 +895,14 @@ function _setupSharedEvents() {
 
   if (navbar) {
     window.addEventListener('scroll', () => {
-      if (window.scrollY > 10) navbar.classList.add('shadow-md','bg-opacity-95','backdrop-blur-sm');
-      else navbar.classList.remove('shadow-md','bg-opacity-95','backdrop-blur-sm');
-    });
+      if (window.scrollY > 30) {
+        navbar.classList.add('shadow-lg', 'backdrop-blur-sm');
+        navbar.style.background = 'rgba(15,23,42,0.92)';
+      } else {
+        navbar.classList.remove('shadow-lg', 'backdrop-blur-sm');
+        navbar.style.background = '';
+      }
+    }, { passive: true });
   }
 }
 
