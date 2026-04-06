@@ -470,10 +470,6 @@
         <i class="fa-solid fa-bars"></i><span>เมนู</span>
       </div>
 
-      <div class="sb-section-lbl" style="margin-top:6px;">Flash Fulfillment</div>
-      <div class="sb-item" id="nav-fulfillment" onclick="showSection('fulfillment')">
-        <i class="fa-solid fa-warehouse"></i><span>แจ้งของเข้าคลัง</span>
-      </div>
       <div class="sb-sep"></div>
       <div class="sb-item" id="nav-settings" onclick="showSection('settings')">
         <i class="fa-solid fa-gear"></i><span>ตั้งค่า</span>
@@ -527,76 +523,86 @@
         <div class="stat-card c-blue">
           <div class="stat-icon c-blue"><i class="fa-solid fa-coins"></i></div>
           <div>
-            <div class="stat-val">฿183,420</div>
-            <div class="stat-lbl">รายได้รวม</div>
-            <div class="stat-trend trend-up"><i class="fa-solid fa-arrow-trend-up"></i> +12.4% จากเดือนก่อน</div>
+            <div class="stat-val" id="dash-revenue">—</div>
+            <div class="stat-lbl" id="dash-revenue-lbl">รายได้รวมเดือนนี้</div>
+            <div class="stat-trend" id="dash-revenue-trend">กำลังโหลด...</div>
           </div>
         </div>
         <div class="stat-card c-green">
           <div class="stat-icon c-green"><i class="fa-solid fa-cart-shopping"></i></div>
           <div>
-            <div class="stat-val">1,284</div>
-            <div class="stat-lbl">คำสั่งซื้อทั้งหมด</div>
-            <div class="stat-trend trend-up"><i class="fa-solid fa-arrow-trend-up"></i> +8.1% จากเดือนก่อน</div>
+            <div class="stat-val" id="dash-orders">—</div>
+            <div class="stat-lbl" id="dash-orders-lbl">คำสั่งซื้อเดือนนี้</div>
+            <div class="stat-trend" id="dash-orders-trend">กำลังโหลด...</div>
           </div>
         </div>
         <div class="stat-card c-orange">
           <div class="stat-icon c-orange"><i class="fa-solid fa-receipt"></i></div>
           <div>
-            <div class="stat-val">฿142.85</div>
+            <div class="stat-val" id="dash-avg">—</div>
             <div class="stat-lbl">ยอดเฉลี่ยต่อออเดอร์</div>
-            <div class="stat-trend trend-down"><i class="fa-solid fa-arrow-trend-down"></i> -2.1% จากเดือนก่อน</div>
+            <div class="stat-trend" id="dash-avg-trend">กำลังโหลด...</div>
           </div>
         </div>
         <div class="stat-card c-purple">
-          <div class="stat-icon c-purple"><i class="fa-solid fa-store"></i></div>
+          <div class="stat-icon c-purple"><i class="fa-solid fa-users"></i></div>
           <div>
-            <div class="stat-val">4</div>
-            <div class="stat-lbl">ช่องทางขาย</div>
-            <div class="stat-trend trend-neu">btmusicdrive · Shopee · Lazada · TikTok</div>
+            <div class="stat-val" id="dash-customers">—</div>
+            <div class="stat-lbl">ลูกค้าใหม่เดือนนี้</div>
+            <div class="stat-trend" id="dash-customers-trend">กำลังโหลด...</div>
           </div>
         </div>
       </div>
 
-      <!-- Channel Revenue Table -->
+      <!-- Pending + Low Stock -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+
+        <!-- Recent Orders -->
+        <div class="wp-card" style="margin-bottom:0;">
+          <div class="card-hdr">
+            <h2><i class="fa-solid fa-clock-rotate-left"></i>ออเดอร์ล่าสุด</h2>
+            <span id="dash-pending-badge" class="card-tag" style="background:#fff3cd;color:#856404;display:none;"></span>
+          </div>
+          <div class="card-body nopad">
+            <table class="wp-tbl" id="dash-recent-orders">
+              <tbody><tr><td colspan="3" style="text-align:center;color:var(--muted);padding:20px;">กำลังโหลด...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Low Stock -->
+        <div class="wp-card" style="margin-bottom:0;">
+          <div class="card-hdr">
+            <h2><i class="fa-solid fa-triangle-exclamation" style="color:#d63638;"></i>สต็อกใกล้หมด</h2>
+          </div>
+          <div class="card-body nopad">
+            <table class="wp-tbl" id="dash-low-stock">
+              <tbody><tr><td colspan="2" style="text-align:center;color:var(--muted);padding:20px;">กำลังโหลด...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Products -->
       <div class="wp-card">
         <div class="card-hdr">
-          <h2><i class="fa-solid fa-chart-bar"></i>รายได้ตามช่องทาง</h2>
-          <span class="card-tag">มิถุนายน 2025 &middot; ตัวอย่าง</span>
+          <h2><i class="fa-solid fa-trophy"></i>สินค้าขายดี</h2>
+          <span class="card-tag" id="dash-month-label">—</span>
         </div>
         <div class="card-body nopad" style="overflow-x:auto;">
           <table class="wp-tbl">
             <thead>
               <tr>
-                <th>ช่องทาง</th>
-                <th class="r">ออเดอร์</th>
-                <th class="r">รายได้</th>
-                <th class="r">เฉลี่ยต่อออเดอร์</th>
-                <th class="r">สัดส่วน</th>
-                <th style="width:110px;"></th>
+                <th>#</th>
+                <th>สินค้า</th>
+                <th class="r">ยอดขาย (ชิ้น)</th>
               </tr>
             </thead>
-            <tbody id="channel-table-body"></tbody>
-            <tfoot>
-              <tr>
-                <td><strong>รวม</strong></td>
-                <td class="r"><strong>1,284</strong></td>
-                <td class="r"><strong>฿183,420</strong></td>
-                <td class="r"><strong>฿142.85</strong></td>
-                <td class="r"><strong>100%</strong></td>
-                <td></td>
-              </tr>
-            </tfoot>
+            <tbody id="dash-top-products">
+              <tr><td colspan="3" style="text-align:center;color:var(--muted);padding:20px;">กำลังโหลด...</td></tr>
+            </tbody>
           </table>
         </div>
-      </div>
-
-      <!-- Distribution bars -->
-      <div class="wp-card">
-        <div class="card-hdr">
-          <h2><i class="fa-solid fa-chart-pie"></i>การกระจายรายได้</h2>
-        </div>
-        <div class="card-body" id="channel-bars"></div>
       </div>
     </section>
 
@@ -940,81 +946,6 @@
       </div>
     </section>
 
-    <!-- ── FLASH FULFILLMENT — INBOUND ───────────────────────────────────── -->
-    <section id="section-fulfillment" style="display:none;">
-      <div class="wp-page-hdr">
-        <h1 class="wp-page-title">Flash Fulfillment — แจ้งของเข้าคลัง</h1>
-      </div>
-
-      <!-- Create Arrival Notice -->
-      <div class="card" style="margin-bottom:20px;">
-        <div class="card-hdr" style="display:flex;align-items:center;justify-content:space-between;">
-          <span><i class="fa-solid fa-truck-ramp-box" style="color:var(--accent);margin-right:6px;"></i>สร้าง Arrival Notice</span>
-        </div>
-        <div style="padding:20px;">
-          <p style="color:var(--muted);font-size:12px;margin-bottom:16px;">เลือกสินค้าและจำนวนที่ต้องการส่งเข้าโกดัง Flash Fulfillment</p>
-
-          <!-- Items Table -->
-          <table style="width:100%;border-collapse:collapse;margin-bottom:12px;" id="inbound-items-table">
-            <thead>
-              <tr style="background:#f6f7f7;font-size:12px;color:var(--muted);">
-                <th style="padding:8px 10px;text-align:left;border:1px solid var(--card-border);">สินค้า</th>
-                <th style="padding:8px 10px;text-align:center;width:100px;border:1px solid var(--card-border);">จำนวน</th>
-                <th style="padding:8px 10px;text-align:center;width:60px;border:1px solid var(--card-border);"></th>
-              </tr>
-            </thead>
-            <tbody id="inbound-items-body">
-              <!-- rows added by JS -->
-            </tbody>
-          </table>
-
-          <button onclick="addInboundRow()" style="font-size:12px;padding:6px 14px;border:1px dashed var(--card-border);border-radius:4px;background:transparent;cursor:pointer;color:var(--muted);margin-bottom:16px;">
-            <i class="fa-solid fa-plus"></i> เพิ่มสินค้า
-          </button>
-
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
-            <div>
-              <label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px;">ประเภท</label>
-              <select id="inbound-type" style="width:100%;padding:7px 10px;border:1px solid var(--card-border);border-radius:4px;font-size:13px;">
-                <option value="1">1 — จัดซื้อ (Purchase)</option>
-                <option value="3">3 — คืนสินค้า (Return)</option>
-                <option value="4">4 — อื่นๆ (Other)</option>
-              </select>
-            </div>
-            <div>
-              <label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px;">หมายเหตุ</label>
-              <input type="text" id="inbound-remark" placeholder="หมายเหตุ (ถ้ามี)" style="width:100%;padding:7px 10px;border:1px solid var(--card-border);border-radius:4px;font-size:13px;">
-            </div>
-          </div>
-
-          <div id="inbound-msg" style="display:none;padding:10px 14px;border-radius:4px;font-size:12px;margin-bottom:12px;"></div>
-
-          <button onclick="submitInbound()" id="inbound-submit-btn"
-            style="background:var(--accent);color:#fff;border:none;border-radius:4px;padding:9px 20px;font-size:13px;font-weight:600;cursor:pointer;">
-            <i class="fa-solid fa-paper-plane"></i> แจ้งของเข้าคลัง
-          </button>
-        </div>
-      </div>
-
-      <!-- Check Inbound Status -->
-      <div class="card">
-        <div class="card-hdr">
-          <i class="fa-solid fa-magnifying-glass" style="color:var(--accent);margin-right:6px;"></i>ตรวจสอบสถานะ Inbound
-        </div>
-        <div style="padding:20px;">
-          <div style="display:flex;gap:8px;margin-bottom:16px;">
-            <input type="text" id="inbound-sn-input" placeholder="กรอก Inbound SN เช่น AN2001018888"
-              style="flex:1;padding:7px 10px;border:1px solid var(--card-border);border-radius:4px;font-size:13px;">
-            <button onclick="checkInboundStatus()"
-              style="background:var(--accent);color:#fff;border:none;border-radius:4px;padding:7px 18px;font-size:13px;font-weight:600;cursor:pointer;">
-              ตรวจสอบ
-            </button>
-          </div>
-          <div id="inbound-status-result" style="display:none;"></div>
-        </div>
-      </div>
-    </section>
-
   </main>
 </div><!-- end #dashboard -->
 
@@ -1294,18 +1225,10 @@
     return h;
   }
 
-  const CHANNELS = [
-    { name: 'btmusicdrive Store', icon: 'fa-bolt',         color: '#0073aa', orders: 312, revenue: 44616, share: 24.3 },
-    { name: 'Shopee',       icon: 'fa-store',         color: '#ee4d2d', orders: 487, revenue: 68978, share: 37.6 },
-    { name: 'Lazada',       icon: 'fa-bag-shopping',  color: '#0f146d', orders: 298, revenue: 43512, share: 23.7 },
-    { name: 'TikTok Shop',  icon: 'fa-music',         color: '#2d2d2d', orders: 187, revenue: 26314, share: 14.4 },
-  ];
-
-  const SECTIONS = ['dashboard', 'orders', 'products', 'customers', 'categories', 'menus', 'fulfillment', 'settings'];
+  const SECTIONS = ['dashboard', 'orders', 'products', 'customers', 'categories', 'menus', 'settings'];
   const SECTION_TITLES = {
     dashboard: 'แดชบอร์ด', orders: 'คำสั่งซื้อ', products: 'สินค้า',
-    customers: 'ลูกค้า', categories: 'หมวดหมู่', menus: 'เมนู',
-    fulfillment: 'Flash Fulfillment', settings: 'ตั้งค่า'
+    customers: 'ลูกค้า', categories: 'หมวดหมู่', menus: 'เมนู', settings: 'ตั้งค่า'
   };
 
   // ── Gate ──────────────────────────────────────────────────────────────────
@@ -1362,60 +1285,98 @@
     if (navEl) navEl.classList.add('active');
     document.getElementById('topbar-title').textContent = SECTION_TITLES[id] || id;
     closeSidebar();
+    if (id === 'dashboard') initDashboard();
     if (id === 'orders') loadOrders();
     if (id === 'products') loadProducts();
     if (id === 'customers') loadCustomers();
     if (id === 'categories') loadCategories();
     if (id === 'menus') loadMenus();
-    if (id === 'fulfillment') initFulfillment();
   }
 
   // ── Init ──────────────────────────────────────────────────────────────────
-  function initDashboard() {
-    renderChannelTable();
-    renderChannelBars();
-    showSection('dashboard');
+  let _dashLoaded = false;
+
+  async function initDashboard() {
+    if (_dashLoaded) return;
+    _dashLoaded = true;
+    await loadDashboardStats();
   }
 
-  // ── Sales Overview ────────────────────────────────────────────────────────
-  function renderChannelTable() {
-    document.getElementById('channel-table-body').innerHTML = CHANNELS.map(c => `
-      <tr>
-        <td>
-          <div class="ch-name-cell">
-            <div class="ch-icon" style="background:${c.color};"><i class="fa-solid ${c.icon}"></i></div>
-            <strong>${c.name}</strong>
-          </div>
-        </td>
-        <td class="r">${c.orders.toLocaleString()}</td>
-        <td class="r"><strong>฿${c.revenue.toLocaleString()}</strong></td>
-        <td class="r" style="color:var(--muted);">฿${(c.revenue / c.orders).toFixed(2)}</td>
-        <td class="r">
-          <span class="share-pill" style="background:${c.color}22;color:${c.color};">${c.share}%</span>
-        </td>
-        <td>
-          <div class="mini-bar-track">
-            <div class="mini-bar-fill" style="width:${c.share}%;background:${c.color};"></div>
-          </div>
-        </td>
-      </tr>`).join('');
+  // ── Dashboard Stats ───────────────────────────────────────────────────────
+  function trendHtml(change) {
+    const sign = change >= 0 ? '+' : '';
+    const cls = change >= 0 ? 'trend-up' : 'trend-down';
+    const icon = change >= 0 ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down';
+    return `<span class="stat-trend ${cls}"><i class="fa-solid ${icon}"></i> ${sign}${change.toFixed(1)}% จากเดือนก่อน</span>`;
   }
 
-  function renderChannelBars() {
-    const max = Math.max(...CHANNELS.map(c => c.revenue));
-    document.getElementById('channel-bars').innerHTML = CHANNELS.map(c => `
-      <div class="dist-row">
-        <div class="dist-meta">
-          <div class="dist-label">
-            <div class="dist-dot" style="background:${c.color};"></div>
-            <span>${c.name}</span>
-          </div>
-          <span class="dist-val">฿${c.revenue.toLocaleString()}</span>
-        </div>
-        <div class="dist-track">
-          <div class="dist-fill" style="width:${(c.revenue / max * 100).toFixed(1)}%;background:${c.color};"></div>
-        </div>
-      </div>`).join('');
+  async function loadDashboardStats() {
+    try {
+      const res = await fetch(`${API_BASE}/orders/stats`, { headers: adminHeaders(false) });
+      if (!res.ok) throw new Error('stats failed');
+      const d = await res.json();
+
+      // Stat cards
+      document.getElementById('dash-revenue').textContent = '฿' + Math.round(d.revenue.current).toLocaleString();
+      document.getElementById('dash-revenue-lbl').textContent = `รายได้รวม — ${d.month}`;
+      document.getElementById('dash-revenue-trend').innerHTML = trendHtml(d.revenue.change);
+
+      document.getElementById('dash-orders').textContent = d.orders.current.toLocaleString();
+      document.getElementById('dash-orders-lbl').textContent = `คำสั่งซื้อ — ${d.month}`;
+      document.getElementById('dash-orders-trend').innerHTML = trendHtml(d.orders.change);
+
+      document.getElementById('dash-avg').textContent = '฿' + d.avgOrder.current.toFixed(2);
+      document.getElementById('dash-avg-trend').innerHTML = trendHtml(d.avgOrder.change);
+
+      document.getElementById('dash-customers').textContent = d.customers.current.toLocaleString();
+      document.getElementById('dash-customers-trend').innerHTML = trendHtml(d.customers.change);
+
+      // Pending badge
+      if (d.orders.pending > 0) {
+        const badge = document.getElementById('dash-pending-badge');
+        badge.textContent = `${d.orders.pending} รอดำเนินการ`;
+        badge.style.display = 'inline-block';
+      }
+
+      // Month label
+      document.getElementById('dash-month-label').textContent = d.month;
+
+      // Recent orders
+      const STATUS_TH = { PENDING:'รอชำระ', PROCESSING:'กำลังดำเนินการ', PAID:'ชำระแล้ว', SHIPPED:'จัดส่งแล้ว', DELIVERED:'ส่งสำเร็จ', CANCELLED:'ยกเลิก' };
+      const STATUS_COLOR = { PENDING:'#856404', PROCESSING:'#0c63e4', PAID:'#166534', SHIPPED:'#0a58ca', DELIVERED:'#198754', CANCELLED:'#d63638' };
+      document.getElementById('dash-recent-orders').querySelector('tbody').innerHTML =
+        d.recentOrders.length ? d.recentOrders.map(o => `
+          <tr>
+            <td style="font-size:11px;color:var(--muted);">#${o.id.slice(-6).toUpperCase()}<br>
+              <span style="font-size:11px;">${o.customerName}</span></td>
+            <td class="r"><strong>฿${Number(o.totalAmount).toLocaleString()}</strong></td>
+            <td class="r"><span style="font-size:11px;font-weight:600;color:${STATUS_COLOR[o.status]||'#666'};">${STATUS_TH[o.status]||o.status}</span></td>
+          </tr>`).join('')
+        : '<tr><td colspan="3" style="text-align:center;color:var(--muted);padding:16px;">ยังไม่มีออเดอร์</td></tr>';
+
+      // Low stock
+      document.getElementById('dash-low-stock').querySelector('tbody').innerHTML =
+        d.lowStock.length ? d.lowStock.map(p => `
+          <tr>
+            <td>${p.name}</td>
+            <td class="r"><span style="font-weight:700;color:${p.stock === 0 ? '#d63638' : '#856404'};">${p.stock} ชิ้น</span></td>
+          </tr>`).join('')
+        : '<tr><td colspan="2" style="text-align:center;color:var(--muted);padding:16px;">สต็อกปกติทั้งหมด</td></tr>';
+
+      // Top products
+      document.getElementById('dash-top-products').innerHTML =
+        d.topProducts.length ? d.topProducts.map((p, i) => `
+          <tr>
+            <td style="color:var(--muted);font-weight:700;">${i + 1}</td>
+            <td>${p.name || '-'}</td>
+            <td class="r"><strong>${(p.totalSold || 0).toLocaleString()}</strong></td>
+          </tr>`).join('')
+        : '<tr><td colspan="3" style="text-align:center;color:var(--muted);padding:16px;">ยังไม่มีข้อมูล</td></tr>';
+
+    } catch (e) {
+      console.error('Dashboard stats error:', e);
+      document.getElementById('dash-revenue').textContent = 'โหลดไม่ได้';
+    }
   }
 
   // ── Orders ────────────────────────────────────────────────────────────────
@@ -2756,159 +2717,6 @@
     await fetchPickerImages();
   }
 
-  // ══════════════════════════════════════════════════════════════════════════
-  // FLASH FULFILLMENT — INBOUND
-  // ══════════════════════════════════════════════════════════════════════════
-
-  let _inboundProducts = [];
-
-  async function initFulfillment() {
-    if (_inboundProducts.length) return;
-    try {
-      const res = await fetch(`${API_BASE}/products?limit=200`, {
-        headers: adminHeaders(false)
-      });
-      const data = await res.json();
-      _inboundProducts = (data.data || []).filter(p => p.sku);
-    } catch (e) {
-      console.error('Failed to load products for inbound:', e);
-    }
-    // เพิ่ม row แรกอัตโนมัติ
-    if (document.getElementById('inbound-items-body').children.length === 0) {
-      addInboundRow();
-    }
-  }
-
-  function addInboundRow() {
-    const tbody = document.getElementById('inbound-items-body');
-    const idx = tbody.children.length;
-    const options = _inboundProducts.map(p =>
-      `<option value="${p.id}" data-sku="${p.sku}">${p.name} (${p.sku})</option>`
-    ).join('');
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td style="padding:6px 8px;border:1px solid var(--card-border);">
-        <select class="inbound-product-select" data-idx="${idx}"
-          style="width:100%;padding:5px 8px;border:1px solid var(--card-border);border-radius:4px;font-size:12px;">
-          <option value="">— เลือกสินค้า —</option>
-          ${options}
-        </select>
-      </td>
-      <td style="padding:6px 8px;border:1px solid var(--card-border);text-align:center;">
-        <input type="number" class="inbound-qty-input" min="1" value="10"
-          style="width:70px;padding:5px 8px;border:1px solid var(--card-border);border-radius:4px;font-size:12px;text-align:center;">
-      </td>
-      <td style="padding:6px 8px;border:1px solid var(--card-border);text-align:center;">
-        <button onclick="this.closest('tr').remove()"
-          style="background:none;border:none;color:#d63638;cursor:pointer;font-size:14px;" title="ลบ">
-          <i class="fa-solid fa-trash"></i>
-        </button>
-      </td>`;
-    tbody.appendChild(tr);
-  }
-
-  async function submitInbound() {
-    const btn = document.getElementById('inbound-submit-btn');
-    const msg = document.getElementById('inbound-msg');
-    msg.style.display = 'none';
-
-    const rows = document.querySelectorAll('#inbound-items-body tr');
-    const items = [];
-    for (const row of rows) {
-      const productId = row.querySelector('.inbound-product-select').value;
-      const quantity = parseInt(row.querySelector('.inbound-qty-input').value) || 0;
-      if (!productId) { showInboundMsg('error', 'กรุณาเลือกสินค้าทุกแถว'); return; }
-      if (quantity < 1) { showInboundMsg('error', 'จำนวนต้องมากกว่า 0'); return; }
-      items.push({ productId, quantity });
-    }
-    if (!items.length) { showInboundMsg('error', 'กรุณาเพิ่มสินค้าอย่างน้อย 1 รายการ'); return; }
-
-    const type = parseInt(document.getElementById('inbound-type').value);
-    const remark = document.getElementById('inbound-remark').value.trim();
-
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังส่ง...';
-
-    try {
-      const res = await fetch(`${API_BASE}/fulfillment/inbound`, {
-        method: 'POST',
-        headers: adminHeaders(),
-        body: JSON.stringify({ items, type, remark })
-      });
-      const data = await res.json();
-      if (res.ok && data.success) {
-        showInboundMsg('success',
-          `สร้าง Arrival Notice สำเร็จ! <strong>Inbound SN: ${data.inboundSn || '-'}</strong><br>` +
-          `Order SN: ${data.orderSn} | สินค้า ${data.items?.length || items.length} รายการ`);
-        document.getElementById('inbound-items-body').innerHTML = '';
-        document.getElementById('inbound-remark').value = '';
-        addInboundRow();
-      } else {
-        showInboundMsg('error', data.error || data.message || 'เกิดข้อผิดพลาด');
-      }
-    } catch (e) {
-      showInboundMsg('error', 'ไม่สามารถเชื่อมต่อได้: ' + e.message);
-    } finally {
-      btn.disabled = false;
-      btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> แจ้งของเข้าคลัง';
-    }
-  }
-
-  function showInboundMsg(type, html) {
-    const el = document.getElementById('inbound-msg');
-    el.style.display = 'block';
-    el.style.background = type === 'success' ? '#edfaef' : '#fef2f2';
-    el.style.border = `1px solid ${type === 'success' ? '#bbf7c8' : '#fecaca'}`;
-    el.style.color = type === 'success' ? '#166534' : '#991b1b';
-    el.innerHTML = `<i class="fa-solid fa-${type === 'success' ? 'check-circle' : 'triangle-exclamation'}"></i> ${html}`;
-  }
-
-  async function checkInboundStatus() {
-    const sn = document.getElementById('inbound-sn-input').value.trim();
-    const result = document.getElementById('inbound-status-result');
-    if (!sn) { result.style.display = 'none'; return; }
-
-    result.style.display = 'block';
-    result.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังโหลด...';
-
-    try {
-      const res = await fetch(`${API_BASE}/fulfillment/inbound/${encodeURIComponent(sn)}`, {
-        headers: adminHeaders(false)
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        result.innerHTML = `<div style="color:#d63638;font-size:12px;"><i class="fa-solid fa-triangle-exclamation"></i> ${data.error || 'ไม่พบข้อมูล'}</div>`;
-        return;
-      }
-      const statusColor = data.status === 50 ? '#166534' : data.status >= 30 ? '#92400e' : '#1e40af';
-      result.innerHTML = `
-        <div style="padding:12px;border:1px solid var(--card-border);border-radius:6px;background:#f9f9f9;">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-            <span style="font-size:12px;font-weight:700;color:${statusColor};background:${statusColor}22;padding:3px 10px;border-radius:20px;">
-              ${data.statusLabel}
-            </span>
-            <span style="color:var(--muted);font-size:11px;">Inbound SN: ${sn}</span>
-          </div>
-          ${data.goods?.length ? `
-            <table style="width:100%;border-collapse:collapse;font-size:12px;">
-              <thead><tr style="background:#f0f0f1;">
-                <th style="padding:6px 8px;text-align:left;border:1px solid var(--card-border);">Barcode</th>
-                <th style="padding:6px 8px;text-align:center;border:1px solid var(--card-border);">จำนวนที่แจ้ง</th>
-                <th style="padding:6px 8px;text-align:center;border:1px solid var(--card-border);">จำนวนที่รับ</th>
-              </tr></thead>
-              <tbody>${data.goods.map(g => `
-                <tr>
-                  <td style="padding:6px 8px;border:1px solid var(--card-border);">${g.barCode || '-'}</td>
-                  <td style="padding:6px 8px;text-align:center;border:1px solid var(--card-border);">${g.num ?? '-'}</td>
-                  <td style="padding:6px 8px;text-align:center;border:1px solid var(--card-border);">${g.receivedNum ?? '-'}</td>
-                </tr>`).join('')}
-              </tbody>
-            </table>` : '<div style="color:var(--muted);font-size:12px;">ไม่มีข้อมูลสินค้า</div>'}
-        </div>`;
-    } catch (e) {
-      result.innerHTML = `<div style="color:#d63638;font-size:12px;">เกิดข้อผิดพลาด: ${e.message}</div>`;
-    }
-  }
 </script>
 </body>
 </html>

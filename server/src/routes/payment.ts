@@ -3,7 +3,6 @@ import crypto from 'crypto';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
 import prisma from '../lib/prisma';
 import { sendOrderConfirmationEmail } from '../services/emailService';
-import { createB2COrder } from '../services/flashFulfillmentService';
 
 const router = Router();
 
@@ -45,7 +44,7 @@ router.post('/create-checkout-session', authenticateToken, async (req: AuthReque
     const userId = req.user?.id;
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
-    const { omiseToken, promoCode, shippingAddress, phone, fullName, province, city, district, postalCode } = req.body;
+    const { omiseToken, promoCode, shippingAddress, phone } = req.body;
     if (!omiseToken) return res.status(400).json({ error: 'Missing payment token' });
 
     const cart = await prisma.cart.findUnique({
@@ -121,17 +120,15 @@ router.post('/create-checkout-session', authenticateToken, async (req: AuthReque
 
     console.log('[Omise] Charge result:', { id: charge.id, status: charge.status, authorize_uri: charge.authorize_uri });
 
-    const shippingInfo = { shippingAddress, phone, fullName, province, city, district, postalCode };
-
     // 3D Secure / redirect required
     if (charge.status === 'pending' && charge.authorize_uri) {
-      await createProcessingOrder(userId, invoiceNo, charge.id, cart, validatedPromo, discountAmount, totalAmount, shippingInfo);
+      await createProcessingOrder(userId, invoiceNo, charge.id, cart, validatedPromo, discountAmount, totalAmount, shippingAddress, phone);
       return res.json({ authorizeUri: charge.authorize_uri, invoiceNo });
     }
 
     // Instant success
     if (charge.status === 'successful') {
-      const order = await completeOrder(userId, invoiceNo, charge.id, cart, validatedPromo, discountAmount, totalAmount, shippingInfo);
+      const order = await completeOrder(userId, invoiceNo, charge.id, cart, validatedPromo, discountAmount, totalAmount, shippingAddress, phone);
       return res.json({ orderId: order.id, invoiceNo });
     }
 
@@ -213,9 +210,7 @@ router.post('/confirm', authenticateToken, async (req: AuthRequest, res: Respons
 
 
 // ── Helper functions ────────────────────────────────────────────────────────
-interface ShippingInfo { shippingAddress?: string; phone?: string; fullName?: string; province?: string; city?: string; district?: string; postalCode?: string; }
-
-async function createProcessingOrder(userId: string, invoiceNo: string, chargeId: string, cart: any, promo: any, discountAmount: number, totalAmount: number, shipping: ShippingInfo = {}) {
+async function createProcessingOrder(userId: string, invoiceNo: string, chargeId: string, cart: any, promo: any, discountAmount: number, totalAmount: number, shippingAddress?: string, _phone?: string) {
   const orderItems = cart.items.map((item: any) => ({
     productId: item.productId,
     quantity: item.quantity,
@@ -232,7 +227,7 @@ async function createProcessingOrder(userId: string, invoiceNo: string, chargeId
         paymentIntentId: chargeId,
         promoCode: promo?.code || null,
         discountAmount: discountAmount || 0,
-        shippingAddress: shipping.shippingAddress || null,
+        shippingAddress: shippingAddress || null,
         items: { create: orderItems },
       },
     });
@@ -244,7 +239,7 @@ async function createProcessingOrder(userId: string, invoiceNo: string, chargeId
   return order;
 }
 
-async function completeOrder(userId: string, invoiceNo: string, chargeId: string, cart: any, promo: any, discountAmount: number, totalAmount: number, shipping: ShippingInfo = {}) {
+async function completeOrder(userId: string, invoiceNo: string, chargeId: string, cart: any, promo: any, discountAmount: number, totalAmount: number, shippingAddress?: string, _phone?: string) {
   const orderItems = cart.items.map((item: any) => ({
     productId: item.productId,
     quantity: item.quantity,
@@ -261,7 +256,7 @@ async function completeOrder(userId: string, invoiceNo: string, chargeId: string
         paymentIntentId: chargeId,
         promoCode: promo?.code || null,
         discountAmount: discountAmount || 0,
-        shippingAddress: shipping.shippingAddress || null,
+        shippingAddress: shippingAddress || null,
         items: { create: orderItems },
       },
       include: { items: { include: { product: true } }, user: true }
@@ -285,35 +280,6 @@ async function completeOrder(userId: string, invoiceNo: string, chargeId: string
 
     return newOrder;
   }) as any;
-
-  // Sync to Flash Fulfillment (non-blocking)
-  if (order.user) {
-    createB2COrder({
-      orderSn: order.stripeSessionId || order.id,
-      consigneeName: shipping.fullName || order.user.name || order.user.email,
-      phoneNumber: shipping.phone || order.user.phone || '',
-      consigneeAddress: shipping.shippingAddress || '',
-      province: shipping.province || '',
-      city: shipping.city || '',
-      district: shipping.district || '',
-      postalCode: shipping.postalCode || '',
-      totalPrice: Number(order.totalAmount),
-      items: order.items.map((i: any) => ({
-        sku: i.product.sku || '',
-        quantity: i.quantity,
-        price: Number(i.priceAtTime),
-      })),
-    }).then((r) => {
-      if (r.success && r.trackingNumber) {
-        prisma.order.update({
-          where: { id: order.id },
-          data: { trackingNumber: r.trackingNumber, carrier: 'Flash', status: 'SHIPPED' },
-        }).catch((e: any) => console.error('[Flash Fulfillment] save tracking error:', e));
-      } else if (!r.success) {
-        console.warn('[Flash Fulfillment] createB2COrder:', r.message);
-      }
-    }).catch((e: any) => console.error('[Flash Fulfillment] createB2COrder error:', e));
-  }
 
   // Send Email
   if (order.user) {

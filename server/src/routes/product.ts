@@ -1,7 +1,6 @@
 import { Router, Request, Response } from 'express';
 import prisma from '../lib/prisma';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
-import { addGoods, editGoods } from '../services/flashFulfillmentService';
 
 const router = Router();
 
@@ -84,13 +83,6 @@ router.post('/', authenticateToken, async (req: AuthRequest, res: Response) => {
       include: { category: { select: { name: true } } },
     });
 
-    // Sync to Flash Fulfillment (non-blocking)
-    if (product.sku) {
-      addGoods({ sku: product.sku, name: product.name, price: product.price, imageUrl: product.imageUrl ?? undefined })
-        .then((r) => { if (!r.success) console.warn('[Flash Fulfillment] addGoods:', r.message); })
-        .catch((e) => console.error('[Flash Fulfillment] addGoods error:', e));
-    }
-
     return res.status(201).json(product);
   } catch (error) {
     console.error('Error creating product:', error);
@@ -135,13 +127,6 @@ router.patch('/:id', authenticateToken, async (req: AuthRequest, res: Response) 
       data,
       include: { category: { select: { name: true } } },
     });
-
-    // Sync to Flash Fulfillment (non-blocking)
-    if (product.sku) {
-      editGoods({ sku: product.sku, name: product.name, price: product.price, imageUrl: product.imageUrl ?? undefined })
-        .then((r) => { if (!r.success) console.warn('[Flash Fulfillment] editGoods:', r.message); })
-        .catch((e) => console.error('[Flash Fulfillment] editGoods error:', e));
-    }
 
     return res.json(product);
   } catch (error: any) {

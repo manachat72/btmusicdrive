@@ -10,6 +10,112 @@ const CARRIER_TRACKING_URLS: Record<string, string> = {
   Flash: 'https://www.flashexpress.co.th/tracking/?se=',
 };
 
+// ── GET /api/orders/stats ─────────────────────────────────────────────────────
+// Dashboard stats — ADMIN only
+router.get('/stats', authenticateToken, async (req: AuthRequest, res: Response) => {
+  try {
+    if (req.user?.role !== 'ADMIN') return res.status(403).json({ error: 'Admin access required' });
+
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59);
+
+    const PAID_STATUSES = ['PAID', 'PROCESSING', 'SHIPPED', 'DELIVERED'];
+
+    const [
+      revenueThis, revenueLast,
+      ordersThis, ordersLast,
+      pendingCount,
+      topProducts,
+      recentOrders,
+      lowStock,
+      newCustomersThis, newCustomersLast,
+    ] = await Promise.all([
+      // รายได้เดือนนี้
+      prisma.order.aggregate({
+        where: { status: { in: PAID_STATUSES }, createdAt: { gte: startOfMonth } },
+        _sum: { totalAmount: true },
+      }),
+      // รายได้เดือนที่แล้ว
+      prisma.order.aggregate({
+        where: { status: { in: PAID_STATUSES }, createdAt: { gte: startOfLastMonth, lte: endOfLastMonth } },
+        _sum: { totalAmount: true },
+      }),
+      // order เดือนนี้
+      prisma.order.count({ where: { createdAt: { gte: startOfMonth } } }),
+      // order เดือนที่แล้ว
+      prisma.order.count({ where: { createdAt: { gte: startOfLastMonth, lte: endOfLastMonth } } }),
+      // order รอดำเนินการ
+      prisma.order.count({ where: { status: { in: ['PENDING', 'PROCESSING'] } } }),
+      // สินค้าขายดี top 5
+      prisma.orderItem.groupBy({
+        by: ['productId'],
+        _sum: { quantity: true },
+        orderBy: { _sum: { quantity: 'desc' } },
+        take: 5,
+      }),
+      // order ล่าสุด 5 รายการ
+      prisma.order.findMany({
+        orderBy: { createdAt: 'desc' },
+        take: 5,
+        include: { user: { select: { name: true, email: true } } },
+      }),
+      // สต็อกใกล้หมด (< 10)
+      prisma.product.findMany({
+        where: { stock: { lt: 10 } },
+        select: { id: true, name: true, stock: true, imageUrl: true },
+        orderBy: { stock: 'asc' },
+        take: 5,
+      }),
+      // ลูกค้าใหม่เดือนนี้
+      prisma.user.count({ where: { createdAt: { gte: startOfMonth }, role: 'CUSTOMER' } }),
+      // ลูกค้าใหม่เดือนที่แล้ว
+      prisma.user.count({ where: { createdAt: { gte: startOfLastMonth, lte: endOfLastMonth }, role: 'CUSTOMER' } }),
+    ]);
+
+    // ดึงชื่อสินค้าขายดี
+    const topProductIds = topProducts.map(p => p.productId);
+    const topProductDetails = await prisma.product.findMany({
+      where: { id: { in: topProductIds } },
+      select: { id: true, name: true, imageUrl: true, price: true },
+    });
+    const topProductMap = new Map(topProductDetails.map(p => [p.id, p]));
+
+    const revenueThisVal = Number(revenueThis._sum.totalAmount || 0);
+    const revenueLastVal = Number(revenueLast._sum.totalAmount || 0);
+    const revenueChange = revenueLastVal > 0 ? ((revenueThisVal - revenueLastVal) / revenueLastVal) * 100 : 0;
+    const ordersChange = ordersLast > 0 ? ((ordersThis - ordersLast) / ordersLast) * 100 : 0;
+    const avgOrder = ordersThis > 0 ? revenueThisVal / ordersThis : 0;
+    const avgOrderLast = ordersLast > 0 ? revenueLastVal / ordersLast : 0;
+    const avgChange = avgOrderLast > 0 ? ((avgOrder - avgOrderLast) / avgOrderLast) * 100 : 0;
+    const customersChange = newCustomersLast > 0 ? ((newCustomersThis - newCustomersLast) / newCustomersLast) * 100 : 0;
+
+    return res.json({
+      revenue: { current: revenueThisVal, change: revenueChange },
+      orders: { current: ordersThis, change: ordersChange, pending: pendingCount },
+      avgOrder: { current: avgOrder, change: avgChange },
+      customers: { current: newCustomersThis, change: customersChange },
+      topProducts: topProducts.map(p => ({
+        ...topProductMap.get(p.productId),
+        totalSold: p._sum.quantity,
+      })),
+      recentOrders: recentOrders.map(o => ({
+        id: o.id,
+        customerName: (o.user as any)?.name || (o.user as any)?.email || '-',
+        totalAmount: Number(o.totalAmount),
+        status: o.status,
+        createdAt: o.createdAt,
+      })),
+      lowStock,
+      month: `${now.toLocaleString('th-TH', { month: 'long' })} ${now.getFullYear() + 543}`,
+    });
+  } catch (error) {
+    console.error('Error fetching dashboard stats:', error);
+    return res.status(500).json({ error: 'Failed to fetch stats' });
+  }
+});
+
 // ── GET /api/orders/my ────────────────────────────────────────────────────────
 // List orders for the logged-in user.
 // IMPORTANT: Must be defined BEFORE /:id to avoid being matched as an ID.
