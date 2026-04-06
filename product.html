@@ -696,56 +696,54 @@
     const id = params.get('id');
     if (!id) { showError(); return; }
 
+    // 1. โหลด product — ลอง API ก่อน ถ้าไม่ได้ใช้ products.json เสมอ
     try {
-      let res;
+      res = await fetch(`${PRODUCT_API_BASE}/products/${id}`);
+      if (res.ok) product = await res.json();
+    } catch (_) {}
+
+    if (!product) {
       try {
-        res = await fetch(`${PRODUCT_API_BASE}/products/${id}`);
-        if (!res.ok) throw new Error();
-        product = await res.json();
-      } catch {
-        const fallback = await fetch('products.json');
-        const all = await fallback.json();
-        product = all.find(p => p.id === id);
-      }
-
-      if (!product) { showError(); return; }
-
-      // Merge tracklist from products.json if API didn't return it
-      if (!product.tracklist || !product.tracklist.length) {
-        try {
-          const fb = await fetch('products.json');
-          const localProducts = await fb.json();
-          const local = localProducts.find(p => p.id === id);
-          if (local && local.tracklist) {
-            product.tracklist = local.tracklist;
-          }
-        } catch {}
-      }
-
-      // Load all products for "frequently bought together"
-      try {
-        const allRes = await fetch(`${PRODUCT_API_BASE}/products`);
-        if (allRes.ok) {
-          const json = await allRes.json();
-          allProducts = Array.isArray(json) ? json : (json.data || []);
-        } else throw new Error();
-      } catch {
-        try { const fb = await fetch('products.json'); allProducts = await fb.json(); } catch { allProducts = []; }
-      }
-
-      renderProduct();
-      renderTracklist();
-      renderLowStock();
-      renderFrequentlyBought();
-      renderReviews();
-      updateWishlistUI();
-    } catch {
-      showError();
+        const fb = await fetch('products.json');
+        const all = await fb.json();
+        product = (Array.isArray(all) ? all : (all.data || [])).find(p => p.id === id) || null;
+      } catch (_) {}
     }
+
+    if (!product) { showError(); return; }
+
+    // 2. Merge tracklist จาก products.json ถ้า API ไม่มี
+    if (!product.tracklist || !product.tracklist.length) {
+      try {
+        const fb = await fetch('products.json');
+        const localAll = await fb.json();
+        const local = (Array.isArray(localAll) ? localAll : (localAll.data || [])).find(p => p.id === id);
+        if (local && local.tracklist) product.tracklist = local.tracklist;
+      } catch (_) {}
+    }
+
+    // 3. โหลดสินค้าทั้งหมดสำหรับ related products
+    try {
+      const allRes = await fetch(`${PRODUCT_API_BASE}/products`);
+      if (allRes.ok) {
+        const json = await allRes.json();
+        allProducts = Array.isArray(json) ? json : (json.data || []);
+      } else throw new Error();
+    } catch (_) {
+      try { const fb = await fetch('products.json'); const j = await fb.json(); allProducts = Array.isArray(j) ? j : (j.data || []); } catch (_) { allProducts = []; }
+    }
+
+    renderProduct();
+    renderTracklist();
+    renderLowStock();
+    renderFrequentlyBought();
+    renderReviews();
+    updateWishlistUI();
   }
 
   function showError() {
     document.getElementById('loading').classList.add('hidden');
+    document.getElementById('product-content').classList.add('hidden');
     document.getElementById('error').classList.remove('hidden');
   }
 
@@ -854,8 +852,9 @@
       ).join('');
     }
 
-    // Show
+    // Show — ซ่อน error และ loading ก่อนเสมอ
     document.getElementById('loading').classList.add('hidden');
+    document.getElementById('error').classList.add('hidden');
     document.getElementById('product-content').classList.remove('hidden');
 
     // Populate mobile sticky cart bar
