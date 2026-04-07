@@ -200,6 +200,18 @@
                         </div>
                     </div>
 
+                    <!-- Category SEO Banner -->
+                    <div id="category-banner" class="hidden mb-6 rounded-2xl overflow-hidden relative shadow-md">
+                        <div class="relative h-44 md:h-52">
+                            <img id="category-banner-img" src="" alt="" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent"></div>
+                            <div class="absolute inset-0 flex flex-col justify-center px-8 md:px-12">
+                                <h1 id="category-banner-title" class="text-2xl md:text-3xl font-extrabold text-white mb-2 drop-shadow-md"></h1>
+                                <p id="category-banner-desc" class="text-sm md:text-base text-white/90 max-w-xl leading-relaxed drop-shadow"></p>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Products -->
                     <div class="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4" id="shop-products">
                         <!-- Loading -->
@@ -230,6 +242,7 @@
 
     let shopProducts = [];
     let allCategories = [];
+    let categoryData = [];
     let activeCategory = 'all';
     let currentSort = 'default';
     let searchQuery = '';
@@ -240,11 +253,15 @@
     let inStockOnly = false;
     let onSaleOnly = false;
 
+    const DEFAULT_TITLE = document.title;
+    const DEFAULT_META_DESC = document.querySelector('meta[name="description"]')?.content || '';
+
     // Read category from URL param
     const urlParams = new URLSearchParams(window.location.search);
     const urlCategory = urlParams.get('category');
 
     document.addEventListener('DOMContentLoaded', async () => {
+        await loadCategoryData();
         await loadShopProducts();
         setupShopEvents();
         setupMobileFilterDrawer();
@@ -286,10 +303,49 @@
             renderCategoryChips();
             renderSidebarCategories();
             renderShopProducts();
+            updateCategoryBanner(activeCategory);
         } catch (err) {
             console.error(err);
             document.getElementById('shop-products').innerHTML = '<div class="col-span-full text-center py-16 text-red-500"><i class="ph ph-warning-circle text-5xl mb-3"></i><p class="font-semibold">ไม่สามารถโหลดสินค้าได้</p></div>';
         }
+    }
+
+    async function loadCategoryData() {
+        try {
+            const res = await fetch('categories.json');
+            if (res.ok) categoryData = await res.json();
+        } catch { /* silently ignore — banner just won't show */ }
+    }
+
+    function updateCategoryBanner(catName) {
+        const banner = document.getElementById('category-banner');
+        const img = document.getElementById('category-banner-img');
+        const title = document.getElementById('category-banner-title');
+        const desc = document.getElementById('category-banner-desc');
+        const metaDesc = document.querySelector('meta[name="description"]');
+
+        if (!banner) return;
+
+        if (catName === 'all') {
+            banner.classList.add('hidden');
+            document.title = DEFAULT_TITLE;
+            if (metaDesc) metaDesc.setAttribute('content', DEFAULT_META_DESC);
+            return;
+        }
+
+        const cat = categoryData.find(c => c.name === catName);
+        if (!cat) {
+            banner.classList.add('hidden');
+            return;
+        }
+
+        img.src = cat.imageUrl;
+        img.alt = cat.name + ' — แฟลชไดร์ฟเพลง MP3 Bt music drive';
+        title.textContent = cat.name;
+        desc.textContent = cat.h1Description;
+        document.title = cat.titleTag;
+        if (metaDesc) metaDesc.setAttribute('content', cat.metaDescription);
+        banner.classList.remove('hidden');
     }
 
     function renderCategoryChips() {
@@ -458,6 +514,7 @@
             renderCategoryChips();
             renderSidebarCategories();
             renderShopProducts();
+            updateCategoryBanner(activeCategory);
             // Update URL
             const url = new URL(window.location);
             if (activeCategory === 'all') url.searchParams.delete('category');
@@ -473,6 +530,7 @@
                 document.getElementById('breadcrumb-current').textContent = activeCategory === 'all' ? 'สินค้าทั้งหมด' : activeCategory;
                 renderCategoryChips();
                 renderShopProducts();
+                updateCategoryBanner(activeCategory);
             }
         });
 
@@ -535,6 +593,7 @@
             renderCategoryChips();
             renderSidebarCategories();
             renderShopProducts();
+            updateCategoryBanner('all');
             document.querySelectorAll('input[name="rating-filter"]').forEach(r => r.checked = r.value === '0');
             updateActiveFilterCount();
         });
@@ -696,6 +755,7 @@
             renderCategoryChips();
             renderSidebarCategories();
             renderShopProducts();
+            updateCategoryBanner(activeCategory);
             updateActiveFilterCount();
             closeDrawer();
         }
