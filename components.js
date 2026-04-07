@@ -198,7 +198,7 @@ function _footerHTML() {
       </div>
 
       <!-- Bottom Bar -->
-      <div class="border-t border-gray-700 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="border-t border-gray-700 pt-6 hidden md:flex flex-col md:flex-row justify-between items-center gap-4">
         <p class="text-gray-500 text-sm">&copy; 2026 btmusicdrive สงวนลิขสิทธิ์ทุกประการ</p>
         <div class="flex items-center gap-4 text-gray-500 text-xs">
           <a href="terms.html" class="hover:text-white transition-colors">ข้อกำหนดและเงื่อนไข</a>
@@ -378,6 +378,13 @@ function _highlightActiveSidebar() {
   // Mobile Bottom Navigation Bar
   if (!document.getElementById('mobile-bottom-nav')) {
     document.body.insertAdjacentHTML('beforeend', _mobileBottomNavHTML());
+  }
+
+  // Fix: iOS Safari breaks position:fixed when body has overflow-x:hidden
+  // Move overflow-x:hidden to html element instead
+  if (document.body.classList.contains('overflow-x-hidden')) {
+    document.body.classList.remove('overflow-x-hidden');
+    document.documentElement.style.overflowX = 'hidden';
   }
 
   _highlightActiveSidebar();
