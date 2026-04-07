@@ -1145,8 +1145,17 @@
           <input type="text" id="cm-name" class="settings-input" placeholder="เช่น เพื่อชีวิต, ลูกทุ่ง, สตริง">
         </div>
         <div class="settings-row">
-          <label class="settings-label">คำอธิบาย</label>
+          <label class="settings-label">คำอธิบาย (แสดงบนแบนเนอร์)</label>
           <textarea id="cm-desc" class="settings-input" rows="2" placeholder="คำอธิบายหมวดหมู่สั้นๆ (แสดงบนแบนเนอร์)" style="resize:vertical;"></textarea>
+        </div>
+        <div class="settings-row">
+          <label class="settings-label">Title Tag (SEO)</label>
+          <input type="text" id="cm-title-tag" class="settings-input" placeholder="เช่น แฟลชไดร์ฟเพลงลูกทุ่ง MP3 ฮิตตลอดกาล — Bt music drive">
+          <p class="settings-hint">ชื่อที่แสดงในแท็บเบราว์เซอร์และ Google</p>
+        </div>
+        <div class="settings-row">
+          <label class="settings-label">Meta Description (SEO)</label>
+          <textarea id="cm-meta-desc" class="settings-input" rows="2" placeholder="คำอธิบายสำหรับ Google ความยาวแนะนำ 120-160 ตัวอักษร" style="resize:vertical;"></textarea>
         </div>
 
         <div class="settings-row">
@@ -2493,6 +2502,8 @@
     document.getElementById('cm-sort').value = cat?.sortOrder ?? 0;
     document.getElementById('cm-active').checked = cat ? cat.isActive !== false : true;
     document.getElementById('cm-banner-url').value = cat?.bannerUrl || '';
+    document.getElementById('cm-title-tag').value = cat?.titleTag || '';
+    document.getElementById('cm-meta-desc').value = cat?.metaDescription || '';
     previewCategoryBanner();
     document.getElementById('cat-modal-title').textContent = cat ? 'แก้ไขหมวดหมู่' : 'เพิ่มหมวดหมู่';
     document.getElementById('category-modal').style.display = 'flex';
@@ -2522,7 +2533,9 @@
       bannerUrl: document.getElementById('cm-banner-url').value.trim(),
       icon: document.getElementById('cm-icon').value.trim(),
       sortOrder: parseInt(document.getElementById('cm-sort').value) || 0,
-      isActive: document.getElementById('cm-active').checked
+      isActive: document.getElementById('cm-active').checked,
+      titleTag: document.getElementById('cm-title-tag').value.trim(),
+      metaDescription: document.getElementById('cm-meta-desc').value.trim()
     };
 
     if (id) {

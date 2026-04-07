@@ -144,6 +144,7 @@
     let activeCat = '';
     let catSearch = '';
     let catSort = 'default';
+    let jsonCats = []; // from categories.json
 
     // Get category from URL
     const urlParams = new URLSearchParams(window.location.search);
@@ -175,6 +176,14 @@
             allProducts = [];
         }
 
+        // Load categories.json for banner images
+        try {
+            const res = await fetch('categories.json');
+            jsonCats = await res.json();
+        } catch {
+            jsonCats = [];
+        }
+
         // Extract categories from products
         const catMap = new Map();
         allProducts.forEach(p => {
@@ -193,18 +202,44 @@
         // Find saved category settings for the active one
         const savedCat = savedCats.find(c => c.name === activeCat);
 
-        // Update banner
-        if (savedCat && savedCat.bannerUrl) {
-            document.getElementById('banner-img').src = savedCat.bannerUrl;
+        // Find matching entry in categories.json (match by category id from products)
+        function getJsonCatForName(catName) {
+            const product = allProducts.find(p => (p.category?.name || p.category) === catName);
+            const catId = product?.category?.id || product?.categoryId;
+            return jsonCats.find(c => String(c.id) === String(catId));
         }
+
+        // Update banner — prefer LocalStorage bannerUrl, fallback to categories.json imageUrl
+        const bannerImg = document.getElementById('banner-img');
+        if (savedCat && savedCat.bannerUrl) {
+            bannerImg.src = savedCat.bannerUrl;
+        } else {
+            const jc = getJsonCatForName(activeCat);
+            if (jc && jc.imageUrl) bannerImg.src = jc.imageUrl;
+        }
+        const jcActive = getJsonCatForName(activeCat);
+
         if (savedCat && savedCat.description) {
             document.getElementById('cat-desc').textContent = savedCat.description;
+        } else if (jcActive && jcActive.h1Description) {
+            document.getElementById('cat-desc').textContent = jcActive.h1Description;
         }
 
         // Update page info
         document.getElementById('cat-title').textContent = activeCat || 'หมวดหมู่';
         document.getElementById('breadcrumb-cat').textContent = activeCat || 'หมวดหมู่';
-        document.title = `${activeCat || 'หมวดหมู่'} — btmusicdrive`;
+
+        // Title tag — prefer LocalStorage titleTag, fallback to categories.json
+        const titleTag = (savedCat && savedCat.titleTag) || (jcActive && jcActive.titleTag) || `${activeCat || 'หมวดหมู่'} — btmusicdrive`;
+        document.title = titleTag;
+
+        // Meta description
+        const metaDesc = (savedCat && savedCat.metaDescription) || (jcActive && jcActive.metaDescription) || '';
+        if (metaDesc) {
+            let metaEl = document.querySelector('meta[name="description"]');
+            if (!metaEl) { metaEl = document.createElement('meta'); metaEl.name = 'description'; document.head.appendChild(metaEl); }
+            metaEl.content = metaDesc;
+        }
 
         renderCatChips();
         renderCatProducts();
@@ -328,8 +363,14 @@
             document.getElementById('breadcrumb-cat').textContent = activeCat;
             document.title = `${activeCat} — btmusicdrive`;
 
+            const bannerImgEl = document.getElementById('banner-img');
             if (savedCat && savedCat.bannerUrl) {
-                document.getElementById('banner-img').src = savedCat.bannerUrl;
+                bannerImgEl.src = savedCat.bannerUrl;
+            } else {
+                const product = allProducts.find(p => (p.category?.name || p.category) === activeCat);
+                const catId = product?.category?.id || product?.categoryId;
+                const jc = jsonCats.find(c => String(c.id) === String(catId));
+                if (jc && jc.imageUrl) bannerImgEl.src = jc.imageUrl;
             }
             if (savedCat && savedCat.description) {
                 document.getElementById('cat-desc').textContent = savedCat.description;
