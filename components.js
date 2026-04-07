@@ -189,9 +189,7 @@ function _footerHTML() {
           </ul>
           <div class="flex space-x-3 mt-5">
             <a href="#" class="w-9 h-9 rounded-full bg-gray-700 hover:bg-primary flex items-center justify-center text-gray-300 hover:text-white transition-all"><i class="ph-fill ph-facebook-logo text-lg"></i></a>
-            <a href="#" class="w-9 h-9 rounded-full bg-gray-700 hover:bg-primary flex items-center justify-center text-gray-300 hover:text-white transition-all"><i class="ph-fill ph-tiktok-logo text-lg"></i></a>
-            <a href="#" class="w-9 h-9 rounded-full bg-gray-700 hover:bg-primary flex items-center justify-center text-gray-300 hover:text-white transition-all"><i class="ph-fill ph-instagram-logo text-lg"></i></a>
-            <a href="#" class="w-9 h-9 rounded-full bg-gray-700 hover:bg-primary flex items-center justify-center text-gray-300 hover:text-white transition-all"><i class="ph-fill ph-youtube-logo text-lg"></i></a>
+            <a href="#" class="w-9 h-9 rounded-full bg-gray-700 hover:bg-primary flex items-center justify-center text-gray-300 hover:text-white transition-all"><i class="ph-fill ph-line-logo text-lg"></i></a>
           </div>
         </div>
 

@@ -4,7 +4,12 @@
       "Bash(python3:*)",
       "Bash(node:*)",
       "Bash(grep -l \"components.js\" /c/Users/manac/ProjectsPython/btmusicdrive/*.html)",
-      "Bash(grep -n \"overflow-x-hidden\" c:/Users/manac/ProjectsPython/btmusicdrive/*.html)"
+      "Bash(grep -n \"overflow-x-hidden\" c:/Users/manac/ProjectsPython/btmusicdrive/*.html)",
+      "Bash(grep -v \"^category$\")",
+      "Bash(cat ~/.claude/plugins/*.json)",
+      "Bash(xargs grep:*)",
+      "Bash(npm list:*)",
+      "Bash(npm install:*)"
     ]
   }
 }
