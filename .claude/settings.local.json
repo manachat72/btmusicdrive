@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(python3:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(grep -l \"components.js\" /c/Users/manac/ProjectsPython/btmusicdrive/*.html)"
     ]
   }
 }

@@ -437,11 +437,11 @@ function _renderNavMenus(menus) {
   }).join('');
 
   mobile.innerHTML = menus.map(m => {
-    const icon = m.icon ? `<i class="${m.icon}"></i> ` : '';
-    let html = `<a href="${m.url}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-primary hover:bg-white/10 flex items-center gap-2">${icon}${m.label}</a>`;
+    const icon = m.icon ? `<i class="${m.icon}"></i>` : '';
+    let html = `<a href="${m.url}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-primary hover:bg-white/10 flex items-center gap-2">${icon} ${m.label}</a>`;
     if (m.children && m.children.length > 0) {
       html += m.children.map(c =>
-        `<a href="${c.url}" class="block pl-8 pr-3 py-2 rounded-md text-sm text-gray-400 hover:text-primary hover:bg-white/10">${c.icon ? `<i class="${c.icon}"></i> ` : ''}${c.label}</a>`
+        `<a href="${c.url}" class="block pl-8 pr-3 py-2 rounded-md text-sm text-gray-400 hover:text-primary hover:bg-white/10 flex items-center gap-2">${c.icon ? `<i class="${c.icon}"></i>` : ''}${c.label}</a>`
       ).join('');
     }
     return html;
