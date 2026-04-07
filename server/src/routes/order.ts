@@ -21,7 +21,7 @@ router.get('/stats', authenticateToken, async (req: AuthRequest, res: Response) 
     const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
     const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59);
 
-    const PAID_STATUSES = ['PAID', 'PROCESSING', 'SHIPPED', 'DELIVERED'];
+    const PAID_STATUSES: import('@prisma/client').OrderStatus[] = ['PAID', 'PROCESSING', 'SHIPPED', 'DELIVERED'];
 
     const [
       revenueThis, revenueLast,
@@ -82,8 +82,8 @@ router.get('/stats', authenticateToken, async (req: AuthRequest, res: Response) 
     });
     const topProductMap = new Map(topProductDetails.map(p => [p.id, p]));
 
-    const revenueThisVal = Number(revenueThis._sum.totalAmount || 0);
-    const revenueLastVal = Number(revenueLast._sum.totalAmount || 0);
+    const revenueThisVal = Number(revenueThis._sum?.totalAmount || 0);
+    const revenueLastVal = Number(revenueLast._sum?.totalAmount || 0);
     const revenueChange = revenueLastVal > 0 ? ((revenueThisVal - revenueLastVal) / revenueLastVal) * 100 : 0;
     const ordersChange = ordersLast > 0 ? ((ordersThis - ordersLast) / ordersLast) * 100 : 0;
     const avgOrder = ordersThis > 0 ? revenueThisVal / ordersThis : 0;

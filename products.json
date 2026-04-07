@@ -6,7 +6,7 @@
     "originalPrice": 319,
     "categoryId": "1",
     "category": { "id": "1", "name": "เพื่อชีวิต" },
-    "imageUrl": "images/carabao-usb.png",
+    "imageUrl": "images/USB Flash Drive Mp3 Songs for Life Carabao.png",
     "images": [
       "https://images.unsplash.com/photo-1524805444758-089113d48a6d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
       "https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
@@ -149,7 +149,12 @@
     "categoryId": "4",
     "category": { "id": "4", "name": "เพลงสตริง" },
     "imageUrl": "images/usb-flash-drive-mp3-90s-greatest-hits.png",
-    "images": ["images/usb-flash-drive-mp3-90s-greatest-hits(1).png"],
+    "images": ["images/usb-flash-drive-mp3-90s-greatest-hits(1).png",
+               "images/usb-flash-drive-mp3-90s-greatest-hits(2).png",
+               "images/usb-flash-drive-mp3-90s-greatest-hits(3).png",
+               "images/usb-flash-drive-mp3-90s-greatest-hits(4).png"
+  ],
+    
     "brand": "btmusicdrive",
     "sku": "BT-LT-004",
     "tags": ["USB", "MP3", "สตริง", "90s"],
@@ -188,8 +193,11 @@
     "originalPrice": 299,
     "categoryId": "5",
     "category": { "id": "5", "name": "หมอลำ" },
-    "imageUrl": "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-    "images": [],
+    "imageUrl": "images/USB_MP3_Southern_Memories_Original.png",
+    "images": ["images/USB_MP3_Southern_Memories_Original(4).png",
+               "images/USB_MP3_Southern_Memories_Original(2).png",
+               "images/USB_MP3_Southern_Memories_Original(3).png",
+               ],
     "brand": "btmusicdrive",
     "sku": "BT-ML-005",
     "tags": ["USB", "MP3", "หมอลำ", "หมอลำซิ่ง", "อีสาน"],
