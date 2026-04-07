@@ -188,8 +188,16 @@ function _footerHTML() {
             <li class="flex items-center gap-3"><i class="ph ph-envelope text-lg text-primary"></i><span>contact@btmusicdrive.com</span></li>
           </ul>
           <div class="flex space-x-3 mt-5">
-            <a href="#" class="w-9 h-9 rounded-full bg-gray-700 hover:bg-primary flex items-center justify-center text-gray-300 hover:text-white transition-all"><i class="ph-fill ph-facebook-logo text-lg"></i></a>
-            <a href="#" class="w-9 h-9 rounded-full bg-gray-700 hover:bg-primary flex items-center justify-center text-gray-300 hover:text-white transition-all"><i class="ph-fill ph-line-logo text-lg"></i></a>
+            <a href="https://www.facebook.com/btmusicdrive" target="_blank" rel="noopener" title="Facebook"
+               class="w-10 h-10 rounded-2xl flex items-center justify-center text-white text-xl shadow-lg transition-all duration-200 hover:scale-110 hover:shadow-blue-500/40"
+               style="background:linear-gradient(135deg,#1877f2,#0c5fd8);">
+              <i class="ph-fill ph-facebook-logo"></i>
+            </a>
+            <a href="https://line.me/ti/p/~@bt1992" target="_blank" rel="noopener" title="Line"
+               class="w-10 h-10 rounded-2xl flex items-center justify-center text-white text-xl shadow-lg transition-all duration-200 hover:scale-110 hover:shadow-green-500/40"
+               style="background:linear-gradient(135deg,#06c755,#059d43);">
+              <i class="ph-fill ph-line-logo"></i>
+            </a>
           </div>
         </div>
 
