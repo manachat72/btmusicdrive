@@ -236,11 +236,36 @@
             </button>
           </div>
 
+          <!-- Share Buttons -->
+          <div class="mb-5 flex items-center gap-2 flex-wrap">
+            <span class="text-xs text-gray-400 font-medium mr-1">แชร์:</span>
+            <a id="share-facebook" href="#" target="_blank" rel="noopener" title="แชร์ Facebook"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-semibold text-gray-600 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700 transition-all">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.988H7.898V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg>
+              Facebook
+            </a>
+            <a id="share-line" href="#" target="_blank" rel="noopener" title="แชร์ LINE"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-semibold text-gray-600 hover:bg-green-50 hover:border-green-300 hover:text-green-700 transition-all">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.070 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+              LINE
+            </a>
+            <a id="share-twitter" href="#" target="_blank" rel="noopener" title="แชร์ X (Twitter)"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-semibold text-gray-600 hover:bg-gray-100 hover:border-gray-400 transition-all">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.911-5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              X
+            </a>
+            <button id="share-copy" onclick="copyProductLink()" title="คัดลอกลิงก์"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-semibold text-gray-600 hover:bg-amber-50 hover:border-amber-300 hover:text-amber-700 transition-all">
+              <i class="ph ph-link text-sm"></i>
+              คัดลอกลิงก์
+            </button>
+          </div>
+
           <!-- Trust Badges -->
           <div class="grid grid-cols-2 gap-2.5 mb-5 p-4 bg-gray-50 rounded-2xl border border-gray-100">
             <div class="trust-badge flex items-center gap-2.5 p-3 bg-white rounded-xl border border-gray-100">
-              <div class="w-9 h-9 rounded-lg bg-amber-100 flex items-center justify-center shrink-0">
-                <i class="ph ph-shield-check text-lg text-amber-600"></i>
+              <div class="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
+                <i class="ph ph-shield-check text-lg text-gray-500"></i>
               </div>
               <div>
                 <p class="text-xs font-bold text-gray-800">รับประกัน 1 ปี</p>
@@ -248,8 +273,8 @@
               </div>
             </div>
             <div class="trust-badge flex items-center gap-2.5 p-3 bg-white rounded-xl border border-gray-100">
-              <div class="w-9 h-9 rounded-lg bg-green-100 flex items-center justify-center shrink-0">
-                <i class="ph ph-truck text-lg text-green-600"></i>
+              <div class="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
+                <i class="ph ph-truck text-lg text-gray-500"></i>
               </div>
               <div>
                 <p class="text-xs font-bold text-gray-800">ส่งด่วน 24 ชม.</p>
@@ -257,8 +282,8 @@
               </div>
             </div>
             <div class="trust-badge flex items-center gap-2.5 p-3 bg-white rounded-xl border border-gray-100">
-              <div class="w-9 h-9 rounded-lg bg-blue-100 flex items-center justify-center shrink-0">
-                <i class="ph ph-lock-key text-lg text-blue-600"></i>
+              <div class="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
+                <i class="ph ph-lock-key text-lg text-gray-500"></i>
               </div>
               <div>
                 <p class="text-xs font-bold text-gray-800">ชำระผ่าน Omise</p>
@@ -266,8 +291,8 @@
               </div>
             </div>
             <div class="trust-badge flex items-center gap-2.5 p-3 bg-white rounded-xl border border-gray-100">
-              <div class="w-9 h-9 rounded-lg bg-purple-100 flex items-center justify-center shrink-0">
-                <i class="ph ph-arrow-counter-clockwise text-lg text-purple-600"></i>
+              <div class="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
+                <i class="ph ph-arrow-counter-clockwise text-lg text-gray-500"></i>
               </div>
               <div>
                 <p class="text-xs font-bold text-gray-800">เปลี่ยนคืน 7 วัน</p>
@@ -601,7 +626,21 @@
           </div>
           <a href="shop.html" class="text-sm text-primary font-semibold hover:underline flex items-center gap-1">ดูทั้งหมด <i class="ph ph-arrow-right"></i></a>
         </div>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="same-category-grid"></div>
+        <!-- Slider wrapper -->
+        <div class="relative">
+          <!-- Prev button -->
+          <button id="related-prev" onclick="slideRelated(-1)"
+            class="hidden absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 w-9 h-9 rounded-full bg-white shadow-md border border-gray-200 flex items-center justify-center text-gray-500 hover:text-primary hover:border-primary transition-all">
+            <i class="ph ph-caret-left text-lg"></i>
+          </button>
+          <!-- Grid — always 2 cols, up to 4 on desktop -->
+          <div class="grid grid-cols-2 md:grid-cols-2 gap-4 overflow-hidden" id="same-category-grid"></div>
+          <!-- Next button -->
+          <button id="related-next" onclick="slideRelated(1)"
+            class="hidden absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 w-9 h-9 rounded-full bg-white shadow-md border border-gray-200 flex items-center justify-center text-gray-500 hover:text-primary hover:border-primary transition-all">
+            <i class="ph ph-caret-right text-lg"></i>
+          </button>
+        </div>
       </div>
 
     </div>
@@ -793,6 +832,16 @@
     ldScript.textContent = JSON.stringify(ld);
     // ── End SEO update ───────────────────────────────────────────────────────
 
+    // ── Share buttons ─────────────────────────────────────────────────────────
+    const shareUrl = encodeURIComponent(pageUrl);
+    const shareText = encodeURIComponent(product.name + ' — Bt music drive');
+    const fbEl = document.getElementById('share-facebook');
+    if (fbEl) fbEl.href = `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`;
+    const lineEl = document.getElementById('share-line');
+    if (lineEl) lineEl.href = `https://line.me/R/msg/text/?${shareText}%20${shareUrl}`;
+    const twEl = document.getElementById('share-twitter');
+    if (twEl) twEl.href = `https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}`;
+
     document.getElementById('bc-name').textContent = product.name;
     document.getElementById('p-name').textContent = product.name;
 
@@ -940,15 +989,44 @@
     }
   }
 
-  // ── Frequently Bought Together ───────────────────────────────────────────────
+  // ── Related Products (same category, 2-col with slider if >2) ────────────────
+  let _relatedProducts = [];
+  let _relatedPage = 0;
+  const RELATED_PER_PAGE = 2;
+
   function renderFrequentlyBought() {
     if (!product || allProducts.length < 2) return;
-    const sameCat = allProducts.filter(p => p.id !== product.id && (p.categoryId === product.categoryId || p.category?.id === product.category?.id));
+
+    // Try same category first; fallback to all other products
+    let sameCat = allProducts.filter(p => p.id !== product.id &&
+      (p.categoryId === product.categoryId || p.category?.id === product.category?.id ||
+       (p.category?.name || p.category) === (product.category?.name || product.category)));
+    if (sameCat.length === 0) {
+      sameCat = allProducts.filter(p => p.id !== product.id);
+    }
     if (sameCat.length === 0) return;
 
-    const recommended = sameCat.slice(0, 4);
+    _relatedProducts = sameCat;
+    _relatedPage = 0;
+
+    const prevBtn = document.getElementById('related-prev');
+    const nextBtn = document.getElementById('related-next');
+
+    if (_relatedProducts.length > RELATED_PER_PAGE) {
+      if (prevBtn) prevBtn.classList.remove('hidden');
+      if (nextBtn) nextBtn.classList.remove('hidden');
+    }
+
+    renderRelatedPage();
+    document.getElementById('frequently-bought').classList.remove('hidden');
+  }
+
+  function renderRelatedPage() {
     const container = document.getElementById('same-category-grid');
-    container.innerHTML = recommended.map(p => {
+    const start = _relatedPage * RELATED_PER_PAGE;
+    const items = _relatedProducts.slice(start, start + RELATED_PER_PAGE);
+
+    container.innerHTML = items.map(p => {
       const disc = p.originalPrice && p.originalPrice > p.price
         ? `<span class="text-xs text-gray-400 line-through ml-1">฿${Number(p.originalPrice).toLocaleString('th-TH', {minimumFractionDigits:2})}</span>`
         : '';
@@ -967,7 +1045,30 @@
       </a>`;
     }).join('');
 
-    document.getElementById('frequently-bought').classList.remove('hidden');
+    // Update nav button states
+    const maxPage = Math.ceil(_relatedProducts.length / RELATED_PER_PAGE) - 1;
+    const prevBtn = document.getElementById('related-prev');
+    const nextBtn = document.getElementById('related-next');
+    if (prevBtn) prevBtn.style.opacity = _relatedPage === 0 ? '0.3' : '1';
+    if (nextBtn) nextBtn.style.opacity = _relatedPage >= maxPage ? '0.3' : '1';
+  }
+
+  function slideRelated(dir) {
+    const maxPage = Math.ceil(_relatedProducts.length / RELATED_PER_PAGE) - 1;
+    _relatedPage = Math.max(0, Math.min(maxPage, _relatedPage + dir));
+    renderRelatedPage();
+  }
+
+  function copyProductLink() {
+    const url = window.location.href;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(url).then(() => showToast('คัดลอกลิงก์แล้ว!'));
+    } else {
+      const ta = document.createElement('textarea');
+      ta.value = url; document.body.appendChild(ta); ta.select();
+      document.execCommand('copy'); document.body.removeChild(ta);
+      showToast('คัดลอกลิงก์แล้ว!');
+    }
   }
 
   function addBundleToCart() {

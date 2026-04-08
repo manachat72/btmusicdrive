@@ -188,7 +188,7 @@ function renderProducts() {
         const heartClass = isWishlisted ? 'ph-fill ph-heart text-xl text-red-500' : 'ph ph-heart text-xl';
 
         productCard.innerHTML = `
-            <a href="product.html?id=${product.id}" class="block relative h-64 overflow-hidden group cursor-pointer">
+            <a href="product.html?id=${product.id}" class="block relative h-40 sm:h-64 overflow-hidden group cursor-pointer">
                 <img src="${product.imageUrl}" alt="${product.name}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
                 ${badgeHtml}
                 <!-- Gradient overlay on hover -->
@@ -203,19 +203,19 @@ function renderProducts() {
                     <i class="${heartClass}"></i>
                 </button>
             </a>
-            <div class="p-5">
-                <div class="text-xs text-gray-500 font-medium mb-1 uppercase tracking-wider">${product.category?.name || product.category || ''}</div>
-                <a href="product.html?id=${product.id}" class="block"><h3 class="text-lg font-bold text-gray-900 mb-2 truncate hover:text-primary transition-colors">${product.name}</h3></a>
-                <div class="flex items-center mb-3">
+            <div class="p-3 sm:p-5">
+                <div class="text-xs text-gray-500 font-medium mb-1 uppercase tracking-wider hidden sm:block">${product.category?.name || product.category || ''}</div>
+                <a href="product.html?id=${product.id}" class="block"><h3 class="text-sm sm:text-lg font-bold text-gray-900 mb-1 sm:mb-2 line-clamp-2 hover:text-primary transition-colors">${product.name}</h3></a>
+                <div class="hidden sm:flex items-center mb-3">
                     <div class="flex mr-2">
                         ${starsHtml}
                     </div>
                     <span class="text-xs text-gray-500">(${reviews})</span>
                 </div>
                 <div class="flex items-center justify-between">
-                    <span class="text-xl font-bold text-gray-900">฿${product.price.toFixed(2)}</span>
-                    <button class="md:hidden add-to-cart-btn-mobile text-primary hover:text-secondary p-2" data-id="${product.id}">
-                        <i class="ph-fill ph-plus-circle text-3xl"></i>
+                    <span class="text-base sm:text-xl font-bold text-gray-900">฿${product.price.toFixed(2)}</span>
+                    <button class="add-to-cart-btn-mobile text-primary hover:text-secondary p-1" data-id="${product.id}" onclick="event.preventDefault();event.stopPropagation();">
+                        <i class="ph-fill ph-plus-circle text-2xl sm:text-3xl"></i>
                     </button>
                 </div>
                 ${lowStockHtml}

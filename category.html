@@ -96,8 +96,21 @@
         </div>
     </section>
 
+    <!-- All Categories Grid (like index.html) -->
+    <section class="py-10 bg-gray-50" id="all-categories-section">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-3">หมวดหมู่แนวเพลง</h2>
+                <div class="w-12 h-1 bg-primary mx-auto rounded"></div>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-5 auto-rows-[160px] md:auto-rows-[200px]" id="all-cats-grid">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+    </section>
+
     <!-- Products Grid -->
-    <section class="py-10">
+    <section class="py-10" id="cat-products-section">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
                 <p class="text-gray-500" id="cat-product-count">กำลังโหลด...</p>
@@ -242,7 +255,46 @@
         }
 
         renderCatChips();
+        renderAllCatsGrid();
         renderCatProducts();
+    }
+
+    function renderAllCatsGrid() {
+        const DEFAULT_CATEGORIES = [
+            { name: 'เพื่อชีวิต', bannerUrl: 'images/category/category-songs-for-life.png', description: 'รวมเพลงเพื่อชีวิตยอดฮิต คาราบาว 3 ช่า' },
+            { name: 'เพลงสตริง', bannerUrl: 'images/category/category-thai-pop-rock.png', description: 'เพลงสตริงยุค 80s-90s รวมทุกวง' },
+            { name: 'ลูกทุ่ง', bannerUrl: 'images/category/category-thai-country.png', description: 'เพลงลูกทุ่งฮิตตลอดกาล' },
+            { name: 'หมอลำ', bannerUrl: 'images/category/category-southern-thai.png', description: 'หมอลำซิ่ง มันส์ๆ เสียงอีสาน' },
+            { name: 'เพลงสากล', bannerUrl: 'images/category/category-international-hits.png', description: 'เพลงสากลฮิต Pop Rock R&B' },
+            { name: 'ลูกกรุง', bannerUrl: 'images/category/category-thai-oldies.png', description: 'เพลงลูกกรุงอมตะ คลาสสิกไพเราะ' }
+        ];
+        const savedCats = getCategoriesFromStorage();
+        let cats = savedCats.filter(c => c.isActive !== false);
+        if (cats.length === 0) cats = DEFAULT_CATEGORIES;
+
+        const grid = document.getElementById('all-cats-grid');
+        if (!grid) return;
+        grid.innerHTML = cats.map((c, idx) => {
+            const jc = jsonCats.find(j => j.name === c.name);
+            const banner = c.bannerUrl || (jc && jc.imageUrl) || DEFAULT_CATEGORIES.find(d => d.name === c.name)?.bannerUrl || 'images/category/category-songs-for-life.png';
+            const desc = c.description || c.name;
+            const featured = idx === 0;
+            const spanClass = featured ? 'col-span-2 row-span-2' : 'col-span-1 row-span-1';
+            const titleSize = featured ? 'text-2xl md:text-3xl' : 'text-lg';
+            const badge = featured ? '<span class="inline-block mb-1.5 text-xs font-bold bg-amber-400 text-gray-900 px-2.5 py-0.5 rounded-full uppercase tracking-wide">ขายดีที่สุด</span><br>' : '';
+            const isActive = c.name === activeCat;
+            return `
+            <a href="category.html?cat=${encodeURIComponent(c.name)}"
+               class="group relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 ${spanClass} ${isActive ? 'ring-4 ring-primary ring-offset-2' : ''}">
+                <img src="${banner}" alt="${c.name}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent group-hover:from-black/80 transition-all duration-300"></div>
+                <div class="absolute bottom-4 left-4 right-4">
+                    ${badge}
+                    <h3 class="${titleSize} font-bold text-white mb-0.5 drop-shadow">${c.name}</h3>
+                    <p class="text-gray-200 text-xs flex items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-2 group-hover:translate-y-0">${desc} <i class="ph ph-arrow-right ml-1"></i></p>
+                </div>
+            </a>`;
+        }).join('');
     }
 
     function renderCatChips() {
