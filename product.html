@@ -634,7 +634,7 @@
             <i class="ph ph-caret-left text-lg"></i>
           </button>
           <!-- Grid — always 2 cols, up to 4 on desktop -->
-          <div class="grid grid-cols-2 md:grid-cols-2 gap-4 overflow-hidden" id="same-category-grid"></div>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 overflow-hidden" id="same-category-grid"></div>
           <!-- Next button -->
           <button id="related-next" onclick="slideRelated(1)"
             class="hidden absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 w-9 h-9 rounded-full bg-white shadow-md border border-gray-200 flex items-center justify-center text-gray-500 hover:text-primary hover:border-primary transition-all">
@@ -1008,7 +1008,7 @@
   // ── Related Products (same category, 2-col with slider if >2) ────────────────
   let _relatedProducts = [];
   let _relatedPage = 0;
-  const RELATED_PER_PAGE = 2;
+  const RELATED_PER_PAGE = 4;
 
   function renderFrequentlyBought() {
     if (!product || allProducts.length < 2) return;
