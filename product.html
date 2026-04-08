@@ -962,7 +962,7 @@
       const name = escHtml(typeof t === 'string' ? t : t.name || '');
       const artist = typeof t === 'object' && t.artist ? escHtml(t.artist) : '';
       return `<div class="tl-row tracklist-item">
-        <span class="tl-num">${i + 1}.</span>
+        <span class="tl-num"></span>
         <i class="ph ph-music-note text-primary/60 text-sm shrink-0"></i>
         <span class="tl-name track-name">${name}</span>
         ${artist ? `<span class="tl-artist">${artist}</span>` : ''}
