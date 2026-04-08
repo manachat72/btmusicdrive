@@ -757,13 +757,7 @@
         const fb = await fetch('products.json');
         const localAll = await fb.json();
         const localList = Array.isArray(localAll) ? localAll : (localAll.data || []);
-        // Match by id first, then name exact, then name partial (handles UUID vs numeric id mismatch)
-        let local = localList.find(p => p.id === id);
-        if (!local) local = localList.find(p => p.name === product.name);
-        if (!local) {
-          const catName = (product.category?.name || product.category || '').toLowerCase();
-          local = localList.find(p => (p.category?.name || p.category || '').toLowerCase() === catName);
-        }
+        const local = localList.find(p => p.id === id);
         if (local && local.tracklist) product.tracklist = local.tracklist;
       } catch (_) {}
     }
