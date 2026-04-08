@@ -938,7 +938,6 @@
     populateSpecsSummary();
 
     if (hasTracklist) {
-      // Show tracklist section, hide empty state
       const section = document.getElementById('tracklist-section-all');
       const emptyEl = document.getElementById('tracklist-empty');
       if (section) section.classList.remove('hidden');
@@ -954,6 +953,22 @@
       if (section) section.classList.add('hidden');
       if (emptyEl) emptyEl.classList.remove('hidden');
     }
+  }
+
+  function populateSpecsSummary() {
+    if (!product) return;
+    const specs = product.specs || {};
+    const capacity = specs['ความจุ'] || specs['capacity'] || '—';
+    const quality = specs['ไฟล์เพลง'] || specs['quality'] || 'MP3 320kbps';
+    const trackCount = (product.tracklist && product.tracklist.length > 0)
+      ? `${product.tracklist.length} เพลง`
+      : (specs['จำนวนเพลง'] || '—');
+    const capEl = document.getElementById('spec-capacity');
+    const qualEl = document.getElementById('spec-quality');
+    const countEl = document.getElementById('spec-track-count');
+    if (capEl) capEl.textContent = capacity;
+    if (qualEl) qualEl.textContent = quality;
+    if (countEl) countEl.textContent = trackCount;
   }
 
   function renderTracklistFull(list) {
