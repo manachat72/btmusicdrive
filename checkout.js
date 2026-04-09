@@ -7,9 +7,14 @@ const TAX_RATE = 0.08;
 
 let cart = [];
 let currentUser = null;
-let appliedPromo = null; // { code, type: 'PERCENT'|'FIXED', value, description }
+let appliedPromo = null;
 
-// ── Init ────────────────────────────────────────────────────────────────────
+// Stripe instances
+let stripe = null;
+let elements = null;
+let paymentElement = null;
+
+// ── Init ─────────────────────────────────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', () => {
     enforceLogin();
@@ -17,9 +22,21 @@ document.addEventListener('DOMContentLoaded', () => {
     loadCart();
     checkPaymentStatus();
     initAddressDropdowns();
+    initStripe();
 });
 
-// ── Auth Guard ───────────────────────────────────────────────────────────────
+// ── Stripe Init ───────────────────────────────────────────────────────────────
+
+function initStripe() {
+    const stripePublicKey = window.STRIPE_PUBLIC_KEY || 'pk_live_51T8AaH0naU9InmAiCY8gXdsBKS0BLpimIkid75RgXhPPqzGlig2c1l820PFFGEJUvP2VF2iJbOKo0PsQMVr0JZNg00NWthxP0H';
+    if (typeof Stripe === 'undefined') {
+        console.error('Stripe.js not loaded');
+        return;
+    }
+    stripe = Stripe(stripePublicKey);
+}
+
+// ── Auth Guard ────────────────────────────────────────────────────────────────
 
 function enforceLogin() {
     const token = localStorage.getItem('btmusicdrive_token');
@@ -32,7 +49,7 @@ function enforceLogin() {
     }
 }
 
-// ── User Info ────────────────────────────────────────────────────────────────
+// ── User Info ─────────────────────────────────────────────────────────────────
 
 async function loadUserInfo() {
     const token = localStorage.getItem('btmusicdrive_token');
@@ -47,11 +64,9 @@ async function loadUserInfo() {
         currentUser = data.user;
 
         const fullName = currentUser.name || '';
-        // Fill the new combined name field
         const fullNameField = document.getElementById('full-name');
         if (fullNameField) fullNameField.value = fullName;
 
-        // Also fill hidden fields for backward compat
         const parts = fullName.trim().split(' ');
         const firstNameField = document.getElementById('first-name');
         const lastNameField = document.getElementById('last-name');
@@ -64,7 +79,7 @@ async function loadUserInfo() {
     }
 }
 
-// ── Cart Loading ─────────────────────────────────────────────────────────────
+// ── Cart Loading ──────────────────────────────────────────────────────────────
 
 async function loadCart() {
     const token = localStorage.getItem('btmusicdrive_token');
@@ -91,7 +106,6 @@ async function loadCart() {
         }
     }
 
-    // Fallback: localStorage
     try {
         const raw = localStorage.getItem('cart');
         cart = raw ? JSON.parse(raw) : [];
@@ -170,7 +184,7 @@ function updateTotals() {
 // ── Payment Tabs ──────────────────────────────────────────────────────────────
 
 function selectPaymentMethod(method) {
-    const methods = ['card', 'promptpay', 'truemoney', 'cod'];
+    const methods = ['card', 'cod'];
 
     methods.forEach(m => {
         const box = document.getElementById(`payment-box-${m}`);
@@ -182,32 +196,12 @@ function selectPaymentMethod(method) {
         }
     });
 
-    const cardForm = document.getElementById('inline-card-form');
+    const stripeContainer = document.getElementById('stripe-payment-container');
     if (method === 'card') {
-        cardForm?.classList.remove('hidden');
+        stripeContainer?.classList.remove('hidden');
     } else {
-        cardForm?.classList.add('hidden');
+        stripeContainer?.classList.add('hidden');
     }
-}
-
-function switchPayment(method) {
-    // Legacy alias — delegate to selectPaymentMethod
-    selectPaymentMethod(method);
-}
-
-// ── Input Formatters ──────────────────────────────────────────────────────────
-
-function formatCardNumber(input) {
-    let val = input.value.replace(/\D/g, '').substring(0, 16);
-    input.value = val.match(/.{1,4}/g)?.join(' ') || val;
-}
-
-function formatExpiry(input) {
-    let val = input.value.replace(/\D/g, '').substring(0, 4);
-    if (val.length >= 2) {
-        val = val.substring(0, 2) + ' / ' + val.substring(2);
-    }
-    input.value = val;
 }
 
 // ── Promo Code ────────────────────────────────────────────────────────────────
@@ -254,7 +248,6 @@ async function applyPromo() {
         updateTotals();
 
     } catch {
-        // API unavailable — fallback demo codes
         const DEMO_CODES = {
             'SAVE10':  { type: 'PERCENT', value: 10,  description: '10% off your order' },
             'SAVE50':  { type: 'FIXED',   value: 50,  description: '฿50 off your order' },
@@ -341,9 +334,6 @@ function validateForm() {
 
 // ── Place Order ───────────────────────────────────────────────────────────────
 
-// Initialize Omise
-Omise.setPublicKey('pkey_test_674nw670v7znhhl0h6x');
-
 async function placeOrder() {
     hideError();
 
@@ -362,94 +352,148 @@ async function placeOrder() {
 
     const btn = document.getElementById('place-order-btn');
     const btnMobile = document.getElementById('place-order-btn-mobile');
-    
-    const totalText = document.getElementById('total-price').textContent.replace('฿', '').replace(/,/g, '');
-    const amountInSatangs = Math.round(parseFloat(totalText) * 100);
-
     const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+
+    const normalizedPhone = document.getElementById('phone').value.trim().replace(/\D/g, '');
+    const shippingAddress = [
+        document.getElementById('address').value.trim(),
+        document.getElementById('address2')?.value.trim(),
+        document.getElementById('city')?.value.trim(),
+        document.getElementById('state')?.value.trim(),
+        document.getElementById('zip').value.trim(),
+        document.getElementById('country')?.value || 'TH'
+    ].filter(Boolean).join(', ');
 
     setLoading(btn, true);
     setLoading(btnMobile, true);
 
     if (paymentMethod === 'cod') {
-        // Cash on delivery bypasses Omise directly
-        processCheckout('cod');
-    } else if (paymentMethod === 'card') {
-        const num = document.getElementById('cc-number').value.replace(/\s+/g, '');
-        const name = document.getElementById('cc-name').value;
-        const expiry = document.getElementById('cc-expiry').value.split('/');
-        const month = expiry[0] ? expiry[0].trim() : '';
-        const yearVal = expiry[1] ? expiry[1].trim() : '';
-        const year = yearVal.length === 2 ? '20' + yearVal : yearVal; // Convert YY to YYYY
-        const cvv = document.getElementById('cc-cvv').value;
-
-        if (!num || !name || !month || !year || !cvv) {
-            showError('กรุณากรอกข้อมูลบัตรให้ครบถ้วน');
-            setLoading(btn, false);
-            setLoading(btnMobile, false);
-            return;
-        }
-
-        Omise.createToken('card', {
-            name: name,
-            number: num,
-            expiration_month: month,
-            expiration_year: year,
-            security_code: cvv
-        }, (statusCode, response) => {
-            if (statusCode === 200) {
-                processCheckout(response.id);
-            } else {
-                showError(response.message || 'เกิดข้อผิดพลาดกับข้อมูลบัตรของคุณ');
-                setLoading(btn, false);
-                setLoading(btnMobile, false);
-            }
-        });
+        await processCodOrder(shippingAddress, normalizedPhone, btn, btnMobile);
     } else {
-        // PromptPay or TrueMoney
-        Omise.createSource(paymentMethod, {
-            amount: amountInSatangs,
-            currency: 'THB'
-        }, (statusCode, response) => {
-            if (statusCode === 200) {
-                processCheckout(response.id);
-            } else {
-                showError(response.message || 'เกิดข้อผิดพลาดในการสร้างรายการชำระเงิน');
-                setLoading(btn, false);
-                setLoading(btnMobile, false);
-            }
-        });
+        await processStripePayment(shippingAddress, normalizedPhone, btn, btnMobile);
     }
 }
 
-async function processCheckout(omiseToken) {
-    const token = localStorage.getItem('btmusicdrive_token');
-    const btn = document.getElementById('place-order-btn');
-    const btnMobile = document.getElementById('place-order-btn-mobile');
-    setLoading(btn, true);
-    setLoading(btnMobile, true);
-    const normalizedPhone = document.getElementById('phone').value.trim().replace(/\D/g, '');
+// ── Stripe Payment ────────────────────────────────────────────────────────────
 
-    const shippingAddress = [
-        document.getElementById('address').value.trim(),
-        document.getElementById('address2').value.trim(),
-        document.getElementById('city').value.trim(),
-        document.getElementById('state').value.trim(),
-        document.getElementById('zip').value.trim(),
-        document.getElementById('country').value
-    ].filter(Boolean).join(', ');
+async function processStripePayment(shippingAddress, phone, btn, btnMobile) {
+    const token = localStorage.getItem('btmusicdrive_token');
+
+    if (!stripe) {
+        showError('ระบบชำระเงินยังไม่พร้อม กรุณารีเฟรชหน้าและลองอีกครั้ง');
+        setLoading(btn, false);
+        setLoading(btnMobile, false);
+        return;
+    }
 
     try {
-        const res = await fetch(`${API_BASE}/payment/create-checkout-session`, {
+        // Step 1: Create PaymentIntent via backend
+        const intentRes = await fetch(`${API_BASE}/payment/create-payment-intent`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`
             },
             body: JSON.stringify({
-                omiseToken,
-                phone: normalizedPhone,
+                ...(appliedPromo ? { promoCode: appliedPromo.code } : {})
+            })
+        });
+
+        const intentData = await intentRes.json();
+
+        if (!intentRes.ok) {
+            showError(intentData.error || 'ไม่สามารถสร้างรายการชำระเงินได้');
+            setLoading(btn, false);
+            setLoading(btnMobile, false);
+            return;
+        }
+
+        const { clientSecret, invoiceNo } = intentData;
+
+        // Step 2: Mount Stripe Payment Element (ถ้ายังไม่ได้ mount)
+        const stripeEl = document.getElementById('stripe-payment-element');
+        if (stripeEl && !paymentElement) {
+            elements = stripe.elements({ clientSecret, locale: 'th' });
+            paymentElement = elements.create('payment', { layout: 'tabs' });
+            paymentElement.mount('#stripe-payment-element');
+            // รอ element mount
+            await new Promise(r => setTimeout(r, 600));
+        }
+
+        // Step 3: Confirm payment
+        const confirmResult = await stripe.confirmPayment({
+            elements,
+            confirmParams: {
+                return_url: `${window.location.origin}/checkout.html`,
+            },
+            redirect: 'if_required',
+        });
+
+        if (confirmResult.error) {
+            showError(confirmResult.error.message || 'การชำระเงินล้มเหลว');
+            setLoading(btn, false);
+            setLoading(btnMobile, false);
+            return;
+        }
+
+        const paymentIntent = confirmResult.paymentIntent;
+        if (paymentIntent && paymentIntent.status === 'succeeded') {
+            // Step 4: Confirm order in backend
+            const confirmRes = await fetch(`${API_BASE}/payment/confirm-order`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    paymentIntentId: paymentIntent.id,
+                    invoiceNo,
+                    shippingAddress,
+                    phone,
+                })
+            });
+
+            const confirmData = await confirmRes.json();
+
+            if (!confirmRes.ok) {
+                showError(confirmData.error || 'ยืนยันคำสั่งซื้อไม่สำเร็จ');
+                setLoading(btn, false);
+                setLoading(btnMobile, false);
+                return;
+            }
+
+            cart = [];
+            localStorage.removeItem('cart');
+            showSuccessModal(confirmData.orderId);
+        } else {
+            showError('การชำระเงินยังไม่สมบูรณ์ กรุณาลองอีกครั้ง');
+            setLoading(btn, false);
+            setLoading(btnMobile, false);
+        }
+
+    } catch (e) {
+        console.error('Stripe checkout error:', e);
+        showError('เกิดข้อผิดพลาดเครือข่าย กรุณาตรวจสอบการเชื่อมต่อและลองอีกครั้ง');
+        setLoading(btn, false);
+        setLoading(btnMobile, false);
+    }
+}
+
+// ── COD Order ─────────────────────────────────────────────────────────────────
+
+async function processCodOrder(shippingAddress, phone, btn, btnMobile) {
+    const token = localStorage.getItem('btmusicdrive_token');
+
+    try {
+        const res = await fetch(`${API_BASE}/payment/cod-order`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({
                 shippingAddress,
+                phone,
                 ...(appliedPromo ? { promoCode: appliedPromo.code } : {})
             })
         });
@@ -457,91 +501,86 @@ async function processCheckout(omiseToken) {
         const data = await res.json();
 
         if (!res.ok) {
-            showError(data.error || 'ไม่สามารถชำระเงินได้ กรุณาลองอีกครั้ง');
+            showError(data.error || 'ไม่สามารถสร้างคำสั่งซื้อได้');
             setLoading(btn, false);
             setLoading(btnMobile, false);
             return;
         }
 
-        if (data.authorizeUri) {
-            window.location.href = data.authorizeUri;
-        } else if (data.orderId) {
-            window.location.href = `checkout.html?status=success&invoice_no=${encodeURIComponent(data.invoiceNo)}`;
-        }
+        cart = [];
+        localStorage.removeItem('cart');
+        showSuccessModal(data.orderId, true);
 
     } catch (e) {
-        console.error('Checkout error:', e);
+        console.error('COD order error:', e);
         showError('เกิดข้อผิดพลาดเครือข่าย กรุณาตรวจสอบการเชื่อมต่อและลองอีกครั้ง');
         setLoading(btn, false);
         setLoading(btnMobile, false);
     }
 }
 
-// ── Status Checking ──────────────────────────────────────────────────────────
+// ── Status Checking (Stripe redirect return) ──────────────────────────────────
 
 async function checkPaymentStatus() {
     const urlParams = new URLSearchParams(window.location.search);
-    const status = urlParams.get('status');
-    const invoiceNo = urlParams.get('invoice_no');
+    const paymentIntentClientSecret = urlParams.get('payment_intent_client_secret');
+    const paymentIntentId = urlParams.get('payment_intent');
 
-    if ((status === 'success' || status === 'pending') && invoiceNo) {
-        // Clean up URL immediately
-        window.history.replaceState({}, document.title, window.location.pathname);
+    if (!paymentIntentClientSecret || !paymentIntentId) return;
 
-        // Confirm payment with backend to create the DB order
+    // Clean up URL
+    window.history.replaceState({}, document.title, window.location.pathname);
+
+    if (!stripe) {
+        const stripePublicKey = window.STRIPE_PUBLIC_KEY || 'pk_live_51T8AaH0naU9InmAiCY8gXdsBKS0BLpimIkid75RgXhPPqzGlig2c1l820PFFGEJUvP2VF2iJbOKo0PsQMVr0JZNg00NWthxP0H';
+        if (typeof Stripe !== 'undefined') {
+            stripe = Stripe(stripePublicKey);
+        } else {
+            return;
+        }
+    }
+
+    const { paymentIntent } = await stripe.retrievePaymentIntent(paymentIntentClientSecret);
+
+    if (paymentIntent && paymentIntent.status === 'succeeded') {
         const token = localStorage.getItem('btmusicdrive_token');
-        let orderId = invoiceNo.slice(-8).toUpperCase();
-        let isPending = status === 'pending';
+        const invoiceNo = paymentIntent.metadata?.invoiceNo || paymentIntentId;
 
         if (token) {
             try {
-                const res = await fetch(`${API_BASE}/payment/confirm`, {
+                const res = await fetch(`${API_BASE}/payment/confirm-order`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-                    body: JSON.stringify({ invoiceNo })
+                    body: JSON.stringify({ paymentIntentId, invoiceNo })
                 });
                 if (res.ok) {
                     const data = await res.json();
-                    if (data.status === 'pending') {
-                        isPending = true;
-                    } else {
-                        orderId = data.id ? data.id.slice(-8).toUpperCase() : orderId;
-                    }
+                    cart = [];
+                    localStorage.removeItem('cart');
+                    showSuccessModal(data.orderId);
+                    return;
                 }
             } catch (e) {
-                console.warn('Could not confirm order with backend:', e);
+                console.warn('Could not confirm order after redirect:', e);
             }
         }
-
-        // Clear cart everywhere
         cart = [];
         localStorage.removeItem('cart');
-
-        if (isPending) {
-            // Show pending modal for QR / async payment
-            const modalContent = document.querySelector('#success-modal .text-center') || document.querySelector('#success-modal > div > div');
-            if (modalContent) {
-                const icon = modalContent.querySelector('.ph-check-circle, .ph-seal-check');
-                if (icon) { icon.className = 'ph ph-clock-countdown text-5xl text-primary'; }
-                const title = modalContent.querySelector('h2');
-                if (title) { title.textContent = 'กำลังตรวจสอบการชำระเงิน'; }
-                const desc = modalContent.querySelector('p');
-                if (desc) { desc.textContent = 'กำลังตรวจสอบการชำระเงินของคุณ คุณจะได้รับอีเมลยืนยันเมื่อการชำระเงินสำเร็จ'; }
-            }
-            document.getElementById('order-id-display').textContent = 'รอการชำระเงิน';
-            document.getElementById('success-modal').classList.remove('hidden');
-            document.getElementById('success-modal').classList.add('flex');
-        } else {
-            // Show success modal
-            document.getElementById('order-id-display').textContent = `คำสั่งซื้อ #${orderId}`;
-            document.getElementById('success-modal').classList.remove('hidden');
-            document.getElementById('success-modal').classList.add('flex');
-        }
-
-    } else if (status === 'cancelled') {
+        showSuccessModal(paymentIntentId.slice(-8).toUpperCase());
+    } else if (paymentIntent?.status === 'canceled' || paymentIntent?.last_payment_error) {
         showError('การชำระเงินถูกยกเลิก คุณสามารถลองอีกครั้งเมื่อพร้อม');
-        window.history.replaceState({}, document.title, window.location.pathname);
     }
+}
+
+// ── Success Modal ─────────────────────────────────────────────────────────────
+
+function showSuccessModal(orderId, isCod = false) {
+    const shortId = orderId ? String(orderId).slice(-8).toUpperCase() : '';
+    document.getElementById('order-id-display').textContent = isCod
+        ? `คำสั่งซื้อ #${shortId} (ชำระเงินปลายทาง)`
+        : `คำสั่งซื้อ #${shortId}`;
+    document.getElementById('success-modal').classList.remove('hidden');
+    document.getElementById('success-modal').classList.add('flex');
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -656,20 +695,10 @@ const TH_ADDRESS_DATA = {
         'พระสมุทรเจดีย์': { 'ตำบลนาเกลือ': '10290', 'ตำบลบ้านคลองสวน': '10290', 'ตำบลแหลมฟ้าผ่า': '10290', 'ตำบลปากคลองบางปลากด': '10290', 'ตำบลในคลองบางปลากด': '10290' },
         'บางเสาธง': { 'ตำบลบางเสาธง': '10570', 'ตำบลศีรษะจรเข้น้อย': '10570', 'ตำบลศีรษะจรเข้ใหญ่': '10570' },
     },
-    'นครปฐม': {
-        'เมืองนครปฐม': { 'ตำบลพระปฐมเจดีย์': '73000', 'ตำบลบางแขม': '73000', 'ตำบลพระประโทน': '73000', 'ตำบลธรรมศาลา': '73000' },
-        'สามพราน': { 'ตำบลท่าข้าม': '73110', 'ตำบลทรงคนอง': '73210', 'ตำบลตลาดจินดา': '73110', 'ตำบลคลองจินดา': '73110', 'ตำบลบ้านใหม่': '73110' },
-        'นครชัยศรี': { 'ตำบลนครชัยศรี': '73120', 'ตำบลบางกระเบา': '73120', 'ตำบลวัดแค': '73120', 'ตำบลท่าตำหนัก': '73120' },
-        'พุทธมณฑล': { 'ตำบลศาลายา': '73170', 'ตำบลคลองโยง': '73170', 'ตำบลมหาสวัสดิ์': '73170' },
-    },
     'เชียงใหม่': {
         'เมืองเชียงใหม่': { 'ตำบลศรีภูมิ': '50200', 'ตำบลพระสิงห์': '50200', 'ตำบลหายยา': '50100', 'ตำบลช้างม่อย': '50300', 'ตำบลช้างคลาน': '50100', 'ตำบลวัดเกต': '50000', 'ตำบลช้างเผือก': '50300', 'ตำบลสุเทพ': '50200', 'ตำบลแม่เหียะ': '50100', 'ตำบลป่าแดด': '50100', 'ตำบลหนองหอย': '50000', 'ตำบลท่าศาลา': '50000', 'ตำบลหนองป่าครั่ง': '50000', 'ตำบลฟ้าฮ่าม': '50000', 'ตำบลป่าตัน': '50300', 'ตำบลสันผีเสื้อ': '50300' },
-    },
-    'ชลบุรี': {
-        'เมืองชลบุรี': { 'ตำบลบางปลาสร้อย': '20000', 'ตำบลมะขามหย่ง': '20000', 'ตำบลบ้านโขด': '20000', 'ตำบลแสนสุข': '20130', 'ตำบลบ้านสวน': '20000', 'ตำบลหนองรี': '20000', 'ตำบลนาป่า': '20000', 'ตำบลหนองข้างคอก': '20000' },
-        'ศรีราชา': { 'ตำบลศรีราชา': '20110', 'ตำบลสุรศักดิ์': '20110', 'ตำบลทุ่งสุขลา': '20230', 'ตำบลบึง': '20230', 'ตำบลหนองขาม': '20110', 'ตำบลเขาคันทรง': '20110', 'ตำบลบ่อวิน': '20230', 'ตำบลบางพระ': '20110' },
-        'บางละมุง': { 'ตำบลบางละมุง': '20150', 'ตำบลหนองปรือ': '20150', 'ตำบลหนองปลาไหล': '20150', 'ตำบลโป่ง': '20150', 'ตำบลเขาไม้แก้ว': '20150', 'ตำบลห้วยใหญ่': '20150', 'ตำบลตะเคียนเตี้ย': '20150', 'ตำบลนาเกลือ': '20150' },
-        'พัทยา': { 'ตำบลนาเกลือ': '20150', 'ตำบลหนองปรือ': '20150', 'ตำบลหนองปลาไหล': '20150', 'ตำบลห้วยใหญ่': '20150' },
+        'สันกำแพง': { 'ตำบลสันกำแพง': '50130', 'ตำบลทรายมูล': '50130', 'ตำบลร้องวัวแดง': '50130', 'ตำบลบวกค้าง': '50130', 'ตำบลแช่ช้าง': '50130', 'ตำบลออนใต้': '50130', 'ตำบลแม่ปูคา': '50130', 'ตำบลห้วยทราย': '50130', 'ตำบลต้นเปา': '50130', 'ตำบลสันกลาง': '50130' },
+        'สันทราย': { 'ตำบลสันทรายหลวง': '50210', 'ตำบลสันทรายน้อย': '50210', 'ตำบลสันพระเนตร': '50210', 'ตำบลสันนาเม็ง': '50210', 'ตำบลสันป่าเปา': '50210', 'ตำบลหนองแหย่ง': '50210', 'ตำบลป่าไผ่': '50210', 'ตำบลเมืองเล็น': '50210', 'ตำบลป่าตุ้ม': '50210', 'ตำบลหนองจ๊อม': '50210' },
     },
     'ขอนแก่น': {
         'เมืองขอนแก่น': { 'ตำบลในเมือง': '40000', 'ตำบลสำราญ': '40000', 'ตำบลโคกสี': '40000', 'ตำบลท่าพระ': '40260', 'ตำบลบ้านทุ่ม': '40000', 'ตำบลเมืองเก่า': '40000', 'ตำบลพระลับ': '40000', 'ตำบลสาวะถี': '40000', 'ตำบลบ้านหว้า': '40000' },
@@ -783,7 +812,6 @@ function syncHiddenFields() {
 
 function onZipChange(zip) {
     if (zip.length !== 5) return;
-    // Try to auto-select province/district/subdistrict from zip
     for (const [prov, districts] of Object.entries(addressData)) {
         for (const [dist, subs] of Object.entries(districts)) {
             for (const [sub, code] of Object.entries(subs)) {

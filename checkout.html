@@ -8,8 +8,9 @@
     <meta name="robots" content="noindex, nofollow">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Omise -->
-    <script src="https://cdn.omise.co/omise.js"></script>
+    <!-- Stripe.js -->
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>window.STRIPE_PUBLIC_KEY = 'pk_live_51T8AaH0naU9InmAiCY8gXdsBKS0BLpimIkid75RgXhPPqzGlig2c1l820PFFGEJUvP2VF2iJbOKo0PsQMVr0JZNg00NWthxP0H';</script>
     <script>
         tailwind.config = {
             theme: {
@@ -222,78 +223,31 @@
                         <h2 class="text-lg font-bold text-gray-900">วิธีการชำระเงิน</h2>
                     </div>
 
-                    <!-- Inline Payment Form -->
+                    <!-- Payment Options -->
                     <div class="space-y-3">
-                        <!-- Option 1: Credit/Debit Card -->
+                        <!-- Option 1: Credit/Debit Card + Stripe -->
                         <div class="payment-box active" id="payment-box-card">
                             <label class="flex items-center gap-3 p-4 cursor-pointer">
                                 <input type="radio" name="payment_method" value="card" class="w-5 h-5 text-primary focus:ring-primary border-gray-300" checked onchange="selectPaymentMethod('card')">
                                 <span class="font-semibold text-gray-900">บัตรเครดิต / เดบิต</span>
-                                <div class="ml-auto text-primary"><i class="ph ph-credit-card text-2xl"></i></div>
+                                <div class="ml-auto flex items-center gap-1">
+                                    <img src="https://cdn.brandfetch.io/idxAg10C0L/w/400/h/400/theme/dark/icon.jpeg?c=1bfwsmEH20yx2woSHbF" class="h-5 object-contain rounded" alt="Visa" onerror="this.style.display='none'">
+                                    <i class="ph ph-credit-card text-primary text-2xl"></i>
+                                </div>
                             </label>
-                            <div class="p-4 pt-0 border-t border-amber-100 mt-2" id="inline-card-form">
-                                <div class="space-y-4 pt-4">
-                                    <div>
-                                        <label for="cc-number" class="block text-sm font-medium text-gray-700 mb-1">หมายเลขบัตร</label>
-                                        <input type="text" id="cc-number" name="cc-number" autocomplete="cc-number"
-                                            class="input-field text-sm" placeholder="0000 0000 0000 0000"
-                                            maxlength="19" inputmode="numeric"
-                                            aria-label="หมายเลขบัตรเครดิต/เดบิต 16 หลัก"
-                                            oninput="formatCardNumber(this)">
-                                    </div>
-                                    <div>
-                                        <label for="cc-name" class="block text-sm font-medium text-gray-700 mb-1">ชื่อบนบัตร</label>
-                                        <input type="text" id="cc-name" name="cc-name" autocomplete="cc-name"
-                                            class="input-field text-sm" placeholder="ชื่อ-นามสกุล"
-                                            aria-label="ชื่อที่ปรากฏบนบัตร">
-                                    </div>
-                                    <div class="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label for="cc-expiry" class="block text-sm font-medium text-gray-700 mb-1">วันหมดอายุ</label>
-                                            <input type="text" id="cc-expiry" name="cc-expiry" autocomplete="cc-exp"
-                                                class="input-field text-sm" placeholder="MM/YY" maxlength="5"
-                                                inputmode="numeric" aria-label="วันหมดอายุบัตร รูปแบบ เดือน/ปี"
-                                                oninput="formatExpiry(this)">
-                                        </div>
-                                        <div>
-                                            <label for="cc-cvv" class="block text-sm font-medium text-gray-700 mb-1">
-                                                รหัสความปลอดภัย
-                                                <span class="text-gray-400 cursor-help" title="3-4 หลักด้านหลังบัตร" aria-label="CVV คือรหัส 3-4 หลักด้านหลังบัตร">
-                                                    <i class="ph ph-question text-xs border border-gray-300 rounded-full px-0.5" aria-hidden="true"></i>
-                                                </span>
-                                            </label>
-                                            <input type="password" id="cc-cvv" name="cc-cvv" autocomplete="cc-csc"
-                                                class="input-field text-sm" placeholder="123" maxlength="4"
-                                                inputmode="numeric" aria-label="รหัส CVV 3-4 หลักด้านหลังบัตร">
-                                        </div>
-                                    </div>
+                            <!-- Stripe Payment Element -->
+                            <div class="p-4 pt-0 border-t border-amber-100 mt-2" id="stripe-payment-container">
+                                <div id="stripe-payment-element" class="pt-4">
+                                    <!-- Stripe mounts here when user clicks pay -->
+                                    <p class="text-xs text-gray-400 text-center py-4">
+                                        <i class="ph ph-credit-card mr-1"></i>
+                                        ฟอร์มกรอกบัตรจาก Stripe จะแสดงเมื่อกด "ยืนยันและสั่งซื้อ"
+                                    </p>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Option 2: PromptPay -->
-                        <div class="payment-box" id="payment-box-promptpay">
-                            <label class="flex items-center gap-3 p-4 cursor-pointer">
-                                <input type="radio" name="payment_method" value="promptpay" class="w-5 h-5 text-primary focus:ring-primary border-gray-300" onchange="selectPaymentMethod('promptpay')">
-                                <span class="font-semibold text-gray-700">PromptPay</span>
-                                <div class="ml-auto flex items-center justify-center p-1 rounded">
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/PromptPay-logo.png/1200px-PromptPay-logo.png" class="h-5 object-contain" alt="PromptPay">
-                                </div>
-                            </label>
-                        </div>
-
-                        <!-- Option 3: TrueMoney -->
-                        <div class="payment-box" id="payment-box-truemoney">
-                            <label class="flex items-center gap-3 p-4 cursor-pointer">
-                                <input type="radio" name="payment_method" value="truemoney" class="w-5 h-5 text-primary focus:ring-primary border-gray-300" onchange="selectPaymentMethod('truemoney')">
-                                <span class="font-semibold text-gray-700">TrueMoney</span>
-                                <div class="ml-auto flex items-center justify-center p-1 rounded">
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/TrueMoney_Wallet_logo.png/1200px-TrueMoney_Wallet_logo.png" class="h-6 object-contain" alt="TrueMoney Wallet" onerror="this.onerror=null; this.src='https://cdn.iconscout.com/icon/free/png-256/free-true-money-logo-icon-download-in-svg-png-gif-file-formats--wallet-payment-brand-logos-icons-2673859.png';">
-                                </div>
-                            </label>
-                        </div>
-
-                        <!-- Option 4: Cash on Delivery -->
+                        <!-- Option 2: Cash on Delivery -->
                         <div class="payment-box" id="payment-box-cod">
                             <label class="flex items-center gap-3 p-4 cursor-pointer">
                                 <input type="radio" name="payment_method" value="cod" class="w-5 h-5 text-primary focus:ring-primary border-gray-300" onchange="selectPaymentMethod('cod')">
@@ -308,7 +262,7 @@
                     <!-- Security Note -->
                     <div class="mt-4 flex items-center gap-2 text-xs text-gray-600 pt-4 border-t border-gray-100" role="note">
                         <i class="ph ph-shield-check text-green-600 text-base flex-shrink-0" aria-hidden="true"></i>
-                        <span>ข้อมูลการชำระเงินถูกเข้ารหัสและปลอดภัยผ่านระบบ <strong>Omise</strong> — เราไม่เก็บข้อมูลบัตรของคุณ</span>
+                        <span>ข้อมูลการชำระเงินถูกเข้ารหัสและปลอดภัยผ่านระบบ <strong>Stripe</strong> — เราไม่เก็บข้อมูลบัตรของคุณ</span>
                     </div>
                 </div>
 
