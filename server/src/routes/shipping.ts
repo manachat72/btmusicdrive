@@ -4,9 +4,11 @@ import prisma from '../lib/prisma';
 
 const router = Router();
 
-const SHIPPOP_API_URL = 'https://api.shippop.com/v2';
-const SHIPPOP_API_KEY = process.env.SHIPPOP_API_KEY || '';
-const SHIPPOP_EMAIL  = process.env.SHIPPOP_EMAIL || '';
+const SHIPPOP_API_URL  = 'https://api.shippop.com/v2';
+const SHIPPOP_API_KEY  = process.env.SHIPPOP_API_KEY || '';
+const SHIPPOP_EMAIL    = process.env.SHIPPOP_EMAIL || '';
+const SERVER_URL       = process.env.SERVER_URL || 'https://btmusicdrive.vercel.app';
+const CALLBACK_URL     = `${SERVER_URL}/api/shipping/callback`;
 
 // ── Helper: SHIPPOP request ───────────────────────────────────────────────────
 async function shippopRequest(endpoint: string, method: 'GET' | 'POST', body?: any) {
@@ -79,6 +81,7 @@ router.post('/booking', authenticateToken, async (req: AuthRequest, res: Respons
           },
           cod_amount: 0,
           remark: `Order #${order.id.slice(-8).toUpperCase()}`,
+          url_callback: CALLBACK_URL,
         },
       ],
       email: SHIPPOP_EMAIL,
@@ -188,6 +191,50 @@ router.post('/rates', authenticateToken, async (req: AuthRequest, res: Response)
   } catch (error: any) {
     console.error('[SHIPPOP] rates error:', error);
     return res.status(500).json({ error: error.message || 'Internal server error' });
+  }
+});
+
+// ── POST /api/shipping/callback ───────────────────────────────────────────────
+// SHIPPOP Webhook — รับสถานะพัสดุแบบ real-time (ไม่ต้อง auth)
+router.post('/callback', async (req: any, res: Response) => {
+  try {
+    const body = req.body;
+    console.log('[SHIPPOP Callback]', JSON.stringify(body));
+
+    // SHIPPOP ส่งข้อมูลในรูปแบบ:
+    // { tracking_code, status, status_text, courier_code, purchase_id, ... }
+    const trackingCode = body?.tracking_code || body?.trackingCode || '';
+    const statusText   = body?.status_text || body?.statusText || '';
+    const rawStatus    = body?.status || '';
+
+    if (!trackingCode) {
+      return res.status(200).json({ received: true }); // ตอบ 200 เสมอเพื่อไม่ให้ SHIPPOP retry
+    }
+
+    // Map SHIPPOP status -> ระบบเรา
+    let orderStatus: string | null = null;
+    const s = String(rawStatus).toLowerCase();
+    if (s === 'delivered' || statusText.includes('ส่งสำเร็จ') || statusText.includes('delivered')) {
+      orderStatus = 'DELIVERED';
+    } else if (s === 'returned' || statusText.includes('คืน') || statusText.includes('return')) {
+      orderStatus = 'CANCELLED';
+    } else if (s === 'shipping' || statusText.includes('กำลังขนส่ง') || statusText.includes('transit')) {
+      orderStatus = 'SHIPPED';
+    }
+
+    if (orderStatus) {
+      await prisma.order.updateMany({
+        where: { trackingNumber: trackingCode },
+        data: { status: orderStatus as any },
+      });
+      console.log(`[SHIPPOP Callback] updated order tracking=${trackingCode} → ${orderStatus}`);
+    }
+
+    return res.status(200).json({ received: true });
+
+  } catch (error: any) {
+    console.error('[SHIPPOP Callback] error:', error);
+    return res.status(200).json({ received: true }); // ตอบ 200 เสมอ
   }
 });
 
