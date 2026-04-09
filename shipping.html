@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>การจัดส่งสินค้า — btmusicdrive</title>
+  <meta name="description" content="ข้อมูลการจัดส่งสินค้า btmusicdrive จัดส่งทั่วไทย รวดเร็ว ปลอดภัย">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#8B7355',
+            secondary: '#0F172A',
+          },
+          animation: {
+            'fade-up': 'fadeUp 0.6s ease forwards',
+            'shimmer': 'shimmer 1.5s infinite',
+            'float': 'float 6s ease-in-out infinite',
+          },
+          keyframes: {
+            fadeUp: { '0%': { opacity: 0, transform: 'translateY(20px)' }, '100%': { opacity: 1, transform: 'translateY(0)' } },
+            shimmer: { '0%': { backgroundPosition: '-200% 0' }, '100%': { backgroundPosition: '200% 0' } },
+            float: { '0%,100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' } },
+          }
+        }
+      }
+    };
+  </script>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Kanit', 'Inter', -apple-system, sans-serif; }
+
+    /* Hero */
+    .hero-bg {
+      background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0F172A 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-bg::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(139,115,85,0.22) 0%, transparent 65%);
+    }
+    .hero-bg::after {
+      content: '';
+      position: absolute;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(139,115,85,0.08) 0%, transparent 70%);
+      top: -200px; right: -200px;
+    }
+
+    /* Glass card */
+    .glass { background: rgba(255,255,255,0.88); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+
+    /* Timeline connector */
+    .timeline-line { width: 2px; background: linear-gradient(to bottom, #8B7355, #e2e8f0); }
+
+    /* Carrier badge */
+    .carrier-badge {
+      border: 1.5px solid;
+      transition: all 0.2s;
+    }
+    .carrier-badge:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+
+    /* Delivery table row */
+    .delivery-row:hover td { background: #fdf8f3; }
+
+    /* Feature icon glow */
+    .icon-glow { box-shadow: 0 0 0 8px rgba(139,115,85,0.08); }
+
+    /* Sticky nav */
+    .sticky-nav { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+
+    /* Pulse */
+    @keyframes pulse-ring {
+      0% { transform: scale(1); opacity: 1; }
+      100% { transform: scale(2); opacity: 0; }
+    }
+    .pulse-ring::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: #22c55e;
+      animation: pulse-ring 2s cubic-bezier(0.4,0,0.6,1) infinite;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800 antialiased">
+
+<!-- ── Navbar ───────────────────────────────────────────────────────────────── -->
+<nav class="bg-secondary sticky-nav shadow-sm sticky top-0 z-50 border-b border-white/5">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+    <a href="index.html" class="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm">
+      <i class="ph ph-arrow-left text-lg"></i>
+      <span class="hidden sm:inline">กลับหน้าร้าน</span>
+    </a>
+    <a href="index.html" class="flex items-center gap-2">
+      <img src="images/logo (60 x 60 px) (1).png" alt="btmusicdrive" class="h-8 w-8 rounded-full">
+      <span class="font-bold text-lg text-white tracking-tight">btmusicdrive</span>
+    </a>
+    <a href="track-order.html" class="flex items-center gap-2 text-sm text-amber-400 hover:text-amber-300 transition-colors font-medium">
+      <i class="ph ph-magnifying-glass text-base"></i>
+      <span class="hidden sm:inline">ติดตามพัสดุ</span>
+    </a>
+  </div>
+</nav>
+
+<!-- ── Hero ─────────────────────────────────────────────────────────────────── -->
+<section class="hero-bg py-20 md:py-28 px-4 text-white relative z-10">
+  <div class="max-w-4xl mx-auto text-center relative z-10">
+    <!-- Badge -->
+    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-900/40 border border-amber-700/40 text-amber-300 text-sm font-medium mb-6">
+      <span class="relative inline-flex h-2 w-2">
+        <span class="pulse-ring relative inline-flex rounded-full h-2 w-2 bg-green-400"></span>
+      </span>
+      จัดส่งทุกวัน ทั่วไทย
+    </div>
+
+    <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4">
+      การจัดส่งสินค้า
+      <span class="block text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-200 to-amber-400 mt-1">ระดับพรีเมียม</span>
+    </h1>
+    <p class="text-lg text-gray-400 max-w-xl mx-auto leading-relaxed">
+      รวดเร็ว ปลอดภัย คุ้มค่า — จัดส่งด้วยขนส่งชั้นนำทั่วประเทศไทย
+    </p>
+
+    <!-- Quick stats -->
+    <div class="mt-10 grid grid-cols-3 gap-4 max-w-lg mx-auto">
+      <div class="bg-white/5 border border-white/10 rounded-2xl py-4 px-2">
+        <div class="text-2xl font-bold text-amber-300">1–2</div>
+        <div class="text-xs text-gray-400 mt-0.5">วัน กรุงเทพฯ</div>
+      </div>
+      <div class="bg-white/5 border border-white/10 rounded-2xl py-4 px-2">
+        <div class="text-2xl font-bold text-amber-300">2–3</div>
+        <div class="text-xs text-gray-400 mt-0.5">วัน ต่างจังหวัด</div>
+      </div>
+      <div class="bg-white/5 border border-white/10 rounded-2xl py-4 px-2">
+        <div class="text-2xl font-bold text-amber-300">77</div>
+        <div class="text-xs text-gray-400 mt-0.5">จังหวัดทั่วไทย</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Features ──────────────────────────────────────────────────────────────── -->
+<section class="py-16 px-4 bg-white">
+  <div class="max-w-6xl mx-auto">
+    <h2 class="text-center text-2xl md:text-3xl font-bold text-gray-900 mb-2">บริการจัดส่งของเรา</h2>
+    <p class="text-center text-gray-500 mb-12 text-sm">มั่นใจทุกขั้นตอน ตั้งแต่แพ็คจนถึงมือคุณ</p>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <!-- Feature 1 -->
+      <div class="group bg-gray-50 rounded-2xl p-6 hover:bg-amber-50 hover:shadow-md transition-all duration-300 border border-gray-100 hover:border-amber-200">
+        <div class="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center mb-4 icon-glow group-hover:scale-110 transition-transform">
+          <i class="ph ph-package text-2xl text-amber-700"></i>
+        </div>
+        <h3 class="font-semibold text-gray-900 mb-1">แพ็คอย่างพิถีพิถัน</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">ห่อกันกระแทก บุฟองน้ำทุกชิ้น ปิดซีลกันน้ำ ถึงมือลูกค้าในสภาพสมบูรณ์</p>
+      </div>
+      <!-- Feature 2 -->
+      <div class="group bg-gray-50 rounded-2xl p-6 hover:bg-blue-50 hover:shadow-md transition-all duration-300 border border-gray-100 hover:border-blue-200">
+        <div class="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+          <i class="ph ph-lightning text-2xl text-blue-600"></i>
+        </div>
+        <h3 class="font-semibold text-gray-900 mb-1">จัดส่งรวดเร็ว</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">ออเดอร์ก่อนเที่ยงส่งวันเดียวกัน กรุงเทพฯ ถึงใน 1–2 วัน ต่างจังหวัด 2–3 วัน</p>
+      </div>
+      <!-- Feature 3 -->
+      <div class="group bg-gray-50 rounded-2xl p-6 hover:bg-green-50 hover:shadow-md transition-all duration-300 border border-gray-100 hover:border-green-200">
+        <div class="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+          <i class="ph ph-hand-coins text-2xl text-green-600"></i>
+        </div>
+        <h3 class="font-semibold text-gray-900 mb-1">เก็บเงินปลายทาง COD</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">สั่งซื้อสบายใจ รับของก่อนจ่ายทีหลัง รองรับ COD ทั่วประเทศ ไม่มีค่าธรรมเนียมเพิ่ม</p>
+      </div>
+      <!-- Feature 4 -->
+      <div class="group bg-gray-50 rounded-2xl p-6 hover:bg-purple-50 hover:shadow-md transition-all duration-300 border border-gray-100 hover:border-purple-200">
+        <div class="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+          <i class="ph ph-map-pin text-2xl text-purple-600"></i>
+        </div>
+        <h3 class="font-semibold text-gray-900 mb-1">ติดตามได้ทุกขั้นตอน</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">รับ Tracking Number ทันทีหลังส่ง ติดตามสถานะพัสดุได้ Real-time ตลอด 24 ชั่วโมง</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Delivery Timeline ─────────────────────────────────────────────────────── -->
+<section class="py-16 px-4 bg-gray-50">
+  <div class="max-w-3xl mx-auto">
+    <h2 class="text-center text-2xl md:text-3xl font-bold text-gray-900 mb-2">ขั้นตอนการจัดส่ง</h2>
+    <p class="text-center text-gray-500 mb-12 text-sm">จากคำสั่งซื้อถึงมือคุณ ใช้เวลาไม่นาน</p>
+
+    <div class="relative">
+      <!-- Vertical line -->
+      <div class="absolute left-6 top-8 bottom-8 w-0.5 bg-gradient-to-b from-amber-400 via-amber-300 to-gray-200 hidden sm:block"></div>
+
+      <div class="space-y-6">
+        <!-- Step 1 -->
+        <div class="flex gap-5 items-start animate-fade-up" style="animation-delay:0.0s">
+          <div class="relative z-10 flex-shrink-0 w-12 h-12 rounded-full bg-amber-500 flex items-center justify-center shadow-lg shadow-amber-200">
+            <i class="ph ph-shopping-cart-simple text-white text-xl"></i>
+          </div>
+          <div class="flex-1 bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+            <div class="flex items-center justify-between mb-1">
+              <h3 class="font-semibold text-gray-900">รับคำสั่งซื้อ</h3>
+              <span class="text-xs bg-amber-100 text-amber-700 px-2.5 py-0.5 rounded-full font-medium">ทันที</span>
+            </div>
+            <p class="text-sm text-gray-500">เราได้รับออเดอร์และชำระเงินเรียบร้อยแล้ว ระบบเริ่มประมวลผลทันที</p>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="flex gap-5 items-start animate-fade-up" style="animation-delay:0.1s">
+          <div class="relative z-10 flex-shrink-0 w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center shadow-lg shadow-blue-200">
+            <i class="ph ph-package text-white text-xl"></i>
+          </div>
+          <div class="flex-1 bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+            <div class="flex items-center justify-between mb-1">
+              <h3 class="font-semibold text-gray-900">แพ็คสินค้า</h3>
+              <span class="text-xs bg-blue-100 text-blue-700 px-2.5 py-0.5 rounded-full font-medium">ภายใน 2 ชม.</span>
+            </div>
+            <p class="text-sm text-gray-500">ทีมงานแพ็คสินค้าอย่างพิถีพิถัน ห่อกันกระแทก บุฟองน้ำ ปิดซีลกันน้ำ</p>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="flex gap-5 items-start animate-fade-up" style="animation-delay:0.2s">
+          <div class="relative z-10 flex-shrink-0 w-12 h-12 rounded-full bg-indigo-500 flex items-center justify-center shadow-lg shadow-indigo-200">
+            <i class="ph ph-truck text-white text-xl"></i>
+          </div>
+          <div class="flex-1 bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+            <div class="flex items-center justify-between mb-1">
+              <h3 class="font-semibold text-gray-900">ส่งให้ขนส่ง</h3>
+              <span class="text-xs bg-indigo-100 text-indigo-700 px-2.5 py-0.5 rounded-full font-medium">วันเดียวกัน</span>
+            </div>
+            <p class="text-sm text-gray-500">นำส่งขนส่งพาร์ทเนอร์ และส่ง Tracking Number ให้คุณทาง SMS / อีเมล / LINE</p>
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="flex gap-5 items-start animate-fade-up" style="animation-delay:0.3s">
+          <div class="relative z-10 flex-shrink-0 w-12 h-12 rounded-full bg-green-500 flex items-center justify-center shadow-lg shadow-green-200">
+            <i class="ph ph-seal-check text-white text-xl"></i>
+          </div>
+          <div class="flex-1 bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+            <div class="flex items-center justify-between mb-1">
+              <h3 class="font-semibold text-gray-900">สินค้าถึงมือคุณ</h3>
+              <span class="text-xs bg-green-100 text-green-700 px-2.5 py-0.5 rounded-full font-medium">1–5 วัน</span>
+            </div>
+            <p class="text-sm text-gray-500">รับสินค้าที่หน้าบ้าน ตรวจสอบสภาพก่อนเซ็นรับ มีปัญหาแจ้งเราได้ทันที</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Delivery Time Table ───────────────────────────────────────────────────── -->
+<section class="py-16 px-4 bg-white">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="text-center text-2xl md:text-3xl font-bold text-gray-900 mb-2">ระยะเวลาจัดส่ง</h2>
+    <p class="text-center text-gray-500 mb-10 text-sm">โดยประมาณ (วันทำการ ไม่รวมวันหยุดนักขัตฤกษ์)</p>
+
+    <div class="overflow-hidden rounded-2xl border border-gray-200 shadow-sm">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="bg-secondary text-white">
+            <th class="text-left px-6 py-4 font-semibold">พื้นที่</th>
+            <th class="text-center px-4 py-4 font-semibold">ระยะเวลา</th>
+            <th class="text-center px-4 py-4 font-semibold hidden sm:table-cell">ค่าจัดส่ง</th>
+            <th class="text-center px-4 py-4 font-semibold hidden md:table-cell">ขนส่งที่แนะนำ</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          <tr class="delivery-row transition-colors">
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-green-400 flex-shrink-0"></span>
+                <div>
+                  <div class="font-medium text-gray-900">กรุงเทพฯ และปริมณฑล</div>
+                  <div class="text-xs text-gray-500 mt-0.5">กทม., นนทบุรี, ปทุมธานี, สมุทรปราการ</div>
+                </div>
+              </div>
+            </td>
+            <td class="px-4 py-4 text-center">
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
+                1–2 วัน
+              </span>
+            </td>
+            <td class="px-4 py-4 text-center hidden sm:table-cell text-gray-600">~35–50 บาท</td>
+            <td class="px-4 py-4 text-center hidden md:table-cell">
+              <span class="inline-flex items-center gap-1 text-xs text-gray-600">
+                <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>Kerry / J&T
+              </span>
+            </td>
+          </tr>
+          <tr class="delivery-row transition-colors">
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-blue-400 flex-shrink-0"></span>
+                <div>
+                  <div class="font-medium text-gray-900">ภาคกลาง / ภาคตะวันออก</div>
+                  <div class="text-xs text-gray-500 mt-0.5">ชลบุรี, ระยอง, อยุธยา, สระบุรี ฯลฯ</div>
+                </div>
+              </div>
+            </td>
+            <td class="px-4 py-4 text-center">
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
+                1–3 วัน
+              </span>
+            </td>
+            <td class="px-4 py-4 text-center hidden sm:table-cell text-gray-600">~40–60 บาท</td>
+            <td class="px-4 py-4 text-center hidden md:table-cell">
+              <span class="inline-flex items-center gap-1 text-xs text-gray-600">
+                <span class="w-1.5 h-1.5 rounded-full bg-yellow-500"></span>Flash / Kerry
+              </span>
+            </td>
+          </tr>
+          <tr class="delivery-row transition-colors">
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-amber-400 flex-shrink-0"></span>
+                <div>
+                  <div class="font-medium text-gray-900">ภาคเหนือ / ภาคอีสาน / ภาคใต้</div>
+                  <div class="text-xs text-gray-500 mt-0.5">เชียงใหม่, ขอนแก่น, สุราษฎร์ธานี ฯลฯ</div>
+                </div>
+              </div>
+            </td>
+            <td class="px-4 py-4 text-center">
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700">
+                2–4 วัน
+              </span>
+            </td>
+            <td class="px-4 py-4 text-center hidden sm:table-cell text-gray-600">~45–65 บาท</td>
+            <td class="px-4 py-4 text-center hidden md:table-cell">
+              <span class="inline-flex items-center gap-1 text-xs text-gray-600">
+                <span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span>Kerry / Flash
+              </span>
+            </td>
+          </tr>
+          <tr class="delivery-row transition-colors">
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-red-400 flex-shrink-0"></span>
+                <div>
+                  <div class="font-medium text-gray-900">พื้นที่ห่างไกล / เกาะ</div>
+                  <div class="text-xs text-gray-500 mt-0.5">เกาะสมุย, เกาะพะงัน, ชายแดน ฯลฯ</div>
+                </div>
+              </div>
+            </td>
+            <td class="px-4 py-4 text-center">
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700">
+                3–5 วัน
+              </span>
+            </td>
+            <td class="px-4 py-4 text-center hidden sm:table-cell text-gray-600">~50–80 บาท</td>
+            <td class="px-4 py-4 text-center hidden md:table-cell">
+              <span class="inline-flex items-center gap-1 text-xs text-gray-600">
+                <span class="w-1.5 h-1.5 rounded-full bg-gray-500"></span>Kerry Express
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="text-xs text-gray-400 text-center mt-4">* ค่าจัดส่งอาจเปลี่ยนแปลงตามน้ำหนักและปลายทาง คำนวณอัตโนมัติตอนสั่งซื้อ</p>
+  </div>
+</section>
+
+<!-- ── Shipping Partners ──────────────────────────────────────────────────────── -->
+<section class="py-16 px-4 bg-gray-50">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="text-center text-2xl md:text-3xl font-bold text-gray-900 mb-2">พาร์ทเนอร์ขนส่ง</h2>
+    <p class="text-center text-gray-500 mb-10 text-sm">เลือกขนส่งชั้นนำที่ครอบคลุมทั่วประเทศ</p>
+
+    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+      <!-- Kerry -->
+      <div class="carrier-badge bg-white rounded-2xl p-5 text-center border-red-200 cursor-default">
+        <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-red-50 flex items-center justify-center">
+          <i class="ph ph-truck text-2xl text-red-500"></i>
+        </div>
+        <div class="font-semibold text-gray-900 text-sm">Kerry Express</div>
+        <div class="text-xs text-gray-500 mt-0.5">ครอบคลุมทั่วไทย</div>
+        <div class="mt-2 inline-flex items-center gap-1 text-xs bg-red-50 text-red-600 px-2 py-0.5 rounded-full">
+          <span class="w-1.5 h-1.5 rounded-full bg-red-400"></span> ยอดนิยม
+        </div>
+      </div>
+
+      <!-- Flash -->
+      <div class="carrier-badge bg-white rounded-2xl p-5 text-center border-yellow-200 cursor-default">
+        <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-yellow-50 flex items-center justify-center">
+          <i class="ph ph-lightning text-2xl text-yellow-500"></i>
+        </div>
+        <div class="font-semibold text-gray-900 text-sm">Flash Express</div>
+        <div class="text-xs text-gray-500 mt-0.5">ราคาประหยัด รวดเร็ว</div>
+        <div class="mt-2 inline-flex items-center gap-1 text-xs bg-yellow-50 text-yellow-700 px-2 py-0.5 rounded-full">
+          <span class="w-1.5 h-1.5 rounded-full bg-yellow-400"></span> ประหยัด
+        </div>
+      </div>
+
+      <!-- J&T -->
+      <div class="carrier-badge bg-white rounded-2xl p-5 text-center border-orange-200 cursor-default">
+        <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-orange-50 flex items-center justify-center">
+          <i class="ph ph-package text-2xl text-orange-500"></i>
+        </div>
+        <div class="font-semibold text-gray-900 text-sm">J&T Express</div>
+        <div class="text-xs text-gray-500 mt-0.5">เก็บปลายทาง (COD)</div>
+        <div class="mt-2 inline-flex items-center gap-1 text-xs bg-orange-50 text-orange-700 px-2 py-0.5 rounded-full">
+          <span class="w-1.5 h-1.5 rounded-full bg-orange-400"></span> COD
+        </div>
+      </div>
+
+      <!-- Thailand Post -->
+      <div class="carrier-badge bg-white rounded-2xl p-5 text-center border-purple-200 cursor-default">
+        <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-purple-50 flex items-center justify-center">
+          <i class="ph ph-envelope text-2xl text-purple-500"></i>
+        </div>
+        <div class="font-semibold text-gray-900 text-sm">ไปรษณีย์ไทย</div>
+        <div class="text-xs text-gray-500 mt-0.5">พื้นที่ห่างไกล</div>
+        <div class="mt-2 inline-flex items-center gap-1 text-xs bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full">
+          <span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span> EMS / ลงทะเบียน
+        </div>
+      </div>
+
+      <!-- SHIPPOP -->
+      <div class="carrier-badge bg-white rounded-2xl p-5 text-center border-blue-200 cursor-default">
+        <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-blue-50 flex items-center justify-center">
+          <i class="ph ph-map-trifold text-2xl text-blue-500"></i>
+        </div>
+        <div class="font-semibold text-gray-900 text-sm">SHIPPOP</div>
+        <div class="text-xs text-gray-500 mt-0.5">รวมขนส่งหลายเจ้า</div>
+        <div class="mt-2 inline-flex items-center gap-1 text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">
+          <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span> พาร์ทเนอร์หลัก
+        </div>
+      </div>
+
+      <!-- Nimble Express -->
+      <div class="carrier-badge bg-white rounded-2xl p-5 text-center border-teal-200 cursor-default">
+        <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-teal-50 flex items-center justify-center">
+          <i class="ph ph-rocket-launch text-2xl text-teal-500"></i>
+        </div>
+        <div class="font-semibold text-gray-900 text-sm">Nimble Express</div>
+        <div class="text-xs text-gray-500 mt-0.5">ด่วนพิเศษ</div>
+        <div class="mt-2 inline-flex items-center gap-1 text-xs bg-teal-50 text-teal-700 px-2 py-0.5 rounded-full">
+          <span class="w-1.5 h-1.5 rounded-full bg-teal-400"></span> ด่วน
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FAQ ───────────────────────────────────────────────────────────────────── -->
+<section class="py-16 px-4 bg-white">
+  <div class="max-w-3xl mx-auto">
+    <h2 class="text-center text-2xl md:text-3xl font-bold text-gray-900 mb-2">คำถามที่พบบ่อย</h2>
+    <p class="text-center text-gray-500 mb-10 text-sm">เกี่ยวกับการจัดส่งสินค้า</p>
+
+    <div class="space-y-3" id="faq-list">
+      <!-- FAQ items injected by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- ── Track CTA ─────────────────────────────────────────────────────────────── -->
+<section class="py-16 px-4 bg-secondary">
+  <div class="max-w-3xl mx-auto text-center">
+    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-900/40 border border-amber-700/40 text-amber-300 text-sm font-medium mb-6">
+      <i class="ph ph-magnifying-glass-plus"></i>
+      ติดตามพัสดุได้เลย
+    </div>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">รู้ว่าของอยู่ที่ไหน<br><span class="text-amber-300">ทุกวินาที</span></h2>
+    <p class="text-gray-400 mb-8 leading-relaxed">กรอกเลขออเดอร์หรือเบอร์โทรเพื่อดูสถานะพัสดุแบบ Real-time</p>
+
+    <!-- Mini track form -->
+    <div class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto mb-8">
+      <input
+        id="track-input"
+        type="text"
+        placeholder="เลขออเดอร์ หรือ เบอร์โทร"
+        class="flex-1 bg-white/10 border border-white/20 text-white placeholder-gray-500 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 transition"
+        onkeydown="if(event.key==='Enter') goTrack()"
+      />
+      <button onclick="goTrack()" class="bg-amber-500 hover:bg-amber-400 text-white font-semibold px-6 py-3 rounded-xl text-sm transition-colors shadow-lg shadow-amber-900/30">
+        ติดตาม
+      </button>
+    </div>
+
+    <!-- Support -->
+    <div class="flex flex-col sm:flex-row gap-3 justify-center">
+      <a href="https://line.me/ti/p/~@btmusicdrive" target="_blank"
+         class="inline-flex items-center justify-center gap-2 bg-[#06C755] hover:bg-[#05b34c] text-white text-sm font-medium px-5 py-2.5 rounded-xl transition-colors">
+        <i class="ph ph-chat-circle-dots"></i> LINE สอบถาม
+      </a>
+      <a href="track-order.html"
+         class="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white text-sm font-medium px-5 py-2.5 rounded-xl transition-colors border border-white/10">
+        <i class="ph ph-arrow-right"></i> หน้าติดตามพัสดุ
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer strip ──────────────────────────────────────────────────────────── -->
+<footer class="bg-secondary border-t border-white/5 py-6 px-4">
+  <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-gray-500">
+    <div class="flex items-center gap-2">
+      <img src="images/logo (60 x 60 px) (1).png" alt="btmusicdrive" class="h-7 w-7 rounded-full">
+      <span class="text-gray-400">btmusicdrive &copy; 2026</span>
+    </div>
+    <div class="flex items-center gap-5">
+      <a href="terms.html" class="hover:text-gray-300 transition-colors">ข้อกำหนด</a>
+      <a href="privacy.html" class="hover:text-gray-300 transition-colors">นโยบายความเป็นส่วนตัว</a>
+      <a href="refund.html" class="hover:text-gray-300 transition-colors">คืนสินค้า</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ── FAQ data ─────────────────────────────────────────────────────────────────
+  const faqs = [
+    {
+      q: 'ออเดอร์ก่อนกี่โมงถึงจะส่งวันเดียวกัน?',
+      a: 'ออเดอร์ที่ชำระเงินก่อนเวลา 12:00 น. จะจัดส่งภายในวันนั้น สำหรับออเดอร์หลังเที่ยงจะส่งวันทำการถัดไป'
+    },
+    {
+      q: 'มีบริการเก็บเงินปลายทาง (COD) ไหม?',
+      a: 'มีบริการ COD ครอบคลุมทั่วประเทศ เลือกชำระ "เก็บเงินปลายทาง" ตอนสั่งซื้อได้เลย ไม่มีค่าธรรมเนียมเพิ่มเติม'
+    },
+    {
+      q: 'จะรู้ได้อย่างไรว่าของถูกส่งแล้ว?',
+      a: 'เราจะส่ง Tracking Number ให้ทาง SMS และอีเมลที่ลงทะเบียนไว้ หรือตรวจสอบได้ที่หน้า "ประวัติออเดอร์" ในบัญชีของคุณ'
+    },
+    {
+      q: 'สั่งวันนี้จะได้รับของวันไหน?',
+      a: 'กรุงเทพฯ และปริมณฑล: 1–2 วันทำการ | ต่างจังหวัด: 2–4 วันทำการ | พื้นที่ห่างไกล/เกาะ: 3–5 วันทำการ'
+    },
+    {
+      q: 'ของหายหรือเสียหายระหว่างขนส่งทำอย่างไร?',
+      a: 'แจ้งเราทาง LINE @btmusicdrive ภายใน 24 ชั่วโมงหลังได้รับสินค้า พร้อมแนบรูปถ่าย เราดูแลและรับผิดชอบทุกกรณี'
+    },
+    {
+      q: 'สามารถระบุวันจัดส่งได้ไหม?',
+      a: 'ยังไม่มีบริการระบุวันจัดส่งล่วงหน้า แต่คุณสามารถระบุเวลาที่สะดวกรับสินค้าในช่อง "หมายเหตุ" ตอนสั่งซื้อ'
+    },
+  ];
+
+  const faqList = document.getElementById('faq-list');
+  faqs.forEach((item, i) => {
+    faqList.innerHTML += `
+      <div class="border border-gray-200 rounded-2xl overflow-hidden">
+        <button onclick="toggleFaq(${i})" class="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-gray-50 transition-colors">
+          <span class="font-medium text-gray-900 text-sm pr-4">${item.q}</span>
+          <i id="faq-icon-${i}" class="ph ph-plus text-gray-400 flex-shrink-0 text-lg transition-transform"></i>
+        </button>
+        <div id="faq-body-${i}" class="hidden px-6 pb-4">
+          <p class="text-sm text-gray-600 leading-relaxed">${item.a}</p>
+        </div>
+      </div>
+    `;
+  });
+
+  function toggleFaq(i) {
+    const body = document.getElementById(`faq-body-${i}`);
+    const icon = document.getElementById(`faq-icon-${i}`);
+    const isOpen = !body.classList.contains('hidden');
+    // close all
+    document.querySelectorAll('[id^="faq-body-"]').forEach(el => el.classList.add('hidden'));
+    document.querySelectorAll('[id^="faq-icon-"]').forEach(el => {
+      el.classList.remove('ph-minus');
+      el.classList.add('ph-plus');
+    });
+    if (!isOpen) {
+      body.classList.remove('hidden');
+      icon.classList.remove('ph-plus');
+      icon.classList.add('ph-minus');
+    }
+  }
+
+  // ── Track redirect ───────────────────────────────────────────────────────────
+  function goTrack() {
+    const val = document.getElementById('track-input').value.trim();
+    if (!val) return;
+    window.location.href = `track-order.html?q=${encodeURIComponent(val)}`;
+  }
+</script>
+</body>
+</html>
