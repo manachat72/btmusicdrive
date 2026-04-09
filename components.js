@@ -158,7 +158,7 @@ function _footerHTML() {
         <div>
           <h4 class="font-bold text-white mb-5 text-base">บริการลูกค้า</h4>
           <ul class="space-y-3">
-            <li><a href="track-order.html" class="text-gray-400 hover:text-primary transition-colors text-sm">การจัดส่งสินค้า</a></li>
+            <li><a href="shipping.html" class="text-gray-400 hover:text-primary transition-colors text-sm">การจัดส่งสินค้า</a></li>
             <li><a href="warranty.html" class="text-gray-400 hover:text-primary transition-colors text-sm">การรับประกันสินค้า</a></li>
             <li><a href="returns.html" class="text-gray-400 hover:text-primary transition-colors text-sm">การคืนสินค้าและการคืนเงิน</a></li>
             <li><a href="exchange.html" class="text-gray-400 hover:text-primary transition-colors text-sm">การยกเลิกการสั่งซื้อสินค้า</a></li>
