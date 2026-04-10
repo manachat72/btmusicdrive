@@ -2611,14 +2611,16 @@
 
     const headers = [
       'Customer_order_number', 'Consignee_name', 'Address', 'Postal_code',
-      'Phone_number', 'Phone_number2', 'COD',
+      'Phone_number', 'Phone_number2', 'Number of parcels', 'COD',
       'Item description1(Name/Size/Weight/color/quantity)',
       'Item description2(Name/Size/Weight/color/quantity)',
       'Item description3(Name/Size/Weight/color/quantity)',
       'Item description4(Name/Size/Weight/color/quantity)',
       'Item description5(Name/Size/Weight/color/quantity)',
-      'Item_type', 'Flash_care', 'Declared_value', 'Box_shed',
-      'Weight_kg', 'Length', 'Width', 'Height', 'Product_type', 'Payment_method'
+      'Item_type', 'Weight_kg', 'Length', 'Width', 'Height',
+      'Declared_value', 'Box_shi_eld', 'Document_return_service',
+      'Product_type', 'Payment_method',
+      'Remark', 'Delivery Preference_location note', 'Delivery Preference_contact note'
     ];
 
     const rows = pending.map(o => {
@@ -2650,18 +2652,22 @@
         postal,                         // Postal_code
         phone,                          // Phone_number
         '',                             // Phone_number2
+        1,                              // Number of parcels
         codAmount,                      // COD
         itemDescs[0], itemDescs[1], itemDescs[2], itemDescs[3], itemDescs[4],
         'อุปกรณ์ไฟฟ้า',                // Item_type
-        'N',                            // Flash_care
-        Number(o.totalAmount).toFixed(2), // Declared_value
-        'N',                            // Box_shed
-        1,                              // Weight_kg
-        5,                              // Length
-        5,                              // Width
+        0.4,                            // Weight_kg
+        13,                             // Length
+        13,                             // Width
         2,                              // Height
+        Number(o.totalAmount).toFixed(2), // Declared_value
+        'n',                            // Box_shi_eld
+        'n',                            // Document_return_service
         'Standard',                     // Product_type
-        isCOD ? 'payment by recipient' : 'prepaid', // Payment_method
+        isCOD ? 'payment by recipient' : 'payment by sender',
+        '',                             // Remark
+        '',                             // Delivery Preference_location note
+        '',                             // Delivery Preference_contact note
       ];
     });
 
@@ -2670,10 +2676,11 @@
 
     // ปรับความกว้างคอลัมน์
     ws['!cols'] = [
-      {wch:20},{wch:20},{wch:40},{wch:10},{wch:14},{wch:14},{wch:10},
+      {wch:20},{wch:20},{wch:40},{wch:10},{wch:14},{wch:14},{wch:12},{wch:10},
       {wch:30},{wch:30},{wch:30},{wch:30},{wch:30},
-      {wch:16},{wch:10},{wch:14},{wch:10},
-      {wch:10},{wch:8},{wch:8},{wch:8},{wch:12},{wch:20}
+      {wch:16},{wch:10},{wch:8},{wch:8},{wch:8},
+      {wch:14},{wch:12},{wch:22},{wch:14},{wch:22},
+      {wch:20},{wch:28},{wch:28}
     ];
 
     XLSX.utils.book_append_sheet(wb, ws, 'Flash Express');
