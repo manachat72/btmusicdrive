@@ -1541,22 +1541,12 @@
           <td>
             ${shipped
               ? `<div class="track-done"><i class="fa-solid fa-circle-check"></i> จัดส่งแล้ว
-                  ${order.trackingNumber ? `<div style="font-size:11px;color:var(--muted);margin-top:3px;">${escHtml(order.carrier||'')} · ${escHtml(order.trackingNumber)}</div>` : ''}
+                  ${order.trackingNumber ? `<div style="font-size:11px;color:var(--muted);margin-top:3px;">Flash · ${escHtml(order.trackingNumber)}</div>` : ''}
                 </div>`
-              : `<div>
-                  <form class="track-form" onsubmit="submitTracking(event,'${order.id}')">
-                    <select name="carrier" required style="width:100%;margin-bottom:4px;padding:4px;border:1px solid #ddd;border-radius:3px;">
-                      <option value="">เลือกขนส่ง…</option>
-                      <option value="Kerry">Kerry Express</option>
-                      <option value="JT">J&T Express</option>
-                      <option value="Flash">Flash Express</option>
-                    </select>
-                    <div class="track-form-row">
-                      <input type="text" name="trackingNumber" placeholder="หมายเลขพัสดุ" required />
-                      <button type="submit" class="ship-btn"><i class="fa-solid fa-truck"></i> บันทึก</button>
-                    </div>
-                  </form>
-                </div>`
+              : `<form class="track-form" style="flex-direction:row;align-items:center;gap:5px;" onsubmit="submitTracking(event,'${order.id}')">
+                  <input type="text" name="trackingNumber" placeholder="เลขพัสดุ Flash" required style="flex:1;min-width:0;" />
+                  <button type="submit" class="ship-btn" style="white-space:nowrap;"><i class="fa-solid fa-file-import"></i> Import</button>
+                </form>`
             }
           </td>
           <td>
@@ -1571,7 +1561,7 @@
   async function submitTracking(e, orderId) {
     e.preventDefault();
     const form = e.target;
-    const carrier = form.carrier.value;
+    const carrier = 'Flash';
     const trackingNumber = form.trackingNumber.value.trim();
     const btn = form.querySelector('.ship-btn');
     btn.disabled = true;
