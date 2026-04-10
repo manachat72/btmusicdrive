@@ -469,6 +469,10 @@
       <div class="sb-item" id="nav-menus" onclick="showSection('menus')">
         <i class="fa-solid fa-bars"></i><span>เมนู</span>
       </div>
+      <div class="sb-item" id="nav-shipping" onclick="showSection('shipping')">
+        <i class="fa-solid fa-truck"></i><span>จัดส่ง</span>
+        <span class="sb-badge" id="shipping-badge"></span>
+      </div>
 
       <div class="sb-sep"></div>
       <div class="sb-item" id="nav-settings" onclick="showSection('settings')">
@@ -821,6 +825,75 @@
 
       <div id="menus-empty" class="wp-empty-box" style="display:none;">
         <i class="fa-solid fa-bars"></i><p>ยังไม่มีเมนู กด "เพิ่มเมนู" เพื่อสร้างเมนูแรก</p>
+      </div>
+    </section>
+
+    <!-- ── SHIPPING ─────────────────────────────────────────────────────── -->
+    <section id="section-shipping" style="display:none;">
+      <div class="wp-page-hdr">
+        <h1 class="wp-page-title">จัดส่ง</h1>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button onclick="exportFlashExcel()" class="wp-btn" style="background:#e8a000;color:#fff;border-color:#e8a000;">
+            <i class="fa-solid fa-file-excel"></i> Export Flash Express
+          </button>
+          <button onclick="document.getElementById('import-tracking-input').click()" class="wp-btn" style="background:#166534;color:#fff;border-color:#166534;">
+            <i class="fa-solid fa-file-import"></i> Import Tracking
+          </button>
+          <input type="file" id="import-tracking-input" accept=".xlsx,.xls,.csv" style="display:none;" onchange="importTrackingFile(this)">
+          <button onclick="loadShipping()" class="wp-btn">
+            <i class="fa-solid fa-arrows-rotate"></i> รีเฟรช
+          </button>
+        </div>
+      </div>
+
+      <!-- สถิติ -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:18px;">
+        <div class="wp-card" style="padding:16px;text-align:center;">
+          <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">รอจัดส่ง</div>
+          <div id="ship-stat-pending" style="font-size:28px;font-weight:700;color:#e8a000;">—</div>
+        </div>
+        <div class="wp-card" style="padding:16px;text-align:center;">
+          <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">จัดส่งแล้ว</div>
+          <div id="ship-stat-shipped" style="font-size:28px;font-weight:700;color:#3730a3;">—</div>
+        </div>
+        <div class="wp-card" style="padding:16px;text-align:center;">
+          <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">ส่งสำเร็จ</div>
+          <div id="ship-stat-delivered" style="font-size:28px;font-weight:700;color:#166534;">—</div>
+        </div>
+      </div>
+
+      <!-- ตารางรอจัดส่ง -->
+      <div class="wp-card" style="margin-bottom:18px;">
+        <div class="card-hdr">
+          <h2><i class="fa-solid fa-clock"></i> รอจัดส่ง (PAID / PROCESSING)</h2>
+          <span class="card-tag" id="ship-pending-count">0 รายการ</span>
+        </div>
+        <div class="card-body nopad" style="overflow-x:auto;">
+          <table class="wp-table">
+            <thead><tr>
+              <th>Order</th><th>ลูกค้า</th><th>ที่อยู่</th><th>รายการสินค้า</th>
+              <th class="r">ยอด</th><th>วิธีชำระ</th><th>วันที่</th><th>กรอก Tracking</th>
+            </tr></thead>
+            <tbody id="ship-pending-tbody"><tr><td colspan="8" style="text-align:center;color:var(--muted);padding:24px;">กำลังโหลด…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ตารางจัดส่งแล้ว -->
+      <div class="wp-card">
+        <div class="card-hdr">
+          <h2><i class="fa-solid fa-circle-check"></i> จัดส่งแล้ว</h2>
+          <span class="card-tag" id="ship-shipped-count">0 รายการ</span>
+        </div>
+        <div class="card-body nopad" style="overflow-x:auto;">
+          <table class="wp-table">
+            <thead><tr>
+              <th>Order</th><th>ลูกค้า</th><th>ขนส่ง</th><th>Tracking</th>
+              <th>สถานะ</th><th>วันที่ส่ง</th><th>พิมพ์</th>
+            </tr></thead>
+            <tbody id="ship-shipped-tbody"><tr><td colspan="7" style="text-align:center;color:var(--muted);padding:24px;">กำลังโหลด…</td></tr></tbody>
+          </table>
+        </div>
       </div>
     </section>
 
@@ -1237,10 +1310,11 @@
     return h;
   }
 
-  const SECTIONS = ['dashboard', 'orders', 'products', 'customers', 'categories', 'menus', 'settings'];
+  const SECTIONS = ['dashboard', 'orders', 'products', 'customers', 'categories', 'menus', 'shipping', 'settings'];
   const SECTION_TITLES = {
     dashboard: 'แดชบอร์ด', orders: 'คำสั่งซื้อ', products: 'สินค้า',
-    customers: 'ลูกค้า', categories: 'หมวดหมู่', menus: 'เมนู', settings: 'ตั้งค่า'
+    customers: 'ลูกค้า', categories: 'หมวดหมู่', menus: 'เมนู',
+    shipping: 'จัดส่ง', settings: 'ตั้งค่า'
   };
 
   // ── Gate ──────────────────────────────────────────────────────────────────
@@ -1303,6 +1377,7 @@
     if (id === 'customers') loadCustomers();
     if (id === 'categories') loadCategories();
     if (id === 'menus') loadMenus();
+    if (id === 'shipping') loadShipping();
   }
 
   // ── Init ──────────────────────────────────────────────────────────────────
@@ -2308,6 +2383,219 @@
   }
 
   // ══════════════════════════════════════════════════════════════════════════
+  // SHIPPING SECTION
+  // ══════════════════════════════════════════════════════════════════════════
+  let _shipOrders = [];
+
+  async function loadShipping() {
+    try {
+      const res = await fetch(`${API_BASE}/orders?limit=200`, { headers: adminHeaders() });
+      const data = await res.json();
+      _shipOrders = data.data || data || [];
+
+      const pending  = _shipOrders.filter(o => !o.trackingNumber && (o.status === 'PAID' || o.status === 'PROCESSING'));
+      const shipped  = _shipOrders.filter(o => o.trackingNumber && o.status === 'SHIPPED');
+      const delivered = _shipOrders.filter(o => o.status === 'DELIVERED');
+
+      document.getElementById('ship-stat-pending').textContent   = pending.length;
+      document.getElementById('ship-stat-shipped').textContent   = shipped.length;
+      document.getElementById('ship-stat-delivered').textContent = delivered.length;
+      document.getElementById('ship-pending-count').textContent  = `${pending.length} รายการ`;
+      document.getElementById('ship-shipped-count').textContent  = `${shipped.length} รายการ`;
+
+      // badge ใน sidebar
+      const badge = document.getElementById('shipping-badge');
+      if (badge) { badge.textContent = pending.length || ''; }
+
+      renderShipPending(pending);
+      renderShipShipped(shipped);
+    } catch(e) {
+      console.error(e);
+      showToast('โหลดข้อมูลจัดส่งไม่สำเร็จ', true);
+    }
+  }
+
+  function renderShipPending(orders) {
+    const tbody = document.getElementById('ship-pending-tbody');
+    if (!orders.length) {
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:24px;">ไม่มี order รอจัดส่ง</td></tr>';
+      return;
+    }
+    tbody.innerHTML = orders.map((o, idx) => {
+      const shortId = '#' + o.id.slice(-8).toUpperCase();
+      const name    = o.user?.name || o.user?.email?.split('@')[0] || '—';
+      const address = o.shippingAddress || '—';
+      const itemsSummary = (o.items || []).map(it => `${it.product?.name || '?'} x${it.quantity||1}`).join(', ');
+      const isCOD   = !o.paymentIntentId && !o.stripeSessionId;
+      const date    = new Date(o.createdAt).toLocaleDateString('th-TH', { day:'2-digit', month:'short', year:'numeric' });
+      return `<tr>
+        <td style="font-weight:700;white-space:nowrap;">${shortId}</td>
+        <td>${escHtml(name)}</td>
+        <td style="font-size:12px;max-width:200px;">${escHtml(address)}</td>
+        <td style="font-size:12px;max-width:180px;color:var(--muted);">${escHtml(itemsSummary)}</td>
+        <td class="r" style="font-weight:700;">฿${Number(o.totalAmount).toFixed(2)}</td>
+        <td><span style="font-size:11px;padding:2px 7px;border-radius:10px;background:${isCOD?'#fef8ee':'#edfaef'};color:${isCOD?'#996800':'#166534'};">${isCOD?'COD':'โอน'}</span></td>
+        <td style="white-space:nowrap;font-size:12px;color:var(--muted);">${date}</td>
+        <td>
+          <form style="display:flex;flex-direction:column;gap:4px;min-width:200px;" onsubmit="shipSubmitTracking(event,'${o.id}')">
+            <select name="carrier" required style="padding:4px 6px;border:1px solid #ddd;border-radius:3px;font-size:12px;">
+              <option value="">เลือกขนส่ง…</option>
+              <option value="Flash Express">Flash Express</option>
+              <option value="Kerry">Kerry Express</option>
+              <option value="J&T">J&amp;T Express</option>
+              <option value="ไปรษณีย์ไทย">ไปรษณีย์ไทย</option>
+              <option value="Ninja Van">Ninja Van</option>
+              <option value="SCG">SCG Express</option>
+            </select>
+            <div style="display:flex;gap:4px;">
+              <input type="text" name="trackingNumber" placeholder="หมายเลขพัสดุ" required
+                style="flex:1;padding:4px 6px;border:1px solid #ddd;border-radius:3px;font-size:12px;" />
+              <button type="submit" class="wp-btn wp-btn-primary" style="padding:4px 10px;font-size:12px;white-space:nowrap;">
+                <i class="fa-solid fa-check"></i> บันทึก
+              </button>
+            </div>
+          </form>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  function renderShipShipped(orders) {
+    const tbody = document.getElementById('ship-shipped-tbody');
+    if (!orders.length) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:24px;">ยังไม่มี order ที่จัดส่ง</td></tr>';
+      return;
+    }
+    tbody.innerHTML = orders.map((o, idx) => {
+      const shortId  = '#' + o.id.slice(-8).toUpperCase();
+      const name     = o.user?.name || o.user?.email?.split('@')[0] || '—';
+      const date     = new Date(o.updatedAt || o.createdAt).toLocaleDateString('th-TH', { day:'2-digit', month:'short', year:'numeric' });
+      const globalIdx = _shipOrders.indexOf(o);
+      return `<tr>
+        <td style="font-weight:700;">${shortId}</td>
+        <td>${escHtml(name)}</td>
+        <td>${escHtml(o.carrier || '—')}</td>
+        <td style="font-family:monospace;">${escHtml(o.trackingNumber || '—')}</td>
+        <td><span class="s-badge s-SHIPPED">SHIPPED</span></td>
+        <td style="font-size:12px;color:var(--muted);">${date}</td>
+        <td>
+          <button class="action-btn" onclick="printShippingLabel(${globalIdx})" title="พิมพ์ใบปะหน้า">
+            <i class="fa-solid fa-print"></i>
+          </button>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  async function shipSubmitTracking(e, orderId) {
+    e.preventDefault();
+    const form   = e.target;
+    const carrier        = form.carrier.value;
+    const trackingNumber = form.trackingNumber.value.trim();
+    const btn    = form.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>';
+    try {
+      const res = await fetch(`${API_BASE}/orders/${orderId}/tracking`, {
+        method: 'PATCH',
+        headers: adminHeaders(),
+        body: JSON.stringify({ carrier, trackingNumber })
+      });
+      if (res.ok) {
+        showToast(`บันทึก ${carrier} · ${trackingNumber} แล้ว`);
+        loadShipping();
+      } else {
+        const d = await res.json().catch(() => ({}));
+        showToast(d.error || 'บันทึกไม่สำเร็จ', true);
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> บันทึก';
+      }
+    } catch {
+      showToast('เครือข่ายผิดพลาด', true);
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-check"></i> บันทึก';
+    }
+  }
+
+  // ── Import Tracking จากไฟล์ Flash Express ────────────────────────────────
+  // Flash ส่งกลับไฟล์ที่มีคอลัมน์ Customer_order_number และ Tracking_number
+  async function importTrackingFile(input) {
+    const file = input.files[0];
+    if (!file) return;
+    input.value = '';
+
+    // โหลด SheetJS ถ้ายังไม่มี
+    const loadXLSX = () => new Promise((resolve, reject) => {
+      if (typeof XLSX !== 'undefined') return resolve();
+      const s = document.createElement('script');
+      s.src = 'https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js';
+      s.onload = resolve; s.onerror = reject;
+      document.head.appendChild(s);
+    });
+
+    try {
+      await loadXLSX();
+    } catch {
+      showToast('โหลด SheetJS ไม่สำเร็จ', true); return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = async (ev) => {
+      try {
+        const wb   = XLSX.read(ev.target.result, { type: 'array' });
+        const ws   = wb.Sheets[wb.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
+
+        if (!rows.length) { showToast('ไฟล์ว่างเปล่า', true); return; }
+
+        // หา column ที่ใช้ — Flash ส่งกลับหลายรูปแบบ
+        const first = rows[0];
+        const orderCol   = Object.keys(first).find(k => /order.*number|customer.*order/i.test(k));
+        const trackCol   = Object.keys(first).find(k => /tracking|track.*no|waybill/i.test(k));
+        const carrierCol = Object.keys(first).find(k => /carrier|courier|ขนส่ง/i.test(k));
+
+        if (!orderCol || !trackCol) {
+          showToast(`ไม่พบคอลัมน์ order/tracking — พบคอลัมน์: ${Object.keys(first).join(', ')}`, true);
+          return;
+        }
+
+        // จับคู่กับ _shipOrders โดยใช้ short ID (8 ตัวท้าย)
+        const shipMap = {};
+        _shipOrders.forEach(o => { shipMap[o.id.slice(-8).toUpperCase()] = o.id; });
+
+        let success = 0, fail = 0, skip = 0;
+        const tasks = rows.map(async row => {
+          const shortId      = String(row[orderCol]).trim().toUpperCase();
+          const trackingNumber = String(row[trackCol]).trim();
+          const carrier      = carrierCol ? String(row[carrierCol]).trim() : 'Flash Express';
+
+          if (!shortId || !trackingNumber) { skip++; return; }
+
+          const fullId = shipMap[shortId];
+          if (!fullId) { skip++; return; }
+
+          try {
+            const res = await fetch(`${API_BASE}/orders/${fullId}/tracking`, {
+              method: 'PATCH',
+              headers: adminHeaders(),
+              body: JSON.stringify({ carrier: carrier || 'Flash Express', trackingNumber })
+            });
+            res.ok ? success++ : fail++;
+          } catch { fail++; }
+        });
+
+        await Promise.all(tasks);
+        showToast(`Import สำเร็จ ${success} รายการ${fail ? ` · ผิดพลาด ${fail}` : ''}${skip ? ` · ข้าม ${skip}` : ''}`);
+        loadShipping();
+      } catch(err) {
+        console.error(err);
+        showToast('อ่านไฟล์ไม่สำเร็จ: ' + err.message, true);
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
   // EXPORT FLASH EXPRESS XLSX
   // ══════════════════════════════════════════════════════════════════════════
   function exportFlashExcel() {
@@ -2326,8 +2614,9 @@
   }
 
   function _doExportFlash() {
-    // กรอง เฉพาะ order ที่ยังไม่มี tracking (PAID หรือ PROCESSING)
-    const pending = _orders.filter(o => !o.trackingNumber && (o.status === 'PAID' || o.status === 'PROCESSING'));
+    // ใช้ _shipOrders ถ้าอยู่ใน shipping section, ไม่งั้นใช้ _orders
+    const source = (_shipOrders && _shipOrders.length) ? _shipOrders : (_orders || []);
+    const pending = source.filter(o => !o.trackingNumber && (o.status === 'PAID' || o.status === 'PROCESSING'));
     if (!pending.length) {
       showToast('ไม่มี order ที่รอจัดส่ง (PAID/PROCESSING) แล้ว', true);
       return;
