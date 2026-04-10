@@ -611,6 +611,9 @@
       <div class="wp-page-hdr">
         <h1 class="wp-page-title">คำสั่งซื้อ</h1>
         <div style="display:flex;gap:8px;">
+          <button onclick="exportFlashExcel()" class="wp-btn" style="background:#e8a000;color:#fff;border-color:#e8a000;">
+            <i class="fa-solid fa-file-excel"></i> Export Flash Express
+          </button>
           <button onclick="exportOrdersCSV()" class="wp-btn">
             <i class="fa-solid fa-file-csv"></i> Export CSV
           </button>
@@ -2302,6 +2305,105 @@
 <button class="print-btn" onclick="window.print()"><i class="fa-solid fa-print"></i> พิมพ์ใบปะหน้า</button>
 </body></html>`);
     win.document.close();
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // EXPORT FLASH EXPRESS XLSX
+  // ══════════════════════════════════════════════════════════════════════════
+  function exportFlashExcel() {
+    if (!_orders || !_orders.length) { showToast('ไม่มีข้อมูลคำสั่งซื้อให้ส่งออก', true); return; }
+
+    // Load SheetJS on-demand
+    if (typeof XLSX === 'undefined') {
+      const script = document.createElement('script');
+      script.src = 'https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js';
+      script.onload = () => _doExportFlash();
+      script.onerror = () => showToast('โหลด SheetJS ไม่สำเร็จ กรุณาตรวจสอบอินเทอร์เน็ต', true);
+      document.head.appendChild(script);
+    } else {
+      _doExportFlash();
+    }
+  }
+
+  function _doExportFlash() {
+    // กรอง เฉพาะ order ที่ยังไม่มี tracking (PAID หรือ PROCESSING)
+    const pending = _orders.filter(o => !o.trackingNumber && (o.status === 'PAID' || o.status === 'PROCESSING'));
+    if (!pending.length) {
+      showToast('ไม่มี order ที่รอจัดส่ง (PAID/PROCESSING) แล้ว', true);
+      return;
+    }
+
+    const headers = [
+      'Customer_order_number', 'Consignee_name', 'Address', 'Postal_code',
+      'Phone_number', 'Phone_number2', 'COD',
+      'Item description1(Name/Size/Weight/color/quantity)',
+      'Item description2(Name/Size/Weight/color/quantity)',
+      'Item description3(Name/Size/Weight/color/quantity)',
+      'Item description4(Name/Size/Weight/color/quantity)',
+      'Item description5(Name/Size/Weight/color/quantity)',
+      'Item_type', 'Flash_care', 'Declared_value', 'Box_shed',
+      'Weight_kg', 'Length', 'Width', 'Height', 'Product_type', 'Payment_method'
+    ];
+
+    const rows = pending.map(o => {
+      const name    = o.user?.name || o.user?.email?.split('@')[0] || '';
+      const phone   = o.shippingPhone || o.user?.phone || '';
+      const address = o.shippingAddress || '';
+
+      // แยก postal code จาก address (5 หลักท้ายสุด)
+      const postalMatch = address.match(/\b(\d{5})\b/g);
+      const postal = postalMatch ? postalMatch[postalMatch.length - 1] : '';
+
+      // สร้าง item descriptions (max 5)
+      const items = (o.items || []).slice(0, 5);
+      const itemDescs = items.map(it => {
+        const n = it.product?.name || it.name || '';
+        const q = it.quantity || 1;
+        return `${n} x${q}`;
+      });
+      while (itemDescs.length < 5) itemDescs.push('');
+
+      // COD amount — เฉพาะ order ที่ไม่มี paymentIntentId (COD)
+      const isCOD = !o.paymentIntentId && !o.stripeSessionId;
+      const codAmount = isCOD ? Number(o.totalAmount).toFixed(2) : '';
+
+      return [
+        o.id.slice(-8).toUpperCase(),  // Customer_order_number
+        name,                           // Consignee_name
+        address,                        // Address
+        postal,                         // Postal_code
+        phone,                          // Phone_number
+        '',                             // Phone_number2
+        codAmount,                      // COD
+        itemDescs[0], itemDescs[1], itemDescs[2], itemDescs[3], itemDescs[4],
+        'อุปกรณ์ไฟฟ้า',                // Item_type
+        'N',                            // Flash_care
+        Number(o.totalAmount).toFixed(2), // Declared_value
+        'N',                            // Box_shed
+        1,                              // Weight_kg
+        5,                              // Length
+        5,                              // Width
+        2,                              // Height
+        'Standard',                     // Product_type
+        isCOD ? 'payment by recipient' : 'prepaid', // Payment_method
+      ];
+    });
+
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+
+    // ปรับความกว้างคอลัมน์
+    ws['!cols'] = [
+      {wch:20},{wch:20},{wch:40},{wch:10},{wch:14},{wch:14},{wch:10},
+      {wch:30},{wch:30},{wch:30},{wch:30},{wch:30},
+      {wch:16},{wch:10},{wch:14},{wch:10},
+      {wch:10},{wch:8},{wch:8},{wch:8},{wch:12},{wch:20}
+    ];
+
+    XLSX.utils.book_append_sheet(wb, ws, 'Flash Express');
+    const date = new Date().toISOString().slice(0,10);
+    XLSX.writeFile(wb, `flash-express-${date}.xlsx`);
+    showToast(`Export ${pending.length} order สำหรับ Flash Express แล้ว`);
   }
 
   // ══════════════════════════════════════════════════════════════════════════
