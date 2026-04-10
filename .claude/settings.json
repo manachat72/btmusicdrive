@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s \"https://www.btmusicdrive.com/api/orders\" -H \"x-admin-password: btmusicdrive-admin-2025\")",
+      "Bash(curl -s \"https://www.btmusicdrive.com/api/orders\" -H \"X-Admin-Password: btmusicdrive-admin-2025\")"
+    ]
+  }
+}

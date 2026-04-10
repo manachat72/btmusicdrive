@@ -40,6 +40,7 @@ app.use(cors({
     }
   },
   credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Admin-Password', 'x-admin-password'],
 }));
 
 // Stripe webhook needs raw body — must be before express.json()
