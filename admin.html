@@ -1496,7 +1496,8 @@
         document.getElementById('orders-error-text').textContent = 'เซิร์ฟเวอร์ผิดพลาด กรุณาตรวจสอบว่า backend ทำงานอยู่';
         vis('orders-error', true); return;
       }
-      const orders = await res.json();
+      const json = await res.json();
+      const orders = Array.isArray(json) ? json : (json.data || []);
       _orders = orders;
 
       const pending = orders.filter(o => o.status === 'PENDING' || o.status === 'PROCESSING').length;
