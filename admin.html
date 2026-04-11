@@ -8,6 +8,7 @@
   <link rel="icon" type="image/png" href="images/logo (60 x 60 px) (1).png">
   <title>btmusicdrive — Admin Dashboard</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
     /* ── WP Admin Design Tokens ────────────────────────────────────────────── */
     :root {
@@ -679,8 +680,15 @@
           <h1 class="wp-page-title">สินค้า</h1>
           <p class="wp-page-desc" id="products-count-label">จัดการคาตาล็อกสินค้า</p>
         </div>
-        <div style="display:flex;gap:8px;">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
           <button onclick="loadProducts()" class="wp-btn"><i class="fa-solid fa-arrows-rotate"></i> รีเฟรช</button>
+          <button onclick="exportProductTemplate()" class="wp-btn" style="background:#166534;color:#fff;border-color:#166534;">
+            <i class="fa-solid fa-file-arrow-down"></i> Export Template
+          </button>
+          <button onclick="document.getElementById('bulk-import-file').click()" class="wp-btn" style="background:#1d4ed8;color:#fff;border-color:#1d4ed8;">
+            <i class="fa-solid fa-file-arrow-up"></i> Import XLSX
+          </button>
+          <input type="file" id="bulk-import-file" accept=".xlsx,.xls" style="display:none;" onchange="onBulkImportFileSelected(this)">
           <button onclick="openProductModal(null)" class="wp-btn" style="background:var(--accent);color:#fff;border-color:var(--accent);">
             <i class="fa-solid fa-plus"></i> เพิ่มสินค้า
           </button>
@@ -1130,6 +1138,46 @@
       <button onclick="closeConfirm()" class="wp-btn">ยกเลิก</button>
       <button onclick="confirmDelete()" id="confirm-delete-btn" style="background:#d63638;color:#fff;border:none;border-radius:3px;padding:7px 18px;font-size:13px;font-weight:600;cursor:pointer;">
         <i class="fa-solid fa-trash"></i> ลบ
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── BULK IMPORT MODAL ──────────────────────────────────────────────────── -->
+<div id="bulk-import-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:600;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:6px;width:100%;max-width:860px;max-height:92vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3);margin:16px;display:flex;flex-direction:column;">
+    <div style="padding:16px 20px;border-bottom:1px solid var(--card-border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+      <div>
+        <h2 style="font-size:15px;font-weight:700;">Import สินค้าจาก XLSX</h2>
+        <p id="bulk-import-subtitle" style="font-size:12px;color:var(--muted);margin-top:2px;"></p>
+      </div>
+      <button onclick="closeBulkImportModal()" style="background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;line-height:1;">&#x2715;</button>
+    </div>
+    <!-- Step 1: Preview -->
+    <div id="bulk-step-preview" style="padding:20px;flex:1;">
+      <div id="bulk-notice-bar" style="display:none;padding:10px 14px;border-radius:4px;font-size:13px;margin-bottom:14px;"></div>
+      <div style="overflow-x:auto;max-height:400px;overflow-y:auto;border:1px solid var(--card-border);border-radius:4px;">
+        <table class="wp-tbl" style="font-size:12px;min-width:700px;">
+          <thead id="bulk-preview-head" style="position:sticky;top:0;background:#f9fafb;z-index:1;"></thead>
+          <tbody id="bulk-preview-body"></tbody>
+        </table>
+      </div>
+      <p style="font-size:11px;color:var(--muted);margin-top:8px;">* แถวสีแดงคือข้อมูลที่ไม่สมบูรณ์ (ไม่มีชื่อ/ราคา) จะถูกข้ามขณะ import</p>
+    </div>
+    <!-- Step 2: Result -->
+    <div id="bulk-step-result" style="display:none;padding:20px;">
+      <div style="text-align:center;margin-bottom:16px;">
+        <div style="width:56px;height:56px;border-radius:50%;background:#f0fdf4;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+          <i class="fa-solid fa-circle-check" style="color:#16a34a;font-size:24px;"></i>
+        </div>
+        <p id="bulk-result-summary" style="font-size:14px;font-weight:600;"></p>
+      </div>
+      <div id="bulk-result-errors" style="display:none;max-height:200px;overflow-y:auto;border:1px solid #fca5a5;border-radius:4px;background:#fef2f2;padding:10px 14px;font-size:12px;"></div>
+    </div>
+    <div style="padding:14px 20px;border-top:1px solid var(--card-border);display:flex;gap:8px;justify-content:flex-end;flex-shrink:0;">
+      <button onclick="closeBulkImportModal()" class="wp-btn" id="bulk-cancel-btn">ยกเลิก</button>
+      <button onclick="runBulkImport()" id="bulk-import-btn" class="settings-save-btn" style="background:#1d4ed8;border-color:#1d4ed8;">
+        <i class="fa-solid fa-file-arrow-up"></i> <span id="bulk-import-btn-txt">Import สินค้าทั้งหมด</span>
       </button>
     </div>
   </div>
@@ -3121,6 +3169,193 @@
     await fetchPickerImages();
   }
 
+  // ══════════════════════════════════════════════════════════════════════════
+  // BULK IMPORT (XLSX)
+  // ══════════════════════════════════════════════════════════════════════════
+
+  // Column definitions: { key, label, required }
+  const IMPORT_COLS = [
+    { key: 'name',          label: 'ชื่อสินค้า *',        required: true  },
+    { key: 'price',         label: 'ราคา (฿) *',          required: true  },
+    { key: 'originalPrice', label: 'ราคาเดิม (฿)',        required: false },
+    { key: 'categoryName',  label: 'หมวดหมู่',             required: false },
+    { key: 'brand',         label: 'แบรนด์',              required: false },
+    { key: 'sku',           label: 'SKU',                  required: false },
+    { key: 'stock',         label: 'คลัง',                required: false },
+    { key: 'imageUrl',      label: 'URL รูปหลัก',         required: false },
+    { key: 'tags',          label: 'แท็ก (คั่น ,)',       required: false },
+    { key: 'description',   label: 'รายละเอียด',          required: false },
+    { key: 'tracklist',     label: 'รายชื่อเพลง (คั่น \\n)', required: false },
+    { key: 'specs',         label: 'สเปค (key=value คั่น \\n)', required: false },
+  ];
+
+  let _bulkRows = [];
+
+  // ── Export Template XLSX ──────────────────────────────────────────────────
+  function exportProductTemplate() {
+    if (typeof XLSX === 'undefined') { showToast('กำลังโหลด XLSX library…'); return; }
+    const headers = IMPORT_COLS.map(c => c.label);
+    const example = [
+      'ไดร์ฟเพลงลูกทุ่ง 100 เพลง', '299', '399', 'ลูกทุ่ง', 'BTMusic', 'SKU-001',
+      '50', 'https://example.com/img.jpg', 'ลูกทุ่ง, ใหม่',
+      'ไดร์ฟเพลงคุณภาพสูง', 'เมดอินไทยแลนด์\nทะเลใจ\nบัวลอย',
+      'ความจุ=16GB\nระบบ=MP3/WAV',
+    ];
+    const ws = XLSX.utils.aoa_to_sheet([headers, example]);
+
+    // Column widths
+    ws['!cols'] = IMPORT_COLS.map((c, i) => ({ wch: [20, 12, 12, 14, 12, 12, 8, 30, 20, 30, 30, 30][i] || 16 }));
+
+    // Header style (yellow fill) — SheetJS community edition does not support cell styles,
+    // but we mark required columns with * in their label already.
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Products');
+
+    // Help sheet
+    const helpRows = [
+      ['คำอธิบายคอลัมน์', ''],
+      ...IMPORT_COLS.map(c => [c.label, c.required ? 'จำเป็น' : 'ไม่บังคับ']),
+      ['', ''],
+      ['หมายเหตุ', 'คอลัมน์ที่มี * จำเป็นต้องกรอก'],
+      ['แท็ก', 'คั่นด้วยเครื่องหมายจุลภาค เช่น ลูกทุ่ง, ใหม่'],
+      ['รายชื่อเพลง', 'แต่ละเพลงคั่นด้วย Enter (newline \\n)'],
+      ['สเปค', 'format: key=value คั่นด้วย Enter เช่น ความจุ=16GB'],
+    ];
+    const wsHelp = XLSX.utils.aoa_to_sheet(helpRows);
+    wsHelp['!cols'] = [{ wch: 30 }, { wch: 20 }];
+    XLSX.utils.book_append_sheet(wb, wsHelp, 'คำอธิบาย');
+
+    XLSX.writeFile(wb, 'btmusicdrive_products_template.xlsx');
+    showToast('ดาวน์โหลด Template แล้ว!');
+  }
+
+  // ── Parse XLSX file selected by user ─────────────────────────────────────
+  function onBulkImportFileSelected(input) {
+    if (!input.files || !input.files[0]) return;
+    if (typeof XLSX === 'undefined') { showToast('กำลังโหลด XLSX library…'); return; }
+
+    const file = input.files[0];
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = new Uint8Array(e.target.result);
+        const wb   = XLSX.read(data, { type: 'array' });
+        const ws   = wb.Sheets[wb.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
+
+        if (!rows.length) { showToast('ไฟล์ว่างเปล่า'); input.value = ''; return; }
+
+        // Map column labels → keys
+        _bulkRows = rows.map(row => {
+          const mapped = {};
+          IMPORT_COLS.forEach(col => {
+            // Try exact key match first, then label match (strip " *")
+            const labelClean = col.label.replace(' *', '').trim();
+            const val = row[col.key] ?? row[col.label] ?? row[labelClean] ?? '';
+            mapped[col.key] = String(val).trim();
+          });
+          return mapped;
+        });
+
+        openBulkImportModal();
+      } catch (err) {
+        showToast('อ่านไฟล์ไม่สำเร็จ: ' + err.message);
+      }
+      input.value = '';
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
+  // ── Open modal and render preview ────────────────────────────────────────
+  function openBulkImportModal() {
+    const modal = document.getElementById('bulk-import-modal');
+    modal.style.display = 'flex';
+
+    document.getElementById('bulk-step-preview').style.display = '';
+    document.getElementById('bulk-step-result').style.display  = 'none';
+    document.getElementById('bulk-import-btn').style.display   = '';
+    document.getElementById('bulk-cancel-btn').textContent     = 'ยกเลิก';
+
+    const valid   = _bulkRows.filter(r => r.name && r.price).length;
+    const invalid = _bulkRows.length - valid;
+
+    const notice = document.getElementById('bulk-notice-bar');
+    notice.style.display = '';
+    notice.style.background = invalid ? '#fef9c3' : '#f0fdf4';
+    notice.style.color      = invalid ? '#713f12' : '#166534';
+    notice.style.border     = invalid ? '1px solid #fde047' : '1px solid #86efac';
+    notice.innerHTML = `พบ <strong>${_bulkRows.length}</strong> แถว — พร้อม import <strong>${valid}</strong> รายการ` +
+      (invalid ? ` | <span style="color:#dc2626;">ข้ามได้ ${invalid} แถว (ไม่มีชื่อ/ราคา)</span>` : '');
+
+    document.getElementById('bulk-import-subtitle').textContent = `${valid} สินค้าพร้อม import`;
+    document.getElementById('bulk-import-btn-txt').textContent  = `Import ${valid} สินค้า`;
+
+    // Render preview table
+    const previewCols = ['name','price','originalPrice','categoryName','brand','sku','stock','tags'];
+    document.getElementById('bulk-preview-head').innerHTML = `<tr>${previewCols.map(k => {
+      const col = IMPORT_COLS.find(c => c.key === k);
+      return `<th style="white-space:nowrap;">${col ? col.label : k}</th>`;
+    }).join('')}<th>สถานะ</th></tr>`;
+
+    document.getElementById('bulk-preview-body').innerHTML = _bulkRows.map(r => {
+      const ok = !!(r.name && r.price);
+      const bg = ok ? '' : 'background:#fef2f2;';
+      return `<tr style="${bg}">${previewCols.map(k => `<td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escHtml(r[k])}">${escHtml(r[k] || '—')}</td>`).join('')}
+        <td>${ok ? '<span style="color:#16a34a;font-weight:600;">✓ OK</span>' : '<span style="color:#dc2626;">✗ ข้าม</span>'}</td></tr>`;
+    }).join('');
+  }
+
+  function closeBulkImportModal() {
+    document.getElementById('bulk-import-modal').style.display = 'none';
+    _bulkRows = [];
+  }
+
+  // ── Run actual import ─────────────────────────────────────────────────────
+  async function runBulkImport() {
+    const validRows = _bulkRows.filter(r => r.name && r.price);
+    if (!validRows.length) { showToast('ไม่มีข้อมูลที่ถูกต้องสำหรับ import'); return; }
+
+    const btn = document.getElementById('bulk-import-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลัง import…';
+
+    try {
+      const res = await fetch(`${API_BASE}/products/bulk-import`, {
+        method: 'POST',
+        headers: adminHeaders(),
+        body: JSON.stringify({ products: validRows }),
+      });
+      const json = await res.json();
+
+      if (!res.ok) throw new Error(json.error || 'Import failed');
+
+      // Show result step
+      document.getElementById('bulk-step-preview').style.display = 'none';
+      document.getElementById('bulk-step-result').style.display  = '';
+      btn.style.display = 'none';
+      document.getElementById('bulk-cancel-btn').textContent = 'ปิด';
+
+      document.getElementById('bulk-result-summary').textContent =
+        `Import สำเร็จ ${json.created} รายการ${json.errors ? ` | ล้มเหลว ${json.errors} รายการ` : ''}`;
+
+      const errBox = document.getElementById('bulk-result-errors');
+      if (json.errors > 0) {
+        const errRows = json.results.filter(r => r.status === 'error');
+        errBox.style.display = '';
+        errBox.innerHTML = '<strong style="display:block;margin-bottom:6px;color:#dc2626;">รายการที่มีข้อผิดพลาด:</strong>' +
+          errRows.map(r => `<div>แถว ${r.index + 1}: ${escHtml(r.name)} — ${escHtml(r.error || '')}</div>`).join('');
+      } else {
+        errBox.style.display = 'none';
+      }
+
+      showToast(`Import สำเร็จ ${json.created} รายการ!`);
+      loadProducts();
+    } catch (err) {
+      showToast('Import ล้มเหลว: ' + err.message);
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-file-arrow-up"></i> <span id="bulk-import-btn-txt">ลองอีกครั้ง</span>';
+    }
+  }
 
 
 </script>

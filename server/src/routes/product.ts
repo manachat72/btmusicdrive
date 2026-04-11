@@ -147,6 +147,99 @@ router.patch('/:id', authenticateToken, async (req: AuthRequest, res: Response) 
   }
 });
 
+// ── POST /api/products/bulk-import ──────────────────────────────────────────
+// Admin only — create multiple products from XLSX export
+router.post('/bulk-import', authenticateToken, async (req: AuthRequest, res: Response) => {
+  try {
+    if (req.user?.role !== 'ADMIN') {
+      return res.status(403).json({ error: 'Admin access required' });
+    }
+
+    const { products } = req.body;
+    if (!Array.isArray(products) || products.length === 0) {
+      return res.status(400).json({ error: 'products array is required and must not be empty' });
+    }
+    if (products.length > 500) {
+      return res.status(400).json({ error: 'Maximum 500 products per import' });
+    }
+
+    const results: { index: number; name: string; status: 'created' | 'error'; error?: string }[] = [];
+
+    for (let i = 0; i < products.length; i++) {
+      const p = products[i];
+      try {
+        if (!p.name || p.price == null) {
+          results.push({ index: i, name: p.name || `Row ${i + 1}`, status: 'error', error: 'name and price are required' });
+          continue;
+        }
+
+        const parsedPrice = parseFloat(p.price);
+        if (isNaN(parsedPrice) || parsedPrice <= 0) {
+          results.push({ index: i, name: p.name, status: 'error', error: 'price must be a positive number' });
+          continue;
+        }
+
+        const parsedStock = parseInt(p.stock) || 0;
+        const catName = p.categoryName || p.category || 'Uncategorized';
+
+        let category = await prisma.category.findUnique({ where: { name: catName } });
+        if (!category) {
+          category = await prisma.category.create({ data: { name: catName } });
+        }
+
+        const tags = typeof p.tags === 'string'
+          ? p.tags.split(',').map((t: string) => t.trim()).filter(Boolean)
+          : (Array.isArray(p.tags) ? p.tags : []);
+
+        const tracklist = typeof p.tracklist === 'string'
+          ? p.tracklist.split('\n').map((t: string) => t.trim()).filter(Boolean)
+          : (Array.isArray(p.tracklist) ? p.tracklist : []);
+
+        let specs: any = null;
+        if (typeof p.specs === 'string' && p.specs.trim()) {
+          specs = {};
+          p.specs.split('\n').forEach((line: string) => {
+            const [k, ...rest] = line.split('=');
+            if (k && rest.length) specs[k.trim()] = rest.join('=').trim();
+          });
+        } else if (p.specs && typeof p.specs === 'object') {
+          specs = p.specs;
+        }
+
+        await prisma.product.create({
+          data: {
+            name: String(p.name),
+            price: parsedPrice,
+            originalPrice: p.originalPrice ? parseFloat(p.originalPrice) : null,
+            stock: parsedStock,
+            imageUrl: p.imageUrl || null,
+            images: Array.isArray(p.images) ? p.images : [],
+            brand: p.brand || null,
+            sku: p.sku || null,
+            tags,
+            tracklist,
+            specs,
+            description: p.description || null,
+            categoryId: category.id,
+          },
+        });
+
+        results.push({ index: i, name: p.name, status: 'created' });
+      } catch (err: any) {
+        results.push({ index: i, name: p.name || `Row ${i + 1}`, status: 'error', error: err.message });
+      }
+    }
+
+    const created = results.filter(r => r.status === 'created').length;
+    const errors  = results.filter(r => r.status === 'error').length;
+
+    return res.status(201).json({ created, errors, results });
+  } catch (error) {
+    console.error('Error bulk importing products:', error);
+    return res.status(500).json({ error: 'Failed to bulk import products' });
+  }
+});
+
 // ── DELETE /api/products/:id ─────────────────────────────────────────────────
 // Admin only
 router.delete('/:id', authenticateToken, async (req: AuthRequest, res: Response) => {
