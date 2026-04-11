@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#8B7355">
+  <link rel="icon" type="image/png" href="images/logo (60 x 60 px) (1).png">
 
   <!-- ══ SEO: Title & Description (updated dynamically by JS after product loads) ══ -->
   <title>แฟลชไดร์ฟเพลง MP3 — Bt music drive</title>
@@ -809,6 +811,10 @@
     setMeta('meta[name="twitter:title"]', seoTitle);
     setMeta('meta[name="twitter:description"]', seoDesc);
     setMeta('meta[name="twitter:image"]', ogImage);
+
+    // ── Canonical URL update ──
+    const canonLink = document.querySelector('link[rel="canonical"]');
+    if (canonLink) canonLink.setAttribute('href', `https://btmusicdrive.com/product.html?id=${product.id}`);
 
     // ── Schema.org Product JSON-LD ──────────────────────────────────────────
     const ld = {
