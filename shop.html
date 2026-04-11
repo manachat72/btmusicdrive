@@ -639,8 +639,21 @@
                 // Fallback: use localStorage
                 let cart = JSON.parse(localStorage.getItem('btmusicdrive_cart') || '[]');
                 const existing = cart.find(c => c.id === productId);
-                if (existing) existing.quantity++;
-                else cart.push({ id: productId, quantity: 1 });
+                if (existing) {
+                    existing.quantity++;
+                } else {
+                    const product = shopProducts.find(p => p.id === productId);
+                    if (product) {
+                        cart.push({
+                            id: productId,
+                            name: product.name,
+                            price: product.price,
+                            image: product.imageUrl || product.image,
+                            category: product.category?.name || product.category || '',
+                            quantity: 1
+                        });
+                    }
+                }
                 localStorage.setItem('btmusicdrive_cart', JSON.stringify(cart));
                 if (typeof _loadCartFromStorage === 'function') _loadCartFromStorage();
                 if (typeof _updateCartUI === 'function') _updateCartUI();

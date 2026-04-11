@@ -850,11 +850,12 @@ function _setupSharedEvents() {
   const mobileMenu = document.getElementById('mobile-menu');
   const navbar = document.getElementById('navbar');
 
-  cartBtn?.addEventListener('click', _toggleCart);
-  closeCart?.addEventListener('click', _toggleCart);
-  cartOverlay?.addEventListener('click', () => { _toggleCart(); });
+  cartBtn?.addEventListener('click', (e) => { if (typeof toggleCart === 'function') return; _toggleCart(); });
+  closeCart?.addEventListener('click', (e) => { if (typeof toggleCart === 'function') return; _toggleCart(); });
+  cartOverlay?.addEventListener('click', () => { if (typeof toggleCart === 'function') return; _toggleCart(); });
 
   document.getElementById('clear-cart-btn')?.addEventListener('click', () => {
+    if (typeof toggleCart === 'function') return; // let script.js handle or ignore
     if (_cart.length === 0) return;
     if (confirm('ลบสินค้าทั้งหมดในตะกร้า?')) {
       _cart = [];
@@ -863,11 +864,11 @@ function _setupSharedEvents() {
     }
   });
 
-  authBtn?.addEventListener('click', () => { if (_currentUser) _handleLogout(); else _toggleAuthModal(); });
-  closeAuth?.addEventListener('click', _toggleAuthModal);
-  authModal?.addEventListener('click', e => { if (e.target === authModal) _toggleAuthModal(); });
-  authToggle?.addEventListener('click', () => { _isLoginMode = !_isLoginMode; _updateAuthUI(); });
-  authForm?.addEventListener('submit', _handleAuthSubmit);
+  authBtn?.addEventListener('click', () => { if (typeof toggleAuthModal === 'function') return; if (_currentUser) _handleLogout(); else _toggleAuthModal(); });
+  closeAuth?.addEventListener('click', () => { if (typeof toggleAuthModal === 'function') return; _toggleAuthModal(); });
+  authModal?.addEventListener('click', e => { if (typeof toggleAuthModal === 'function') return; if (e.target === authModal) _toggleAuthModal(); });
+  authToggle?.addEventListener('click', () => { if (typeof toggleAuthModal === 'function') return; _isLoginMode = !_isLoginMode; _updateAuthUI(); });
+  authForm?.addEventListener('submit', (e) => { if (typeof handleAuthSubmit === 'function') return; _handleAuthSubmit(e); });
 
   mobileBtn?.addEventListener('click', () => mobileMenu?.classList.toggle('hidden'));
 

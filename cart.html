@@ -177,7 +177,7 @@
 
         // Fallback: localStorage
         try {
-            const raw = localStorage.getItem('cart');
+            const raw = localStorage.getItem('btmusicdrive_cart');
             pageCart = raw ? JSON.parse(raw) : [];
         } catch {
             pageCart = [];
@@ -271,9 +271,10 @@
     }
 
     function saveAndRenderCart() {
-        localStorage.setItem('cart', JSON.stringify(pageCart));
+        localStorage.setItem('btmusicdrive_cart', JSON.stringify(pageCart));
         // Also update the component cart count
-        if (typeof _updateCartCount === 'function') _updateCartCount();
+        if (typeof _loadCartFromStorage === 'function') _loadCartFromStorage();
+        if (typeof _updateCartUI === 'function') _updateCartUI();
         renderPageCart();
     }
     </script>

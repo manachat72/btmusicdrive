@@ -1,7 +1,7 @@
 // Product Data State (Fetched from API)
 let products = [];
 // Cart State
-let cart = [];
+let cart = JSON.parse(localStorage.getItem('btmusicdrive_cart') || '[]');
 
 // DOM Elements
 const productsContainer = document.getElementById('products-container');
@@ -524,6 +524,8 @@ async function fetchUserCart() {
                 category: item.product.categoryId, // Fallback if needed
                 quantity: item.quantity
             }));
+            localStorage.setItem('btmusicdrive_cart', JSON.stringify(cart));
+            if (typeof _loadCartFromStorage === 'function') _loadCartFromStorage();
             updateCartUI();
         }
     } catch (error) {
@@ -577,6 +579,10 @@ async function addToCart(productId) {
         });
     }
 
+    localStorage.setItem('btmusicdrive_cart', JSON.stringify(cart));
+    if (typeof _loadCartFromStorage === 'function') _loadCartFromStorage();
+    if (typeof _updateCartUI === 'function') _updateCartUI();
+
     updateCartUI();
     showToast(`Added ${product.name} to cart`);
     
@@ -606,6 +612,9 @@ async function addToCart(productId) {
 async function removeFromCart(productId) {
     // Local state update
     cart = cart.filter(item => item.id !== productId);
+    localStorage.setItem('btmusicdrive_cart', JSON.stringify(cart));
+    if (typeof _loadCartFromStorage === 'function') _loadCartFromStorage();
+    if (typeof _updateCartUI === 'function') _updateCartUI();
     updateCartUI();
     
     // Sync with backend if logged in
@@ -631,6 +640,9 @@ async function updateQuantity(productId, newQuantity) {
     const item = cart.find(i => i.id === productId);
     if (item) {
         item.quantity = newQuantity;
+        localStorage.setItem('btmusicdrive_cart', JSON.stringify(cart));
+        if (typeof _loadCartFromStorage === 'function') _loadCartFromStorage();
+        if (typeof _updateCartUI === 'function') _updateCartUI();
         updateCartUI();
         
         // Sync with backend if logged in
