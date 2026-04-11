@@ -123,9 +123,10 @@ function renderNavMenus(menus) {
 
 // Fetch Products from API or fallback to local JSON
 async function fetchProducts() {
-    try {
+    if (productsContainer) {
         productsContainer.innerHTML = '<div class="col-span-full text-center py-10"><div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div><p class="mt-4 text-gray-500">Loading products...</p></div>';
-        
+    }
+    try {
         let response;
         try {
             // First try to fetch from API
@@ -143,15 +144,16 @@ async function fetchProducts() {
         
         const json = await response.json();
         products = Array.isArray(json) ? json : (json.data || []);
-        renderProducts();
+        if (productsContainer) renderProducts();
     } catch (error) {
         console.error('Error:', error);
-        productsContainer.innerHTML = '<div class="col-span-full text-center py-10 text-red-500"><i class="ph ph-warning-circle text-4xl mb-2"></i><p>Failed to load products. Please check if the server is running.</p></div>';
+        if (productsContainer) productsContainer.innerHTML = '<div class="col-span-full text-center py-10 text-red-500"><i class="ph ph-warning-circle text-4xl mb-2"></i><p>Failed to load products. Please check if the server is running.</p></div>';
     }
 }
 
 // Render Products
 function renderProducts() {
+    if (!productsContainer) return;
     productsContainer.innerHTML = '';
     
     products.forEach((product, index) => {
@@ -238,46 +240,48 @@ function renderProducts() {
 // Event Listeners Setup
 function setupEventListeners() {
     // Cart Toggle
-    cartBtn.addEventListener('click', toggleCart);
-    closeCartBtn.addEventListener('click', toggleCart);
-    cartOverlay.addEventListener('click', () => {
-        if (!cartSidebar.classList.contains('translate-x-full')) toggleCart();
-        if (!authModal.classList.contains('hidden')) toggleAuthModal();
+    if (cartBtn) cartBtn.addEventListener('click', toggleCart);
+    if (closeCartBtn) closeCartBtn.addEventListener('click', toggleCart);
+    if (cartOverlay) cartOverlay.addEventListener('click', () => {
+        if (cartSidebar && !cartSidebar.classList.contains('translate-x-full')) toggleCart();
+        if (authModal && !authModal.classList.contains('hidden')) toggleAuthModal();
     });
     
     // Auth Toggle
-    authBtn.addEventListener('click', () => {
+    if (authBtn) authBtn.addEventListener('click', () => {
         if (currentUser) {
             handleLogout();
         } else {
             toggleAuthModal();
         }
     });
-    closeAuthBtn.addEventListener('click', toggleAuthModal);
+    if (closeAuthBtn) closeAuthBtn.addEventListener('click', toggleAuthModal);
 
     // Close auth modal when clicking on backdrop (outside modal content)
-    authModal.addEventListener('click', (e) => {
+    if (authModal) authModal.addEventListener('click', (e) => {
         if (e.target === authModal) toggleAuthModal();
     });
     
-    authToggleBtn.addEventListener('click', () => {
+    if (authToggleBtn) authToggleBtn.addEventListener('click', () => {
         isLoginMode = !isLoginMode;
         updateAuthUI();
     });
 
-    authForm.addEventListener('submit', handleAuthSubmit);
+    if (authForm) authForm.addEventListener('submit', handleAuthSubmit);
 
     // Mobile Menu Toggle
-    mobileMenuBtn.addEventListener('click', () => {
-        mobileMenu.classList.toggle('hidden');
+    if (mobileMenuBtn) mobileMenuBtn.addEventListener('click', () => {
+        if (mobileMenu) mobileMenu.classList.toggle('hidden');
     });
 
     // Navbar Scroll Effect
     window.addEventListener('scroll', () => {
-        if (window.scrollY > 10) {
-            navbar.classList.add('shadow-md', 'bg-opacity-95', 'backdrop-blur-sm');
-        } else {
-            navbar.classList.remove('shadow-md', 'bg-opacity-95', 'backdrop-blur-sm');
+        if (navbar) {
+            if (window.scrollY > 10) {
+                navbar.classList.add('shadow-md', 'bg-opacity-95', 'backdrop-blur-sm');
+            } else {
+                navbar.classList.remove('shadow-md', 'bg-opacity-95', 'backdrop-blur-sm');
+            }
         }
     });
 
@@ -487,6 +491,7 @@ function updateUserUI() {
 
 // Cart Functions
 function toggleCart() {
+    if (!cartSidebar || !cartOverlay) return;
     const isCartOpen = !cartSidebar.classList.contains('translate-x-full');
     
     if (isCartOpen) {
@@ -562,7 +567,11 @@ async function syncLocalCartToDatabase() {
 }
 
 async function addToCart(productId) {
-    const product = products.find(p => p.id === productId);
+    // Search in script.js products first, then fallback to shopProducts (from shop.html)
+    let product = products.find(p => p.id === productId);
+    if (!product && typeof shopProducts !== 'undefined') {
+        product = shopProducts.find(p => p.id === productId);
+    }
     if (!product) return;
 
     // Local state update (optimistic UI)
@@ -572,7 +581,9 @@ async function addToCart(productId) {
         existingItem.quantity += 1;
     } else {
         cart.push({
-            ...product,
+            id: product.id,
+            name: product.name,
+            price: product.price,
             image: product.image || product.imageUrl,
             category: product.category?.name || product.category || '',
             quantity: 1
@@ -587,7 +598,7 @@ async function addToCart(productId) {
     showToast(`Added ${product.name} to cart`);
     
     // Auto-open cart on desktop
-    if (window.innerWidth >= 768 && cartSidebar.classList.contains('translate-x-full')) {
+    if (window.innerWidth >= 768 && cartSidebar && cartSidebar.classList.contains('translate-x-full')) {
         toggleCart();
     }
     
@@ -667,18 +678,21 @@ async function updateQuantity(productId, newQuantity) {
 function updateCartUI() {
     // Update Cart Count Badge
     const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
-    cartCount.textContent = totalItems;
+    if (cartCount) cartCount.textContent = totalItems;
+    
+    // If cart sidebar elements don't exist on this page, just save and return
+    if (!cartItemsContainer) return;
     
     // Show/Hide Empty Message
     if (cart.length === 0) {
-        emptyCartMsg.style.display = 'block';
+        if (emptyCartMsg) emptyCartMsg.style.display = 'block';
         cartItemsContainer.innerHTML = '';
-        cartItemsContainer.appendChild(emptyCartMsg);
-        cartTotal.textContent = '฿0.00';
+        if (emptyCartMsg) cartItemsContainer.appendChild(emptyCartMsg);
+        if (cartTotal) cartTotal.textContent = '฿0.00';
         return;
     }
     
-    emptyCartMsg.style.display = 'none';
+    if (emptyCartMsg) emptyCartMsg.style.display = 'none';
     
     // Render Cart Items
     cartItemsContainer.innerHTML = '';
@@ -723,7 +737,7 @@ function updateCartUI() {
     });
     
     // Update Total
-    cartTotal.textContent = `฿${total.toFixed(2)}`;
+    if (cartTotal) cartTotal.textContent = `฿${total.toFixed(2)}`;
     
     // Attach event listeners to new cart item buttons
     document.querySelectorAll('.remove-item-btn').forEach(btn => {
