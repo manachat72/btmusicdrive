@@ -10,11 +10,11 @@ async function main() {
   const adminEmail = 'admin@btmusicdrive.store';
   const existing = await prisma.user.findUnique({ where: { email: adminEmail } });
   if (!existing) {
-    const passwordHash = await bcrypt.hash('btmusicdrive-admin-2025', 10);
+    const passwordHash = await bcrypt.hash('nu3gtXBTlef6i4wmnqjjcw', 10);
     await prisma.user.create({
       data: { email: adminEmail, passwordHash, name: 'btmusicdrive Admin', role: 'ADMIN' },
     });
-    console.log(`Admin user created: ${adminEmail} / btmusicdrive-admin-2025`);
+    console.log(`Admin user created: ${adminEmail}`);
   } else {
     console.log('Admin user already exists, skipping.');
   }
