@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
@@ -247,7 +247,21 @@
                             </div>
                         </div>
 
-                        <!-- Option 2: Cash on Delivery -->
+                        <!-- Option 2: PromptPay -->
+                        <div class="payment-box" id="payment-box-promptpay">
+                            <label class="flex items-center gap-3 p-4 cursor-pointer">
+                                <input type="radio" name="payment_method" value="promptpay" class="w-5 h-5 text-primary focus:ring-primary border-gray-300" onchange="selectPaymentMethod('promptpay')">
+                                <span class="font-semibold text-gray-900">พร้อมเพย์ / โอนเงิน (PromptPay)</span>
+                                <div class="ml-auto flex items-center justify-center text-blue-800">
+                                    <i class="ph ph-qr-code text-2xl"></i>
+                                </div>
+                            </label>
+                            <div class="hidden p-4 pt-0 border-t border-amber-100 mt-2 text-sm text-gray-500" id="promptpay-info">
+                                <p class="mb-2">ระบบจะสร้าง QR Code หรือแสดงเลขบัญชีเพื่อให้คุณโอนเงินในหน้าถัดไป</p>
+                            </div>
+                        </div>
+
+                        <!-- Option 3: Cash on Delivery -->
                         <div class="payment-box" id="payment-box-cod">
                             <label class="flex items-center gap-3 p-4 cursor-pointer">
                                 <input type="radio" name="payment_method" value="cod" class="w-5 h-5 text-primary focus:ring-primary border-gray-300" onchange="selectPaymentMethod('cod')">

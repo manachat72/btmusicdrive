@@ -209,6 +209,142 @@ router.post('/confirm', authenticateToken, async (req: AuthRequest, res: Respons
 });
 
 
+// ── COD (Cash on Delivery) ─────────────────────────────────────────────────────────────
+router.post('/cod-order', authenticateToken, async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+
+    const { shippingAddress, phone, promoCode } = req.body;
+    
+    const cart = await prisma.cart.findUnique({
+      where: { userId },
+      include: { items: { include: { product: true } } }
+    });
+
+    if (!cart || cart.items.length === 0) {
+      return res.status(400).json({ error: 'Cart is empty' });
+    }
+
+    const subtotal = cart.items.reduce((sum, item) => sum + Number(item.product.price) * item.quantity, 0);
+    
+    let discountAmount = 0;
+    let validatedPromo: any = null;
+
+    if (promoCode) {
+      const promo = await prisma.promoCode.findUnique({ where: { code: promoCode.trim().toUpperCase() } });
+      if (promo && promo.isActive) {
+        validatedPromo = promo;
+        if (promo.type === 'PERCENT') discountAmount = Math.min(subtotal * (promo.value / 100), subtotal);
+        if (promo.type === 'FIXED')   discountAmount = Math.min(promo.value, subtotal);
+      }
+    }
+
+    const discountedSubtotal = subtotal - discountAmount;
+    const tax = Math.round(discountedSubtotal * TAX_RATE * 100) / 100;
+    const totalAmount = Math.round((discountedSubtotal + SHIPPING_COST_THB + tax) * 100) / 100;
+    
+    const invoiceNo = `BTM${Date.now()}${crypto.randomBytes(3).toString('hex')}`;
+
+    // Processing status for COD
+    const order = await createProcessingOrder(userId, invoiceNo, `cod_${invoiceNo}`, cart, validatedPromo, discountAmount, totalAmount, shippingAddress, phone);
+    
+    // Clear cart immediately since it's COD
+    await prisma.cartItem.deleteMany({ where: { cartId: cart.id } });
+
+    // Send email logic (without blocking)
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (user) {
+      sendOrderConfirmationEmail({
+        orderId: order.id,
+        customerEmail: user.email,
+        customerName: user.name || '',
+        items: cart.items.map((i: any) => ({
+          name: i.product.name,
+          quantity: i.quantity,
+          priceAtTime: Number(i.product.price),
+        })),
+        totalAmount: totalAmount,
+      }).catch((err: any) => console.error('[Email] Confirmation skip:', err));
+    }
+
+    return res.json({ orderId: order.id, invoiceNo });
+
+  } catch (error: any) {
+    console.error('COD order error:', error);
+    return res.status(500).json({ error: 'Failed to process COD order' });
+  }
+});
+
+
+// ── PromptPay Order ─────────────────────────────────────────────────────────────
+router.post('/promptpay-order', authenticateToken, async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+
+    const { shippingAddress, phone, promoCode } = req.body;
+    
+    const cart = await prisma.cart.findUnique({
+      where: { userId },
+      include: { items: { include: { product: true } } }
+    });
+
+    if (!cart || cart.items.length === 0) {
+      return res.status(400).json({ error: 'Cart is empty' });
+    }
+
+    const subtotal = cart.items.reduce((sum, item) => sum + Number(item.product.price) * item.quantity, 0);
+    
+    let discountAmount = 0;
+    let validatedPromo: any = null;
+
+    if (promoCode) {
+      const promo = await prisma.promoCode.findUnique({ where: { code: promoCode.trim().toUpperCase() } });
+      if (promo && promo.isActive) {
+        validatedPromo = promo;
+        if (promo.type === 'PERCENT') discountAmount = Math.min(subtotal * (promo.value / 100), subtotal);
+        if (promo.type === 'FIXED')   discountAmount = Math.min(promo.value, subtotal);
+      }
+    }
+
+    const discountedSubtotal = subtotal - discountAmount;
+    const tax = Math.round(discountedSubtotal * TAX_RATE * 100) / 100;
+    const totalAmount = Math.round((discountedSubtotal + SHIPPING_COST_THB + tax) * 100) / 100;
+    
+    const invoiceNo = `BTM${Date.now()}${crypto.randomBytes(3).toString('hex')}`;
+
+    // Set as PROCESSING, user needs to send slip
+    const order = await createProcessingOrder(userId, invoiceNo, `pp_${invoiceNo}`, cart, validatedPromo, discountAmount, totalAmount, shippingAddress, phone);
+    
+    // Clear cart immediately
+    await prisma.cartItem.deleteMany({ where: { cartId: cart.id } });
+
+    // Send email with instructions
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (user) {
+      sendOrderConfirmationEmail({
+        orderId: order.id,
+        customerEmail: user.email,
+        customerName: user.name || '',
+        items: cart.items.map((i: any) => ({
+          name: i.product.name,
+          quantity: i.quantity,
+          priceAtTime: Number(i.product.price),
+        })),
+        totalAmount: totalAmount,
+      }).catch((err: any) => console.error('[Email] Confirmation skip:', err));
+    }
+
+    return res.json({ orderId: order.id, invoiceNo });
+
+  } catch (error: any) {
+    console.error('Promptpay order error:', error);
+    return res.status(500).json({ error: 'Failed to process PromptPay order' });
+  }
+});
+
+
 // ── Helper functions ────────────────────────────────────────────────────────
 async function createProcessingOrder(userId: string, invoiceNo: string, chargeId: string, cart: any, promo: any, discountAmount: number, totalAmount: number, shippingAddress?: string, _phone?: string) {
   const orderItems = cart.items.map((item: any) => ({

@@ -107,7 +107,7 @@ async function loadCart() {
     }
 
     try {
-        const raw = localStorage.getItem('cart');
+        const raw = localStorage.getItem('btmusicdrive_cart');
         cart = raw ? JSON.parse(raw) : [];
     } catch {
         cart = [];
@@ -184,7 +184,7 @@ function updateTotals() {
 // ── Payment Tabs ──────────────────────────────────────────────────────────────
 
 function selectPaymentMethod(method) {
-    const methods = ['card', 'cod'];
+    const methods = ['card', 'promptpay', 'cod'];
 
     methods.forEach(m => {
         const box = document.getElementById(`payment-box-${m}`);
@@ -197,10 +197,18 @@ function selectPaymentMethod(method) {
     });
 
     const stripeContainer = document.getElementById('stripe-payment-container');
+    const promptpayInfo = document.getElementById('promptpay-info');
+    
     if (method === 'card') {
         stripeContainer?.classList.remove('hidden');
     } else {
         stripeContainer?.classList.add('hidden');
+    }
+
+    if (method === 'promptpay') {
+        promptpayInfo?.classList.remove('hidden');
+    } else {
+        promptpayInfo?.classList.add('hidden');
     }
 }
 
@@ -369,6 +377,8 @@ async function placeOrder() {
 
     if (paymentMethod === 'cod') {
         await processCodOrder(shippingAddress, normalizedPhone, btn, btnMobile);
+    } else if (paymentMethod === 'promptpay') {
+        await processPromptPayOrder(shippingAddress, normalizedPhone, btn, btnMobile);
     } else {
         await processStripePayment(shippingAddress, normalizedPhone, btn, btnMobile);
     }
@@ -463,7 +473,7 @@ async function processStripePayment(shippingAddress, phone, btn, btnMobile) {
             }
 
             cart = [];
-            localStorage.removeItem('cart');
+            localStorage.removeItem('btmusicdrive_cart');
             showSuccessModal(confirmData.orderId);
         } else {
             showError('การชำระเงินยังไม่สมบูรณ์ กรุณาลองอีกครั้ง');
@@ -508,11 +518,55 @@ async function processCodOrder(shippingAddress, phone, btn, btnMobile) {
         }
 
         cart = [];
-        localStorage.removeItem('cart');
+        localStorage.removeItem('btmusicdrive_cart');
         showSuccessModal(data.orderId, true);
 
     } catch (e) {
         console.error('COD order error:', e);
+        showError('เกิดข้อผิดพลาดเครือข่าย กรุณาตรวจสอบการเชื่อมต่อและลองอีกครั้ง');
+        setLoading(btn, false);
+        setLoading(btnMobile, false);
+    }
+}
+
+// ── PromptPay Order ───────────────────────────────────────────────────────────
+
+async function processPromptPayOrder(shippingAddress, phone, btn, btnMobile) {
+    const token = localStorage.getItem('btmusicdrive_token');
+
+    try {
+        const res = await fetch(`${API_BASE}/payment/promptpay-order`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                shippingAddress,
+                phone,
+                ...(appliedPromo ? { promoCode: appliedPromo.code } : {})
+            })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            showError(data.error || 'ไม่สามารถสร้างคำสั่งซื้อได้');
+            setLoading(btn, false);
+            setLoading(btnMobile, false);
+            return;
+        }
+
+        cart = [];
+        localStorage.removeItem('btmusicdrive_cart');
+        // Show success modal with promptpay notice
+        const shortId = data.orderId ? String(data.orderId).slice(-8).toUpperCase() : '';
+        document.getElementById('order-id-display').innerHTML = `คำสั่งซื้อ #${shortId}<br><span class="text-blue-600 font-bold mt-2 block">กรุณาโอนเงินเข้าบัญชีตามที่ส่งไปในอีเมล</span>`;
+        document.getElementById('success-modal').classList.remove('hidden');
+        document.getElementById('success-modal').classList.add('flex');
+
+    } catch (e) {
+        console.error('PromptPay order error:', e);
         showError('เกิดข้อผิดพลาดเครือข่าย กรุณาตรวจสอบการเชื่อมต่อและลองอีกครั้ง');
         setLoading(btn, false);
         setLoading(btnMobile, false);
@@ -556,7 +610,7 @@ async function checkPaymentStatus() {
                 if (res.ok) {
                     const data = await res.json();
                     cart = [];
-                    localStorage.removeItem('cart');
+                    localStorage.removeItem('btmusicdrive_cart');
                     showSuccessModal(data.orderId);
                     return;
                 }
@@ -565,7 +619,7 @@ async function checkPaymentStatus() {
             }
         }
         cart = [];
-        localStorage.removeItem('cart');
+        localStorage.removeItem('btmusicdrive_cart');
         showSuccessModal(paymentIntentId.slice(-8).toUpperCase());
     } else if (paymentIntent?.status === 'canceled' || paymentIntent?.last_payment_error) {
         showError('การชำระเงินถูกยกเลิก คุณสามารถลองอีกครั้งเมื่อพร้อม');
