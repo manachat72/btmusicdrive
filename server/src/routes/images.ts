@@ -42,7 +42,8 @@ const upload = multer({
 // Admin password check middleware (reuse same header pattern)
 function requireAdmin(req: Request, res: Response, next: () => void) {
   const pw = req.headers['x-admin-password'];
-  if (pw !== 'btmusicdrive-admin-2025') {
+  const adminPw = process.env.ADMIN_PASSWORD || 'nu3gtXBTlef6i4wmnqjjcw';
+  if (pw !== adminPw) {
     res.status(403).json({ error: 'Forbidden' });
     return;
   }

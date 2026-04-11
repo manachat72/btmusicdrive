@@ -3,6 +3,13 @@ let products = [];
 // Cart State
 let cart = JSON.parse(localStorage.getItem('btmusicdrive_cart') || '[]');
 
+// ── Utility: HTML escape to prevent XSS ──────────────────────────────────────
+function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.appendChild(document.createTextNode(String(str ?? '')));
+    return div.innerHTML;
+}
+
 // DOM Elements
 const productsContainer = document.getElementById('products-container');
 const cartBtn = document.getElementById('cart-btn');
@@ -91,30 +98,30 @@ function renderNavMenus(menus) {
 
     // Desktop
     desktop.innerHTML = menus.map(m => {
-        const iconHtml = m.icon ? `<i class="${m.icon} text-base"></i> ` : '';
+        const iconHtml = m.icon ? `<i class="${escapeHtml(m.icon)} text-base"></i> ` : '';
         if (m.children && m.children.length > 0) {
             const submenu = m.children.map(c =>
-                `<a href="${c.url}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary">${c.icon ? `<i class="${c.icon}"></i> ` : ''}${c.label}</a>`
+                `<a href="${escapeHtml(c.url)}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary">${c.icon ? `<i class="${escapeHtml(c.icon)}"></i> ` : ''}${escapeHtml(c.label)}</a>`
             ).join('');
             return `<div class="relative group">
                 <button class="text-gray-600 hover:text-primary transition-colors font-medium flex items-center gap-1 px-3 py-2 rounded-lg hover:bg-gray-50">
-                    ${iconHtml}${m.label} <i class="ph ph-caret-down text-xs ml-1"></i>
+                    ${iconHtml}${escapeHtml(m.label)} <i class="ph ph-caret-down text-xs ml-1"></i>
                 </button>
                 <div class="absolute left-0 top-full mt-1 w-52 bg-white rounded-xl shadow-xl border border-gray-100 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                     ${submenu}
                 </div>
             </div>`;
         }
-        return `<a href="${m.url}" class="text-gray-600 hover:text-primary transition-colors font-medium flex items-center gap-1 px-3 py-2 rounded-lg hover:bg-gray-50">${iconHtml}${m.label}</a>`;
+        return `<a href="${escapeHtml(m.url)}" class="text-gray-600 hover:text-primary transition-colors font-medium flex items-center gap-1 px-3 py-2 rounded-lg hover:bg-gray-50">${iconHtml}${escapeHtml(m.label)}</a>`;
     }).join('');
 
     // Mobile
     mobile.innerHTML = menus.map(m => {
-        const iconHtml = m.icon ? `<i class="${m.icon}"></i> ` : '';
-        let html = `<a href="${m.url}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50 flex items-center gap-2">${iconHtml}${m.label}</a>`;
+        const iconHtml = m.icon ? `<i class="${escapeHtml(m.icon)}"></i> ` : '';
+        let html = `<a href="${escapeHtml(m.url)}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50 flex items-center gap-2">${iconHtml}${escapeHtml(m.label)}</a>`;
         if (m.children && m.children.length > 0) {
             html += m.children.map(c =>
-                `<a href="${c.url}" class="block pl-8 pr-3 py-2 rounded-md text-sm text-gray-600 hover:text-primary hover:bg-gray-50">${c.icon ? `<i class="${c.icon}"></i> ` : ''}${c.label}</a>`
+                `<a href="${escapeHtml(c.url)}" class="block pl-8 pr-3 py-2 rounded-md text-sm text-gray-600 hover:text-primary hover:bg-gray-50">${c.icon ? `<i class="${escapeHtml(c.icon)}"></i> ` : ''}${escapeHtml(c.label)}</a>`
             ).join('');
         }
         return html;
@@ -190,24 +197,24 @@ function renderProducts() {
         const heartClass = isWishlisted ? 'ph-fill ph-heart text-xl text-red-500' : 'ph ph-heart text-xl';
 
         productCard.innerHTML = `
-            <a href="product.html?id=${product.id}" class="block relative h-40 sm:h-64 overflow-hidden group cursor-pointer">
-                <img src="${product.imageUrl}" alt="${product.name}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+            <a href="product.html?id=${encodeURIComponent(product.id)}" class="block relative h-40 sm:h-64 overflow-hidden group cursor-pointer">
+                <img src="${escapeHtml(product.imageUrl)}" alt="${escapeHtml(product.name)}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
                 ${badgeHtml}
                 <!-- Gradient overlay on hover -->
                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <!-- Slide-up Add to Cart button -->
                 <div class="absolute bottom-0 left-0 right-0 flex justify-center pb-5">
-                    <button class="add-to-cart-btn bg-white text-gray-900 hover:bg-primary hover:text-white font-bold py-2.5 px-6 rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.3)] transition-all flex items-center gap-2 text-sm" data-id="${product.id}" onclick="event.preventDefault();event.stopPropagation();">
+                    <button class="add-to-cart-btn bg-white text-gray-900 hover:bg-primary hover:text-white font-bold py-2.5 px-6 rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.3)] transition-all flex items-center gap-2 text-sm" data-id="${escapeHtml(product.id)}" onclick="event.preventDefault();event.stopPropagation();">
                         <i class="ph ph-shopping-cart text-base"></i> หยิบใส่ตะกร้า
                     </button>
                 </div>
-                <button class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm p-2 rounded-full text-gray-400 hover:text-red-500 shadow-sm transition-colors z-10" data-wishlist="${product.id}" onclick="event.preventDefault();event.stopPropagation();">
+                <button class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm p-2 rounded-full text-gray-400 hover:text-red-500 shadow-sm transition-colors z-10" data-wishlist="${escapeHtml(product.id)}" onclick="event.preventDefault();event.stopPropagation();">
                     <i class="${heartClass}"></i>
                 </button>
             </a>
             <div class="p-3 sm:p-5">
-                <div class="text-xs text-gray-500 font-medium mb-1 uppercase tracking-wider hidden sm:block">${product.category?.name || product.category || ''}</div>
-                <a href="product.html?id=${product.id}" class="block"><h3 class="text-sm sm:text-lg font-bold text-gray-900 mb-1 sm:mb-2 line-clamp-2 hover:text-primary transition-colors">${product.name}</h3></a>
+                <div class="text-xs text-gray-500 font-medium mb-1 uppercase tracking-wider hidden sm:block">${escapeHtml(product.category?.name || product.category || '')}</div>
+                <a href="product.html?id=${encodeURIComponent(product.id)}" class="block"><h3 class="text-sm sm:text-lg font-bold text-gray-900 mb-1 sm:mb-2 line-clamp-2 hover:text-primary transition-colors">${escapeHtml(product.name)}</h3></a>
                 <div class="hidden sm:flex items-center mb-3">
                     <div class="flex mr-2">
                         ${starsHtml}
@@ -708,16 +715,16 @@ function updateCartUI() {
         
         cartItemEl.innerHTML = `
             <div class="w-20 h-24 flex-shrink-0 bg-gray-100 rounded-md overflow-hidden">
-                <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover">
+                <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" class="w-full h-full object-cover">
             </div>
             <div class="flex-1 flex flex-col">
                 <div class="flex justify-between">
-                    <h4 class="text-sm font-bold text-gray-900 line-clamp-2 pr-4">${item.name}</h4>
-                    <button class="remove-item-btn text-gray-400 hover:text-red-500 transition-colors flex-shrink-0" data-id="${item.id}">
+                    <h4 class="text-sm font-bold text-gray-900 line-clamp-2 pr-4">${escapeHtml(item.name)}</h4>
+                    <button class="remove-item-btn text-gray-400 hover:text-red-500 transition-colors flex-shrink-0" data-id="${escapeHtml(item.id)}">
                         <i class="ph ph-trash text-lg"></i>
                     </button>
                 </div>
-                <p class="text-sm text-gray-500 mt-1">${item.category?.name || item.category || ''}</p>
+                <p class="text-sm text-gray-500 mt-1">${escapeHtml(item.category?.name || item.category || '')}</p>
                 <div class="flex justify-between items-end mt-auto pt-2">
                     <div class="flex items-center border border-gray-200 rounded-md">
                         <button class="qty-btn minus-btn px-2 py-1 text-gray-500 hover:text-primary transition-colors" data-id="${item.id}">
@@ -783,7 +790,7 @@ function showToast(message) {
         <div class="bg-green-500 rounded-full p-1">
             <i class="ph ph-check text-white"></i>
         </div>
-        <p class="text-sm font-medium">${message}</p>
+        <p class="text-sm font-medium">${escapeHtml(message)}</p>
     `;
     
     toastContainer.appendChild(toast);

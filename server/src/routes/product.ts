@@ -58,6 +58,15 @@ router.post('/', authenticateToken, async (req: AuthRequest, res: Response) => {
       return res.status(400).json({ error: 'name and price are required' });
     }
 
+    const parsedPrice = parseFloat(price);
+    const parsedStock = parseInt(stock) || 0;
+    if (isNaN(parsedPrice) || parsedPrice <= 0) {
+      return res.status(400).json({ error: 'price must be a positive number' });
+    }
+    if (parsedStock < 0) {
+      return res.status(400).json({ error: 'stock cannot be negative' });
+    }
+
     // Find or create category
     let category = await prisma.category.findUnique({ where: { name: categoryName || 'Uncategorized' } });
     if (!category) {
@@ -67,9 +76,9 @@ router.post('/', authenticateToken, async (req: AuthRequest, res: Response) => {
     const product = await prisma.product.create({
       data: {
         name,
-        price: parseFloat(price),
+        price: parsedPrice,
         originalPrice: originalPrice ? parseFloat(originalPrice) : null,
-        stock: parseInt(stock) || 0,
+        stock: parsedStock,
         imageUrl: imageUrl || null,
         images: Array.isArray(images) ? images : [],
         brand: brand || null,

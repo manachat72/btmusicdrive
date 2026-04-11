@@ -144,7 +144,7 @@ function renderOrderSummary() {
         <div class="flex items-center gap-3">
             <div class="relative flex-shrink-0">
                 ${item.image
-                    ? `<img src="${item.image}" alt="${escapeHtml(item.name)}" class="w-16 h-16 object-cover rounded-lg border border-gray-100">`
+                    ? `<img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" class="w-16 h-16 object-cover rounded-lg border border-gray-100">`
                     : `<div class="w-16 h-16 bg-stone-100 rounded-lg flex items-center justify-center"><i class="ph ph-package text-primary text-2xl"></i></div>`
                 }
                 <span class="absolute -top-2 -right-2 w-5 h-5 bg-primary text-white rounded-full text-xs flex items-center justify-center font-bold">${item.quantity}</span>
@@ -236,21 +236,9 @@ async function applyPromo() {
         updateTotals();
 
     } catch {
-        const DEMO_CODES = {
-            'SAVE10':  { type: 'PERCENT', value: 10,  description: '10% off your order' },
-            'SAVE50':  { type: 'FIXED',   value: 50,  description: '฿50 off your order' },
-            'WELCOME': { type: 'PERCENT', value: 15,  description: '15% welcome discount' },
-        };
-
-        if (DEMO_CODES[code]) {
-            appliedPromo = { code, ...DEMO_CODES[code] };
-            renderPromoApplied();
-            updateTotals();
-        } else {
-            showPromoError(`โค้ดส่วนลด "${code}" ไม่ถูกต้อง`);
-            btn.disabled = false;
-            btn.textContent = 'ใช้โค้ด';
-        }
+        showPromoError('ไม่สามารถตรวจสอบโค้ดส่วนลดได้ กรุณาลองใหม่อีกครั้ง');
+        btn.disabled = false;
+        btn.textContent = 'ใช้โค้ด';
     }
 }
 
@@ -343,6 +331,10 @@ async function placeOrder() {
     const paymentMethod = 'cod';
 
     const normalizedPhone = document.getElementById('phone').value.trim().replace(/\D/g, '');
+    if (!/^(06|08|09)\d{8}$/.test(normalizedPhone)) {
+        showError('เบอร์โทรศัพท์ไม่ถูกต้อง ต้องเป็น 10 หลัก ขึ้นต้นด้วย 06, 08 หรือ 09');
+        return;
+    }
     const shippingAddress = [
         document.getElementById('address').value.trim(),
         document.getElementById('address2')?.value.trim(),

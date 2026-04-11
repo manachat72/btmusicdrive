@@ -14,6 +14,12 @@ let _isLoginMode = true;
 let _googleSdkPromise = null;
 let _googleInitialized = false;
 
+function _escapeHtml(str) {
+  const div = document.createElement('div');
+  div.appendChild(document.createTextNode(String(str ?? '')));
+  return div.innerHTML;
+}
+
 // ── HTML Templates ──────────────────────────────────────────────────────────
 
 function _navbarHTML() {
@@ -685,7 +691,7 @@ function _updateBnavAccountState() {
     nameEl.textContent = displayName;
     if (emailEl) emailEl.textContent = user.email || '';
     if (avatarEl && user.avatar) {
-      avatarEl.innerHTML = `<img src="${user.avatar}" class="w-full h-full object-cover rounded-full" alt="">`;
+      avatarEl.innerHTML = `<img src="${_escapeHtml(user.avatar)}" class="w-full h-full object-cover rounded-full" alt="">`;
     }
     if (statsEl) statsEl.style.display = '';
     if (logoutBtn) logoutBtn.style.display = '';
@@ -829,7 +835,7 @@ function _showToast(message) {
   if (!c) { c = document.createElement('div'); c.id = 'toast-container'; c.className = 'fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none'; document.body.appendChild(c); }
   const t = document.createElement('div');
   t.className = 'bg-gray-900 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 transform translate-y-10 opacity-0 transition-all duration-300';
-  t.innerHTML = `<div class="bg-green-500 rounded-full p-1"><i class="ph ph-check text-white"></i></div><p class="text-sm font-medium">${message}</p>`;
+  t.innerHTML = `<div class="bg-green-500 rounded-full p-1"><i class="ph ph-check text-white"></i></div><p class="text-sm font-medium">${_escapeHtml(message)}</p>`;
   c.appendChild(t);
   requestAnimationFrame(() => { t.classList.remove('translate-y-10','opacity-0'); t.classList.add('translate-y-0','opacity-100'); });
   setTimeout(() => { t.classList.remove('translate-y-0','opacity-100'); t.classList.add('translate-y-10','opacity-0'); setTimeout(() => t.remove(), 300); }, 3000);

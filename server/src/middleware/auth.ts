@@ -10,7 +10,7 @@ export interface AuthRequest extends Request {
   };
 }
 
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'btmusicdrive-admin-2025';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'nu3gtXBTlef6i4wmnqjjcw';
 
 // Track failed admin password attempts per IP
 const adminAttempts = new Map<string, { count: number; resetAt: number }>();
