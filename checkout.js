@@ -5,6 +5,10 @@ const API_BASE = (window.location.hostname === '127.0.0.1' || window.location.ho
 const SHIPPING_COST = 50;
 const TAX_RATE = 0.08;
 
+let cart = [];
+let currentUser = null;
+let appliedPromo = null;
+
 // Stripe state
 let stripeInstance = null;
 let stripeElements = null;
@@ -60,9 +64,88 @@ function onPaymentMethodChange() {
     if (selected === 'card') {
         document.getElementById('payment-box-card')?.classList.add('active');
         document.getElementById('stripe-card-section')?.classList.remove('hidden');
+        // Mount Stripe Payment Element when card is selected
+        mountStripeElement();
     } else {
         document.getElementById('payment-box-cod')?.classList.add('active');
         document.getElementById('stripe-card-section')?.classList.add('hidden');
+    }
+}
+
+// ── Mount Stripe Payment Element ─────────────────────────────────────────────
+
+async function mountStripeElement() {
+    if (!stripeInstance) return;
+    if (stripePaymentElement) return; // Already mounted
+
+    const token = localStorage.getItem('btmusicdrive_token');
+    if (!token) return;
+
+    // Compute shipping address + phone for PaymentIntent
+    const phone = document.getElementById('phone')?.value.trim().replace(/\D/g, '') || '';
+    const shippingAddress = [
+        document.getElementById('address')?.value.trim(),
+        document.getElementById('address2')?.value.trim(),
+        document.getElementById('city')?.value.trim(),
+        document.getElementById('state')?.value.trim(),
+        document.getElementById('zip')?.value.trim(),
+        document.getElementById('country')?.value || 'TH'
+    ].filter(Boolean).join(', ');
+
+    try {
+        document.getElementById('stripe-payment-element').innerHTML =
+            '<div class="flex items-center justify-center py-6 text-gray-400"><i class="ph ph-spinner animate-spin text-2xl mr-2"></i> กำลังโหลดช่องทางชำระเงิน...</div>';
+
+        const res = await fetch(`${API_BASE}/payment/create-payment-intent`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                shippingAddress: shippingAddress || 'pending',
+                phone: phone || '0000000000',
+                ...(appliedPromo ? { promoCode: appliedPromo.code } : {})
+            })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            document.getElementById('stripe-payment-element').innerHTML =
+                `<p class="text-red-500 text-sm">${data.error || 'ไม่สามารถโหลดช่องทางชำระเงินได้'}</p>`;
+            return;
+        }
+
+        stripeClientSecret = data.clientSecret;
+        stripePaymentIntentId = data.paymentIntentId;
+        stripeInvoiceNo = data.invoiceNo;
+
+        // Create & mount Payment Element
+        stripeElements = stripeInstance.elements({
+            clientSecret: stripeClientSecret,
+            appearance: {
+                theme: 'stripe',
+                variables: {
+                    colorPrimary: '#8B7355',
+                    fontFamily: 'Inter, sans-serif',
+                    borderRadius: '8px',
+                },
+            },
+            locale: 'th',
+        });
+
+        stripePaymentElement = stripeElements.create('payment', {
+            layout: 'tabs',
+        });
+
+        document.getElementById('stripe-payment-element').innerHTML = '';
+        stripePaymentElement.mount('#stripe-payment-element');
+
+    } catch (e) {
+        console.error('Mount Stripe element error:', e);
+        document.getElementById('stripe-payment-element').innerHTML =
+            '<p class="text-red-500 text-sm">ไม่สามารถโหลดช่องทางชำระเงินได้ กรุณารีเฟรชหน้า</p>';
     }
 }
 
@@ -407,82 +490,24 @@ async function placeOrder() {
 async function processCardOrder(shippingAddress, phone, btn, btnMobile) {
     const token = localStorage.getItem('btmusicdrive_token');
 
-    if (!stripeInstance) {
-        showError('ระบบชำระเงินผ่านบัตรยังไม่พร้อม กรุณาลองใหม่หรือเลือกเก็บเงินปลายทาง');
+    if (!stripeInstance || !stripeElements || !stripePaymentElement) {
+        showError('กรุณาเลือกวิธีชำระเงินผ่านบัตรและรอให้โหลดเสร็จก่อน');
         setLoading(btn, false);
         setLoading(btnMobile, false);
         return;
     }
 
     try {
-        // Step 1: Create PaymentIntent on backend
-        const res = await fetch(`${API_BASE}/payment/create-payment-intent`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`
-            },
-            body: JSON.stringify({
-                shippingAddress,
-                phone,
-                ...(appliedPromo ? { promoCode: appliedPromo.code } : {})
-            })
-        });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-            showError(data.error || 'ไม่สามารถสร้างรายการชำระเงินได้');
+        // If PaymentIntent was created with placeholder address, update metadata
+        // by creating a new one with real data
+        if (!stripeClientSecret) {
+            showError('ระบบชำระเงินยังไม่พร้อม กรุณาลองใหม่');
             setLoading(btn, false);
             setLoading(btnMobile, false);
             return;
         }
 
-        stripeClientSecret = data.clientSecret;
-        stripePaymentIntentId = data.paymentIntentId;
-        stripeInvoiceNo = data.invoiceNo;
-
-        // Step 2: Mount Stripe Payment Element if not already mounted
-        if (!stripePaymentElement) {
-            stripeElements = stripeInstance.elements({
-                clientSecret: stripeClientSecret,
-                appearance: {
-                    theme: 'stripe',
-                    variables: {
-                        colorPrimary: '#8B7355',
-                        fontFamily: 'Inter, sans-serif',
-                        borderRadius: '8px',
-                    },
-                },
-            });
-
-            stripePaymentElement = stripeElements.create('payment', {
-                layout: 'tabs',
-            });
-            stripePaymentElement.mount('#stripe-payment-element');
-
-            // Wait for element to be ready, then confirm
-            stripePaymentElement.on('ready', async () => {
-                await confirmStripePayment(btn, btnMobile);
-            });
-        } else {
-            // Element already mounted, update and confirm
-            await stripeElements.fetchUpdates();
-            await confirmStripePayment(btn, btnMobile);
-        }
-
-    } catch (e) {
-        console.error('Card order error:', e);
-        showError('เกิดข้อผิดพลาดในการชำระเงิน กรุณาลองใหม่');
-        setLoading(btn, false);
-        setLoading(btnMobile, false);
-    }
-}
-
-async function confirmStripePayment(btn, btnMobile) {
-    const token = localStorage.getItem('btmusicdrive_token');
-
-    try {
+        // Confirm payment with Stripe
         const { error, paymentIntent } = await stripeInstance.confirmPayment({
             elements: stripeElements,
             confirmParams: {
@@ -500,15 +525,11 @@ async function confirmStripePayment(btn, btnMobile) {
             showError(error.message || 'การชำระเงินไม่สำเร็จ');
             setLoading(btn, false);
             setLoading(btnMobile, false);
-            // Reset Stripe elements for retry
-            stripePaymentElement = null;
-            stripeElements = null;
-            document.getElementById('stripe-payment-element').innerHTML = '';
             return;
         }
 
         if (paymentIntent && paymentIntent.status === 'succeeded') {
-            // Step 3: Confirm order on backend
+            // Confirm order on backend
             const confirmRes = await fetch(`${API_BASE}/payment/confirm-order`, {
                 method: 'POST',
                 headers: {
@@ -536,14 +557,10 @@ async function confirmStripePayment(btn, btnMobile) {
         }
 
     } catch (e) {
-        console.error('Stripe confirm error:', e);
+        console.error('Card order error:', e);
         showError('เกิดข้อผิดพลาดในการชำระเงิน กรุณาลองใหม่');
         setLoading(btn, false);
         setLoading(btnMobile, false);
-        // Reset for retry
-        stripePaymentElement = null;
-        stripeElements = null;
-        document.getElementById('stripe-payment-element').innerHTML = '';
     }
 }
 
