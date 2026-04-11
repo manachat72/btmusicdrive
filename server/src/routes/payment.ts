@@ -10,6 +10,7 @@ type StripeClient = InstanceType<typeof Stripe>;
 const router = Router();
 
 const SHIPPING_COST_THB = 50;
+const FREE_SHIPPING_THRESHOLD = 200;
 const TAX_RATE = 0.08;
 
 // ── Stripe setup ────────────────────────────────────────────────────────────
@@ -69,7 +70,8 @@ async function calculateOrderTotals(userId: string, promoCode?: string) {
 
   const discountedSubtotal = subtotal - discountAmount;
   const tax = Math.round(discountedSubtotal * TAX_RATE * 100) / 100;
-  const totalAmount = Math.round((discountedSubtotal + SHIPPING_COST_THB + tax) * 100) / 100;
+  const shippingCost = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST_THB;
+  const totalAmount = Math.round((discountedSubtotal + shippingCost + tax) * 100) / 100;
 
   return { cart, subtotal, discountAmount, validatedPromo, tax, totalAmount };
 }

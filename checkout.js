@@ -3,6 +3,7 @@ const API_BASE = (window.location.hostname === '127.0.0.1' || window.location.ho
   : '/api';
 
 const SHIPPING_COST = 50;
+const FREE_SHIPPING_THRESHOLD = 200;
 const TAX_RATE = 0.08;
 
 let cart = [];
@@ -338,7 +339,8 @@ function updateTotals() {
     const discount = calcDiscount(subtotal);
     const discountedSubtotal = subtotal - discount;
     const tax = discountedSubtotal * TAX_RATE;
-    const total = discountedSubtotal + SHIPPING_COST + tax;
+    const shippingCost = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
+    const total = discountedSubtotal + shippingCost + tax;
 
     document.getElementById('item-count').textContent = itemCount;
     document.getElementById('subtotal-price').textContent = `฿${subtotal.toFixed(2)}`;
@@ -357,8 +359,13 @@ function updateTotals() {
 
     const shippingRow = document.getElementById('shipping-row');
     if (shippingRow) {
-        shippingRow.querySelector('span:last-child').textContent = `฿${SHIPPING_COST.toFixed(2)}`;
-        shippingRow.querySelector('span:last-child').className = 'text-gray-900 font-medium';
+        if (shippingCost === 0) {
+            shippingRow.querySelector('span:last-child').textContent = 'ฟรี';
+            shippingRow.querySelector('span:last-child').className = 'text-green-600 font-semibold';
+        } else {
+            shippingRow.querySelector('span:last-child').textContent = `฿${shippingCost.toFixed(2)}`;
+            shippingRow.querySelector('span:last-child').className = 'text-gray-900 font-medium';
+        }
     }
 }
 
