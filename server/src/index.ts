@@ -86,7 +86,7 @@ app.get('/api/health', (req, res) => {
 });
 
 app.get('/api/config/stripe', (req, res) => {
-  const publishableKey = process.env.STRIPE_PUBLISHABLE_KEY || '';
+  const publishableKey = process.env.STRIPE_PUBLIC_KEY || '';
   res.json({ publishableKey });
 });
 
