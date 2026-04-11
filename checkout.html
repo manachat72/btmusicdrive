@@ -29,6 +29,8 @@
     <link rel="stylesheet" href="style.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Stripe.js -->
+    <script src="https://js.stripe.com/v3/"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
 
@@ -225,10 +227,25 @@
 
                     <!-- Payment Options -->
                     <div class="space-y-3">
+                        <!-- Credit / Debit Card (Stripe) -->
+                        <div class="payment-box" id="payment-box-card">
+                            <label class="flex items-center gap-3 p-4 cursor-pointer">
+                                <input type="radio" name="payment_method" value="card" class="w-5 h-5 text-primary focus:ring-primary border-gray-300" onchange="onPaymentMethodChange()">
+                                <span class="font-semibold text-gray-900">บัตรเครดิต / เดบิต</span>
+                                <div class="ml-auto flex items-center justify-center text-primary">
+                                    <i class="ph ph-credit-card text-2xl"></i>
+                                </div>
+                            </label>
+                            <div id="stripe-card-section" class="px-4 pb-4 hidden">
+                                <div id="stripe-payment-element" class="mb-2"></div>
+                                <p id="stripe-error" class="text-red-500 text-xs mt-1 hidden"></p>
+                            </div>
+                        </div>
+
                         <!-- Cash on Delivery -->
                         <div class="payment-box active" id="payment-box-cod">
                             <label class="flex items-center gap-3 p-4 cursor-pointer">
-                                <input type="radio" name="payment_method" value="cod" class="w-5 h-5 text-primary focus:ring-primary border-gray-300" checked>
+                                <input type="radio" name="payment_method" value="cod" class="w-5 h-5 text-primary focus:ring-primary border-gray-300" checked onchange="onPaymentMethodChange()">
                                 <span class="font-semibold text-gray-900">เก็บเงินปลายทาง (COD)</span>
                                 <div class="ml-auto flex items-center justify-center text-primary">
                                     <i class="ph ph-truck text-2xl"></i>
