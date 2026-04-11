@@ -11,11 +11,14 @@ let appliedPromo = null;
 
 // Stripe state
 let stripeInstance = null;
-let stripeElements = null;
-let stripePaymentElement = null;
+let stripeElements = null;       // for card
+let stripePaymentElement = null;  // for card
+let stripePromptPayElements = null;       // for promptpay
+let stripePromptPayElement = null;        // for promptpay
 let stripeClientSecret = null;
 let stripePaymentIntentId = null;
 let stripeInvoiceNo = null;
+let currentStripeMethod = null;  // 'card' or 'promptpay'
 
 // ── Init ─────────────────────────────────────────────────────────────────────
 
@@ -31,24 +34,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function initStripe() {
     try {
-        if (typeof Stripe === 'undefined') return;
+        if (typeof Stripe === 'undefined') {
+            hideStripeOptions();
+            return;
+        }
 
         const res = await fetch(`${API_BASE}/config/stripe`);
-        if (!res.ok) return;
+        if (!res.ok) { hideStripeOptions(); return; }
         const data = await res.json();
 
         if (data.publishableKey) {
             stripeInstance = Stripe(data.publishableKey);
         } else {
-            // Hide card payment option if Stripe is not configured
-            const cardBox = document.getElementById('payment-box-card');
-            if (cardBox) cardBox.style.display = 'none';
+            hideStripeOptions();
         }
     } catch (e) {
         console.warn('Stripe init failed:', e);
-        const cardBox = document.getElementById('payment-box-card');
-        if (cardBox) cardBox.style.display = 'none';
+        hideStripeOptions();
     }
+}
+
+function hideStripeOptions() {
+    const cardBox = document.getElementById('payment-box-card');
+    const promptpayBox = document.getElementById('payment-box-promptpay');
+    if (cardBox) cardBox.style.display = 'none';
+    if (promptpayBox) promptpayBox.style.display = 'none';
 }
 
 // ── Payment Method Toggle ────────────────────────────────────────────────────
@@ -57,29 +67,40 @@ function onPaymentMethodChange() {
     const selected = document.querySelector('input[name="payment_method"]:checked')?.value;
 
     // Update active states
-    document.querySelectorAll('.payment-box').forEach(box => {
-        box.classList.remove('active');
-    });
+    document.querySelectorAll('.payment-box').forEach(box => box.classList.remove('active'));
+
+    // Hide all stripe sections
+    document.getElementById('stripe-card-section')?.classList.add('hidden');
+    document.getElementById('stripe-promptpay-section')?.classList.add('hidden');
 
     if (selected === 'card') {
         document.getElementById('payment-box-card')?.classList.add('active');
         document.getElementById('stripe-card-section')?.classList.remove('hidden');
-        // Mount Stripe Payment Element when card is selected
-        mountStripeElement();
+        mountStripeElement('card');
+    } else if (selected === 'promptpay') {
+        document.getElementById('payment-box-promptpay')?.classList.add('active');
+        document.getElementById('stripe-promptpay-section')?.classList.remove('hidden');
+        mountStripeElement('promptpay');
     } else {
         document.getElementById('payment-box-cod')?.classList.add('active');
-        document.getElementById('stripe-card-section')?.classList.add('hidden');
     }
 }
 
 // ── Mount Stripe Payment Element ─────────────────────────────────────────────
 
-async function mountStripeElement() {
+async function mountStripeElement(method) {
     if (!stripeInstance) return;
-    if (stripePaymentElement) return; // Already mounted
+
+    // Already mounted for this method
+    if (method === 'card' && stripePaymentElement) return;
+    if (method === 'promptpay' && stripePromptPayElement) return;
 
     const token = localStorage.getItem('btmusicdrive_token');
     if (!token) return;
+
+    const containerId = method === 'card' ? 'stripe-card-element' : 'stripe-promptpay-element';
+    const container = document.getElementById(containerId);
+    if (!container) return;
 
     // Compute shipping address + phone for PaymentIntent
     const phone = document.getElementById('phone')?.value.trim().replace(/\D/g, '') || '';
@@ -93,59 +114,79 @@ async function mountStripeElement() {
     ].filter(Boolean).join(', ');
 
     try {
-        document.getElementById('stripe-payment-element').innerHTML =
-            '<div class="flex items-center justify-center py-6 text-gray-400"><i class="ph ph-spinner animate-spin text-2xl mr-2"></i> กำลังโหลดช่องทางชำระเงิน...</div>';
+        container.innerHTML =
+            '<div class="flex items-center justify-center py-6 text-gray-400"><i class="ph ph-spinner animate-spin text-2xl mr-2"></i> กำลังโหลด...</div>';
 
-        const res = await fetch(`${API_BASE}/payment/create-payment-intent`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`
-            },
-            body: JSON.stringify({
-                shippingAddress: shippingAddress || 'pending',
-                phone: phone || '0000000000',
-                ...(appliedPromo ? { promoCode: appliedPromo.code } : {})
-            })
-        });
+        // Create a new PaymentIntent if we don't have one or method changed
+        if (!stripeClientSecret || currentStripeMethod !== method) {
+            const res = await fetch(`${API_BASE}/payment/create-payment-intent`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    shippingAddress: shippingAddress || 'pending',
+                    phone: phone || '0000000000',
+                    ...(appliedPromo ? { promoCode: appliedPromo.code } : {})
+                })
+            });
 
-        const data = await res.json();
+            const data = await res.json();
 
-        if (!res.ok) {
-            document.getElementById('stripe-payment-element').innerHTML =
-                `<p class="text-red-500 text-sm">${data.error || 'ไม่สามารถโหลดช่องทางชำระเงินได้'}</p>`;
-            return;
+            if (!res.ok) {
+                container.innerHTML =
+                    `<p class="text-red-500 text-sm py-3">${data.error || 'ไม่สามารถโหลดช่องทางชำระเงินได้'}</p>`;
+                return;
+            }
+
+            stripeClientSecret = data.clientSecret;
+            stripePaymentIntentId = data.paymentIntentId;
+            stripeInvoiceNo = data.invoiceNo;
+            currentStripeMethod = method;
         }
 
-        stripeClientSecret = data.clientSecret;
-        stripePaymentIntentId = data.paymentIntentId;
-        stripeInvoiceNo = data.invoiceNo;
-
-        // Create & mount Payment Element
-        stripeElements = stripeInstance.elements({
-            clientSecret: stripeClientSecret,
-            appearance: {
-                theme: 'stripe',
-                variables: {
-                    colorPrimary: '#8B7355',
-                    fontFamily: 'Inter, sans-serif',
-                    borderRadius: '8px',
-                },
+        const appearance = {
+            theme: 'stripe',
+            variables: {
+                colorPrimary: '#8B7355',
+                fontFamily: 'Inter, sans-serif',
+                borderRadius: '8px',
             },
-            locale: 'th',
-        });
+        };
 
-        stripePaymentElement = stripeElements.create('payment', {
-            layout: 'tabs',
-        });
+        container.innerHTML = '';
 
-        document.getElementById('stripe-payment-element').innerHTML = '';
-        stripePaymentElement.mount('#stripe-payment-element');
+        if (method === 'card') {
+            stripeElements = stripeInstance.elements({
+                clientSecret: stripeClientSecret,
+                appearance,
+                locale: 'th',
+            });
+            stripePaymentElement = stripeElements.create('payment', {
+                layout: 'tabs',
+                paymentMethodOrder: ['card'],
+                fields: { billingDetails: 'auto' },
+            });
+            stripePaymentElement.mount(`#${containerId}`);
+        } else {
+            stripePromptPayElements = stripeInstance.elements({
+                clientSecret: stripeClientSecret,
+                appearance,
+                locale: 'th',
+            });
+            stripePromptPayElement = stripePromptPayElements.create('payment', {
+                layout: 'tabs',
+                paymentMethodOrder: ['promptpay'],
+                fields: { billingDetails: 'auto' },
+            });
+            stripePromptPayElement.mount(`#${containerId}`);
+        }
 
     } catch (e) {
         console.error('Mount Stripe element error:', e);
-        document.getElementById('stripe-payment-element').innerHTML =
-            '<p class="text-red-500 text-sm">ไม่สามารถโหลดช่องทางชำระเงินได้ กรุณารีเฟรชหน้า</p>';
+        container.innerHTML =
+            '<p class="text-red-500 text-sm py-3">ไม่สามารถโหลดช่องทางชำระเงินได้ กรุณารีเฟรชหน้า</p>';
     }
 }
 
@@ -478,38 +519,39 @@ async function placeOrder() {
     setLoading(btn, true);
     setLoading(btnMobile, true);
 
-    if (paymentMethod === 'card') {
-        await processCardOrder(shippingAddress, normalizedPhone, btn, btnMobile);
+    if (paymentMethod === 'card' || paymentMethod === 'promptpay') {
+        await processStripeOrder(paymentMethod, shippingAddress, normalizedPhone, btn, btnMobile);
     } else {
         await processCodOrder(shippingAddress, normalizedPhone, btn, btnMobile);
     }
 }
 
-// ── Card Order (Stripe) ───────────────────────────────────────────────────────
+// ── Stripe Order (Card / PromptPay) ──────────────────────────────────────────
 
-async function processCardOrder(shippingAddress, phone, btn, btnMobile) {
+async function processStripeOrder(method, shippingAddress, phone, btn, btnMobile) {
     const token = localStorage.getItem('btmusicdrive_token');
 
-    if (!stripeInstance || !stripeElements || !stripePaymentElement) {
-        showError('กรุณาเลือกวิธีชำระเงินผ่านบัตรและรอให้โหลดเสร็จก่อน');
+    const elements = method === 'card' ? stripeElements : stripePromptPayElements;
+    const paymentElement = method === 'card' ? stripePaymentElement : stripePromptPayElement;
+
+    if (!stripeInstance || !elements || !paymentElement) {
+        showError('กรุณาเลือกวิธีชำระเงินและรอให้โหลดเสร็จก่อน');
+        setLoading(btn, false);
+        setLoading(btnMobile, false);
+        return;
+    }
+
+    if (!stripeClientSecret) {
+        showError('ระบบชำระเงินยังไม่พร้อม กรุณาลองใหม่');
         setLoading(btn, false);
         setLoading(btnMobile, false);
         return;
     }
 
     try {
-        // If PaymentIntent was created with placeholder address, update metadata
-        // by creating a new one with real data
-        if (!stripeClientSecret) {
-            showError('ระบบชำระเงินยังไม่พร้อม กรุณาลองใหม่');
-            setLoading(btn, false);
-            setLoading(btnMobile, false);
-            return;
-        }
-
         // Confirm payment with Stripe
         const { error, paymentIntent } = await stripeInstance.confirmPayment({
-            elements: stripeElements,
+            elements,
             confirmParams: {
                 return_url: window.location.origin + '/checkout.html',
             },
@@ -517,7 +559,8 @@ async function processCardOrder(shippingAddress, phone, btn, btnMobile) {
         });
 
         if (error) {
-            const stripeError = document.getElementById('stripe-error');
+            const errorId = method === 'card' ? 'stripe-card-error' : 'stripe-promptpay-error';
+            const stripeError = document.getElementById(errorId);
             if (stripeError) {
                 stripeError.textContent = error.message;
                 stripeError.classList.remove('hidden');
@@ -553,11 +596,16 @@ async function processCardOrder(shippingAddress, phone, btn, btnMobile) {
 
             cart = [];
             localStorage.removeItem('btmusicdrive_cart');
-            showSuccessModal(confirmData.orderId, 'card');
+            showSuccessModal(confirmData.orderId, method === 'card' ? 'card' : 'promptpay');
+        } else if (paymentIntent && paymentIntent.status === 'requires_action') {
+            // PromptPay may need redirect for QR — handled by redirect: 'if_required'
+            showError('กรุณาดำเนินการชำระเงินให้เสร็จสิ้น');
+            setLoading(btn, false);
+            setLoading(btnMobile, false);
         }
 
     } catch (e) {
-        console.error('Card order error:', e);
+        console.error('Stripe order error:', e);
         showError('เกิดข้อผิดพลาดในการชำระเงิน กรุณาลองใหม่');
         setLoading(btn, false);
         setLoading(btnMobile, false);
@@ -608,7 +656,8 @@ async function processCodOrder(shippingAddress, phone, btn, btnMobile) {
 
 function showSuccessModal(orderId, paymentMethod) {
     const shortId = orderId ? String(orderId).slice(-8).toUpperCase() : '';
-    const methodText = paymentMethod === 'card' ? 'ชำระผ่านบัตร' : 'ชำระเงินปลายทาง';
+    const methodTexts = { card: 'ชำระผ่านบัตร', promptpay: 'ชำระผ่านพร้อมเพย์', cod: 'ชำระเงินปลายทาง' };
+    const methodText = methodTexts[paymentMethod] || 'ชำระเงินปลายทาง';
     document.getElementById('order-id-display').textContent = `คำสั่งซื้อ #${shortId} (${methodText})`;
     document.getElementById('success-modal').classList.remove('hidden');
     document.getElementById('success-modal').classList.add('flex');

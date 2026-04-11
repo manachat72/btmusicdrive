@@ -227,32 +227,53 @@
 
                     <!-- Payment Options -->
                     <div class="space-y-3">
-                        <!-- Credit / Debit Card (Stripe) -->
+                        <!-- 1. Cash on Delivery -->
+                        <div class="payment-box active" id="payment-box-cod">
+                            <label class="flex items-center gap-3 p-4 cursor-pointer">
+                                <input type="radio" name="payment_method" value="cod" class="w-5 h-5 text-primary focus:ring-primary border-gray-300" checked onchange="onPaymentMethodChange()">
+                                <div class="flex-1">
+                                    <span class="font-semibold text-gray-900">เก็บเงินปลายทาง (COD)</span>
+                                    <p class="text-xs text-gray-500 mt-0.5">ชำระเงินสดเมื่อได้รับสินค้า</p>
+                                </div>
+                                <div class="ml-auto flex items-center justify-center text-primary">
+                                    <i class="ph ph-truck text-2xl"></i>
+                                </div>
+                            </label>
+                        </div>
+
+                        <!-- 2. PromptPay (สแกน QR) -->
+                        <div class="payment-box" id="payment-box-promptpay">
+                            <label class="flex items-center gap-3 p-4 cursor-pointer">
+                                <input type="radio" name="payment_method" value="promptpay" class="w-5 h-5 text-primary focus:ring-primary border-gray-300" onchange="onPaymentMethodChange()">
+                                <div class="flex-1">
+                                    <span class="font-semibold text-gray-900">พร้อมเพย์ / สแกน QR</span>
+                                    <p class="text-xs text-gray-500 mt-0.5">สแกน QR Code ผ่านแอปธนาคาร</p>
+                                </div>
+                                <div class="ml-auto flex items-center gap-2 text-primary">
+                                    <i class="ph ph-qr-code text-2xl"></i>
+                                </div>
+                            </label>
+                            <div id="stripe-promptpay-section" class="px-4 pb-4 hidden">
+                                <div id="stripe-promptpay-element" class="mb-2"></div>
+                                <p id="stripe-promptpay-error" class="text-red-500 text-xs mt-1 hidden"></p>
+                            </div>
+                        </div>
+
+                        <!-- 3. Credit / Debit Card -->
                         <div class="payment-box" id="payment-box-card">
                             <label class="flex items-center gap-3 p-4 cursor-pointer">
                                 <input type="radio" name="payment_method" value="card" class="w-5 h-5 text-primary focus:ring-primary border-gray-300" onchange="onPaymentMethodChange()">
-                                <span class="font-semibold text-gray-900">บัตรเครดิต / เดบิต</span>
+                                <div class="flex-1">
+                                    <span class="font-semibold text-gray-900">บัตรเครดิต / เดบิต</span>
+                                    <p class="text-xs text-gray-500 mt-0.5">Visa, Mastercard, JCB</p>
+                                </div>
                                 <div class="ml-auto flex items-center justify-center text-primary">
                                     <i class="ph ph-credit-card text-2xl"></i>
                                 </div>
                             </label>
                             <div id="stripe-card-section" class="px-4 pb-4 hidden">
-                                <div id="stripe-payment-element" class="mb-2"></div>
-                                <p id="stripe-error" class="text-red-500 text-xs mt-1 hidden"></p>
-                            </div>
-                        </div>
-
-                        <!-- Cash on Delivery -->
-                        <div class="payment-box active" id="payment-box-cod">
-                            <label class="flex items-center gap-3 p-4 cursor-pointer">
-                                <input type="radio" name="payment_method" value="cod" class="w-5 h-5 text-primary focus:ring-primary border-gray-300" checked onchange="onPaymentMethodChange()">
-                                <span class="font-semibold text-gray-900">เก็บเงินปลายทาง (COD)</span>
-                                <div class="ml-auto flex items-center justify-center text-primary">
-                                    <i class="ph ph-truck text-2xl"></i>
-                                </div>
-                            </label>
-                            <div class="px-4 pb-3 text-xs text-gray-500">
-                                ชำระเงินสดเมื่อได้รับสินค้า — ไม่มีค่าธรรมเนียมเพิ่มเติม
+                                <div id="stripe-card-element" class="mb-2"></div>
+                                <p id="stripe-card-error" class="text-red-500 text-xs mt-1 hidden"></p>
                             </div>
                         </div>
                     </div>
