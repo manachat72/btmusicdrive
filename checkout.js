@@ -86,6 +86,28 @@ async function loadCart() {
 
     if (token) {
         try {
+            // Ensure local items are synced to server before fetching
+            const raw = localStorage.getItem('btmusicdrive_cart');
+            try {
+                const localCart = raw ? JSON.parse(raw) : [];
+                if (localCart.length > 0) {
+                    const itemsToSync = localCart.map(item => ({
+                        productId: item.id,
+                        quantity: item.quantity
+                    }));
+                    await fetch(`${API_BASE}/cart/sync`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ items: itemsToSync })
+                    });
+                }
+            } catch (e) {
+                console.warn('Failed to sync local cart:', e);
+            }
+
             const res = await fetch(`${API_BASE}/cart`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -98,6 +120,11 @@ async function loadCart() {
                     quantity: item.quantity,
                     image: item.product?.imageUrl || null
                 }));
+                // Ensure UI is updated with the server's truth
+                localStorage.setItem('btmusicdrive_cart', JSON.stringify(cart));
+                if (typeof _loadCartFromStorage === 'function') _loadCartFromStorage();
+                if (typeof _updateCartUI === 'function') _updateCartUI();
+
                 renderOrderSummary();
                 return;
             }
