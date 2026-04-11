@@ -1,5 +1,7 @@
 ﻿import express, { Express } from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import path from 'path';
 import authRoutes from './routes/auth';
@@ -30,6 +32,12 @@ const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:5500,ht
   .split(',')
   .map((o) => o.trim());
 
+// ── Security headers ─────────────────────────────────────────────────────────
+app.use(helmet({
+  contentSecurityPolicy: false, // Managed by frontend CDN scripts
+  crossOriginEmbedderPolicy: false,
+}));
+
 app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (mobile apps, curl, etc.)
@@ -43,11 +51,20 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Admin-Password', 'x-admin-password'],
 }));
 
-// Stripe webhook needs raw body — must be before express.json()
-app.use('/api/payment/webhook', express.raw({ type: 'application/json' }));
+// ── Global rate limiter (100 req / 15 min per IP) ───────────────────────────
+app.use(rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests, please try again later.' },
+}));
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Stripe webhook needs raw body — must be before express.json()
+// (Removed: Omise/Stripe webhooks no longer used — COD only)
+
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
 // Serve static files from project root (HTML, CSS, JS, images)
 app.use(express.static(path.join(__dirname, '../..')));

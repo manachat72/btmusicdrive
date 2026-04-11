@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
@@ -8,9 +8,7 @@
     <meta name="robots" content="noindex, nofollow">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Stripe.js -->
-    <script src="https://js.stripe.com/v3/"></script>
-    <script>window.STRIPE_PUBLIC_KEY = 'pk_live_51T8AaH0naU9InmAiCY8gXdsBKS0BLpimIkid75RgXhPPqzGlig2c1l820PFFGEJUvP2VF2iJbOKo0PsQMVr0JZNg00NWthxP0H';</script>
+
     <script>
         tailwind.config = {
             theme: {
@@ -218,65 +216,32 @@
                 <div class="section-card">
                     <div class="flex items-center gap-3 mb-5">
                         <div class="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center">
-                            <i class="ph ph-credit-card text-primary text-base"></i>
+                            <i class="ph ph-truck text-primary text-base"></i>
                         </div>
                         <h2 class="text-lg font-bold text-gray-900">วิธีการชำระเงิน</h2>
                     </div>
 
                     <!-- Payment Options -->
                     <div class="space-y-3">
-                        <!-- Option 1: Credit/Debit Card + Stripe -->
-                        <div class="payment-box active" id="payment-box-card">
+                        <!-- Cash on Delivery -->
+                        <div class="payment-box active" id="payment-box-cod">
                             <label class="flex items-center gap-3 p-4 cursor-pointer">
-                                <input type="radio" name="payment_method" value="card" class="w-5 h-5 text-primary focus:ring-primary border-gray-300" checked onchange="selectPaymentMethod('card')">
-                                <span class="font-semibold text-gray-900">บัตรเครดิต / เดบิต</span>
-                                <div class="ml-auto flex items-center gap-1">
-                                    <img src="https://cdn.brandfetch.io/idxAg10C0L/w/400/h/400/theme/dark/icon.jpeg?c=1bfwsmEH20yx2woSHbF" class="h-5 object-contain rounded" alt="Visa" onerror="this.style.display='none'">
-                                    <i class="ph ph-credit-card text-primary text-2xl"></i>
-                                </div>
-                            </label>
-                            <!-- Stripe Payment Element -->
-                            <div class="p-4 pt-0 border-t border-amber-100 mt-2" id="stripe-payment-container">
-                                <div id="stripe-payment-element" class="pt-4">
-                                    <!-- Stripe mounts here when user clicks pay -->
-                                    <p class="text-xs text-gray-400 text-center py-4">
-                                        <i class="ph ph-credit-card mr-1"></i>
-                                        ฟอร์มกรอกบัตรจาก Stripe จะแสดงเมื่อกด "ยืนยันและสั่งซื้อ"
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Option 2: PromptPay -->
-                        <div class="payment-box" id="payment-box-promptpay">
-                            <label class="flex items-center gap-3 p-4 cursor-pointer">
-                                <input type="radio" name="payment_method" value="promptpay" class="w-5 h-5 text-primary focus:ring-primary border-gray-300" onchange="selectPaymentMethod('promptpay')">
-                                <span class="font-semibold text-gray-900">พร้อมเพย์ / โอนเงิน (PromptPay)</span>
-                                <div class="ml-auto flex items-center justify-center text-blue-800">
-                                    <i class="ph ph-qr-code text-2xl"></i>
-                                </div>
-                            </label>
-                            <div class="hidden p-4 pt-0 border-t border-amber-100 mt-2 text-sm text-gray-500" id="promptpay-info">
-                                <p class="mb-2">ระบบจะสร้าง QR Code หรือแสดงเลขบัญชีเพื่อให้คุณโอนเงินในหน้าถัดไป</p>
-                            </div>
-                        </div>
-
-                        <!-- Option 3: Cash on Delivery -->
-                        <div class="payment-box" id="payment-box-cod">
-                            <label class="flex items-center gap-3 p-4 cursor-pointer">
-                                <input type="radio" name="payment_method" value="cod" class="w-5 h-5 text-primary focus:ring-primary border-gray-300" onchange="selectPaymentMethod('cod')">
-                                <span class="font-semibold text-gray-700">เก็บเงินปลายทาง</span>
-                                <div class="ml-auto flex items-center justify-center text-gray-400">
+                                <input type="radio" name="payment_method" value="cod" class="w-5 h-5 text-primary focus:ring-primary border-gray-300" checked>
+                                <span class="font-semibold text-gray-900">เก็บเงินปลายทาง (COD)</span>
+                                <div class="ml-auto flex items-center justify-center text-primary">
                                     <i class="ph ph-truck text-2xl"></i>
                                 </div>
                             </label>
+                            <div class="px-4 pb-3 text-xs text-gray-500">
+                                ชำระเงินสดเมื่อได้รับสินค้า — ไม่มีค่าธรรมเนียมเพิ่มเติม
+                            </div>
                         </div>
                     </div>
 
                     <!-- Security Note -->
                     <div class="mt-4 flex items-center gap-2 text-xs text-gray-600 pt-4 border-t border-gray-100" role="note">
                         <i class="ph ph-shield-check text-green-600 text-base flex-shrink-0" aria-hidden="true"></i>
-                        <span>ข้อมูลการชำระเงินถูกเข้ารหัสและปลอดภัยผ่านระบบ <strong>Stripe</strong> — เราไม่เก็บข้อมูลบัตรของคุณ</span>
+                        <span>คำสั่งซื้อจะถูกยืนยันทันทีและจัดส่งภายใน 1-2 วันทำการ</span>
                     </div>
                 </div>
 

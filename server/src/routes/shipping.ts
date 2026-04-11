@@ -1,14 +1,11 @@
 import { Router, Response } from 'express';
-import { authenticateToken, AuthRequest } from '../middleware/auth';
-import prisma from '../lib/prisma';
 
 const router = Router();
 
-const SHIPPOP_API_URL  = 'https://api.shippop.com/v2';
-const SHIPPOP_API_KEY  = process.env.SHIPPOP_API_KEY || '';
-const SHIPPOP_EMAIL    = process.env.SHIPPOP_EMAIL || '';
-const SERVER_URL       = process.env.SERVER_URL || 'https://btmusicdrive.vercel.app';
-const CALLBACK_URL     = `${SERVER_URL}/api/shipping/callback`;
+// Shipping routes removed — SHIPPOP integration discontinued.
+// Tracking is managed via admin panel (manual carrier + tracking number).
+
+export default router;
 
 // ── Helper: SHIPPOP request ───────────────────────────────────────────────────
 async function shippopRequest(endpoint: string, method: 'GET' | 'POST', body?: any) {
@@ -195,9 +192,18 @@ router.post('/rates', authenticateToken, async (req: AuthRequest, res: Response)
 });
 
 // ── POST /api/shipping/callback ───────────────────────────────────────────────
-// SHIPPOP Webhook — รับสถานะพัสดุแบบ real-time (ไม่ต้อง auth)
+// SHIPPOP Webhook — รับสถานะพัสดุแบบ real-time
 router.post('/callback', async (req: any, res: Response) => {
   try {
+    // Verify webhook secret if configured
+    if (SHIPPOP_WEBHOOK_SECRET) {
+      const secret = req.query?.secret || req.headers['x-webhook-secret'];
+      if (secret !== SHIPPOP_WEBHOOK_SECRET) {
+        console.warn('[SHIPPOP Callback] Invalid webhook secret');
+        return res.status(403).json({ error: 'Forbidden' });
+      }
+    }
+
     const body = req.body;
     console.log('[SHIPPOP Callback]', JSON.stringify(body));
 

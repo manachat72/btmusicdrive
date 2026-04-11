@@ -4,12 +4,13 @@ import jwt from 'jsonwebtoken';
 import { OAuth2Client } from 'google-auth-library';
 import prisma from '../lib/prisma';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
+import { authLimiter } from '../middleware/rateLimiter';
 
 const router = express.Router();
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // Google Sign-In
-router.post('/google', async (req: Request, res: Response) => {
+router.post('/google', authLimiter, async (req: Request, res: Response) => {
   try {
     const { token } = req.body;
 
@@ -79,12 +80,22 @@ router.post('/google', async (req: Request, res: Response) => {
 });
 
 // Register a new user
-router.post('/register', async (req: Request, res: Response) => {
+router.post('/register', authLimiter, async (req: Request, res: Response) => {
   try {
     const { email: rawEmail, password } = req.body;
 
     if (!rawEmail || !password) {
       res.status(400).json({ error: 'Email and password are required' });
+      return;
+    }
+
+    // Password validation: min 8 chars, at least 1 letter and 1 number
+    if (password.length < 8) {
+      res.status(400).json({ error: 'Password must be at least 8 characters long' });
+      return;
+    }
+    if (!/[a-zA-Z]/.test(password) || !/[0-9]/.test(password)) {
+      res.status(400).json({ error: 'Password must contain at least one letter and one number' });
       return;
     }
 
@@ -137,7 +148,7 @@ router.post('/register', async (req: Request, res: Response) => {
 });
 
 // Login
-router.post('/login', async (req: Request, res: Response) => {
+router.post('/login', authLimiter, async (req: Request, res: Response) => {
   try {
     const { email: rawEmail, password } = req.body;
 

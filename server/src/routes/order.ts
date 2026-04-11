@@ -2,6 +2,7 @@ import { Router, Response } from 'express';
 import prisma from '../lib/prisma';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
 import { sendOrderConfirmationEmail } from '../services/emailService';
+import { orderSearchLimiter } from '../middleware/rateLimiter';
 
 const router = Router();
 
@@ -185,7 +186,7 @@ router.get('/:id', authenticateToken, async (req: AuthRequest, res: Response) =>
 
 // ── GET /api/orders ───────────────────────────────────────────────────────────
 // List all orders (ADMIN only). Supports ?phone= for customer self-lookup.
-router.get('/', authenticateToken, async (req: AuthRequest, res: Response) => {
+router.get('/', authenticateToken, orderSearchLimiter, async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.id;
     const role = req.user?.role;

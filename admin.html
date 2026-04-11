@@ -961,20 +961,11 @@
 
       <!-- Payment -->
       <div class="wp-card" style="margin-bottom:18px;">
-        <div class="card-hdr"><h2><i class="fa-solid fa-credit-card"></i>ผู้ให้บริการชำระเงิน</h2></div>
+        <div class="card-hdr"><h2><i class="fa-solid fa-credit-card"></i>การชำระเงิน</h2></div>
         <div class="card-body">
           <div class="settings-grid">
-            <div class="settings-row">
-              <label class="settings-label">คีย์ Stripe Publishable</label>
-              <input type="text" id="s-stripe-pk" class="settings-input" placeholder="pk_live_…">
-            </div>
-            <div class="settings-row">
-              <label class="settings-label">คีย์ Stripe Secret</label>
-              <input type="password" id="s-stripe-sk" class="settings-input" placeholder="sk_live_…">
-              <p class="settings-hint">เก็บไว้อย่างปลอดภัยบนเซิร์ฟเวอร์ — ไม่เปิดเผยทางเบราว์เซอร์</p>
-            </div>
             <div class="settings-row" style="align-items:center;flex-direction:row;gap:10px;">
-              <label class="settings-label" style="margin:0;flex:none;">เก็บเงินปลายทาง</label>
+              <label class="settings-label" style="margin:0;flex:none;">เก็บเงินปลายทาง (COD)</label>
               <label class="toggle-switch">
                 <input type="checkbox" id="s-cod" checked>
                 <span class="toggle-track"><span class="toggle-thumb"></span></span>
@@ -2413,7 +2404,7 @@
       const name    = o.user?.name || o.user?.email?.split('@')[0] || '—';
       const address = o.shippingAddress || '—';
       const itemsSummary = (o.items || []).map(it => `${it.product?.name || '?'} x${it.quantity||1}`).join(', ');
-      const isCOD   = !o.paymentIntentId && !o.stripeSessionId;
+      const isCOD   = !o.paymentIntentId || o.paymentIntentId.startsWith('cod_');
       const date    = new Date(o.createdAt).toLocaleDateString('th-TH', { day:'2-digit', month:'short', year:'numeric' });
       return `<tr>
         <td style="font-weight:700;white-space:nowrap;">${shortId}</td>
@@ -2641,8 +2632,8 @@
       });
       while (itemDescs.length < 5) itemDescs.push('');
 
-      // COD amount — เฉพาะ order ที่ไม่มี paymentIntentId (COD)
-      const isCOD = !o.paymentIntentId && !o.stripeSessionId;
+      // COD amount — ทุก order เป็น COD
+      const isCOD = !o.paymentIntentId || o.paymentIntentId.startsWith('cod_');
       const codAmount = isCOD ? Number(o.totalAmount).toFixed(2) : '';
 
       return [

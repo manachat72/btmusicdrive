@@ -9,32 +9,14 @@ let cart = [];
 let currentUser = null;
 let appliedPromo = null;
 
-// Stripe instances
-let stripe = null;
-let elements = null;
-let paymentElement = null;
-
 // ── Init ─────────────────────────────────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', () => {
     enforceLogin();
     loadUserInfo();
     loadCart();
-    checkPaymentStatus();
     initAddressDropdowns();
-    initStripe();
 });
-
-// ── Stripe Init ───────────────────────────────────────────────────────────────
-
-function initStripe() {
-    const stripePublicKey = window.STRIPE_PUBLIC_KEY || 'pk_live_51T8AaH0naU9InmAiCY8gXdsBKS0BLpimIkid75RgXhPPqzGlig2c1l820PFFGEJUvP2VF2iJbOKo0PsQMVr0JZNg00NWthxP0H';
-    if (typeof Stripe === 'undefined') {
-        console.error('Stripe.js not loaded');
-        return;
-    }
-    stripe = Stripe(stripePublicKey);
-}
 
 // ── Auth Guard ────────────────────────────────────────────────────────────────
 
@@ -208,36 +190,7 @@ function updateTotals() {
     }
 }
 
-// ── Payment Tabs ──────────────────────────────────────────────────────────────
 
-function selectPaymentMethod(method) {
-    const methods = ['card', 'promptpay', 'cod'];
-
-    methods.forEach(m => {
-        const box = document.getElementById(`payment-box-${m}`);
-        if (!box) return;
-        if (m === method) {
-            box.classList.add('active');
-        } else {
-            box.classList.remove('active');
-        }
-    });
-
-    const stripeContainer = document.getElementById('stripe-payment-container');
-    const promptpayInfo = document.getElementById('promptpay-info');
-    
-    if (method === 'card') {
-        stripeContainer?.classList.remove('hidden');
-    } else {
-        stripeContainer?.classList.add('hidden');
-    }
-
-    if (method === 'promptpay') {
-        promptpayInfo?.classList.remove('hidden');
-    } else {
-        promptpayInfo?.classList.add('hidden');
-    }
-}
 
 // ── Promo Code ────────────────────────────────────────────────────────────────
 
@@ -387,7 +340,7 @@ async function placeOrder() {
 
     const btn = document.getElementById('place-order-btn');
     const btnMobile = document.getElementById('place-order-btn-mobile');
-    const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+    const paymentMethod = 'cod';
 
     const normalizedPhone = document.getElementById('phone').value.trim().replace(/\D/g, '');
     const shippingAddress = [
@@ -404,115 +357,6 @@ async function placeOrder() {
 
     if (paymentMethod === 'cod') {
         await processCodOrder(shippingAddress, normalizedPhone, btn, btnMobile);
-    } else if (paymentMethod === 'promptpay') {
-        await processPromptPayOrder(shippingAddress, normalizedPhone, btn, btnMobile);
-    } else {
-        await processStripePayment(shippingAddress, normalizedPhone, btn, btnMobile);
-    }
-}
-
-// ── Stripe Payment ────────────────────────────────────────────────────────────
-
-async function processStripePayment(shippingAddress, phone, btn, btnMobile) {
-    const token = localStorage.getItem('btmusicdrive_token');
-
-    if (!stripe) {
-        showError('ระบบชำระเงินยังไม่พร้อม กรุณารีเฟรชหน้าและลองอีกครั้ง');
-        setLoading(btn, false);
-        setLoading(btnMobile, false);
-        return;
-    }
-
-    try {
-        // Step 1: Create PaymentIntent via backend
-        const intentRes = await fetch(`${API_BASE}/payment/create-payment-intent`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`
-            },
-            body: JSON.stringify({
-                ...(appliedPromo ? { promoCode: appliedPromo.code } : {})
-            })
-        });
-
-        const intentData = await intentRes.json();
-
-        if (!intentRes.ok) {
-            showError(intentData.error || 'ไม่สามารถสร้างรายการชำระเงินได้');
-            setLoading(btn, false);
-            setLoading(btnMobile, false);
-            return;
-        }
-
-        const { clientSecret, invoiceNo } = intentData;
-
-        // Step 2: Mount Stripe Payment Element (ถ้ายังไม่ได้ mount)
-        const stripeEl = document.getElementById('stripe-payment-element');
-        if (stripeEl && !paymentElement) {
-            elements = stripe.elements({ clientSecret, locale: 'th' });
-            paymentElement = elements.create('payment', { layout: 'tabs' });
-            paymentElement.mount('#stripe-payment-element');
-            // รอ element mount
-            await new Promise(r => setTimeout(r, 600));
-        }
-
-        // Step 3: Confirm payment
-        const confirmResult = await stripe.confirmPayment({
-            elements,
-            confirmParams: {
-                return_url: `${window.location.origin}/checkout.html`,
-            },
-            redirect: 'if_required',
-        });
-
-        if (confirmResult.error) {
-            showError(confirmResult.error.message || 'การชำระเงินล้มเหลว');
-            setLoading(btn, false);
-            setLoading(btnMobile, false);
-            return;
-        }
-
-        const paymentIntent = confirmResult.paymentIntent;
-        if (paymentIntent && paymentIntent.status === 'succeeded') {
-            // Step 4: Confirm order in backend
-            const confirmRes = await fetch(`${API_BASE}/payment/confirm-order`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    paymentIntentId: paymentIntent.id,
-                    invoiceNo,
-                    shippingAddress,
-                    phone,
-                })
-            });
-
-            const confirmData = await confirmRes.json();
-
-            if (!confirmRes.ok) {
-                showError(confirmData.error || 'ยืนยันคำสั่งซื้อไม่สำเร็จ');
-                setLoading(btn, false);
-                setLoading(btnMobile, false);
-                return;
-            }
-
-            cart = [];
-            localStorage.removeItem('btmusicdrive_cart');
-            showSuccessModal(confirmData.orderId);
-        } else {
-            showError('การชำระเงินยังไม่สมบูรณ์ กรุณาลองอีกครั้ง');
-            setLoading(btn, false);
-            setLoading(btnMobile, false);
-        }
-
-    } catch (e) {
-        console.error('Stripe checkout error:', e);
-        showError('เกิดข้อผิดพลาดเครือข่าย กรุณาตรวจสอบการเชื่อมต่อและลองอีกครั้ง');
-        setLoading(btn, false);
-        setLoading(btnMobile, false);
     }
 }
 
@@ -546,7 +390,7 @@ async function processCodOrder(shippingAddress, phone, btn, btnMobile) {
 
         cart = [];
         localStorage.removeItem('btmusicdrive_cart');
-        showSuccessModal(data.orderId, true);
+        showSuccessModal(data.orderId);
 
     } catch (e) {
         console.error('COD order error:', e);
@@ -556,110 +400,11 @@ async function processCodOrder(shippingAddress, phone, btn, btnMobile) {
     }
 }
 
-// ── PromptPay Order ───────────────────────────────────────────────────────────
-
-async function processPromptPayOrder(shippingAddress, phone, btn, btnMobile) {
-    const token = localStorage.getItem('btmusicdrive_token');
-
-    try {
-        const res = await fetch(`${API_BASE}/payment/promptpay-order`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`
-            },
-            body: JSON.stringify({
-                shippingAddress,
-                phone,
-                ...(appliedPromo ? { promoCode: appliedPromo.code } : {})
-            })
-        });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-            showError(data.error || 'ไม่สามารถสร้างคำสั่งซื้อได้');
-            setLoading(btn, false);
-            setLoading(btnMobile, false);
-            return;
-        }
-
-        cart = [];
-        localStorage.removeItem('btmusicdrive_cart');
-        // Show success modal with promptpay notice
-        const shortId = data.orderId ? String(data.orderId).slice(-8).toUpperCase() : '';
-        document.getElementById('order-id-display').innerHTML = `คำสั่งซื้อ #${shortId}<br><span class="text-blue-600 font-bold mt-2 block">กรุณาโอนเงินเข้าบัญชีตามที่ส่งไปในอีเมล</span>`;
-        document.getElementById('success-modal').classList.remove('hidden');
-        document.getElementById('success-modal').classList.add('flex');
-
-    } catch (e) {
-        console.error('PromptPay order error:', e);
-        showError('เกิดข้อผิดพลาดเครือข่าย กรุณาตรวจสอบการเชื่อมต่อและลองอีกครั้ง');
-        setLoading(btn, false);
-        setLoading(btnMobile, false);
-    }
-}
-
-// ── Status Checking (Stripe redirect return) ──────────────────────────────────
-
-async function checkPaymentStatus() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const paymentIntentClientSecret = urlParams.get('payment_intent_client_secret');
-    const paymentIntentId = urlParams.get('payment_intent');
-
-    if (!paymentIntentClientSecret || !paymentIntentId) return;
-
-    // Clean up URL
-    window.history.replaceState({}, document.title, window.location.pathname);
-
-    if (!stripe) {
-        const stripePublicKey = window.STRIPE_PUBLIC_KEY || 'pk_live_51T8AaH0naU9InmAiCY8gXdsBKS0BLpimIkid75RgXhPPqzGlig2c1l820PFFGEJUvP2VF2iJbOKo0PsQMVr0JZNg00NWthxP0H';
-        if (typeof Stripe !== 'undefined') {
-            stripe = Stripe(stripePublicKey);
-        } else {
-            return;
-        }
-    }
-
-    const { paymentIntent } = await stripe.retrievePaymentIntent(paymentIntentClientSecret);
-
-    if (paymentIntent && paymentIntent.status === 'succeeded') {
-        const token = localStorage.getItem('btmusicdrive_token');
-        const invoiceNo = paymentIntent.metadata?.invoiceNo || paymentIntentId;
-
-        if (token) {
-            try {
-                const res = await fetch(`${API_BASE}/payment/confirm-order`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-                    body: JSON.stringify({ paymentIntentId, invoiceNo })
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    cart = [];
-                    localStorage.removeItem('btmusicdrive_cart');
-                    showSuccessModal(data.orderId);
-                    return;
-                }
-            } catch (e) {
-                console.warn('Could not confirm order after redirect:', e);
-            }
-        }
-        cart = [];
-        localStorage.removeItem('btmusicdrive_cart');
-        showSuccessModal(paymentIntentId.slice(-8).toUpperCase());
-    } else if (paymentIntent?.status === 'canceled' || paymentIntent?.last_payment_error) {
-        showError('การชำระเงินถูกยกเลิก คุณสามารถลองอีกครั้งเมื่อพร้อม');
-    }
-}
-
 // ── Success Modal ─────────────────────────────────────────────────────────────
 
-function showSuccessModal(orderId, isCod = false) {
+function showSuccessModal(orderId) {
     const shortId = orderId ? String(orderId).slice(-8).toUpperCase() : '';
-    document.getElementById('order-id-display').textContent = isCod
-        ? `คำสั่งซื้อ #${shortId} (ชำระเงินปลายทาง)`
-        : `คำสั่งซื้อ #${shortId}`;
+    document.getElementById('order-id-display').textContent = `คำสั่งซื้อ #${shortId} (ชำระเงินปลายทาง)`;
     document.getElementById('success-modal').classList.remove('hidden');
     document.getElementById('success-modal').classList.add('flex');
 }
