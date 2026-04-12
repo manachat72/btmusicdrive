@@ -46,65 +46,25 @@
 </head>
 <body class="bg-gray-50 min-h-screen text-gray-800 antialiased">
 
+<!-- ── Hero + Search ──────────────────────────────────────────────────────── -->
+<div class="bg-secondary pt-32 pb-20 px-4">
+  <div class="max-w-2xl mx-auto text-center">
+    <h1 class="text-2xl sm:text-3xl font-bold text-white mb-2">เช็คสถานะการจัดส่ง</h1>
+    <p class="text-gray-400 text-sm mb-8">กรอกหมายเลขพัสดุ เพื่อดูสถานะการจัดส่งของคุณ</p>
 
-<!-- ── Hero ───────────────────────────────────────────────────────────────── -->
-<div class="bg-secondary relative overflow-hidden pt-14 pb-32">
-  <div class="hero-glow absolute inset-0 pointer-events-none"></div>
-  <div class="absolute -top-16 -right-16 w-72 h-72 bg-primary/10 rounded-full blur-3xl"></div>
-  <div class="absolute -bottom-8 -left-8 w-56 h-56 bg-amber-400/5 rounded-full blur-2xl"></div>
-  <div class="max-w-2xl mx-auto px-4 text-center relative z-10">
-    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/10 text-amber-300 text-xs font-medium mb-5">
-      <span class="w-1.5 h-1.5 rounded-full bg-green-400 pulse-dot"></span>
-      ติดตามแบบเรียลไทม์
+    <!-- Search Box -->
+    <div class="flex gap-0 rounded-xl overflow-hidden shadow-lg max-w-xl mx-auto">
+      <input id="flash-tracking-input" type="text"
+        placeholder="กรอกหมายเลขพัสดุ Flash Express"
+        class="flex-1 px-5 py-4 text-sm text-gray-800 bg-white focus:outline-none font-mono"
+        onkeydown="if(event.key==='Enter') goFlash()">
+      <button onclick="goFlash()"
+        class="px-6 py-4 text-white text-sm font-bold whitespace-nowrap transition-opacity hover:opacity-90"
+        style="background:#ff6600;">
+        ค้นหา
+      </button>
     </div>
-    <h1 class="text-3xl sm:text-4xl font-extrabold text-white mb-3 leading-tight">
-      ติดตามพัสดุของคุณ<br>
-      <span class="text-primary">ได้ทุกที่ ทุกเวลา</span>
-    </h1>
-    <p class="text-gray-400 text-sm sm:text-base leading-relaxed">
-      ตรวจสอบสถานะการจัดส่งด้วยหมายเลขคำสั่งซื้อหรือเบอร์โทรศัพท์
-    </p>
-  </div>
-</div>
-
-<!-- ── Flash Express Tracking Card ───────────────────────────────────────── -->
-<div class="max-w-2xl mx-auto px-4 -mt-20 relative z-20 mb-8">
-  <div class="bg-white rounded-3xl shadow-2xl shadow-gray-200/60 border border-gray-100 overflow-hidden animate-fade-up">
-
-    <!-- Header -->
-    <div class="flex items-center gap-3 px-6 py-4 border-b border-gray-100">
-      <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:#ff6600;">
-        <i class="ph ph-lightning text-white text-base"></i>
-      </div>
-      <span class="font-bold text-gray-700 text-sm">ติดตามพัสดุ Flash Express</span>
-      <span class="ml-auto flex items-center gap-1.5 text-xs text-orange-500 font-medium">
-        <span class="w-1.5 h-1.5 rounded-full bg-orange-400 pulse-dot"></span>
-        เรียลไทม์
-      </span>
-    </div>
-
-    <!-- Input -->
-    <div class="p-6">
-      <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">หมายเลขพัสดุ</label>
-      <div class="flex flex-col sm:flex-row gap-3">
-        <div class="relative flex-1">
-          <i class="ph ph-barcode absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg"></i>
-          <input id="flash-tracking-input" type="text" placeholder="เช่น TH123456789"
-            class="w-full pl-11 pr-4 py-3.5 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 transition font-mono uppercase bg-gray-50 hover:bg-white"
-            onkeydown="if(event.key==='Enter') goFlash()">
-        </div>
-        <button onclick="goFlash()"
-          class="text-white font-bold px-6 py-3.5 rounded-2xl transition-all flex items-center justify-center gap-2 whitespace-nowrap shadow-sm hover:shadow-md active:scale-95"
-          style="background:#ff6600;">
-          <i class="ph ph-magnifying-glass"></i> ติดตาม
-        </button>
-      </div>
-      <p class="text-xs text-gray-400 mt-3 flex items-center gap-1.5">
-        <i class="ph ph-info text-gray-300 text-sm"></i>
-        กดปุ่มติดตามเพื่อเปิดหน้า Flash Express โดยตรง
-      </p>
-    </div>
-
+    <p class="text-gray-500 text-xs mt-3">เฉพาะออเดอร์ที่ส่งสินค้ากับ Flash Express</p>
   </div>
 </div>
 
@@ -115,56 +75,6 @@
     window.open(url, '_blank', 'noopener');
   }
 </script>
-
-<!-- ── Help CTA ───────────────────────────────────────────────────────────── -->
-<div class="max-w-2xl mx-auto px-4 mb-10">
-  <div class="bg-amber-50 border border-amber-100 rounded-3xl p-5 flex items-center gap-4">
-    <div class="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center flex-shrink-0">
-      <i class="ph ph-headset text-primary text-lg"></i>
-    </div>
-    <div class="flex-1">
-      <p class="text-sm font-bold text-gray-800">มีปัญหาการจัดส่ง?</p>
-      <p class="text-xs text-gray-500 mt-0.5">ติดต่อแอดมินได้ทาง LINE ได้เลย</p>
-    </div>
-    <a href="https://line.me/ti/p/@bt1992" target="_blank" rel="noopener"
-      class="flex-shrink-0 bg-[#06C755] hover:bg-green-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all flex items-center gap-1.5 shadow-sm hover:shadow-md active:scale-95">
-      <i class="ph ph-chat-circle-dots text-base"></i> LINE
-    </a>
-  </div>
-</div>
-
-<!-- ── Info Section ───────────────────────────────────────────────────────── -->
-<section class="max-w-4xl mx-auto px-4 pb-16">
-  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-    <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 flex flex-col gap-3 hover:shadow-md transition-shadow">
-      <div class="w-11 h-11 bg-blue-50 rounded-2xl flex items-center justify-center">
-        <i class="ph ph-package text-blue-500 text-xl"></i>
-      </div>
-      <div>
-        <p class="font-bold text-gray-900 text-sm">แพ็คกันกระแทก อย่างดี</p>
-        <p class="text-xs text-gray-500 mt-1 leading-relaxed">บับเบิ้ลหนาพิเศษ + กล่องแข็งแรง ป้องกันความเสียหาย 100%</p>
-      </div>
-    </div>
-    <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 flex flex-col gap-3 hover:shadow-md transition-shadow">
-      <div class="w-11 h-11 bg-amber-50 rounded-2xl flex items-center justify-center">
-        <i class="ph ph-clock-countdown text-primary text-xl"></i>
-      </div>
-      <div>
-        <p class="font-bold text-gray-900 text-sm">จัดส่งทุกวัน ตัดรอบ 12:00 น.</p>
-        <p class="text-xs text-gray-500 mt-1 leading-relaxed">สั่งก่อน 12:00 น. จัดส่งวันเดียวกัน กรุงเทพ 1-2 วัน ต่างจังหวัด 2-3 วัน</p>
-      </div>
-    </div>
-    <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 flex flex-col gap-3 hover:shadow-md transition-shadow">
-      <div class="w-11 h-11 bg-green-50 rounded-2xl flex items-center justify-center">
-        <i class="ph ph-truck text-green-500 text-xl"></i>
-      </div>
-      <div>
-        <p class="font-bold text-gray-900 text-sm">ขนส่งพันธมิตร</p>
-        <p class="text-xs text-gray-500 mt-1 leading-relaxed">Flash Express ครอบคลุมทั่วประเทศ</p>
-      </div>
-    </div>
-  </div>
-</section>
 
 
 <script src="components.js"></script>
