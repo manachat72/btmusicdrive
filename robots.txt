@@ -1,0 +1,24 @@
+# robots.txt — BT Music Drive
+# https://btmusicdrive.com
+
+User-agent: *
+
+# Block private / user-specific pages
+Disallow: /admin.html
+Disallow: /cart.html
+Disallow: /checkout.html
+Disallow: /orders.html
+Disallow: /profile.html
+Disallow: /address.html
+Disallow: /wishlist.html
+
+# Block server-side and build artifacts
+Disallow: /server/
+Disallow: /node_modules/
+Disallow: /Downloads/
+
+# Allow all other public pages
+Allow: /
+
+# Sitemap location
+Sitemap: https://btmusicdrive.com/sitemap.xml

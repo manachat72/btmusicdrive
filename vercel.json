@@ -15,7 +15,9 @@
     { "src": "style.css", "use": "@vercel/static" },
     { "src": "products.json", "use": "@vercel/static" },
     { "src": "categories.json", "use": "@vercel/static" },
-    { "src": "images/**", "use": "@vercel/static" }
+    { "src": "images/**", "use": "@vercel/static" },
+    { "src": "sitemap.xml", "use": "@vercel/static" },
+    { "src": "robots.txt", "use": "@vercel/static" }
   ],
   "headers": [
     {
