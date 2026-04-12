@@ -2835,8 +2835,18 @@
   // CATEGORIES (localStorage-based, syncs with category.html)
   // ══════════════════════════════════════════════════════════════════════════
   const LS_CATEGORIES_KEY = 'btmusicdrive_categories';
+  const LS_DELETED_CATS_KEY = 'btmusicdrive_deleted_categories';
   let _categories = [];
   let _deleteCategoryId = null;
+
+  function _lsGetDeletedCatNames() {
+    try { return new Set(JSON.parse(localStorage.getItem(LS_DELETED_CATS_KEY)) || []); } catch { return new Set(); }
+  }
+  function _lsAddDeletedCatName(name) {
+    const s = _lsGetDeletedCatNames();
+    s.add(name);
+    localStorage.setItem(LS_DELETED_CATS_KEY, JSON.stringify([...s]));
+  }
 
   function _lsGetCategories() {
     try { return JSON.parse(localStorage.getItem(LS_CATEGORIES_KEY)) || []; } catch { return []; }
@@ -2866,8 +2876,10 @@
       }
     });
 
-    // Add product-sourced categories that aren't in saved list
+    // Add product-sourced categories that aren't in saved list (skip deleted ones)
+    const deletedNames = _lsGetDeletedCatNames();
     prodCatMap.forEach((count, name) => {
+      if (deletedNames.has(name)) return;  // skip if manually deleted
       if (!_categories.find(c => c.name === name)) {
         _categories.push({
           id: 'cat-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6),
@@ -3007,6 +3019,8 @@
 
   function confirmDeleteCategory() {
     if (!_deleteCategoryId) return;
+    const cat = _categories.find(c => c.id === _deleteCategoryId);
+    if (cat) _lsAddDeletedCatName(cat.name);  // remember this name as deleted
     _categories = _categories.filter(c => c.id !== _deleteCategoryId);
     _lsSaveCategories(_categories);
     closeCatConfirm();
