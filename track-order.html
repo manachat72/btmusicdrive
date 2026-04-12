@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#8B7355">
-  <link rel="icon" type="image/png" href="images/logo (60 x 60 px) (1).png">
+  <link rel="icon" type="image/png" href="images/logo.png">
   <title>ติดตามพัสดุ — Bt music drive</title>
   <meta name="description" content="ติดตามสถานะการจัดส่งสินค้า btmusicdrive ได้แบบเรียลไทม์">
   <meta name="keywords" content="ติดตามพัสดุ, ตรวจสอบการจัดส่ง, btmusicdrive, แฟลชไดร์ฟเพลง">
@@ -19,54 +19,407 @@
             primary: '#8B7355',
             secondary: '#0F172A',
           },
-          animation: {
-            'fade-up': 'fadeUp 0.5s ease forwards',
-            'shimmer': 'shimmer 1.5s infinite',
-          },
-          keyframes: {
-            fadeUp: { '0%': { opacity: 0, transform: 'translateY(16px)' }, '100%': { opacity: 1, transform: 'translateY(0)' } },
-            shimmer: { '0%': { backgroundPosition: '-200% 0' }, '100%': { backgroundPosition: '200% 0' } },
-          }
         }
       }
     };
   </script>
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
-    .step-line { width: 2px; flex-shrink: 0; }
-    .skeleton { background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
-    .glass-card { background: rgba(255,255,255,0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
-    .hero-glow { background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(139,115,85,0.18) 0%, transparent 70%); }
-    .search-tab.active { background: #8B7355; color: #fff; box-shadow: 0 2px 8px rgba(139,115,85,0.3); }
-    .search-tab { transition: all 0.2s; }
-    .pulse-dot { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    body { font-family: 'Kanit', sans-serif; }
+
+    /* ─── Hero ─── */
+    .hero-bg {
+      background: linear-gradient(135deg, #0F172A 0%, #1e2d4a 40%, #1a1060 70%, #0F172A 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-bg::before {
+      content: '';
+      position: absolute;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(139,115,85,.25) 0%, transparent 65%);
+      top: -100px; left: -100px;
+      border-radius: 50%;
+      animation: float1 8s ease-in-out infinite;
+    }
+    .hero-bg::after {
+      content: '';
+      position: absolute;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(99,102,241,.15) 0%, transparent 65%);
+      bottom: -80px; right: -80px;
+      border-radius: 50%;
+      animation: float1 10s ease-in-out infinite reverse;
+    }
+    @keyframes float1 {
+      0%,100% { transform: translateY(0) scale(1); }
+      50%      { transform: translateY(-30px) scale(1.05); }
+    }
+
+    /* ─── Search Box ─── */
+    .search-wrapper {
+      background: rgba(255,255,255,.07);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 20px;
+      padding: 32px;
+    }
+    .search-input {
+      background: rgba(255,255,255,.1);
+      border: 1.5px solid rgba(255,255,255,.2);
+      color: #fff;
+      border-radius: 12px;
+      padding: 14px 20px;
+      font-size: 15px;
+      font-family: 'Kanit', monospace;
+      width: 100%;
+      outline: none;
+      transition: border-color .2s, background .2s;
+    }
+    .search-input::placeholder { color: rgba(255,255,255,.4); }
+    .search-input:focus {
+      border-color: #8B7355;
+      background: rgba(255,255,255,.14);
+    }
+    .btn-flash {
+      background: linear-gradient(135deg, #ff6600, #ff4400);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 14px 28px;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: 'Kanit', sans-serif;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: transform .15s, box-shadow .15s;
+      box-shadow: 0 4px 20px rgba(255,102,0,.4);
+    }
+    .btn-flash:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(255,102,0,.5); }
+    .btn-flash:active { transform: translateY(0); }
+
+    /* ─── Step Timeline ─── */
+    .step-item { position: relative; }
+    .step-item:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 19px; top: 40px;
+      width: 2px;
+      height: calc(100% - 8px);
+      background: linear-gradient(to bottom, #8B7355, rgba(139,115,85,.15));
+    }
+    .step-dot {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      font-size: 18px;
+    }
+
+    /* ─── Info Cards ─── */
+    .info-card {
+      background: #fff;
+      border: 1px solid #f0ece6;
+      border-radius: 16px;
+      padding: 24px;
+      transition: box-shadow .2s, transform .2s;
+    }
+    .info-card:hover {
+      box-shadow: 0 8px 32px rgba(139,115,85,.12);
+      transform: translateY(-2px);
+    }
+
+    /* ─── Quick Links ─── */
+    .quick-link {
+      display: flex; align-items: center; gap: 14px;
+      background: #fff;
+      border: 1px solid #f0ece6;
+      border-radius: 14px;
+      padding: 16px 20px;
+      text-decoration: none;
+      color: #1d2327;
+      transition: all .2s;
+    }
+    .quick-link:hover {
+      background: #fdf8f3;
+      border-color: #8B7355;
+      transform: translateX(4px);
+    }
+    .quick-link-icon {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    /* ─── Badge ─── */
+    .carrier-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #fff3e0; color: #e65100;
+      border: 1px solid #ffcc80;
+      padding: 4px 14px;
+      border-radius: 99px; font-size: 13px; font-weight: 700;
+    }
+
+    /* ─── Shine animation for hero text ─── */
+    .shine-text {
+      background: linear-gradient(90deg, #fff 0%, #fde68a 40%, #fff 80%);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shineAnim 3s linear infinite;
+    }
+    @keyframes shineAnim {
+      0%   { background-position: 200% center; }
+      100% { background-position: -200% center; }
+    }
   </style>
 </head>
 <body class="bg-gray-50 min-h-screen text-gray-800 antialiased">
 
 <div id="site-header"></div>
 
-<!-- ── Hero + Search ──────────────────────────────────────────────────────── -->
-<div class="bg-secondary pt-32 pb-20 px-4">
-  <div class="max-w-2xl mx-auto text-center">
-    <h1 class="text-2xl sm:text-3xl font-bold text-white mb-2">เช็คสถานะการจัดส่ง</h1>
-    <p class="text-gray-400 text-sm mb-8">กรอกหมายเลขพัสดุ เพื่อดูสถานะการจัดส่งของคุณ</p>
+<!-- ── Hero Section ──────────────────────────────────────────────── -->
+<section class="hero-bg pt-32 pb-16 px-4">
+  <div class="max-w-3xl mx-auto relative z-10">
+
+    <!-- Badge -->
+    <div class="flex justify-center mb-5">
+      <span class="carrier-badge">
+        <i class="ph ph-truck"></i>
+        จัดส่งด้วย Flash Express
+      </span>
+    </div>
+
+    <!-- Title -->
+    <div class="text-center mb-8">
+      <h1 class="text-3xl sm:text-4xl font-bold text-white mb-3">
+        ติดตามพัสดุ
+        <span class="shine-text">Bt music drive</span>
+      </h1>
+      <p class="text-gray-400 text-sm sm:text-base max-w-lg mx-auto leading-relaxed">
+        กรอกหมายเลขพัสดุ Flash Express เพื่อตรวจสอบสถานะการจัดส่งสินค้าของคุณแบบเรียลไทม์
+      </p>
+    </div>
 
     <!-- Search Box -->
-    <div class="flex gap-0 rounded-xl overflow-hidden shadow-lg max-w-xl mx-auto">
-      <input id="flash-tracking-input" type="text"
-        placeholder="กรอกหมายเลขพัสดุ Flash Express"
-        class="flex-1 px-5 py-4 text-sm text-gray-800 bg-white focus:outline-none font-mono"
-        onkeydown="if(event.key==='Enter') goFlash()">
-      <button onclick="goFlash()"
-        class="px-6 py-4 text-white text-sm font-bold whitespace-nowrap transition-opacity hover:opacity-90"
-        style="background:#ff6600;">
-        ค้นหา
-      </button>
+    <div class="search-wrapper">
+      <p class="text-white/70 text-sm font-medium mb-3">
+        <i class="ph ph-package mr-1"></i>
+        หมายเลขพัสดุ Flash Express
+      </p>
+      <div class="flex gap-3 flex-col sm:flex-row">
+        <input
+          id="flash-tracking-input"
+          type="text"
+          placeholder="เช่น TH111111111111111"
+          class="search-input flex-1"
+          onkeydown="if(event.key==='Enter') goFlash()"
+        >
+        <button onclick="goFlash()" class="btn-flash flex items-center gap-2">
+          <i class="ph ph-magnifying-glass text-lg"></i>
+          ค้นหาพัสดุ
+        </button>
+      </div>
+      <p class="text-white/40 text-xs mt-3 text-center">
+        <i class="ph ph-info mr-1"></i>
+        ระบบจะเปิดหน้าติดตามพัสดุของ Flash Express ในแท็บใหม่
+      </p>
     </div>
-    <p class="text-gray-500 text-xs mt-3">เฉพาะออเดอร์ที่ส่งสินค้ากับ Flash Express</p>
+  </div>
+</section>
+
+<!-- ── Main Content ─────────────────────────────────────────────── -->
+<div class="max-w-5xl mx-auto px-4 py-14">
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+    <!-- ── ซ้าย: ขั้นตอนการจัดส่ง ── -->
+    <div class="lg:col-span-2">
+      <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+        <span class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+          <i class="ph ph-map-pin text-primary text-lg"></i>
+        </span>
+        ขั้นตอนการจัดส่งสินค้า
+      </h2>
+
+      <div class="space-y-1">
+
+        <!-- Step 1 -->
+        <div class="step-item flex gap-4 pb-6">
+          <div class="step-dot bg-green-100 text-green-600">
+            <i class="ph-fill ph-check-circle"></i>
+          </div>
+          <div class="pt-1">
+            <p class="font-semibold text-gray-800">รับคำสั่งซื้อ</p>
+            <p class="text-sm text-gray-500 mt-0.5">ระบบบันทึกออเดอร์และยืนยันการชำระเงินของคุณเรียบร้อยแล้ว</p>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="step-item flex gap-4 pb-6">
+          <div class="step-dot bg-amber-100 text-amber-600">
+            <i class="ph-fill ph-package"></i>
+          </div>
+          <div class="pt-1">
+            <p class="font-semibold text-gray-800">เตรียมสินค้าและบรรจุหีบห่อ</p>
+            <p class="text-sm text-gray-500 mt-0.5">ทีมงานดำเนินการเตรียมสินค้าและบรรจุอย่างดีก่อนส่งออก</p>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="step-item flex gap-4 pb-6">
+          <div class="step-dot bg-orange-100 text-orange-500">
+            <i class="ph-fill ph-truck"></i>
+          </div>
+          <div class="pt-1">
+            <p class="font-semibold text-gray-800">ส่งให้ Flash Express</p>
+            <p class="text-sm text-gray-500 mt-0.5">พัสดุถูกส่งมอบให้ Flash Express รับเลขพัสดุทางอีเมลและ SMS</p>
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="step-item flex gap-4 pb-6">
+          <div class="step-dot bg-blue-100 text-blue-600">
+            <i class="ph-fill ph-map-trifold"></i>
+          </div>
+          <div class="pt-1">
+            <p class="font-semibold text-gray-800">สินค้าอยู่ระหว่างการขนส่ง</p>
+            <p class="text-sm text-gray-500 mt-0.5">ใช้เลขพัสดุด้านบนเพื่อตรวจสอบตำแหน่งพัสดุแบบเรียลไทม์</p>
+          </div>
+        </div>
+
+        <!-- Step 5 -->
+        <div class="step-item flex gap-4">
+          <div class="step-dot bg-primary/10 text-primary">
+            <i class="ph-fill ph-house-line"></i>
+          </div>
+          <div class="pt-1">
+            <p class="font-semibold text-gray-800">ส่งถึงมือคุณแล้ว!</p>
+            <p class="text-sm text-gray-500 mt-0.5">สินค้าส่งถึงปลายทางเรียบร้อย เพลิดเพลินกับเพลงโปรดได้เลย 🎵</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Delivery Info Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
+        <div class="info-card flex items-start gap-4">
+          <div class="w-11 h-11 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0">
+            <i class="ph ph-clock text-blue-500 text-xl"></i>
+          </div>
+          <div>
+            <p class="font-semibold text-gray-800 mb-1">ระยะเวลาจัดส่ง</p>
+            <p class="text-sm text-gray-500">1–3 วันทำการ หลังชำระเงินสำเร็จ</p>
+          </div>
+        </div>
+        <div class="info-card flex items-start gap-4">
+          <div class="w-11 h-11 rounded-full bg-orange-50 flex items-center justify-center flex-shrink-0">
+            <i class="ph ph-lightning text-orange-500 text-xl"></i>
+          </div>
+          <div>
+            <p class="font-semibold text-gray-800 mb-1">Flash Express</p>
+            <p class="text-sm text-gray-500">บริการขนส่งหลัก ครอบคลุมทั่วไทย</p>
+          </div>
+        </div>
+        <div class="info-card flex items-start gap-4">
+          <div class="w-11 h-11 rounded-full bg-green-50 flex items-center justify-center flex-shrink-0">
+            <i class="ph ph-envelope-open text-green-500 text-xl"></i>
+          </div>
+          <div>
+            <p class="font-semibold text-gray-800 mb-1">แจ้งเตือนอัตโนมัติ</p>
+            <p class="text-sm text-gray-500">รับเลขพัสดุทางอีเมลทันทีหลังจัดส่ง</p>
+          </div>
+        </div>
+        <div class="info-card flex items-start gap-4">
+          <div class="w-11 h-11 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+            <i class="ph ph-shield-check text-primary text-xl"></i>
+          </div>
+          <div>
+            <p class="font-semibold text-gray-800 mb-1">รับประกัน 1 ปี</p>
+            <p class="text-sm text-gray-500">สินค้าทุกชิ้นมีการรับประกันเต็มปี</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ขวา: ลิ้งค์ด่วน + ติดต่อ ── -->
+    <div class="lg:col-span-1">
+      <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+        <span class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+          <i class="ph ph-link text-primary text-lg"></i>
+        </span>
+        ลิ้งค์ที่เป็นประโยชน์
+      </h2>
+
+      <div class="space-y-3 mb-8">
+        <a href="https://www.flashexpress.co.th/fle/tracking" target="_blank" rel="noopener" class="quick-link">
+          <div class="quick-link-icon bg-orange-50 text-orange-500">
+            <i class="ph ph-truck"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="font-semibold text-sm">Flash Express Tracking</p>
+            <p class="text-xs text-gray-400 truncate">flashexpress.co.th/fle/tracking</p>
+          </div>
+          <i class="ph ph-arrow-up-right text-gray-300 flex-shrink-0"></i>
+        </a>
+
+        <a href="orders.html" class="quick-link">
+          <div class="quick-link-icon bg-blue-50 text-blue-500">
+            <i class="ph ph-receipt"></i>
+          </div>
+          <div>
+            <p class="font-semibold text-sm">ประวัติคำสั่งซื้อ</p>
+            <p class="text-xs text-gray-400">ดูออเดอร์ของคุณทั้งหมด</p>
+          </div>
+          <i class="ph ph-arrow-right text-gray-300 flex-shrink-0 ml-auto"></i>
+        </a>
+
+        <a href="shipping.html" class="quick-link">
+          <div class="quick-link-icon bg-primary/10 text-primary">
+            <i class="ph ph-package"></i>
+          </div>
+          <div>
+            <p class="font-semibold text-sm">นโยบายการจัดส่ง</p>
+            <p class="text-xs text-gray-400">เงื่อนไขและข้อกำหนด</p>
+          </div>
+          <i class="ph ph-arrow-right text-gray-300 flex-shrink-0 ml-auto"></i>
+        </a>
+      </div>
+
+      <!-- Contact Card -->
+      <div class="bg-gradient-to-br from-primary to-amber-700 rounded-2xl p-6 text-white">
+        <div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center mb-4">
+          <i class="ph ph-headset text-2xl"></i>
+        </div>
+        <h3 class="font-bold text-base mb-1">ต้องการความช่วยเหลือ?</h3>
+        <p class="text-white/75 text-sm mb-5 leading-relaxed">
+          ติดต่อทีมงานได้เลยหากพัสดุล่าช้าหรือมีปัญหาการจัดส่ง
+        </p>
+        <div class="space-y-3">
+          <a href="https://page.line.me/bt1992?openQrModal=true" target="_blank" rel="noopener"
+             class="flex items-center gap-3 bg-white/15 hover:bg-white/25 rounded-xl px-4 py-3 transition-colors text-sm font-semibold">
+            <span class="w-8 h-8 rounded-lg bg-green-500 flex items-center justify-center flex-shrink-0">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+                <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/>
+              </svg>
+            </span>
+            ติดต่อผ่าน Line
+          </a>
+          <a href="contact.html"
+             class="flex items-center gap-3 bg-white/15 hover:bg-white/25 rounded-xl px-4 py-3 transition-colors text-sm font-semibold">
+            <span class="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center flex-shrink-0">
+              <i class="ph ph-envelope text-white text-sm"></i>
+            </span>
+            ส่งข้อความหาเรา
+          </a>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -77,7 +430,6 @@
     window.open(url, '_blank', 'noopener');
   }
 </script>
-
 
 <div id="site-footer"></div>
 <script src="components.js"></script>
