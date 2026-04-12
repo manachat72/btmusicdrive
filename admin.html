@@ -954,12 +954,12 @@
           <div class="settings-grid">
             <div class="settings-row">
               <label class="settings-label">ค่าจัดส่งคงที่ (฿)</label>
-              <input type="number" id="s-shipping" class="settings-input" value="50" min="0">
+              <input type="number" id="s-shipping" class="settings-input" value="35" min="0">
               <p class="settings-hint">ใช้กับทุกคำสั่งซื้อที่ชำระเงิน</p>
             </div>
             <div class="settings-row">
               <label class="settings-label">สั่งซื้อขั้นต่ำส่งฟรี (฿)</label>
-              <input type="number" id="s-free-shipping" class="settings-input" placeholder="เช่น 1500 (0 = ปิด)" min="0" value="0">
+              <input type="number" id="s-free-shipping" class="settings-input" placeholder="เช่น 200 (0 = ปิด)" min="0" value="200">
             </div>
             <div class="settings-row">
               <label class="settings-label">อัตราภาษี (%)</label>
@@ -2036,9 +2036,31 @@
   // SETTINGS
   // ══════════════════════════════════════════════════════════════════════════
   function saveSettings(section) {
-    const labels = { store: 'ข้อมูลร้านค้า', shipping: 'การจัดส่ง & ภาษี', payment: 'ผู้ให้บริการชำระเงิน' };
-    showToast(`บันทึก${labels[section] || 'การตั้งค่า'}แล้ว!`);
+    const labels = { store: 'ข้อมูลร้านค้า', shipping: 'การจัดส่ง', payment: 'ผู้ให้บริการชำระเงิน' };
+    if (section === 'shipping') {
+      const cost = Number(document.getElementById('s-shipping').value) || 35;
+      const freeThreshold = Number(document.getElementById('s-free-shipping').value) || 0;
+      localStorage.setItem('btmd_shipping_cost', cost);
+      localStorage.setItem('btmd_free_shipping_threshold', freeThreshold);
+      showToast(`บันทึกการจัดส่งแล้ว! ค่าส่ง ฿${cost} | ส่งฟรีเมื่อซื้อครบ ฿${freeThreshold}`);
+    } else {
+      showToast(`บันทึก${labels[section] || 'การตั้งค่า'}แล้ว!`);
+    }
   }
+
+  // Load saved shipping settings into the admin UI fields
+  (function initShippingSettings() {
+    const savedCost = localStorage.getItem('btmd_shipping_cost');
+    const savedThreshold = localStorage.getItem('btmd_free_shipping_threshold');
+    if (savedCost !== null) {
+      const el = document.getElementById('s-shipping');
+      if (el) el.value = savedCost;
+    }
+    if (savedThreshold !== null) {
+      const el = document.getElementById('s-free-shipping');
+      if (el) el.value = savedThreshold;
+    }
+  })();
 
   function changeAdminPassword() {
     const current = document.getElementById('s-pw-current').value;
