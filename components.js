@@ -401,6 +401,15 @@ function _highlightActiveSidebar() {
   }
 
   _highlightActiveSidebar();
+
+  // ── Vercel Web Analytics ────────────────────────────────────────────────────
+  if (!document.getElementById('vercel-analytics')) {
+    const va = document.createElement('script');
+    va.id = 'vercel-analytics';
+    va.defer = true;
+    va.src = '/_vercel/insights/script.js';
+    document.head.appendChild(va);
+  }
 })();
 
 // ── Dynamic Navigation Menus ────────────────────────────────────────────────
