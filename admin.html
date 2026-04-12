@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -1705,11 +1705,25 @@
           </span>
         </td>
         <td style="white-space:nowrap;">
-          <button class="action-btn" onclick='openProductModal(${JSON.stringify(p)})'><i class="fa-solid fa-pen"></i> แก้ไข</button>
+          <button class="action-btn prod-edit-btn" data-product-id="${escHtml(p.id)}"><i class="fa-solid fa-pen"></i> แก้ไข</button>
           <button class="action-btn del" onclick="askDeleteProduct('${escHtml(p.id)}','${escHtml(p.name)}')" style="margin-left:4px;"><i class="fa-solid fa-trash"></i></button>
         </td>
       </tr>`).join('');
+
+    // Use event delegation — safe for any product data (no JSON in onclick)
+    const tbody = document.getElementById('products-tbody');
+    if (!tbody._editListenerBound) {
+      tbody._editListenerBound = true;
+      tbody.addEventListener('click', function(e) {
+        const btn = e.target.closest('.prod-edit-btn');
+        if (!btn) return;
+        const pid = btn.dataset.productId;
+        const product = _products.find(p => p.id === pid);
+        if (product) openProductModal(product);
+      });
+    }
   }
+
 
   // Inline price update from table
   async function inlineUpdatePrice(productId, field, value) {
