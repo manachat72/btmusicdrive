@@ -830,7 +830,42 @@
         "price": product.price,
         "availability": (product.stock > 0) ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
         "url": pageUrl,
-        "seller": { "@type": "Organization", "name": "Bt music drive" }
+        "seller": { "@type": "Organization", "name": "Bt music drive" },
+        "shippingDetails": {
+          "@type": "OfferShippingDetails",
+          "shippingRate": {
+            "@type": "MonetaryAmount",
+            "value": "50",
+            "currency": "THB"
+          },
+          "shippingDestination": {
+            "@type": "DefinedRegion",
+            "addressCountry": "TH"
+          },
+          "deliveryTime": {
+            "@type": "ShippingDeliveryTime",
+            "handlingTime": {
+              "@type": "QuantitativeValue",
+              "minValue": 0,
+              "maxValue": 1,
+              "unitCode": "DAY"
+            },
+            "transitTime": {
+              "@type": "QuantitativeValue",
+              "minValue": 1,
+              "maxValue": 3,
+              "unitCode": "DAY"
+            }
+          }
+        },
+        "hasMerchantReturnPolicy": {
+          "@type": "MerchantReturnPolicy",
+          "applicableCountry": "TH",
+          "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+          "merchantReturnDays": 7,
+          "returnMethod": "https://schema.org/ReturnByMail",
+          "returnFees": "https://schema.org/FreeReturn"
+        }
       }
     };
     if (product.rating) { ld.aggregateRating = { "@type": "AggregateRating", "ratingValue": product.rating, "reviewCount": product.reviews || 1 }; }
