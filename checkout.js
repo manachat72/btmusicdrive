@@ -2,9 +2,10 @@ const API_BASE = (window.location.hostname === '127.0.0.1' || window.location.ho
   ? 'http://localhost:5000/api'
   : '/api';
 
-const SHIPPING_COST = 50;
-const FREE_SHIPPING_THRESHOLD = 200;
-const TAX_RATE = 0.08;
+// ── Shipping Config — reads from admin localStorage settings, falls back to defaults
+const SHIPPING_COST = Number(localStorage.getItem('btmd_shipping_cost') ?? 35);
+const FREE_SHIPPING_THRESHOLD = Number(localStorage.getItem('btmd_free_shipping_threshold') ?? 200);
+const TAX_RATE = 0;
 
 let cart = [];
 let currentUser = null;
