@@ -39,73 +39,125 @@ function buildOrderEmailHtml(data: OrderEmailData): string {
     .map(
       (item) => `
       <tr>
-        <td style="padding:10px 12px;border-bottom:1px solid #f0f0f0;font-size:14px;color:#374151;">${item.name}</td>
-        <td style="padding:10px 12px;border-bottom:1px solid #f0f0f0;font-size:14px;color:#374151;text-align:center;">${item.quantity}</td>
-        <td style="padding:10px 12px;border-bottom:1px solid #f0f0f0;font-size:14px;color:#374151;text-align:right;">฿${(item.priceAtTime * item.quantity).toFixed(2)}</td>
+        <td style="padding:14px 16px;border-bottom:1px solid #2a2a2a;font-size:14px;color:#e5e7eb;">${item.name}</td>
+        <td style="padding:14px 16px;border-bottom:1px solid #2a2a2a;font-size:14px;color:#e5e7eb;text-align:center;">${item.quantity}</td>
+        <td style="padding:14px 16px;border-bottom:1px solid #2a2a2a;font-size:14px;color:#C8A84E;text-align:right;font-weight:700;">฿${(item.priceAtTime * item.quantity).toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
       </tr>`
     )
     .join('');
 
   const trackingSection = data.trackingNumber && data.carrier
     ? `
-      <div style="margin:24px 0;padding:20px;background:#f0fdf4;border-radius:10px;border:1px solid #bbf7d0;">
-        <p style="margin:0 0 8px;font-size:14px;color:#166534;font-weight:600;">📦 Your package is on the way!</p>
-        <p style="margin:0 0 4px;font-size:13px;color:#374151;">Carrier: <strong>${data.carrier}</strong></p>
-        <p style="margin:0 0 16px;font-size:13px;color:#374151;">Tracking Number: <strong>${data.trackingNumber}</strong></p>
+      <div style="margin:28px 0;padding:24px;background:#1a1a1a;border-radius:12px;border:1px solid #C8A84E;">
+        <p style="margin:0 0 10px;font-size:15px;color:#C8A84E;font-weight:700;">📦 พัสดุของคุณกำลังเดินทาง!</p>
+        <p style="margin:0 0 4px;font-size:13px;color:#9ca3af;">ขนส่ง: <strong style="color:#e5e7eb;">${data.carrier}</strong></p>
+        <p style="margin:0 0 20px;font-size:13px;color:#9ca3af;">หมายเลขติดตาม: <strong style="color:#e5e7eb;font-family:monospace;">${data.trackingNumber}</strong></p>
         <a href="${getTrackingUrl(data.carrier, data.trackingNumber)}"
-           style="display:inline-block;background:#C8A84E;color:#fff;text-decoration:none;padding:12px 28px;border-radius:8px;font-weight:700;font-size:14px;">
-          Track My Package →
+           style="display:inline-block;background:linear-gradient(135deg,#C8A84E,#a8873e);color:#0F172A;text-decoration:none;padding:13px 32px;border-radius:8px;font-weight:800;font-size:14px;letter-spacing:0.3px;">
+          ติดตามพัสดุ →
         </a>
       </div>`
     : `
-      <div style="margin:24px 0;padding:16px;background:#eff6ff;border-radius:10px;border:1px solid #bfdbfe;">
-        <p style="margin:0;font-size:14px;color:#1e40af;">⏳ Your order is being processed. You will receive another email when your package ships.</p>
+      <div style="margin:28px 0;padding:20px;background:#1a1a1a;border-radius:12px;border:1px solid #374151;">
+        <p style="margin:0;font-size:14px;color:#9ca3af;">⏳ คำสั่งซื้อของคุณกำลังดำเนินการ เราจะแจ้งอีกครั้งเมื่อพัสดุถูกจัดส่ง</p>
       </div>`;
 
   return `
 <!DOCTYPE html>
-<html lang="en">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="margin:0;padding:0;background:#f9fafb;font-family:'Segoe UI',Arial,sans-serif;">
-  <div style="max-width:580px;margin:32px auto;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.06);">
-    <!-- Header -->
-    <div style="background:linear-gradient(135deg,#C8A84E,#b5953f);padding:32px 40px;text-align:center;">
-      <h1 style="margin:0;color:#fff;font-size:26px;font-weight:800;letter-spacing:-0.5px;">btmusicdrive</h1>
-      <p style="margin:6px 0 0;color:#fef3c7;font-size:14px;">Order Confirmation</p>
-    </div>
-    <!-- Body -->
-    <div style="padding:32px 40px;">
-      <p style="font-size:16px;color:#111827;margin:0 0 4px;">Hi <strong>${data.customerName || 'Valued Customer'}</strong>,</p>
-      <p style="font-size:14px;color:#6b7280;margin:0 0 24px;">Thank you for your order. Here's a summary:</p>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+</head>
+<body style="margin:0;padding:0;background:#0a0a0a;font-family:'Segoe UI',Arial,sans-serif;">
 
-      <div style="background:#f9fafb;border-radius:8px;padding:14px 16px;margin-bottom:20px;">
-        <span style="font-size:12px;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;">Order ID</span>
-        <p style="margin:4px 0 0;font-size:15px;font-weight:700;color:#111827;font-family:monospace;">#${data.orderId.slice(-8).toUpperCase()}</p>
+  <!-- Outer wrapper -->
+  <div style="max-width:600px;margin:32px auto;padding:0 16px;">
+
+    <!-- Card -->
+    <div style="background:#111111;border-radius:20px;overflow:hidden;border:1px solid #2a2a2a;box-shadow:0 8px 40px rgba(0,0,0,0.6);">
+
+      <!-- Header with gold gradient bar -->
+      <div style="height:4px;background:linear-gradient(90deg,#C8A84E,#f5d98b,#C8A84E);"></div>
+
+      <!-- Logo area -->
+      <div style="background:linear-gradient(180deg,#1a1a1a 0%,#111111 100%);padding:36px 40px 28px;text-align:center;border-bottom:1px solid #2a2a2a;">
+        <img src="https://btmusicdrive.com/images/logo%20(60%20x%2060%20px)%20(1).png"
+             alt="BT Music Drive"
+             width="80"
+             style="display:block;margin:0 auto 16px;border-radius:50%;"
+             onerror="this.style.display='none'">
+        <h1 style="margin:0;font-size:13px;font-weight:600;letter-spacing:4px;color:#C8A84E;text-transform:uppercase;">BT MUSIC DRIVE</h1>
+        <div style="margin:16px auto 0;width:48px;height:1px;background:linear-gradient(90deg,transparent,#C8A84E,transparent);"></div>
       </div>
 
-      <!-- Items table -->
-      <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin-bottom:16px;">
-        <thead>
-          <tr style="background:#f3f4f6;">
-            <th style="padding:10px 12px;text-align:left;font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;">Item</th>
-            <th style="padding:10px 12px;text-align:center;font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;">Qty</th>
-            <th style="padding:10px 12px;text-align:right;font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;">Price</th>
-          </tr>
-        </thead>
-        <tbody>${itemRows}</tbody>
-      </table>
-
-      <div style="border-top:2px solid #e5e7eb;padding-top:12px;text-align:right;">
-        <span style="font-size:16px;font-weight:800;color:#111827;">Total: ฿${data.totalAmount.toFixed(2)}</span>
+      <!-- Confirmation badge -->
+      <div style="padding:28px 40px 0;text-align:center;">
+        <div style="display:inline-block;background:linear-gradient(135deg,#C8A84E22,#C8A84E11);border:1px solid #C8A84E44;border-radius:50px;padding:10px 28px;">
+          <span style="font-size:13px;color:#C8A84E;font-weight:700;letter-spacing:1px;">✅ ยืนยันคำสั่งซื้อแล้ว</span>
+        </div>
       </div>
 
-      ${trackingSection}
-    </div>
-    <!-- Footer -->
-    <div style="padding:20px 40px;background:#f9fafb;border-top:1px solid #e5e7eb;text-align:center;">
-      <p style="margin:0;font-size:12px;color:#9ca3af;">© ${new Date().getFullYear()} btmusicdrive Store · Questions? Reply to this email</p>
+      <!-- Body -->
+      <div style="padding:28px 40px;">
+
+        <!-- Greeting -->
+        <p style="font-size:16px;color:#f9fafb;margin:0 0 6px;">สวัสดีคุณ <strong style="color:#C8A84E;">${data.customerName || 'ลูกค้า'}</strong>,</p>
+        <p style="font-size:14px;color:#6b7280;margin:0 0 28px;line-height:1.6;">ขอบคุณที่ไว้วางใจ BT Music Drive นะคะ 🎵<br>นี่คือสรุปคำสั่งซื้อของคุณ</p>
+
+        <!-- Order ID box -->
+        <div style="background:#1a1a1a;border-radius:12px;padding:16px 20px;margin-bottom:24px;border:1px solid #2a2a2a;display:flex;align-items:center;">
+          <div>
+            <span style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:1.5px;">หมายเลขคำสั่งซื้อ</span>
+            <p style="margin:4px 0 0;font-size:18px;font-weight:800;color:#C8A84E;font-family:monospace;letter-spacing:1px;">#${data.orderId.slice(-8).toUpperCase()}</p>
+          </div>
+        </div>
+
+        <!-- Items table -->
+        <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin-bottom:0;border-radius:12px;overflow:hidden;border:1px solid #2a2a2a;">
+          <thead>
+            <tr style="background:#1a1a1a;">
+              <th style="padding:12px 16px;text-align:left;font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:1px;font-weight:600;">สินค้า</th>
+              <th style="padding:12px 16px;text-align:center;font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:1px;font-weight:600;">จำนวน</th>
+              <th style="padding:12px 16px;text-align:right;font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:1px;font-weight:600;">ราคา</th>
+            </tr>
+          </thead>
+          <tbody>${itemRows}</tbody>
+        </table>
+
+        <!-- Total -->
+        <div style="background:linear-gradient(135deg,#1a1a1a,#222222);border:1px solid #C8A84E44;border-top:none;border-radius:0 0 12px 12px;padding:16px 20px;text-align:right;">
+          <span style="font-size:13px;color:#9ca3af;margin-right:12px;">ยอดรวมทั้งหมด</span>
+          <span style="font-size:20px;font-weight:900;color:#C8A84E;">฿${data.totalAmount.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</span>
+        </div>
+
+        ${trackingSection}
+
+        <!-- CTA -->
+        <div style="margin-top:28px;text-align:center;">
+          <a href="https://btmusicdrive.com/orders.html"
+             style="display:inline-block;background:linear-gradient(135deg,#C8A84E,#a8873e);color:#0F172A;text-decoration:none;padding:14px 36px;border-radius:10px;font-weight:800;font-size:14px;letter-spacing:0.5px;">
+            ดูคำสั่งซื้อของฉัน
+          </a>
+        </div>
+
+      </div>
+
+      <!-- Divider -->
+      <div style="height:1px;background:linear-gradient(90deg,transparent,#2a2a2a,transparent);margin:0 40px;"></div>
+
+      <!-- Footer -->
+      <div style="padding:24px 40px;text-align:center;">
+        <p style="margin:0 0 8px;font-size:12px;color:#4b5563;">มีคำถาม? ตอบกลับอีเมลนี้ได้เลยนะคะ</p>
+        <p style="margin:0;font-size:11px;color:#374151;">© ${new Date().getFullYear()} BT Music Drive · All rights reserved</p>
+      </div>
+
+      <!-- Bottom gold bar -->
+      <div style="height:3px;background:linear-gradient(90deg,#C8A84E,#f5d98b,#C8A84E);"></div>
+
     </div>
   </div>
+
 </body>
 </html>`;
 }
