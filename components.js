@@ -402,6 +402,40 @@ function _highlightActiveSidebar() {
     document.body.insertAdjacentHTML('beforeend', _mobileBottomNavHTML());
   }
 
+  // Floating Support Button
+  if (!document.getElementById('floating-support-btn')) {
+    document.body.insertAdjacentHTML('beforeend', `
+      <a id="floating-support-btn" href="contact.html"
+         title="ติดต่อเรา / Support"
+         style="position:fixed;bottom:80px;right:16px;z-index:9999;width:56px;height:56px;border-radius:9999px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.25);transition:transform 0.2s;display:block;"
+         onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'" onmousedown="this.style.transform='scale(0.93)'" onmouseup="this.style.transform='scale(1.1)'">
+        <img src="images/support.png" alt="Support" style="width:100%;height:100%;object-fit:cover;display:block;">
+      </a>
+    `);
+    // Adjust bottom offset on wider screens
+    const btn = document.getElementById('floating-support-btn');
+    if (btn && window.innerWidth >= 640) {
+      btn.style.bottom = '24px';
+      btn.style.right = '24px';
+      btn.style.width = '64px';
+      btn.style.height = '64px';
+    }
+    window.addEventListener('resize', () => {
+      if (!btn) return;
+      if (window.innerWidth >= 640) {
+        btn.style.bottom = '24px';
+        btn.style.right = '24px';
+        btn.style.width = '64px';
+        btn.style.height = '64px';
+      } else {
+        btn.style.bottom = '80px';
+        btn.style.right = '16px';
+        btn.style.width = '56px';
+        btn.style.height = '56px';
+      }
+    });
+  }
+
   // Fix: iOS Safari breaks position:fixed when body has overflow-x:hidden
   // Move overflow-x:hidden to html element instead
   if (document.body.classList.contains('overflow-x-hidden')) {

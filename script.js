@@ -200,14 +200,7 @@ function renderProducts() {
             <a href="product.html?id=${encodeURIComponent(product.id)}" class="block relative h-40 sm:h-64 overflow-hidden group cursor-pointer">
                 <img src="${escapeHtml(product.imageUrl)}" alt="${escapeHtml(product.name)}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
                 ${badgeHtml}
-                <!-- Gradient overlay on hover -->
-                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <!-- Slide-up Add to Cart button -->
-                <div class="absolute bottom-0 left-0 right-0 flex justify-center pb-5">
-                    <button class="add-to-cart-btn bg-white text-gray-900 hover:bg-primary hover:text-white font-bold py-2.5 px-6 rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.3)] transition-all flex items-center gap-2 text-sm" data-id="${escapeHtml(product.id)}" onclick="event.preventDefault();event.stopPropagation();">
-                        <i class="ph ph-shopping-cart text-base"></i> หยิบใส่ตะกร้า
-                    </button>
-                </div>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <button class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm p-2 rounded-full text-gray-400 hover:text-red-500 shadow-sm transition-colors z-10" data-wishlist="${escapeHtml(product.id)}" onclick="event.preventDefault();event.stopPropagation();">
                     <i class="${heartClass}"></i>
                 </button>
@@ -221,12 +214,12 @@ function renderProducts() {
                     </div>
                     <span class="text-xs text-gray-500">(${reviews})</span>
                 </div>
-                <div class="flex items-center justify-between">
+                <div class="mb-2">
                     <span class="text-base sm:text-xl font-bold text-gray-900">฿${product.price.toFixed(2)}</span>
-                    <button class="add-to-cart-btn-mobile text-primary hover:text-secondary p-1" data-id="${product.id}" onclick="event.preventDefault();event.stopPropagation();">
-                        <i class="ph-fill ph-plus-circle text-2xl sm:text-3xl"></i>
-                    </button>
                 </div>
+                <button class="add-to-cart-btn w-full bg-primary hover:bg-primary/90 active:scale-95 text-white font-bold py-2 sm:py-2.5 rounded-full flex items-center justify-center gap-2 text-xs sm:text-sm transition-all" data-id="${escapeHtml(product.id)}" onclick="event.preventDefault();event.stopPropagation();">
+                    <i class="ph ph-shopping-cart text-sm sm:text-base"></i> หยิบใส่ตะกร้า
+                </button>
                 ${lowStockHtml}
             </div>
         `;
