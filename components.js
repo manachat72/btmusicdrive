@@ -234,119 +234,135 @@ function _footerHTML() {
 
 function _mobileBottomNavHTML() {
   return `
-  <nav id="mobile-bottom-nav" class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 md:hidden">
-    <div class="flex justify-around items-center h-14">
-      <a href="index.html" class="flex flex-col items-center justify-center flex-1 py-1 text-gray-500 hover:text-primary transition-colors" id="bnav-home">
-        <i class="ph ph-house text-xl"></i>
-        <span class="text-[10px] mt-0.5">หน้าแรก</span>
+  <style>
+    ._dlink:active { background: rgba(255,255,255,0.07) !important; }
+    @media (hover: hover) { ._dlink:hover { background: rgba(255,255,255,0.04) !important; } }
+    #bnav-home.active-tab, #bnav-home.active-tab i,
+    .bnav-tab.active-tab, .bnav-tab.active-tab i { color: #8B7355 !important; }
+  </style>
+
+  <!-- ── Mobile Bottom Bar ── -->
+  <nav id="mobile-bottom-nav" class="fixed bottom-0 left-0 right-0 z-50 md:hidden" style="background:#0F172A;border-top:1px solid rgba(139,115,85,0.18);height:60px;">
+    <div class="flex h-full">
+      <a href="index.html" id="bnav-home" class="flex flex-col items-center justify-center flex-1 gap-[3px] no-underline" style="color:#64748b;">
+        <i class="ph ph-house" style="font-size:21px;line-height:1;"></i>
+        <span style="font-size:9px;letter-spacing:0.04em;font-weight:500;">หน้าแรก</span>
       </a>
-      <a href="shop.html" class="flex flex-col items-center justify-center flex-1 py-1 text-gray-500 hover:text-primary transition-colors">
-        <i class="ph ph-squares-four text-xl"></i>
-        <span class="text-[10px] mt-0.5">หมวดหมู่</span>
+      <a href="shop.html" class="flex flex-col items-center justify-center flex-1 gap-[3px] no-underline" style="color:#64748b;">
+        <i class="ph ph-storefront" style="font-size:21px;line-height:1;"></i>
+        <span style="font-size:9px;letter-spacing:0.04em;font-weight:500;">ร้านค้า</span>
       </a>
-      <a href="cart.html" class="flex flex-col items-center justify-center flex-1 py-1 text-gray-500 hover:text-primary transition-colors relative" id="bnav-cart-btn">
-        <i class="ph ph-shopping-cart text-xl"></i>
-        <span id="bnav-cart-count" class="absolute top-0 right-1/4 bg-red-500 text-white text-[9px] font-bold rounded-full h-3.5 w-3.5 flex items-center justify-center">0</span>
-        <span class="text-[10px] mt-0.5">ตะกร้า</span>
+      <a href="cart.html" id="bnav-cart-btn" class="flex flex-col items-center justify-center flex-1 gap-[3px] relative no-underline" style="color:#64748b;">
+        <i class="ph ph-shopping-bag" style="font-size:21px;line-height:1;"></i>
+        <span id="bnav-cart-count" class="absolute flex items-center justify-center" style="top:7px;right:calc(50% - 20px);min-width:15px;height:15px;padding:0 3px;font-size:8px;font-weight:700;color:#fff;background:#8B7355;border-radius:99px;">0</span>
+        <span style="font-size:9px;letter-spacing:0.04em;font-weight:500;">ตะกร้า</span>
       </a>
-      <button class="flex flex-col items-center justify-center flex-1 py-1 text-gray-500 hover:text-primary transition-colors" id="bnav-account-btn">
-        <i class="ph ph-user-circle text-xl"></i>
-        <span class="text-[10px] mt-0.5">บัญชี</span>
+      <button id="bnav-account-btn" class="flex flex-col items-center justify-center flex-1 gap-[3px]" style="background:none;border:none;cursor:pointer;color:#64748b;">
+        <i class="ph ph-list" style="font-size:21px;line-height:1;"></i>
+        <span style="font-size:9px;letter-spacing:0.04em;font-weight:500;">เมนู</span>
       </button>
     </div>
   </nav>
 
-  <!-- Mobile Account Sidebar Drawer -->
-  <div id="bnav-account-overlay" class="fixed inset-0 bg-black/50 z-[55] hidden transition-opacity duration-300 md:hidden"></div>
-  <div id="bnav-account-menu" class="fixed inset-y-0 right-0 w-[85%] max-w-sm bg-white z-[56] transform translate-x-full transition-transform duration-300 ease-in-out md:hidden flex flex-col shadow-2xl">
-    <!-- Header -->
-    <div class="bg-secondary text-white p-5 pb-6 relative">
-      <button id="bnav-drawer-close" class="absolute top-3 right-3 text-white/70 hover:text-white transition-colors">
-        <i class="ph ph-x text-2xl"></i>
+  <!-- Backdrop -->
+  <div id="bnav-account-overlay" class="fixed inset-0 z-[55] hidden md:hidden" style="background:rgba(0,0,0,0.72);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);"></div>
+
+  <!-- ── Side Drawer (right, dark minimalist) ── -->
+  <div id="bnav-account-menu" class="fixed inset-y-0 right-0 z-[56] transform translate-x-full transition-transform duration-300 ease-in-out md:hidden flex flex-col" style="width:82%;max-width:300px;background:#0A1120;box-shadow:-12px 0 48px rgba(0,0,0,0.7);">
+
+    <!-- Profile Header -->
+    <div style="position:relative;padding:52px 22px 20px;background:linear-gradient(165deg,#13213a 0%,#0A1120 65%);border-bottom:1px solid rgba(139,115,85,0.12);">
+      <button id="bnav-drawer-close" style="position:absolute;top:12px;right:14px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.07);cursor:pointer;">
+        <i class="ph ph-x" style="font-size:15px;color:#94a3b8;"></i>
       </button>
-      <div class="flex items-center gap-3 mt-2">
-        <div class="w-14 h-14 rounded-full bg-white/20 flex items-center justify-center overflow-hidden" id="bnav-avatar">
-          <i class="ph ph-user text-3xl text-white/80"></i>
+
+      <div style="display:flex;align-items:center;gap:14px;">
+        <div id="bnav-avatar" style="width:50px;height:50px;border-radius:50%;background:rgba(139,115,85,0.12);border:1.5px solid rgba(139,115,85,0.3);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
+          <i class="ph ph-user" style="font-size:24px;color:#8B7355;"></i>
         </div>
-        <div class="flex-1 min-w-0">
-          <p class="font-bold text-base truncate" id="bnav-user-name">ยังไม่ได้เข้าสู่ระบบ</p>
-          <p class="text-white/60 text-xs truncate" id="bnav-user-email"></p>
+        <div style="flex:1;min-width:0;">
+          <p id="bnav-user-name" style="margin:0;font-weight:600;font-size:14px;color:#e2e8f0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">ยังไม่ได้เข้าสู่ระบบ</p>
+          <p id="bnav-user-email" style="margin:3px 0 0;font-size:11px;color:#475569;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></p>
         </div>
       </div>
-      <!-- Stats -->
-      <div class="flex gap-4 mt-4" id="bnav-stats">
-        <div class="text-center flex-1">
-          <p class="text-lg font-bold text-primary" id="bnav-order-count">0</p>
-          <p class="text-[10px] text-white/60">คำสั่งซื้อ</p>
+
+      <!-- Stats (JS toggles display) -->
+      <div id="bnav-stats" class="flex" style="display:none;gap:8px;margin-top:16px;">
+        <div style="flex:1;background:rgba(139,115,85,0.1);border:1px solid rgba(139,115,85,0.14);border-radius:10px;padding:8px 4px;text-align:center;">
+          <p id="bnav-order-count" style="margin:0;font-weight:700;font-size:16px;color:#8B7355;">0</p>
+          <p style="margin:2px 0 0;font-size:9px;color:#64748b;">คำสั่งซื้อ</p>
         </div>
-        <div class="text-center flex-1">
-          <p class="text-lg font-bold text-primary" id="bnav-wishlist-count">0</p>
-          <p class="text-[10px] text-white/60">รายการที่ถูกใจ</p>
+        <div style="flex:1;background:rgba(139,115,85,0.1);border:1px solid rgba(139,115,85,0.14);border-radius:10px;padding:8px 4px;text-align:center;">
+          <p id="bnav-wishlist-count" style="margin:0;font-weight:700;font-size:16px;color:#8B7355;">0</p>
+          <p style="margin:2px 0 0;font-size:9px;color:#64748b;">ถูกใจ</p>
         </div>
-        <div class="text-center flex-1">
-          <p class="text-lg font-bold text-primary" id="bnav-review-count">0</p>
-          <p class="text-[10px] text-white/60">รีวิว</p>
+        <div style="flex:1;background:rgba(139,115,85,0.1);border:1px solid rgba(139,115,85,0.14);border-radius:10px;padding:8px 4px;text-align:center;">
+          <p id="bnav-review-count" style="margin:0;font-weight:700;font-size:16px;color:#8B7355;">0</p>
+          <p style="margin:2px 0 0;font-size:9px;color:#64748b;">รีวิว</p>
         </div>
       </div>
     </div>
 
-    <!-- Menu Items -->
-    <div class="flex-1 overflow-y-auto">
-      <!-- รายการ -->
-      <div class="px-4 pt-4 pb-1">
-        <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">รายการ</p>
-      </div>
-      <a href="orders.html" class="flex items-center gap-3 px-5 py-3 text-sm text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-colors">
-        <i class="ph ph-package text-xl text-gray-400"></i> คำสั่งซื้อ
-        <i class="ph ph-caret-right text-gray-300 ml-auto"></i>
+    <!-- Menu Body -->
+    <div style="flex:1;overflow-y:auto;padding:4px 0;">
+
+      <p style="margin:0;padding:14px 20px 6px;font-size:9px;font-weight:600;letter-spacing:0.13em;text-transform:uppercase;color:rgba(139,115,85,0.5);">เมนูหลัก</p>
+
+      <a href="index.html" class="_dlink" style="display:flex;align-items:center;gap:13px;padding:11px 20px;text-decoration:none;transition:background 0.15s;">
+        <span style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(139,115,85,0.1);flex-shrink:0;"><i class="ph ph-house" style="font-size:17px;color:#8B7355;"></i></span>
+        <span style="font-size:13.5px;font-weight:500;color:#cbd5e1;">หน้าแรก</span>
       </a>
-      <a href="wishlist.html" class="flex items-center gap-3 px-5 py-3 text-sm text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-colors">
-        <i class="ph ph-heart text-xl text-gray-400"></i> สินค้าที่ถูกใจ
-        <i class="ph ph-caret-right text-gray-300 ml-auto"></i>
+      <a href="shop.html" class="_dlink" style="display:flex;align-items:center;gap:13px;padding:11px 20px;text-decoration:none;transition:background 0.15s;">
+        <span style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(139,115,85,0.1);flex-shrink:0;"><i class="ph ph-storefront" style="font-size:17px;color:#8B7355;"></i></span>
+        <span style="font-size:13.5px;font-weight:500;color:#cbd5e1;">ร้านค้า</span>
       </a>
-      <a href="track-order.html" class="flex items-center gap-3 px-5 py-3 text-sm text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-colors">
-        <i class="ph ph-truck text-xl text-gray-400"></i> ติดตามพัสดุ
-        <i class="ph ph-caret-right text-gray-300 ml-auto"></i>
+      <a href="track-order.html" class="_dlink" style="display:flex;align-items:center;gap:13px;padding:11px 20px;text-decoration:none;transition:background 0.15s;">
+        <span style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(139,115,85,0.1);flex-shrink:0;"><i class="ph ph-truck" style="font-size:17px;color:#8B7355;"></i></span>
+        <span style="font-size:13.5px;font-weight:500;color:#cbd5e1;">ติดตามพัสดุ</span>
+      </a>
+      <a href="wishlist.html" class="_dlink" style="display:flex;align-items:center;gap:13px;padding:11px 20px;text-decoration:none;transition:background 0.15s;">
+        <span style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(139,115,85,0.1);flex-shrink:0;"><i class="ph ph-heart" style="font-size:17px;color:#8B7355;"></i></span>
+        <span style="font-size:13.5px;font-weight:500;color:#cbd5e1;">สินค้าที่ถูกใจ</span>
       </a>
 
-      <div class="h-px bg-gray-100 mx-4 my-2"></div>
+      <div style="height:1px;background:rgba(255,255,255,0.05);margin:6px 20px;"></div>
 
-      <!-- บัญชี -->
-      <div class="px-4 pt-2 pb-1">
-        <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">บัญชี</p>
-      </div>
-      <a href="profile.html" class="flex items-center gap-3 px-5 py-3 text-sm text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-colors">
-        <i class="ph ph-user-circle text-xl text-gray-400"></i> ข้อมูลส่วนตัว
-        <i class="ph ph-caret-right text-gray-300 ml-auto"></i>
+      <p style="margin:0;padding:10px 20px 6px;font-size:9px;font-weight:600;letter-spacing:0.13em;text-transform:uppercase;color:rgba(139,115,85,0.5);">บัญชี</p>
+
+      <a href="orders.html" class="_dlink" style="display:flex;align-items:center;gap:13px;padding:11px 20px;text-decoration:none;transition:background 0.15s;">
+        <span style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(139,115,85,0.1);flex-shrink:0;"><i class="ph ph-package" style="font-size:17px;color:#8B7355;"></i></span>
+        <span style="font-size:13.5px;font-weight:500;color:#cbd5e1;">คำสั่งซื้อ</span>
       </a>
-      <a href="address.html" class="flex items-center gap-3 px-5 py-3 text-sm text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-colors">
-        <i class="ph ph-map-pin text-xl text-gray-400"></i> ที่อยู่สำหรับจัดส่ง
-        <i class="ph ph-caret-right text-gray-300 ml-auto"></i>
+      <a href="profile.html" class="_dlink" style="display:flex;align-items:center;gap:13px;padding:11px 20px;text-decoration:none;transition:background 0.15s;">
+        <span style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(139,115,85,0.1);flex-shrink:0;"><i class="ph ph-user-circle" style="font-size:17px;color:#8B7355;"></i></span>
+        <span style="font-size:13.5px;font-weight:500;color:#cbd5e1;">ข้อมูลส่วนตัว</span>
+      </a>
+      <a href="address.html" class="_dlink" style="display:flex;align-items:center;gap:13px;padding:11px 20px;text-decoration:none;transition:background 0.15s;">
+        <span style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(139,115,85,0.1);flex-shrink:0;"><i class="ph ph-map-pin" style="font-size:17px;color:#8B7355;"></i></span>
+        <span style="font-size:13.5px;font-weight:500;color:#cbd5e1;">ที่อยู่จัดส่ง</span>
       </a>
 
-      <div class="h-px bg-gray-100 mx-4 my-2"></div>
+      <div style="height:1px;background:rgba(255,255,255,0.05);margin:6px 20px;"></div>
 
-      <!-- ช่วยเหลือ -->
-      <div class="px-4 pt-2 pb-1">
-        <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">ช่วยเหลือ</p>
-      </div>
-      <a href="contact.html" class="flex items-center gap-3 px-5 py-3 text-sm text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-colors">
-        <i class="ph ph-chat-circle-dots text-xl text-gray-400"></i> ติดต่อเรา
-        <i class="ph ph-caret-right text-gray-300 ml-auto"></i>
+      <p style="margin:0;padding:10px 20px 6px;font-size:9px;font-weight:600;letter-spacing:0.13em;text-transform:uppercase;color:rgba(139,115,85,0.5);">ช่วยเหลือ</p>
+
+      <a href="contact.html" class="_dlink" style="display:flex;align-items:center;gap:13px;padding:11px 20px;text-decoration:none;transition:background 0.15s;">
+        <span style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(139,115,85,0.1);flex-shrink:0;"><i class="ph ph-chat-circle-dots" style="font-size:17px;color:#8B7355;"></i></span>
+        <span style="font-size:13.5px;font-weight:500;color:#cbd5e1;">ติดต่อเรา</span>
       </a>
-      <a href="about.html" class="flex items-center gap-3 px-5 py-3 text-sm text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-colors">
-        <i class="ph ph-info text-xl text-gray-400"></i> เกี่ยวกับเรา
-        <i class="ph ph-caret-right text-gray-300 ml-auto"></i>
+      <a href="about.html" class="_dlink" style="display:flex;align-items:center;gap:13px;padding:11px 20px;text-decoration:none;transition:background 0.15s;">
+        <span style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(139,115,85,0.1);flex-shrink:0;"><i class="ph ph-info" style="font-size:17px;color:#8B7355;"></i></span>
+        <span style="font-size:13.5px;font-weight:500;color:#cbd5e1;">เกี่ยวกับเรา</span>
       </a>
     </div>
 
-    <!-- Bottom: Logout / Login -->
-    <div class="border-t border-gray-100 p-4">
-      <a href="#" id="bnav-logout-btn" class="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-semibold text-red-500 bg-red-50 hover:bg-red-100 active:bg-red-200 transition-colors">
-        <i class="ph ph-sign-out text-lg"></i> ออกจากระบบ
+    <!-- Footer: Logout / Login -->
+    <div style="padding:12px 14px 20px;border-top:1px solid rgba(255,255,255,0.06);">
+      <a href="#" id="bnav-logout-btn" class="flex" style="align-items:center;justify-content:center;gap:8px;padding:11px;border-radius:12px;font-size:13px;font-weight:600;color:#f87171;background:rgba(248,113,113,0.07);text-decoration:none;border:1px solid rgba(248,113,113,0.1);">
+        <i class="ph ph-sign-out" style="font-size:16px;"></i> ออกจากระบบ
       </a>
-      <a href="#" id="bnav-login-btn" class="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-semibold text-white bg-primary hover:bg-secondary active:bg-slate-800 transition-colors">
-        <i class="ph ph-sign-in text-lg"></i> เข้าสู่ระบบ
+      <a href="#" id="bnav-login-btn" class="flex" style="align-items:center;justify-content:center;gap:8px;padding:11px;border-radius:12px;font-size:13px;font-weight:600;color:#fff;background:#8B7355;text-decoration:none;border:1px solid rgba(139,115,85,0.3);">
+        <i class="ph ph-sign-in" style="font-size:16px;"></i> เข้าสู่ระบบ
       </a>
     </div>
   </div>`;
