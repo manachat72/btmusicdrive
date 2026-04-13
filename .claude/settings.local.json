@@ -14,7 +14,18 @@
       "Bash(claude mcp:*)",
       "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\('mcpServers', {}\\), indent=2\\)\\)\")",
       "Bash(xargs -I{} sh -c 'echo \"=== {} ===\"; cat \"{}\"')",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(npx tsc:*)",
+      "Bash(echo \"Exit: $?\")",
+      "Bash(curl -s -X PATCH https://btmusicdrive.vercel.app/api/products/test123 -H 'Content-Type: application/json' -H 'X-Admin-Password: nu3gtXBTlef6i4wmnqjjcw' -d '{\"name\":\"test\"}')",
+      "Bash(curl -s https://btmusicdrive.vercel.app/api/products?limit=1)",
+      "Bash(curl:*)",
+      "mcp__Neon__list_projects",
+      "mcp__Neon__run_sql",
+      "Bash(grep -rn \"fbq\\\\|997999705986502\" /c/Users/manac/ProjectsPython/btmusicdrive/*.html /c/Users/manac/ProjectsPython/btmusicdrive/*.js)",
+      "Bash(grep -L \"components.js\" /c/Users/manac/ProjectsPython/btmusicdrive/*.html)",
+      "Bash(timeout 30 node_modules/.bin/tsc --noEmit)",
+      "Bash(node_modules/.bin/tsc --noEmit)"
     ]
   }
 }
