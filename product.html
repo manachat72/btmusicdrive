@@ -781,6 +781,13 @@
     renderFrequentlyBought();
     renderReviews();
     updateWishlistUI();
+    if (typeof fbq === 'function') fbq('track', 'ViewContent', {
+      content_ids: [product.id],
+      content_name: product.name,
+      content_type: 'product',
+      value: product.price,
+      currency: 'THB'
+    });
   }
 
   function showError() {

@@ -603,6 +603,13 @@ async function addToCart(productId) {
 
     updateCartUI();
     showToast(`Added ${product.name} to cart`);
+    if (typeof fbq === 'function') fbq('track', 'AddToCart', {
+        content_ids: [product.id],
+        content_name: product.name,
+        content_type: 'product',
+        value: product.price,
+        currency: 'THB'
+    });
     
     // Auto-open cart on desktop
     if (window.innerWidth >= 768 && cartSidebar && cartSidebar.classList.contains('translate-x-full')) {

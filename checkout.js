@@ -30,6 +30,16 @@ document.addEventListener('DOMContentLoaded', () => {
     loadCart();
     initAddressDropdowns();
     initStripe();
+    if (typeof fbq === 'function') {
+        const savedCart = JSON.parse(localStorage.getItem('btmusicdrive_cart') || '[]');
+        const subtotal = savedCart.reduce((s, i) => s + i.price * i.quantity, 0);
+        fbq('track', 'InitiateCheckout', {
+            content_ids: savedCart.map(i => i.id),
+            num_items: savedCart.reduce((s, i) => s + i.quantity, 0),
+            value: subtotal,
+            currency: 'THB'
+        });
+    }
 });
 
 // ── Stripe Init ──────────────────────────────────────────────────────────────
@@ -602,6 +612,12 @@ async function processStripeOrder(method, shippingAddress, phone, btn, btnMobile
                 return;
             }
 
+            if (typeof fbq === 'function') fbq('track', 'Purchase', {
+                content_ids: cart.map(i => i.id),
+                num_items: cart.reduce((s, i) => s + i.quantity, 0),
+                value: confirmData.totalAmount || cart.reduce((s,i)=>s+i.price*i.quantity,0),
+                currency: 'THB'
+            });
             cart = [];
             localStorage.removeItem('btmusicdrive_cart');
             showSuccessModal(confirmData.orderId, method === 'card' ? 'card' : 'promptpay');
@@ -648,6 +664,12 @@ async function processCodOrder(shippingAddress, phone, btn, btnMobile) {
             return;
         }
 
+        if (typeof fbq === 'function') fbq('track', 'Purchase', {
+            content_ids: cart.map(i => i.id),
+            num_items: cart.reduce((s, i) => s + i.quantity, 0),
+            value: data.totalAmount || cart.reduce((s,i)=>s+i.price*i.quantity,0),
+            currency: 'THB'
+        });
         cart = [];
         localStorage.removeItem('btmusicdrive_cart');
         showSuccessModal(data.orderId, 'cod');

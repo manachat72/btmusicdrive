@@ -4,6 +4,7 @@ import Stripe from 'stripe';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
 import prisma from '../lib/prisma';
 import { sendOrderConfirmationEmail } from '../services/emailService';
+import { sendPurchaseEvent } from '../lib/meta-capi';
 
 type StripeClient = InstanceType<typeof Stripe>;
 
@@ -263,6 +264,20 @@ router.post('/confirm-order', authenticateToken, async (req: AuthRequest, res: R
       }).catch((err: any) => console.error('[Email] Confirmation skip:', err));
     }
 
+    // Meta CAPI Purchase event (non-blocking)
+    sendPurchaseEvent({
+      orderId: order.id,
+      totalAmount,
+      contentIds: cart.map((i: any) => i.productId || i.id),
+      numItems: cart.reduce((s: number, i: any) => s + (i.quantity || 1), 0),
+      userData: {
+        email: order.user?.email,
+        phone: shippingAddress?.phone || phone,
+        clientIp: (req.headers['x-forwarded-for'] as string)?.split(',')[0] || req.ip,
+        userAgent: req.headers['user-agent'],
+      },
+    }).catch(() => {});
+
     return res.json({
       orderId: order.id,
       invoiceNo: order.stripeSessionId,
@@ -377,6 +392,20 @@ router.post('/cod-order', authenticateToken, async (req: AuthRequest, res: Respo
         totalAmount,
       }).catch((err: any) => console.error('[Email] Confirmation skip:', err));
     }
+
+    // Meta CAPI Purchase event (non-blocking)
+    sendPurchaseEvent({
+      orderId: order.id,
+      totalAmount,
+      contentIds: cart.map((i: any) => i.productId || i.id),
+      numItems: cart.reduce((s: number, i: any) => s + (i.quantity || 1), 0),
+      userData: {
+        email: order.user?.email,
+        phone: phone,
+        clientIp: (req.headers['x-forwarded-for'] as string)?.split(',')[0] || req.ip,
+        userAgent: req.headers['user-agent'],
+      },
+    }).catch(() => {});
 
     return res.json({
       orderId: order.id,

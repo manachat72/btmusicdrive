@@ -4,6 +4,15 @@
 // Usage: <script src="components.js"></script>  (at end of <body>)
 // ═══════════════════════════════════════════════════════════════════════════
 
+// ── Meta Pixel ───────────────────────────────────────────────────────────────
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}
+(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init','997999705986502');
+fbq('track','PageView');
+
 const API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
   ? 'http://localhost:5000/api' : '/api';
 const GOOGLE_CLIENT_ID = '46644504211-02mjffk321u1h5hbh1r5e5j5in30od93.apps.googleusercontent.com';
