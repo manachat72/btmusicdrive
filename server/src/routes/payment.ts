@@ -268,11 +268,11 @@ router.post('/confirm-order', authenticateToken, async (req: AuthRequest, res: R
     sendPurchaseEvent({
       orderId: order.id,
       totalAmount,
-      contentIds: cart.map((i: any) => i.productId || i.id),
-      numItems: cart.reduce((s: number, i: any) => s + (i.quantity || 1), 0),
+      contentIds: cart.items.map((i: any) => i.productId),
+      numItems: cart.items.reduce((s: number, i: any) => s + (i.quantity || 1), 0),
       userData: {
         email: order.user?.email,
-        phone: shippingAddress?.phone || phone,
+        phone: phone,
         clientIp: (req.headers['x-forwarded-for'] as string)?.split(',')[0] || req.ip,
         userAgent: req.headers['user-agent'],
       },
@@ -397,8 +397,8 @@ router.post('/cod-order', authenticateToken, async (req: AuthRequest, res: Respo
     sendPurchaseEvent({
       orderId: order.id,
       totalAmount,
-      contentIds: cart.map((i: any) => i.productId || i.id),
-      numItems: cart.reduce((s: number, i: any) => s + (i.quantity || 1), 0),
+      contentIds: cart.items.map((i: any) => i.productId),
+      numItems: cart.items.reduce((s: number, i: any) => s + (i.quantity || 1), 0),
       userData: {
         email: order.user?.email,
         phone: phone,

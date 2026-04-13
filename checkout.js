@@ -355,7 +355,6 @@ function updateTotals() {
 
     document.getElementById('item-count').textContent = itemCount;
     document.getElementById('subtotal-price').textContent = `฿${subtotal.toFixed(2)}`;
-    document.getElementById('tax-price').textContent = `฿${tax.toFixed(2)}`;
     document.getElementById('total-price').textContent = `฿${total.toFixed(2)}`;
 
     const discountRow = document.getElementById('discount-row');
@@ -527,12 +526,12 @@ async function placeOrder() {
     }
     const shippingAddress = [
         document.getElementById('address').value.trim(),
-        document.getElementById('address2')?.value.trim(),
-        document.getElementById('city')?.value.trim(),
-        document.getElementById('state')?.value.trim(),
+        document.getElementById('subdistrict')?.value.trim(),
+        document.getElementById('district')?.value.trim(),
+        document.getElementById('province')?.value.trim(),
         document.getElementById('zip').value.trim(),
-        document.getElementById('country')?.value || 'TH'
-    ].filter(Boolean).join(', ');
+        'ประเทศไทย'
+    ].filter(Boolean).join(' ');
 
     setLoading(btn, true);
     setLoading(btnMobile, true);
