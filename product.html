@@ -368,7 +368,7 @@
                   </div>
                   <div>
                     <p class="text-sm font-semibold text-gray-800">เสียงใสระดับ HD</p>
-                    <p class="text-xs text-gray-500 mt-0.5">MP3 320kbps ทุกเพลง คุณภาพสูง</p>
+                    <p class="text-xs text-gray-500 mt-0.5">MP3 128-320kbps ทุกเพลง คุณภาพสูง</p>
                   </div>
                 </div>
                 <div class="flex items-start gap-3">
@@ -430,7 +430,7 @@
                 <i class="ph ph-waveform text-xl text-primary"></i>
                 <div>
                   <p class="text-[10px] text-gray-400 uppercase tracking-wider">คุณภาพเสียง</p>
-                  <p class="text-sm font-bold text-gray-800" id="spec-quality">MP3 320kbps</p>
+                  <p class="text-sm font-bold text-gray-800" id="spec-quality">MP3 128-320kbps</p>
                 </div>
               </div>
               <div class="flex items-center gap-2.5 p-3 bg-amber-50 rounded-xl border border-primary/15 col-span-2 sm:col-span-1">
@@ -1007,7 +1007,7 @@
     if (!product) return;
     const specs = product.specs || {};
     const capacity = specs['ความจุ'] || specs['capacity'] || '—';
-    const quality = specs['ไฟล์เพลง'] || specs['quality'] || 'MP3 320kbps';
+    const quality = specs['ไฟล์เพลง'] || specs['quality'] || 'MP3 128-320kbps';
     const trackCount = (product.tracklist && product.tracklist.length > 0)
       ? `${product.tracklist.length} เพลง`
       : (specs['จำนวนเพลง'] || '—');
