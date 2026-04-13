@@ -419,6 +419,18 @@
     .action-btn:hover { border-color: var(--accent); color: var(--accent); }
     .action-btn.del:hover { border-color: #d63638; color: #d63638; }
 
+    /* ── Product Thumbnail ── */
+    .prod-thumb { width:44px;height:44px;border-radius:6px;object-fit:cover;border:1px solid #e0e0e0;background:#f6f7f7; }
+    .prod-thumb-placeholder { width:44px;height:44px;border-radius:6px;background:#f0f0f1;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:18px; }
+
+    /* ── Active Toggle ── */
+    .prod-toggle { position:relative;display:inline-block;width:36px;height:20px;cursor:pointer; }
+    .prod-toggle input { opacity:0;width:0;height:0; }
+    .prod-toggle-track { position:absolute;inset:0;background:#ccc;border-radius:20px;transition:.2s; }
+    .prod-toggle input:checked + .prod-toggle-track { background:#00a32a; }
+    .prod-toggle-thumb { position:absolute;top:3px;left:3px;width:14px;height:14px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2); }
+    .prod-toggle input:checked ~ .prod-toggle-thumb { transform:translateX(16px); }
+
     /* ── ซ่อน Element ── */
     .hidden {
       display: none !important;
@@ -707,11 +719,13 @@
           <table class="wp-tbl">
             <thead>
               <tr>
+                <th style="width:52px;"></th>
                 <th>สินค้า</th>
                 <th>หมวดหมู่</th>
                 <th class="r">ราคา</th>
                 <th class="r">ราคาเดิม</th>
                 <th class="r">คลัง</th>
+                <th style="width:72px;text-align:center;">แสดง</th>
                 <th style="width:120px;">จัดการ</th>
               </tr>
             </thead>
@@ -1664,7 +1678,7 @@
 
     try {
       let products = [];
-      const res = await fetch(`${API_BASE}/products`, { headers: adminHeaders(false) });
+      const res = await fetch(`${API_BASE}/products?admin=1&limit=200`, { headers: adminHeaders(false) });
       if (res.ok) { const json = await res.json(); products = Array.isArray(json) ? json : (json.data || []); }
       else throw new Error('api_fail');
       _products = products;
@@ -1686,11 +1700,18 @@
   }
 
   function renderProductsTable(products) {
-    document.getElementById('products-tbody').innerHTML = products.map(p => `
-      <tr>
+    document.getElementById('products-tbody').innerHTML = products.map(p => {
+      const imgHtml = p.imageUrl
+        ? `<img src="${escHtml(p.imageUrl)}" class="prod-thumb" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+          + `<div class="prod-thumb-placeholder" style="display:none;"><i class="fa-solid fa-image"></i></div>`
+        : `<div class="prod-thumb-placeholder"><i class="fa-solid fa-image"></i></div>`;
+      const isActive = p.isActive !== false;
+      return `
+      <tr style="opacity:${isActive ? 1 : 0.5};">
+        <td style="padding:8px 10px;">${imgHtml}</td>
         <td>
           <div style="font-weight:600;">${escHtml(p.name)}</div>
-          <div style="font-size:11px;color:var(--muted);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(p.description || '')}</div>
+          <div style="font-size:11px;color:var(--muted);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(p.sku ? 'SKU: '+p.sku : p.description || '')}</div>
         </td>
         <td style="color:var(--muted);">${escHtml(p.category?.name || p.categoryName || '—')}</td>
         <td class="r">
@@ -1704,11 +1725,19 @@
             ${p.stock ?? '—'}
           </span>
         </td>
+        <td style="text-align:center;vertical-align:middle;">
+          <label class="prod-toggle" title="${isActive ? 'แสดงอยู่ — คลิกเพื่อซ่อน' : 'ซ่อนอยู่ — คลิกเพื่อแสดง'}">
+            <input type="checkbox" ${isActive ? 'checked' : ''} onchange="toggleProductActive('${escHtml(p.id)}', this.checked, this.closest('tr'))">
+            <span class="prod-toggle-track"></span>
+            <span class="prod-toggle-thumb"></span>
+          </label>
+        </td>
         <td style="white-space:nowrap;">
           <button class="action-btn prod-edit-btn" data-product-id="${escHtml(p.id)}"><i class="fa-solid fa-pen"></i> แก้ไข</button>
           <button class="action-btn del" onclick="askDeleteProduct('${escHtml(p.id)}','${escHtml(p.name)}')" style="margin-left:4px;"><i class="fa-solid fa-trash"></i></button>
         </td>
-      </tr>`).join('');
+      </tr>`;
+    }).join('');
 
     // Use event delegation — safe for any product data (no JSON in onclick)
     const tbody = document.getElementById('products-tbody');
@@ -1739,6 +1768,27 @@
         // Update local data too
         const p = _products.find(x => x.id === productId);
         if (p) p[field] = numVal;
+      } else {
+        showToast('บันทึกไม่สำเร็จ');
+      }
+    } catch {
+      showToast('บันทึกไม่สำเร็จ');
+    }
+  }
+
+  // Toggle product visibility
+  async function toggleProductActive(productId, isActive, row) {
+    try {
+      const res = await fetch(`${API_BASE}/products/${productId}`, {
+        method: 'PATCH',
+        headers: adminHeaders(),
+        body: JSON.stringify({ isActive })
+      });
+      if (res.ok) {
+        row.style.opacity = isActive ? '1' : '0.5';
+        const p = _products.find(x => x.id === productId);
+        if (p) p.isActive = isActive;
+        showToast(isActive ? 'แสดงสินค้าแล้ว' : 'ซ่อนสินค้าแล้ว');
       } else {
         showToast('บันทึกไม่สำเร็จ');
       }

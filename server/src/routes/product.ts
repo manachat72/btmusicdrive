@@ -11,15 +11,19 @@ router.get('/', async (req: Request, res: Response) => {
     const page = Math.max(1, parseInt(req.query.page as string) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 50));
     const skip = (page - 1) * limit;
+    // admin=1 returns all including hidden; storefront only gets active
+    const isAdmin = req.query.admin === '1';
+    const where = isAdmin ? {} : { isActive: true };
 
     const [products, total] = await Promise.all([
       prisma.product.findMany({
+        where,
         include: { category: { select: { name: true } } },
         orderBy: { createdAt: 'desc' },
         skip,
         take: limit,
       }),
-      prisma.product.count(),
+      prisma.product.count({ where }),
     ]);
 
     return res.json({ data: products, total, page, limit, totalPages: Math.ceil(total / limit) });
@@ -107,7 +111,7 @@ router.patch('/:id', authenticateToken, async (req: AuthRequest, res: Response) 
       return res.status(403).json({ error: 'Admin access required' });
     }
 
-    const { name, price, originalPrice, categoryName, stock, imageUrl, images, brand, sku, tags, tracklist, specs, description } = req.body;
+    const { name, price, originalPrice, categoryName, stock, imageUrl, images, brand, sku, tags, tracklist, specs, description, isActive } = req.body;
 
     const data: any = {};
     if (name !== undefined) data.name = name;
@@ -122,6 +126,7 @@ router.patch('/:id', authenticateToken, async (req: AuthRequest, res: Response) 
     if (tracklist !== undefined) data.tracklist = Array.isArray(tracklist) ? tracklist : [];
     if (specs !== undefined) data.specs = specs || null;
     if (description !== undefined) data.description = description || null;
+    if (isActive !== undefined) data.isActive = Boolean(isActive);
 
     if (categoryName !== undefined) {
       let category = await prisma.category.findUnique({ where: { name: categoryName || 'Uncategorized' } });
