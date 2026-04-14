@@ -921,7 +921,7 @@ function _setupSharedEvents() {
   const bnavLogoutBtn = document.getElementById('bnav-logout-btn');
   const bnavLoginBtn = document.getElementById('bnav-login-btn');
 
-  bnavCartBtn?.addEventListener('click', _toggleCart);
+  bnavCartBtn?.addEventListener('click', (e) => { e.preventDefault(); _toggleCart(); });
   bnavAccountBtn?.addEventListener('click', () => {
     _toggleAccountDrawer();
   });
