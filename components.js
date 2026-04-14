@@ -418,38 +418,66 @@ function _highlightActiveSidebar() {
     document.body.insertAdjacentHTML('beforeend', _mobileBottomNavHTML());
   }
 
-  // Floating Support Button
+  // Floating Support Button (expandable FAB)
   if (!document.getElementById('floating-support-btn')) {
     document.body.insertAdjacentHTML('beforeend', `
-      <a id="floating-support-btn" href="contact.html"
-         title="ติดต่อเรา / Support"
-         style="position:fixed;bottom:80px;right:16px;z-index:9999;width:56px;height:56px;border-radius:9999px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.25);transition:transform 0.2s;display:block;"
-         onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'" onmousedown="this.style.transform='scale(0.93)'" onmouseup="this.style.transform='scale(1.1)'">
-        <img src="images/support.png" alt="Support" style="width:100%;height:100%;object-fit:cover;display:block;">
-      </a>
+      <style>
+        #floating-social-btns { opacity:0; pointer-events:none; transform:translateY(10px) scale(0.9); transition:opacity 0.22s ease, transform 0.22s ease; }
+        #floating-social-btns.fab-open { opacity:1; pointer-events:auto; transform:translateY(0) scale(1); }
+        #floating-support-btn { transition:transform 0.2s; }
+        #floating-support-btn:active { transform:scale(0.91) !important; }
+      </style>
+      <div id="floating-support-wrap" style="position:fixed;bottom:80px;right:16px;z-index:9999;display:flex;flex-direction:column;align-items:center;gap:10px;">
+
+        <!-- Social options (shown on click) -->
+        <div id="floating-social-btns" style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+          <a href="https://m.me/buythrrm1992" target="_blank" rel="noopener" title="Facebook Messenger"
+             style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#0099ff,#006ef5);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(0,110,245,0.45);text-decoration:none;color:#fff;">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C6.477 2 2 6.145 2 11.243c0 2.942 1.46 5.566 3.742 7.29L5.742 21 8.35 19.563A10.57 10.57 0 0012 20.485c5.523 0 10-4.145 10-9.242S17.523 2 12 2zm1.133 12.42-2.544-2.72-4.966 2.72 5.468-5.802 2.605 2.72 4.905-2.72-5.468 5.802z"/>
+            </svg>
+          </a>
+          <a href="https://page.line.me/bt1992?openQrModal=true" target="_blank" rel="noopener" title="Line"
+             style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#06c755,#059d43);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(6,199,85,0.4);text-decoration:none;color:#fff;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/>
+            </svg>
+          </a>
+        </div>
+
+        <!-- Main toggle button -->
+        <button id="floating-support-btn" title="แชทกับเรา"
+           style="width:56px;height:56px;border-radius:9999px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.28);border:none;cursor:pointer;padding:0;background:transparent;">
+          <img src="images/support.png" alt="แชทกับเรา" style="width:100%;height:100%;object-fit:cover;display:block;">
+        </button>
+      </div>
     `);
-    // Adjust bottom offset on wider screens
-    const btn = document.getElementById('floating-support-btn');
-    if (btn && window.innerWidth >= 640) {
-      btn.style.bottom = '24px';
-      btn.style.right = '24px';
-      btn.style.width = '64px';
-      btn.style.height = '64px';
-    }
-    window.addEventListener('resize', () => {
-      if (!btn) return;
+
+    // Toggle open/close
+    const fabBtn = document.getElementById('floating-support-btn');
+    const fabSocial = document.getElementById('floating-social-btns');
+    fabBtn?.addEventListener('click', () => fabSocial?.classList.toggle('fab-open'));
+
+    // Close when clicking outside
+    document.addEventListener('click', (e) => {
+      const wrap = document.getElementById('floating-support-wrap');
+      if (wrap && !wrap.contains(e.target)) fabSocial?.classList.remove('fab-open');
+    }, { passive: true });
+
+    // Responsive position
+    const wrap = document.getElementById('floating-support-wrap');
+    function _updateFabPos() {
+      if (!wrap) return;
       if (window.innerWidth >= 640) {
-        btn.style.bottom = '24px';
-        btn.style.right = '24px';
-        btn.style.width = '64px';
-        btn.style.height = '64px';
+        wrap.style.bottom = '24px'; wrap.style.right = '24px';
+        if (fabBtn) { fabBtn.style.width = '64px'; fabBtn.style.height = '64px'; }
       } else {
-        btn.style.bottom = '80px';
-        btn.style.right = '16px';
-        btn.style.width = '56px';
-        btn.style.height = '56px';
+        wrap.style.bottom = '80px'; wrap.style.right = '16px';
+        if (fabBtn) { fabBtn.style.width = '56px'; fabBtn.style.height = '56px'; }
       }
-    });
+    }
+    _updateFabPos();
+    window.addEventListener('resize', _updateFabPos, { passive: true });
   }
 
   // Fix: iOS Safari breaks position:fixed when body has overflow-x:hidden
