@@ -745,11 +745,20 @@
   async function loadProduct() {
     const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
-    if (!id) { showError(); return; }
 
-    // 1. โหลด product — ลอง API ก่อน ถ้าไม่ได้ใช้ products.json เสมอ
+    // Support clean slug URL: /product/some-slug
+    const _pathParts = window.location.pathname.split('/').filter(Boolean);
+    const urlSlug = (_pathParts[0] === 'product' && _pathParts[1]) ? decodeURIComponent(_pathParts[1]) : null;
+
+    if (!id && !urlSlug) { showError(); return; }
+
+    // 1. โหลด product — ถ้ามี slug ใช้ /products/slug/:slug, ไม่งั้นใช้ /products/:id
     try {
-      res = await fetch(`${PRODUCT_API_BASE}/products/${id}`);
+      if (urlSlug) {
+        res = await fetch(`${PRODUCT_API_BASE}/products/slug/${urlSlug}`);
+      } else {
+        res = await fetch(`${PRODUCT_API_BASE}/products/${id}`);
+      }
       if (res.ok) product = await res.json();
     } catch (_) {}
 
@@ -757,19 +766,23 @@
       try {
         const fb = await fetch('products.json');
         const all = await fb.json();
-        product = (Array.isArray(all) ? all : (all.data || [])).find(p => p.id === id) || null;
+        const list = Array.isArray(all) ? all : (all.data || []);
+        product = (urlSlug
+          ? list.find(p => p.slug === urlSlug)
+          : list.find(p => p.id === id)) || null;
       } catch (_) {}
     }
 
     if (!product) { showError(); return; }
 
     // 2. Merge tracklist จาก products.json ถ้า API ไม่มี
+    const lookupId = product.id;
     if (!product.tracklist || !product.tracklist.length) {
       try {
         const fb = await fetch('products.json');
         const localAll = await fb.json();
         const localList = Array.isArray(localAll) ? localAll : (localAll.data || []);
-        const local = localList.find(p => p.id === id);
+        const local = localList.find(p => p.id === lookupId);
         if (local && local.tracklist) product.tracklist = local.tracklist;
       } catch (_) {}
     }
@@ -814,7 +827,8 @@
       ? product.description.substring(0, 155).replace(/\s+/g, ' ').trim() + '…'
       : `${product.name} แฟลชไดร์ฟเพลง MP3 คุณภาพเสียง HD เสียบปุ๊บฟังปั๊บ ฟังในรถยนต์ได้ทันที — Bt music drive`;
     const ogImage  = product.imageUrl || 'https://btmusicdrive.com/images/og-product.jpg';
-    const pageUrl  = `${location.origin}${location.pathname}?id=${product.id}`;
+    const cleanPath = product.slug ? `/product/${product.slug}` : `/product.html?id=${product.id}`;
+    const pageUrl  = `https://btmusicdrive.com${cleanPath}`;
 
     document.title = seoTitle;
 
@@ -831,7 +845,7 @@
 
     // ── Canonical URL update ──
     const canonLink = document.querySelector('link[rel="canonical"]');
-    if (canonLink) canonLink.setAttribute('href', `https://btmusicdrive.com/product.html?id=${product.id}`);
+    if (canonLink) canonLink.setAttribute('href', pageUrl);
 
     // ── Schema.org Product JSON-LD ──────────────────────────────────────────
     const ld = {
@@ -1104,7 +1118,8 @@
       const disc = p.originalPrice && p.originalPrice > p.price
         ? `<span class="text-xs text-gray-400 line-through ml-1">฿${Number(p.originalPrice).toLocaleString('th-TH', {minimumFractionDigits:2})}</span>`
         : '';
-      return `<a href="product.html?id=${p.id}" class="related-card bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.06)] group block">
+      const relUrl = p.slug ? `/product/${p.slug}` : `product.html?id=${p.id}`;
+      return `<a href="${relUrl}" class="related-card bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.06)] group block">
         <div class="aspect-square bg-gray-50 overflow-hidden relative">
           <img src="${escHtml(p.imageUrl)}" alt="${escHtml(p.name)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-400">
           ${p.originalPrice && p.originalPrice > p.price ? `<span class="absolute top-2 left-2 bg-red-500 text-white px-2 py-0.5 rounded-full text-xs font-bold">-${Math.round((1-p.price/p.originalPrice)*100)}%</span>` : ''}

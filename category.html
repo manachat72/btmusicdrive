@@ -9,13 +9,13 @@
     <meta name="description" content="หมวดหมู่สินค้า btmusicdrive รวมแฟลชไดร์ฟเพลง MP3 ทุกแนว ลูกทุ่ง หมอลำ สตริง เพื่อชีวิต สากล ลูกกรุง">
     <meta name="keywords" content="แฟลชไดร์ฟเพลง MP3, หมวดหมู่เพลง, ลูกทุ่ง, หมอลำ, สตริง, เพื่อชีวิต, สากล, ลูกกรุง, btmusicdrive">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://btmusicdrive.com/category.html">
+    <link rel="canonical" href="https://btmusicdrive.com/category.html" id="canonical-url">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Bt music drive">
-    <meta property="og:title" content="หมวดหมู่เพลง — Bt music drive">
-    <meta property="og:description" content="เลือกหมวดหมู่แฟลชไดร์ฟเพลง MP3 ทุกแนว ลูกทุ่ง หมอลำ สตริง เพื่อชีวิต สากล">
+    <meta property="og:title" content="หมวดหมู่เพลง — Bt music drive" id="og-title">
+    <meta property="og:description" content="เลือกหมวดหมู่แฟลชไดร์ฟเพลง MP3 ทุกแนว ลูกทุ่ง หมอลำ สตริง เพื่อชีวิต สากล" id="og-description">
     <meta property="og:image" content="https://btmusicdrive.com/images/logo.png">
-    <meta property="og:url" content="https://btmusicdrive.com/category.html">
+    <meta property="og:url" content="https://btmusicdrive.com/category.html" id="og-url">
     <meta property="og:locale" content="th_TH">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -178,9 +178,30 @@
             || jsonCats.find(c => c.name === catName);
     }
 
-    // Get category from URL
+    // Build clean URL for a category (slug URL if available, else query param)
+    function getCatUrl(catName) {
+        const jc = getJsonCatForName(catName);
+        return jc?.slug ? `/category/${jc.slug}` : `category.html?cat=${encodeURIComponent(catName)}`;
+    }
+
+    // Update canonical and OG URL meta tags for the active category
+    function updateCatMetaUrls(catName) {
+        const jc = getJsonCatForName(catName);
+        const cleanUrl = jc?.slug
+            ? `https://btmusicdrive.com/category/${jc.slug}`
+            : `https://btmusicdrive.com/category.html?cat=${encodeURIComponent(catName)}`;
+        const canonicalEl = document.getElementById('canonical-url');
+        if (canonicalEl) canonicalEl.href = cleanUrl;
+        const ogUrlEl = document.getElementById('og-url');
+        if (ogUrlEl) ogUrlEl.content = cleanUrl;
+    }
+
+    // Get category from URL — support both clean slug URL (/category/lukthung) and query param (?cat=ลูกทุ่ง)
     const urlParams = new URLSearchParams(window.location.search);
     const urlCat = urlParams.get('cat') || urlParams.get('category') || '';
+    // Extract slug from pathname like /category/lukthung
+    const _pathParts = window.location.pathname.split('/').filter(Boolean);
+    const urlSlug = (_pathParts[0] === 'category' && _pathParts[1]) ? decodeURIComponent(_pathParts[1]) : null;
 
     function getCategoriesFromStorage() {
         try { return JSON.parse(localStorage.getItem(LS_CATEGORIES_KEY)) || []; }
@@ -228,8 +249,13 @@
         // Load saved category settings
         const savedCats = getCategoriesFromStorage();
 
-        // Determine active category
-        activeCat = urlCat || allCats[0] || '';
+        // Determine active category — resolve from slug URL first, then query param, then first cat
+        if (urlSlug) {
+            const jcBySlug = jsonCats.find(c => c.slug === urlSlug);
+            activeCat = jcBySlug ? jcBySlug.name : (urlCat || allCats[0] || '');
+        } else {
+            activeCat = urlCat || allCats[0] || '';
+        }
 
         // Find saved category settings for the active one
         const savedCat = savedCats.find(c => c.name === activeCat);
@@ -258,6 +284,14 @@
             metaEl.content = metaDesc;
         }
 
+        // Update canonical + OG URL to use clean slug URL if available
+        updateCatMetaUrls(activeCat);
+        // Update OG title and description
+        const ogTitleEl = document.getElementById('og-title');
+        if (ogTitleEl) ogTitleEl.content = titleTag;
+        const ogDescEl = document.getElementById('og-description');
+        if (ogDescEl && metaDesc) ogDescEl.content = metaDesc;
+
         renderCatChips();
         renderCatProducts();
     }
@@ -272,9 +306,10 @@
             const isActive = cat === activeCat;
             const savedCat = savedCats.find(c => c.name === cat);
             const icon = savedCat?.icon || '';
-            html += `<button class="flex-shrink-0 px-4 py-2 rounded-full border text-sm font-medium transition-all ${isActive ? 'bg-primary text-white border-primary' : 'border-gray-200 text-gray-600 hover:border-primary hover:text-primary'}" data-cat="${cat}">
+            const catUrl = getCatUrl(cat);
+            html += `<a href="${catUrl}" class="flex-shrink-0 px-4 py-2 rounded-full border text-sm font-medium transition-all ${isActive ? 'bg-primary text-white border-primary' : 'border-gray-200 text-gray-600 hover:border-primary hover:text-primary'}" data-cat="${cat}">
                 ${icon ? `<i class="${icon} mr-1"></i>` : ''}${cat}
-            </button>`;
+            </a>`;
         });
         container.innerHTML = html;
     }
@@ -334,10 +369,11 @@
 
             const discountHtml = product.originalPrice ? `<span class="text-xs text-gray-400 line-through">฿${product.originalPrice.toLocaleString()}</span>` : '';
             const discountBadge = product.originalPrice ? `<span class="absolute top-2 left-2 bg-red-500 text-white px-2 py-0.5 rounded-full text-[10px] font-bold">-${Math.round((1 - product.price / product.originalPrice) * 100)}%</span>` : '';
+            const productUrl = product.slug ? `/product/${product.slug}` : `product.html?id=${product.id}`;
 
             return `
             <div class="bg-white rounded-xl overflow-hidden border border-gray-100 hover:shadow-md transition-shadow animate-fade-in-up" style="animation-delay:${index * 0.05}s">
-                <a href="product.html?id=${product.id}" class="block relative aspect-square overflow-hidden group cursor-pointer">
+                <a href="${productUrl}" class="block relative aspect-square overflow-hidden group cursor-pointer">
                     <img src="${product.imageUrl}" alt="${product.name}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                     ${discountBadge}
                     <button class="absolute top-2 right-2 bg-white/80 p-1.5 rounded-full text-gray-400 hover:text-red-500 shadow-sm transition-colors z-10" data-wishlist="${product.id}" onclick="event.preventDefault();event.stopPropagation();">
@@ -345,7 +381,7 @@
                     </button>
                 </a>
                 <div class="p-3">
-                    <a href="product.html?id=${product.id}" class="block">
+                    <a href="${productUrl}" class="block">
                         <h3 class="text-sm font-semibold text-gray-900 mb-1 line-clamp-2 leading-tight hover:text-primary transition-colors">${product.name}</h3>
                     </a>
                     <p class="text-[11px] text-gray-400 mb-1.5">${product.brand || ''} ${product.sku ? '| ' + product.sku : ''}</p>
@@ -368,10 +404,11 @@
     }
 
     function setupCatEvents() {
-        // Category chips
+        // Category chips — prevent default navigation to handle in-page switch + update URL
         document.getElementById('cat-chips').addEventListener('click', e => {
             const chip = e.target.closest('[data-cat]');
             if (!chip) return;
+            e.preventDefault();
             activeCat = chip.dataset.cat;
 
             const savedCats = getCategoriesFromStorage();
@@ -379,17 +416,31 @@
 
             document.getElementById('cat-title').textContent = activeCat;
             document.getElementById('breadcrumb-cat').textContent = activeCat;
-            document.title = `${activeCat} — btmusicdrive`;
+
+            const jcClick = getJsonCatForName(activeCat);
+            const titleTag = (savedCat?.titleTag) || (jcClick?.titleTag) || `${activeCat} — btmusicdrive`;
+            document.title = titleTag;
 
             const bannerImgEl = document.getElementById('banner-img');
-            const jcClick = getJsonCatForName(activeCat);
             bannerImgEl.src = (savedCat?.bannerUrl) || (jcClick?.imageUrl) || DEFAULT_CAT_BANNER;
             document.getElementById('cat-desc').textContent =
                 (savedCat?.description) || (jcClick?.h1Description) || `รวมสินค้าคุณภาพในหมวด ${activeCat}`;
 
-            const url = new URL(window.location);
-            url.searchParams.set('cat', activeCat);
-            history.replaceState(null, '', url);
+            // Update URL to clean slug URL (or query param fallback)
+            const newUrl = jcClick?.slug ? `/category/${jcClick.slug}` : `?cat=${encodeURIComponent(activeCat)}`;
+            history.pushState(null, '', newUrl);
+
+            // Update meta tags
+            updateCatMetaUrls(activeCat);
+            const ogTitleEl = document.getElementById('og-title');
+            if (ogTitleEl) ogTitleEl.content = titleTag;
+            const metaDesc = (savedCat?.metaDescription) || (jcClick?.metaDescription) || '';
+            if (metaDesc) {
+                let metaEl = document.querySelector('meta[name="description"]');
+                if (metaEl) metaEl.content = metaDesc;
+                const ogDescEl = document.getElementById('og-description');
+                if (ogDescEl) ogDescEl.content = metaDesc;
+            }
 
             renderCatChips();
             renderCatProducts();

@@ -461,16 +461,17 @@
 
             const discountHtml = product.originalPrice ? `<span class="text-sm text-gray-400 line-through ml-2">฿${product.originalPrice.toFixed(2)}</span><span class="ml-2 text-xs font-bold text-red-500 bg-red-50 px-2 py-0.5 rounded-full">-${Math.round((1 - product.price / product.originalPrice) * 100)}%</span>` : '';
 
+            const pUrl = product.slug ? `/product/${product.slug}` : `product.html?id=${product.id}`;
             if (viewMode === 'list') {
                 return `
                 <div class="bg-white rounded-2xl border border-gray-100 flex overflow-hidden hover:shadow-lg transition-shadow animate-fade-in-up" style="animation-delay:${index * 0.05}s">
-                    <a href="product.html?id=${product.id}" class="w-48 h-48 flex-shrink-0 overflow-hidden">
+                    <a href="${pUrl}" class="w-48 h-48 flex-shrink-0 overflow-hidden">
                         <img src="${product.imageUrl}" alt="${product.name} แฟลชไดร์ฟเพลง MP3 — Bt music drive" loading="lazy" decoding="async" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
                     </a>
                     <div class="p-5 flex-1 flex flex-col justify-between">
                         <div>
                             <div class="text-xs text-gray-500 font-medium uppercase tracking-wider mb-1">${product.category?.name || product.category || ''}</div>
-                            <a href="product.html?id=${product.id}" class="block"><h3 class="text-lg font-bold text-gray-900 hover:text-primary transition-colors">${product.name}</h3></a>
+                            <a href="${pUrl}" class="block"><h3 class="text-lg font-bold text-gray-900 hover:text-primary transition-colors">${product.name}</h3></a>
                             <div class="flex items-center mt-2">${starsHtml}<span class="text-xs text-gray-500 ml-2">(${reviews} รีวิว)</span></div>
                         </div>
                         <div class="flex items-center justify-between mt-3">
@@ -483,14 +484,14 @@
 
             return `
             <div class="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_12px_36px_rgba(139,115,85,0.16)] transition-all duration-300 animate-fade-in-up" style="animation-delay:${index * 0.05}s">
-                <a href="product.html?id=${product.id}" class="block relative aspect-square overflow-hidden group cursor-pointer">
+                <a href="${pUrl}" class="block relative aspect-square overflow-hidden group cursor-pointer">
                     <img src="${product.imageUrl}" alt="${product.name} แฟลชไดร์ฟเพลง MP3 คุณภาพ HD — Bt music drive" loading="lazy" decoding="async" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     ${product.originalPrice ? `<span class="absolute top-2 left-2 bg-red-500 text-white px-2 py-0.5 rounded-full text-xs font-bold shadow-sm">-${Math.round((1 - product.price / product.originalPrice) * 100)}%</span>` : ''}
                 </a>
                 <div class="p-2.5 sm:p-4">
                     <div class="text-[10px] sm:text-xs text-gray-400 font-medium mb-0.5 uppercase tracking-wider">${product.category?.name || product.category || ''}</div>
-                    <a href="product.html?id=${product.id}" class="block"><h3 class="text-xs sm:text-sm font-bold text-gray-900 mb-1 line-clamp-2 hover:text-primary transition-colors leading-snug">${product.name}</h3></a>
+                    <a href="${pUrl}" class="block"><h3 class="text-xs sm:text-sm font-bold text-gray-900 mb-1 line-clamp-2 hover:text-primary transition-colors leading-snug">${product.name}</h3></a>
                     <div class="flex items-center mb-2">
                         <div class="flex mr-1">${starsHtml}</div>
                         <span class="text-[10px] sm:text-xs text-gray-400">(${reviews})</span>

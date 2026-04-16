@@ -33,12 +33,28 @@ router.get('/', async (req: Request, res: Response) => {
   }
 });
 
+// ── GET /api/products/slug/:slug ─────────────────────────────────────────────
+// Public — find product by slug (for clean URLs like /product/001-flashdrive-lukthung)
+router.get('/slug/:slug', async (req: Request, res: Response) => {
+  try {
+    const product = await prisma.product.findUnique({
+      where: { slug: req.params.slug },
+      include: { category: { select: { name: true, slug: true } } },
+    });
+    if (!product) return res.status(404).json({ error: 'Product not found' });
+    return res.json(product);
+  } catch (error) {
+    console.error('Error fetching product by slug:', error);
+    return res.status(500).json({ error: 'Failed to fetch product' });
+  }
+});
+
 // ── GET /api/products/:id ────────────────────────────────────────────────────
 router.get('/:id', async (req: Request, res: Response) => {
   try {
     const product = await prisma.product.findUnique({
       where: { id: req.params.id as string },
-      include: { category: { select: { name: true } } },
+      include: { category: { select: { name: true, slug: true } } },
     });
     if (!product) return res.status(404).json({ error: 'Product not found' });
     return res.json(product);
@@ -56,7 +72,7 @@ router.post('/', authenticateToken, async (req: AuthRequest, res: Response) => {
       return res.status(403).json({ error: 'Admin access required' });
     }
 
-    const { name, price, originalPrice, categoryName, stock, imageUrl, images, brand, sku, tags, tracklist, specs, description } = req.body;
+    const { name, price, originalPrice, categoryName, stock, imageUrl, images, brand, sku, slug, tags, tracklist, specs, description } = req.body;
 
     if (!name || price == null) {
       return res.status(400).json({ error: 'name and price are required' });
@@ -87,17 +103,21 @@ router.post('/', authenticateToken, async (req: AuthRequest, res: Response) => {
         images: Array.isArray(images) ? images : [],
         brand: brand || null,
         sku: sku || null,
+        slug: slug || null,
         tags: Array.isArray(tags) ? tags : [],
         tracklist: Array.isArray(tracklist) ? tracklist : [],
         specs: specs || null,
         description: description || null,
         categoryId: category.id,
       },
-      include: { category: { select: { name: true } } },
+      include: { category: { select: { name: true, slug: true } } },
     });
 
     return res.status(201).json(product);
-  } catch (error) {
+  } catch (error: any) {
+    if (error.code === 'P2002' && error.meta?.target?.includes('slug')) {
+      return res.status(409).json({ error: 'Slug already exists, please use a different slug' });
+    }
     console.error('Error creating product:', error);
     return res.status(500).json({ error: 'Failed to create product' });
   }
@@ -111,7 +131,7 @@ router.patch('/:id', authenticateToken, async (req: AuthRequest, res: Response) 
       return res.status(403).json({ error: 'Admin access required' });
     }
 
-    const { name, price, originalPrice, categoryName, stock, imageUrl, images, brand, sku, tags, tracklist, specs, description, isActive } = req.body;
+    const { name, price, originalPrice, categoryName, stock, imageUrl, images, brand, sku, slug, tags, tracklist, specs, description, isActive } = req.body;
 
     const data: any = {};
     if (name !== undefined) data.name = name;
@@ -122,6 +142,7 @@ router.patch('/:id', authenticateToken, async (req: AuthRequest, res: Response) 
     if (images !== undefined) data.images = Array.isArray(images) ? images : [];
     if (brand !== undefined) data.brand = brand || null;
     if (sku !== undefined) data.sku = sku || null;
+    if (slug !== undefined) data.slug = slug || null;
     if (tags !== undefined) data.tags = Array.isArray(tags) ? tags : [];
     if (tracklist !== undefined) data.tracklist = Array.isArray(tracklist) ? tracklist : [];
     if (specs !== undefined) data.specs = specs || null;
@@ -139,13 +160,16 @@ router.patch('/:id', authenticateToken, async (req: AuthRequest, res: Response) 
     const product = await prisma.product.update({
       where: { id: req.params.id as string },
       data,
-      include: { category: { select: { name: true } } },
+      include: { category: { select: { name: true, slug: true } } },
     });
 
     return res.json(product);
   } catch (error: any) {
     if (error.code === 'P2025') {
       return res.status(404).json({ error: 'Product not found' });
+    }
+    if (error.code === 'P2002' && error.meta?.target?.includes('slug')) {
+      return res.status(409).json({ error: 'Slug already exists, please use a different slug' });
     }
     console.error('Error updating product:', error);
     return res.status(500).json({ error: 'Failed to update product' });
@@ -221,6 +245,7 @@ router.post('/bulk-import', authenticateToken, async (req: AuthRequest, res: Res
             images: Array.isArray(p.images) ? p.images : [],
             brand: p.brand || null,
             sku: p.sku || null,
+            slug: p.slug || null,
             tags,
             tracklist,
             specs,

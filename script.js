@@ -196,8 +196,9 @@ function renderProducts() {
         const isWishlisted = wishlist.some(w => w.id === product.id);
         const heartClass = isWishlisted ? 'ph-fill ph-heart text-xl text-red-500' : 'ph ph-heart text-xl';
 
+        const _pUrl = product.slug ? `/product/${product.slug}` : `product.html?id=${encodeURIComponent(product.id)}`;
         productCard.innerHTML = `
-            <a href="product.html?id=${encodeURIComponent(product.id)}" class="block relative h-40 sm:h-64 overflow-hidden group cursor-pointer">
+            <a href="${_pUrl}" class="block relative h-40 sm:h-64 overflow-hidden group cursor-pointer">
                 <img src="${escapeHtml(product.imageUrl)}" alt="${escapeHtml(product.name)}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
                 ${badgeHtml}
                 <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -207,7 +208,7 @@ function renderProducts() {
             </a>
             <div class="p-3 sm:p-5">
                 <div class="text-xs text-gray-500 font-medium mb-1 uppercase tracking-wider hidden sm:block">${escapeHtml(product.category?.name || product.category || '')}</div>
-                <a href="product.html?id=${encodeURIComponent(product.id)}" class="block"><h3 class="text-sm sm:text-lg font-bold text-gray-900 mb-1 sm:mb-2 line-clamp-2 hover:text-primary transition-colors">${escapeHtml(product.name)}</h3></a>
+                <a href="${_pUrl}" class="block"><h3 class="text-sm sm:text-lg font-bold text-gray-900 mb-1 sm:mb-2 line-clamp-2 hover:text-primary transition-colors">${escapeHtml(product.name)}</h3></a>
                 <div class="hidden sm:flex items-center mb-3">
                     <div class="flex mr-2">
                         ${starsHtml}
