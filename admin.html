@@ -436,6 +436,16 @@
       display: none !important;
     }
   </style>
+  <!-- Meta Pixel Code -->
+  <script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+  n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}
+  (window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init','269855615506465');fbq('track','PageView');</script>
+  <noscript><img height="1" width="1" style="display:none"
+  src="https://www.facebook.com/tr?id=269855615506465&ev=PageView&noscript=1"/></noscript>
+  <!-- End Meta Pixel Code -->
 </head>
 <body>
 
@@ -2288,7 +2298,8 @@
     if (!url) { showToast('กรุณาใส่ Facebook Page URL', true); return; }
     const layout    = document.getElementById('fb-like-layout').value;
     const showFaces = document.getElementById('fb-like-show-faces').checked;
-    const code = `<!-- Facebook SDK -->\n<div id="fb-root"></div>\n<script async defer crossorigin="anonymous"\n  src="https://connect.facebook.net/th_TH/sdk.js#xfbml=1&version=v21.0">\n<\/script>\n\n<!-- Facebook Like Button -->\n<div class="fb-like"\n  data-href="${url}"\n  data-layout="${layout}"\n  data-action="like"\n  data-size="large"\n  data-share="true"\n  data-show-faces="${showFaces}">\n</div>`;
+    const _se = '</' + 'script>';
+    const code = `<!-- Facebook SDK -->\n<div id="fb-root"></div>\n<script async defer crossorigin="anonymous"\n  src="https://connect.facebook.net/th_TH/sdk.js#xfbml=1&version=v21.0">\n${_se}\n\n<!-- Facebook Like Button -->\n<div class="fb-like"\n  data-href="${url}"\n  data-layout="${layout}"\n  data-action="like"\n  data-size="large"\n  data-share="true"\n  data-show-faces="${showFaces}">\n</div>`;
     document.getElementById('fb-like-code').value = code;
     document.getElementById('fb-like-result').style.display = 'block';
   }
@@ -2300,7 +2311,8 @@
     const h        = document.getElementById('fb-plugin-h').value || '500';
     const timeline = document.getElementById('fb-plugin-timeline').checked;
     const tabs     = timeline ? 'timeline' : '';
-    const code = `<!-- Facebook SDK -->\n<div id="fb-root"></div>\n<script async defer crossorigin="anonymous"\n  src="https://connect.facebook.net/th_TH/sdk.js#xfbml=1&version=v21.0">\n<\/script>\n\n<!-- Facebook Page Plugin -->\n<div class="fb-page"\n  data-href="${url}"\n  data-tabs="${tabs}"\n  data-width="${w}"\n  data-height="${h}"\n  data-small-header="false"\n  data-adapt-container-width="true"\n  data-hide-cover="false"\n  data-show-facepile="true">\n  <blockquote cite="${url}" class="fb-xfbml-parse-ignore">\n    <a href="${url}">Facebook Page</a>\n  </blockquote>\n</div>`;
+    const _se2 = '</' + 'script>';
+    const code = `<!-- Facebook SDK -->\n<div id="fb-root"></div>\n<script async defer crossorigin="anonymous"\n  src="https://connect.facebook.net/th_TH/sdk.js#xfbml=1&version=v21.0">\n${_se2}\n\n<!-- Facebook Page Plugin -->\n<div class="fb-page"\n  data-href="${url}"\n  data-tabs="${tabs}"\n  data-width="${w}"\n  data-height="${h}"\n  data-small-header="false"\n  data-adapt-container-width="true"\n  data-hide-cover="false"\n  data-show-facepile="true">\n  <blockquote cite="${url}" class="fb-xfbml-parse-ignore">\n    <a href="${url}">Facebook Page</a>\n  </blockquote>\n</div>`;
     document.getElementById('fb-plugin-code').value = code;
     document.getElementById('fb-plugin-result').style.display = 'block';
   }
@@ -2680,16 +2692,6 @@
     body { padding:0; }
   }
 </style>
-<!-- Meta Pixel Code -->
-<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}
-(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
-fbq('init','269855615506465');fbq('track','PageView');</script>
-<noscript><img height="1" width="1" style="display:none"
-src="https://www.facebook.com/tr?id=269855615506465&ev=PageView&noscript=1"/></noscript>
-<!-- End Meta Pixel Code -->
 </head><body>
 <div class="label">
   <div class="label-header">
