@@ -1241,6 +1241,14 @@
             <input type="text" id="pm-sku" class="settings-input" placeholder="e.g. SKU-11968">
           </div>
         </div>
+        <div class="settings-row">
+          <label class="settings-label">URL Slug <span style="color:var(--muted);font-weight:400;">(สำหรับลิงก์สินค้า)</span></label>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span style="color:var(--muted);font-size:12px;white-space:nowrap;">/product/</span>
+            <input type="text" id="pm-slug" class="settings-input" placeholder="e.g. sku-022" style="font-family:monospace;font-size:13px;" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'')">
+          </div>
+          <p class="settings-hint">ใช้ตัวอักษรเล็ก a-z, ตัวเลข 0-9 และ - เท่านั้น · ถ้าไม่กรอกจะใช้ SKU อัตโนมัติ</p>
+        </div>
         <div style="display:flex;gap:10px;">
           <div class="settings-row" style="flex:1;">
             <label class="settings-label">หมวดหมู่</label>
@@ -1977,6 +1985,7 @@
     document.getElementById('pm-original-price').value = product?.originalPrice || '';
     document.getElementById('pm-brand').value   = product?.brand || '';
     document.getElementById('pm-sku').value     = product?.sku || '';
+    document.getElementById('pm-slug').value    = product?.slug || '';
     document.getElementById('pm-category').value= product?.category?.name || product?.categoryName || '';
     document.getElementById('pm-stock').value   = product?.stock ?? '';
     document.getElementById('pm-tags').value    = Array.isArray(product?.tags) ? product.tags.join(', ') : '';
@@ -2098,6 +2107,7 @@
       originalPrice: document.getElementById('pm-original-price').value ? parseFloat(document.getElementById('pm-original-price').value) : null,
       brand: document.getElementById('pm-brand').value.trim() || null,
       sku: document.getElementById('pm-sku').value.trim() || null,
+      slug: document.getElementById('pm-slug').value.trim() || null,
       categoryName: document.getElementById('pm-category').value.trim(),
       stock: parseInt(document.getElementById('pm-stock').value) || 0,
       imageUrl: mainImgUrl,

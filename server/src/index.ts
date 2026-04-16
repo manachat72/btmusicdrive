@@ -90,6 +90,14 @@ app.get('/api/config/stripe', (req, res) => {
   res.json({ publishableKey });
 });
 
+// Clean URL routing — serve HTML for slug-based pages (mirrors vercel.json)
+app.get('/category/:slug', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../category.html'));
+});
+app.get('/product/:slug', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../product.html'));
+});
+
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
