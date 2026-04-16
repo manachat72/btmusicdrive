@@ -272,6 +272,16 @@
     const urlParams = new URLSearchParams(window.location.search);
     const urlCategory = urlParams.get('category');
 
+    // Redirect shop.html?category=X → /category/:slug (clean URL)
+    if (urlCategory) {
+        fetch('categories.json').then(r => r.json()).then(cats => {
+            const match = cats.find(c => c.name === urlCategory);
+            if (match?.slug) {
+                window.location.replace(`/category/${match.slug}`);
+            }
+        }).catch(() => {});
+    }
+
     document.addEventListener('DOMContentLoaded', async () => {
         await loadCategoryData();
         await loadShopProducts();

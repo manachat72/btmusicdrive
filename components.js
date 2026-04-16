@@ -428,7 +428,8 @@ function _highlightActiveSidebar() {
       if (cats.length > 0) {
         cats.forEach(c => {
           const li = document.createElement('li');
-          li.innerHTML = `<a href="category.html?cat=${encodeURIComponent(c.name)}" class="text-gray-500 hover:text-primary transition-colors">${c.name}</a>`;
+          const catUrl = c.slug ? `/category/${c.slug}` : `category.html?cat=${encodeURIComponent(c.name)}`;
+          li.innerHTML = `<a href="${catUrl}" class="text-gray-500 hover:text-primary transition-colors">${c.name}</a>`;
           footerCats.appendChild(li);
         });
       }
@@ -473,12 +474,12 @@ const _DEFAULT_MENUS = [
   { label: 'ร้านค้า', url: 'shop.html', icon: 'ph ph-storefront' },
   { label: 'หมวดหมู่', url: '#', icon: 'ph ph-squares-four', children: [
     { label: 'สินค้าทั้งหมด', url: 'shop.html', icon: 'ph ph-package' },
-    { label: 'เพื่อชีวิต', url: 'category.html?cat=เพื่อชีวิต', icon: 'ph ph-microphone-stage' },
-    { label: 'เพลงสตริง', url: 'category.html?cat=เพลงสตริง', icon: 'ph ph-music-notes' },
-    { label: 'ลูกทุ่ง', url: 'category.html?cat=ลูกทุ่ง', icon: 'ph ph-vinyl-record' },
-    { label: 'หมอลำ', url: 'category.html?cat=หมอลำ', icon: 'ph ph-speaker-high' },
-    { label: 'เพลงสากล', url: 'category.html?cat=เพลงสากล', icon: 'ph ph-globe' },
-    { label: 'ลูกกรุง', url: 'category.html?cat=ลูกกรุง', icon: 'ph ph-music-note' },
+    { label: 'เพื่อชีวิต', url: '/category/phuea-chiwit', icon: 'ph ph-microphone-stage' },
+    { label: 'เพลงสตริง', url: '/category/phleng-satring', icon: 'ph ph-music-notes' },
+    { label: 'ลูกทุ่ง', url: '/category/lukthung', icon: 'ph ph-vinyl-record' },
+    { label: 'หมอลำ', url: '/category/mor-lam', icon: 'ph ph-speaker-high' },
+    { label: 'เพลงสากล', url: '/category/international', icon: 'ph ph-globe' },
+    { label: 'ลูกกรุง', url: '/category/luk-krung', icon: 'ph ph-music-note' },
   ]},
   { label: 'เกี่ยวกับ', url: 'about.html', icon: 'ph ph-info' },
   { label: 'ติดตามพัสดุ', url: 'track-order.html', icon: 'ph ph-package' },
