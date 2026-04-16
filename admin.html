@@ -495,6 +495,11 @@
         <span class="sb-badge" id="shipping-badge"></span>
       </div>
 
+      <div class="sb-section-lbl" style="margin-top:6px;">การตลาด</div>
+      <div class="sb-item" id="nav-marketing" onclick="showSection('marketing')">
+        <i class="fa-solid fa-bullhorn"></i><span>การตลาด</span>
+      </div>
+
       <div class="sb-sep"></div>
       <div class="sb-item" id="nav-settings" onclick="showSection('settings')">
         <i class="fa-solid fa-gear"></i><span>ตั้งค่า</span>
@@ -928,6 +933,152 @@
     </section>
 
     <!-- ── SETTINGS ──────────────────────────────────────────────────────── -->
+    <!-- ═══════════════════════════════════════ MARKETING ═══════════════════ -->
+    <section id="section-marketing" style="display:none;">
+      <div class="wp-page-hdr"><h1 class="wp-page-title">การตลาด</h1></div>
+
+      <!-- Meta Pixel & CAPI -->
+      <div class="wp-card" style="margin-bottom:18px;">
+        <div class="card-hdr"><h2><i class="fa-brands fa-meta"></i> Meta Pixel &amp; Conversions API</h2></div>
+        <div class="card-body">
+          <div class="settings-grid">
+            <div class="settings-row">
+              <label class="settings-label">Pixel ID</label>
+              <div style="display:flex;gap:8px;align-items:center;">
+                <input type="text" id="mkt-pixel-id" class="settings-input" value="269855615506465" readonly style="font-family:monospace;letter-spacing:1px;">
+                <button onclick="copyText('mkt-pixel-id')" class="wp-btn" style="flex:none;white-space:nowrap;"><i class="fa-solid fa-copy"></i> คัดลอก</button>
+              </div>
+              <p class="settings-hint">Pixel ID ถูก embed ในทุกหน้าของเว็บไซต์แล้ว (checkout.html, shop.html, index.html, ...)</p>
+            </div>
+            <div class="settings-row">
+              <label class="settings-label">Events ที่ติดตาม</label>
+              <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;">
+                <span style="background:#e8f5e9;color:#2e7d32;font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;">✓ PageView — ทุกหน้า</span>
+                <span style="background:#e8f5e9;color:#2e7d32;font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;">✓ AddToCart</span>
+                <span style="background:#e8f5e9;color:#2e7d32;font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;">✓ InitiateCheckout</span>
+                <span style="background:#e8f5e9;color:#2e7d32;font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;">✓ Purchase (Server-side CAPI)</span>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">
+            <a href="https://business.facebook.com/events_manager" target="_blank" class="wp-btn"><i class="fa-solid fa-chart-line"></i> Events Manager</a>
+            <a href="https://www.facebook.com/ads/manager" target="_blank" class="wp-btn"><i class="fa-solid fa-bullhorn"></i> Ads Manager</a>
+            <a href="https://www.facebook.com/business/help/898185560232180" target="_blank" class="wp-btn"><i class="fa-solid fa-circle-question"></i> CAPI คืออะไร?</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Social Media Links -->
+      <div class="wp-card" style="margin-bottom:18px;">
+        <div class="card-hdr"><h2><i class="fa-solid fa-share-nodes"></i> ลิงก์โซเชียลมีเดีย</h2></div>
+        <div class="card-body">
+          <p style="font-size:12px;color:var(--muted);margin-bottom:14px;">ลิงก์เหล่านี้จะแสดงใน Footer ของเว็บไซต์ — บันทึกแล้วรีเฟรชหน้าเว็บเพื่อดูการเปลี่ยนแปลง</p>
+          <div class="settings-grid">
+            <div class="settings-row">
+              <label class="settings-label"><i class="fa-brands fa-facebook" style="color:#1877f2;margin-right:5px;"></i>Facebook Page URL</label>
+              <input type="url" id="mkt-fb-url" class="settings-input" placeholder="https://www.facebook.com/yourpage">
+            </div>
+            <div class="settings-row">
+              <label class="settings-label"><i class="fa-brands fa-line" style="color:#06c755;margin-right:5px;"></i>LINE OA URL</label>
+              <input type="url" id="mkt-line-url" class="settings-input" placeholder="https://line.me/R/ti/p/@yourlineid">
+            </div>
+            <div class="settings-row">
+              <label class="settings-label"><i class="fa-brands fa-instagram" style="color:#e1306c;margin-right:5px;"></i>Instagram URL</label>
+              <input type="url" id="mkt-ig-url" class="settings-input" placeholder="https://www.instagram.com/youraccount">
+            </div>
+            <div class="settings-row">
+              <label class="settings-label"><i class="fa-brands fa-tiktok" style="margin-right:5px;"></i>TikTok URL</label>
+              <input type="url" id="mkt-tt-url" class="settings-input" placeholder="https://www.tiktok.com/@youraccount">
+            </div>
+            <div class="settings-row">
+              <label class="settings-label"><i class="fa-brands fa-youtube" style="color:#ff0000;margin-right:5px;"></i>YouTube URL</label>
+              <input type="url" id="mkt-yt-url" class="settings-input" placeholder="https://www.youtube.com/@yourchannel">
+            </div>
+          </div>
+          <div style="margin-top:14px;"><button onclick="saveSocialLinks()" class="settings-save-btn"><i class="fa-solid fa-floppy-disk"></i> บันทึก</button></div>
+        </div>
+      </div>
+
+      <!-- Facebook Like Button Generator -->
+      <div class="wp-card" style="margin-bottom:18px;">
+        <div class="card-hdr"><h2><i class="fa-solid fa-thumbs-up"></i> Facebook Like Button — สร้าง Embed Code</h2></div>
+        <div class="card-body">
+          <p style="font-size:12px;color:var(--muted);margin-bottom:14px;">สร้าง code สำหรับปุ่ม Like Facebook Page เพื่อนำไปวางในหน้าเว็บ</p>
+          <div class="settings-grid">
+            <div class="settings-row">
+              <label class="settings-label">Facebook Page URL</label>
+              <input type="url" id="fb-like-page-url" class="settings-input" placeholder="https://www.facebook.com/yourpage">
+            </div>
+            <div class="settings-row">
+              <label class="settings-label">รูปแบบ</label>
+              <select id="fb-like-layout" class="settings-input">
+                <option value="standard">Standard (Like + Share)</option>
+                <option value="button_count">Button Count</option>
+                <option value="button">Button Only</option>
+                <option value="box_count">Box Count</option>
+              </select>
+            </div>
+            <div class="settings-row" style="align-items:center;flex-direction:row;gap:10px;">
+              <label class="settings-label" style="margin:0;flex:none;">แสดงรูปโปรไฟล์ผู้กดไลก์</label>
+              <label class="toggle-switch">
+                <input type="checkbox" id="fb-like-show-faces">
+                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              </label>
+            </div>
+          </div>
+          <div style="margin-top:14px;">
+            <button onclick="generateFbLike()" class="settings-save-btn"><i class="fa-solid fa-code"></i> สร้าง Embed Code</button>
+          </div>
+          <div id="fb-like-result" style="display:none;margin-top:16px;">
+            <label class="settings-label">Embed Code (วางใน HTML ที่ต้องการ)</label>
+            <textarea id="fb-like-code" class="settings-input" rows="5" readonly style="font-family:monospace;font-size:11px;line-height:1.5;"></textarea>
+            <div style="margin-top:8px;">
+              <button onclick="copyArea('fb-like-code')" class="wp-btn"><i class="fa-solid fa-copy"></i> คัดลอก</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Facebook Page Plugin -->
+      <div class="wp-card">
+        <div class="card-hdr"><h2><i class="fa-solid fa-window-maximize"></i> Facebook Page Plugin (Widget)</h2></div>
+        <div class="card-body">
+          <p style="font-size:12px;color:var(--muted);margin-bottom:14px;">แสดง feed หน้า Facebook บนเว็บไซต์ — ต้องตั้ง App Domain ใน Facebook App ก่อน หรือใช้ผ่าน Facebook Developers</p>
+          <div class="settings-grid">
+            <div class="settings-row">
+              <label class="settings-label">Facebook Page URL</label>
+              <input type="url" id="fb-plugin-url" class="settings-input" placeholder="https://www.facebook.com/yourpage">
+            </div>
+            <div class="settings-row">
+              <label class="settings-label">ความกว้าง (px)</label>
+              <input type="number" id="fb-plugin-w" class="settings-input" value="340" min="180" max="500">
+            </div>
+            <div class="settings-row">
+              <label class="settings-label">ความสูง (px)</label>
+              <input type="number" id="fb-plugin-h" class="settings-input" value="500" min="70">
+            </div>
+            <div class="settings-row" style="align-items:center;flex-direction:row;gap:10px;">
+              <label class="settings-label" style="margin:0;flex:none;">แสดง Timeline Posts</label>
+              <label class="toggle-switch">
+                <input type="checkbox" id="fb-plugin-timeline" checked>
+                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              </label>
+            </div>
+          </div>
+          <div style="margin-top:14px;">
+            <button onclick="generateFbPlugin()" class="settings-save-btn"><i class="fa-solid fa-code"></i> สร้าง Embed Code</button>
+          </div>
+          <div id="fb-plugin-result" style="display:none;margin-top:16px;">
+            <label class="settings-label">Embed Code</label>
+            <textarea id="fb-plugin-code" class="settings-input" rows="7" readonly style="font-family:monospace;font-size:11px;line-height:1.5;"></textarea>
+            <div style="margin-top:8px;">
+              <button onclick="copyArea('fb-plugin-code')" class="wp-btn"><i class="fa-solid fa-copy"></i> คัดลอก</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section id="section-settings" style="display:none;">
       <div class="wp-page-hdr"><h1 class="wp-page-title">ตั้งค่า</h1></div>
 
@@ -1371,11 +1522,11 @@
     return h;
   }
 
-  const SECTIONS = ['dashboard', 'orders', 'products', 'customers', 'categories', 'menus', 'shipping', 'settings'];
+  const SECTIONS = ['dashboard', 'orders', 'products', 'customers', 'categories', 'menus', 'shipping', 'marketing', 'settings'];
   const SECTION_TITLES = {
     dashboard: 'แดชบอร์ด', orders: 'คำสั่งซื้อ', products: 'สินค้า',
     customers: 'ลูกค้า', categories: 'หมวดหมู่', menus: 'เมนู',
-    shipping: 'จัดส่ง', settings: 'ตั้งค่า'
+    shipping: 'จัดส่ง', marketing: 'การตลาด', settings: 'ตั้งค่า'
   };
 
   // ── Gate ──────────────────────────────────────────────────────────────────
@@ -1439,6 +1590,7 @@
     if (id === 'categories') loadCategories();
     if (id === 'menus') loadMenus();
     if (id === 'shipping') loadShipping();
+    if (id === 'marketing') loadMarketingSettings();
   }
 
   // ── Init ──────────────────────────────────────────────────────────────────
@@ -2083,6 +2235,76 @@
   }
 
   // ══════════════════════════════════════════════════════════════════════════
+  // ══════════════════════════════════════════════════════════════════════════
+  // MARKETING
+  // ══════════════════════════════════════════════════════════════════════════
+  const SOCIAL_KEYS = {
+    'mkt-fb-url':   'btmd_social_facebook',
+    'mkt-line-url': 'btmd_social_line',
+    'mkt-ig-url':   'btmd_social_instagram',
+    'mkt-tt-url':   'btmd_social_tiktok',
+    'mkt-yt-url':   'btmd_social_youtube',
+  };
+
+  function loadMarketingSettings() {
+    for (const [id, key] of Object.entries(SOCIAL_KEYS)) {
+      const val = localStorage.getItem(key);
+      const el = document.getElementById(id);
+      if (el && val) el.value = val;
+    }
+    // Pre-fill Like/Plugin URL with saved Facebook URL
+    const fbUrl = localStorage.getItem('btmd_social_facebook') || '';
+    if (fbUrl) {
+      const likeEl   = document.getElementById('fb-like-page-url');
+      const pluginEl = document.getElementById('fb-plugin-url');
+      if (likeEl   && !likeEl.value)   likeEl.value   = fbUrl;
+      if (pluginEl && !pluginEl.value) pluginEl.value = fbUrl;
+    }
+  }
+
+  function saveSocialLinks() {
+    for (const [id, key] of Object.entries(SOCIAL_KEYS)) {
+      const val = (document.getElementById(id)?.value || '').trim();
+      if (val) localStorage.setItem(key, val);
+      else localStorage.removeItem(key);
+    }
+    showToast('บันทึกลิงก์โซเชียลแล้ว');
+  }
+
+  function copyText(inputId) {
+    const el = document.getElementById(inputId);
+    if (!el) return;
+    navigator.clipboard.writeText(el.value).then(() => showToast('คัดลอกแล้ว'));
+  }
+
+  function copyArea(textareaId) {
+    const el = document.getElementById(textareaId);
+    if (!el) return;
+    navigator.clipboard.writeText(el.value).then(() => showToast('คัดลอก embed code แล้ว'));
+  }
+
+  function generateFbLike() {
+    const url = document.getElementById('fb-like-page-url').value.trim();
+    if (!url) { showToast('กรุณาใส่ Facebook Page URL', true); return; }
+    const layout    = document.getElementById('fb-like-layout').value;
+    const showFaces = document.getElementById('fb-like-show-faces').checked;
+    const code = `<!-- Facebook SDK -->\n<div id="fb-root"></div>\n<script async defer crossorigin="anonymous"\n  src="https://connect.facebook.net/th_TH/sdk.js#xfbml=1&version=v21.0">\n<\/script>\n\n<!-- Facebook Like Button -->\n<div class="fb-like"\n  data-href="${url}"\n  data-layout="${layout}"\n  data-action="like"\n  data-size="large"\n  data-share="true"\n  data-show-faces="${showFaces}">\n</div>`;
+    document.getElementById('fb-like-code').value = code;
+    document.getElementById('fb-like-result').style.display = 'block';
+  }
+
+  function generateFbPlugin() {
+    const url      = document.getElementById('fb-plugin-url').value.trim();
+    if (!url) { showToast('กรุณาใส่ Facebook Page URL', true); return; }
+    const w        = document.getElementById('fb-plugin-w').value || '340';
+    const h        = document.getElementById('fb-plugin-h').value || '500';
+    const timeline = document.getElementById('fb-plugin-timeline').checked;
+    const tabs     = timeline ? 'timeline' : '';
+    const code = `<!-- Facebook SDK -->\n<div id="fb-root"></div>\n<script async defer crossorigin="anonymous"\n  src="https://connect.facebook.net/th_TH/sdk.js#xfbml=1&version=v21.0">\n<\/script>\n\n<!-- Facebook Page Plugin -->\n<div class="fb-page"\n  data-href="${url}"\n  data-tabs="${tabs}"\n  data-width="${w}"\n  data-height="${h}"\n  data-small-header="false"\n  data-adapt-container-width="true"\n  data-hide-cover="false"\n  data-show-facepile="true">\n  <blockquote cite="${url}" class="fb-xfbml-parse-ignore">\n    <a href="${url}">Facebook Page</a>\n  </blockquote>\n</div>`;
+    document.getElementById('fb-plugin-code').value = code;
+    document.getElementById('fb-plugin-result').style.display = 'block';
+  }
+
   // SETTINGS
   // ══════════════════════════════════════════════════════════════════════════
   function saveSettings(section) {
@@ -2457,7 +2679,18 @@
     .print-btn { display:none !important; }
     body { padding:0; }
   }
-</style></head><body>
+</style>
+<!-- Meta Pixel Code -->
+<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}
+(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init','269855615506465');fbq('track','PageView');</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=269855615506465&ev=PageView&noscript=1"/></noscript>
+<!-- End Meta Pixel Code -->
+</head><body>
 <div class="label">
   <div class="label-header">
     <h1>btmusicdrive</h1>
