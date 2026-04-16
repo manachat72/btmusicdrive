@@ -345,18 +345,22 @@
             return;
         }
 
-        const cat = categoryData.find(c => c.name === catName);
+        // Try to find by exact name, then by product's categoryId match
+        let cat = categoryData.find(c => c.name === catName);
         if (!cat) {
-            banner.classList.add('hidden');
-            return;
+            const product = shopProducts.find(p => (p.category?.name || p.category) === catName);
+            const catId = product?.category?.id || product?.categoryId;
+            if (catId) cat = categoryData.find(c => String(c.id) === String(catId));
         }
 
-        img.src = cat.imageUrl;
-        img.alt = cat.name + ' — แฟลชไดร์ฟเพลง MP3 Bt music drive';
-        title.textContent = cat.name;
-        desc.textContent = cat.h1Description;
-        document.title = cat.titleTag;
-        if (metaDesc) metaDesc.setAttribute('content', cat.metaDescription);
+        const DEFAULT_BANNER = 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80';
+
+        img.src = cat?.imageUrl || DEFAULT_BANNER;
+        img.alt = catName + ' — แฟลชไดร์ฟเพลง MP3 Bt music drive';
+        title.textContent = catName;
+        desc.textContent = cat?.h1Description || `รวมสินค้าคุณภาพในหมวด ${catName}`;
+        document.title = cat?.titleTag || `${catName} — Bt music drive`;
+        if (metaDesc) metaDesc.setAttribute('content', cat?.metaDescription || `เลือกซื้อแฟลชไดร์ฟเพลง ${catName} MP3 เสียงชัด HD จัดส่งทั่วไทย`);
         banner.classList.remove('hidden');
     }
 
