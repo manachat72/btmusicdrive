@@ -168,6 +168,16 @@
     let catSort = 'default';
     let jsonCats = []; // from categories.json
 
+    const DEFAULT_CAT_BANNER = 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80';
+
+    // Find matching entry in categories.json — try by product categoryId first, then by name
+    function getJsonCatForName(catName) {
+        const product = allProducts.find(p => (p.category?.name || p.category) === catName);
+        const catId = product?.category?.id || product?.categoryId;
+        return jsonCats.find(c => String(c.id) === String(catId))
+            || jsonCats.find(c => c.name === catName);
+    }
+
     // Get category from URL
     const urlParams = new URLSearchParams(window.location.search);
     const urlCat = urlParams.get('cat') || urlParams.get('category') || '';
@@ -224,28 +234,13 @@
         // Find saved category settings for the active one
         const savedCat = savedCats.find(c => c.name === activeCat);
 
-        // Find matching entry in categories.json (match by category id from products)
-        function getJsonCatForName(catName) {
-            const product = allProducts.find(p => (p.category?.name || p.category) === catName);
-            const catId = product?.category?.id || product?.categoryId;
-            return jsonCats.find(c => String(c.id) === String(catId));
-        }
-
-        // Update banner — prefer LocalStorage bannerUrl, fallback to categories.json imageUrl
+        // Update banner — prefer LocalStorage bannerUrl, fallback categories.json, then default
         const bannerImg = document.getElementById('banner-img');
-        if (savedCat && savedCat.bannerUrl) {
-            bannerImg.src = savedCat.bannerUrl;
-        } else {
-            const jc = getJsonCatForName(activeCat);
-            if (jc && jc.imageUrl) bannerImg.src = jc.imageUrl;
-        }
         const jcActive = getJsonCatForName(activeCat);
+        bannerImg.src = (savedCat?.bannerUrl) || (jcActive?.imageUrl) || DEFAULT_CAT_BANNER;
 
-        if (savedCat && savedCat.description) {
-            document.getElementById('cat-desc').textContent = savedCat.description;
-        } else if (jcActive && jcActive.h1Description) {
-            document.getElementById('cat-desc').textContent = jcActive.h1Description;
-        }
+        document.getElementById('cat-desc').textContent =
+            (savedCat?.description) || (jcActive?.h1Description) || `รวมสินค้าคุณภาพในหมวด ${activeCat}`;
 
         // Update page info
         document.getElementById('cat-title').textContent = activeCat || 'หมวดหมู่';
@@ -387,19 +382,10 @@
             document.title = `${activeCat} — btmusicdrive`;
 
             const bannerImgEl = document.getElementById('banner-img');
-            if (savedCat && savedCat.bannerUrl) {
-                bannerImgEl.src = savedCat.bannerUrl;
-            } else {
-                const product = allProducts.find(p => (p.category?.name || p.category) === activeCat);
-                const catId = product?.category?.id || product?.categoryId;
-                const jc = jsonCats.find(c => String(c.id) === String(catId));
-                if (jc && jc.imageUrl) bannerImgEl.src = jc.imageUrl;
-            }
-            if (savedCat && savedCat.description) {
-                document.getElementById('cat-desc').textContent = savedCat.description;
-            } else {
-                document.getElementById('cat-desc').textContent = `รวมสินค้าคุณภาพในหมวด ${activeCat}`;
-            }
+            const jcClick = getJsonCatForName(activeCat);
+            bannerImgEl.src = (savedCat?.bannerUrl) || (jcClick?.imageUrl) || DEFAULT_CAT_BANNER;
+            document.getElementById('cat-desc').textContent =
+                (savedCat?.description) || (jcClick?.h1Description) || `รวมสินค้าคุณภาพในหมวด ${activeCat}`;
 
             const url = new URL(window.location);
             url.searchParams.set('cat', activeCat);
