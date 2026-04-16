@@ -613,6 +613,8 @@ async function processStripeOrder(method, shippingAddress, phone, btn, btnMobile
 
             if (typeof fbq === 'function') fbq('track', 'Purchase', {
                 content_ids: cart.map(i => i.id),
+                content_type: 'product',
+                contents: cart.map(i => ({ id: i.id, quantity: i.quantity, item_price: i.price })),
                 num_items: cart.reduce((s, i) => s + i.quantity, 0),
                 value: confirmData.totalAmount || cart.reduce((s,i)=>s+i.price*i.quantity,0),
                 currency: 'THB'
@@ -665,6 +667,8 @@ async function processCodOrder(shippingAddress, phone, btn, btnMobile) {
 
         if (typeof fbq === 'function') fbq('track', 'Purchase', {
             content_ids: cart.map(i => i.id),
+            content_type: 'product',
+            contents: cart.map(i => ({ id: i.id, quantity: i.quantity, item_price: i.price })),
             num_items: cart.reduce((s, i) => s + i.quantity, 0),
             value: data.totalAmount || cart.reduce((s,i)=>s+i.price*i.quantity,0),
             currency: 'THB'

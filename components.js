@@ -10,7 +10,7 @@ n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
 n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
 t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}
 (window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
-fbq('init','997999705986502');
+fbq('init','269855615506465');
 fbq('track','PageView');
 
 const API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
@@ -428,7 +428,7 @@ function _highlightActiveSidebar() {
       if (cats.length > 0) {
         cats.forEach(c => {
           const li = document.createElement('li');
-          const catUrl = c.slug ? `/category/${c.slug}` : `category.html?cat=${encodeURIComponent(c.name)}`;
+          const catUrl = c.slug ? `/category/${c.slug}` : `/category?cat=${encodeURIComponent(c.name)}`;
           li.innerHTML = `<a href="${catUrl}" class="text-gray-500 hover:text-primary transition-colors">${c.name}</a>`;
           footerCats.appendChild(li);
         });

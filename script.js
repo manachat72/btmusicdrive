@@ -196,7 +196,7 @@ function renderProducts() {
         const isWishlisted = wishlist.some(w => w.id === product.id);
         const heartClass = isWishlisted ? 'ph-fill ph-heart text-xl text-red-500' : 'ph ph-heart text-xl';
 
-        const _pUrl = product.slug ? `/product/${product.slug}` : `product.html?id=${encodeURIComponent(product.id)}`;
+        const _pUrl = product.slug ? `/product/${product.slug}` : `/product?id=${encodeURIComponent(product.id)}`;
         productCard.innerHTML = `
             <a href="${_pUrl}" class="block relative h-40 sm:h-64 overflow-hidden group cursor-pointer">
                 <img src="${escapeHtml(product.imageUrl)}" alt="${escapeHtml(product.name)}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
@@ -601,6 +601,7 @@ async function addToCart(productId) {
         content_ids: [product.id],
         content_name: product.name,
         content_type: 'product',
+        contents: [{ id: product.id, quantity: 1, item_price: product.price }],
         value: product.price,
         currency: 'THB'
     });

@@ -182,7 +182,7 @@
     // Build clean URL for a category (slug URL if available, else query param)
     function getCatUrl(catName) {
         const jc = getJsonCatForName(catName);
-        return jc?.slug ? `/category/${jc.slug}` : `category.html?cat=${encodeURIComponent(catName)}`;
+        return jc?.slug ? `/category/${jc.slug}` : `/category?cat=${encodeURIComponent(catName)}`;
     }
 
     // Update canonical and OG URL meta tags for the active category
@@ -190,7 +190,7 @@
         const jc = getJsonCatForName(catName);
         const cleanUrl = jc?.slug
             ? `https://btmusicdrive.com/category/${jc.slug}`
-            : `https://btmusicdrive.com/category.html?cat=${encodeURIComponent(catName)}`;
+            : `https://btmusicdrive.com/category?cat=${encodeURIComponent(catName)}`;
         const canonicalEl = document.getElementById('canonical-url');
         if (canonicalEl) canonicalEl.href = cleanUrl;
         const ogUrlEl = document.getElementById('og-url');
@@ -370,7 +370,7 @@
 
             const discountHtml = product.originalPrice ? `<span class="text-xs text-gray-400 line-through">฿${product.originalPrice.toLocaleString()}</span>` : '';
             const discountBadge = product.originalPrice ? `<span class="absolute top-2 left-2 bg-red-500 text-white px-2 py-0.5 rounded-full text-[10px] font-bold">-${Math.round((1 - product.price / product.originalPrice) * 100)}%</span>` : '';
-            const productUrl = product.slug ? `/product/${product.slug}` : `product.html?id=${product.id}`;
+            const productUrl = product.slug ? `/product/${product.slug}` : `/product?id=${product.id}`;
 
             return `
             <div class="bg-white rounded-xl overflow-hidden border border-gray-100 hover:shadow-md transition-shadow animate-fade-in-up" style="animation-delay:${index * 0.05}s">
