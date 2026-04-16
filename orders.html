@@ -1,6 +1,7 @@
 ﻿<!DOCTYPE html>
 <html lang="th">
 <head>
+  <base href="/">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
@@ -45,16 +46,16 @@
           <div class="mb-6">
             <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">รายการ</h3>
             <ul class="space-y-1">
-              <li><a href="orders.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-primary font-semibold bg-amber-50 border-l-4 border-primary transition-colors"><i class="ph ph-package text-lg"></i> คำสั่งซื้อ</a></li>
-              <li><a href="wishlist.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"><i class="ph ph-heart text-lg"></i> สินค้าที่ถูกใจ</a></li>
+              <li><a href="/orders" class="flex items-center gap-2 px-3 py-2 rounded-lg text-primary font-semibold bg-amber-50 border-l-4 border-primary transition-colors"><i class="ph ph-package text-lg"></i> คำสั่งซื้อ</a></li>
+              <li><a href="/wishlist" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"><i class="ph ph-heart text-lg"></i> สินค้าที่ถูกใจ</a></li>
             </ul>
           </div>
           <div>
             <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">บัญชี</h3>
             <ul class="space-y-1">
-              <li><a href="profile.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"><i class="ph ph-user-circle text-lg"></i> ข้อมูลส่วนตัว</a></li>
-              <li><a href="address.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"><i class="ph ph-map-pin text-lg"></i> ที่อยู่สำหรับจัดส่ง</a></li>
-              <li><a href="#" onclick="localStorage.removeItem('token');localStorage.removeItem('user');location.href='index.html';" class="flex items-center gap-2 px-3 py-2 rounded-lg text-red-500 hover:bg-red-50 transition-colors"><i class="ph ph-sign-out text-lg"></i> ออกจากระบบ</a></li>
+              <li><a href="/profile" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"><i class="ph ph-user-circle text-lg"></i> ข้อมูลส่วนตัว</a></li>
+              <li><a href="/address" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"><i class="ph ph-map-pin text-lg"></i> ที่อยู่สำหรับจัดส่ง</a></li>
+              <li><a href="#" onclick="localStorage.removeItem('token');localStorage.removeItem('user');location.href='/';" class="flex items-center gap-2 px-3 py-2 rounded-lg text-red-500 hover:bg-red-50 transition-colors"><i class="ph ph-sign-out text-lg"></i> ออกจากระบบ</a></li>
             </ul>
           </div>
         </aside>
@@ -67,7 +68,7 @@
                 <div class="bg-blue-50 w-10 h-10 rounded-full flex items-center justify-center"><i class="ph ph-package text-xl text-blue-600"></i></div>
                 <h1 class="text-2xl font-bold text-gray-900">คำสั่งซื้อ</h1>
               </div>
-              <a href="track-order.html" class="text-sm text-primary hover:underline flex items-center gap-1"><i class="ph ph-magnifying-glass"></i> ติดตามพัสดุ</a>
+              <a href="/track-order" class="text-sm text-primary hover:underline flex items-center gap-1"><i class="ph ph-magnifying-glass"></i> ติดตามพัสดุ</a>
             </div>
 
             <!-- Filter Tabs -->
@@ -89,7 +90,7 @@
               <i class="ph ph-shopping-bag text-6xl text-gray-300 mb-4"></i>
               <p class="text-lg font-semibold text-gray-400 mb-2">ยังไม่มีคำสั่งซื้อ</p>
               <p class="text-sm text-gray-400 mb-6">เริ่มช้อปปิ้งสินค้าที่คุณชอบได้เลย</p>
-              <a href="index.html" class="inline-block bg-primary hover:bg-yellow-600 text-white font-semibold px-6 py-3 rounded-lg transition-colors">เลือกซื้อสินค้า</a>
+              <a href="/" class="inline-block bg-primary hover:bg-yellow-600 text-white font-semibold px-6 py-3 rounded-lg transition-colors">เลือกซื้อสินค้า</a>
             </div>
           </div>
         </div>
@@ -104,7 +105,7 @@
 
     document.addEventListener('DOMContentLoaded', async () => {
       const token = localStorage.getItem('btmusicdrive_token');
-      if (!token) { location.href = 'index.html'; return; }
+      if (!token) { location.href = '/'; return; }
       
       try {
         const res = await fetch(`${API_BASE}/auth/me`, { headers: { Authorization: `Bearer ${token}` } });
@@ -150,7 +151,7 @@
             });
           });
         } else {
-          location.href = 'index.html';
+          location.href = '/';
         }
       } catch(e) { console.error(e); }
     });

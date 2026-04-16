@@ -34,6 +34,7 @@
     { "src": "/api/(.*)", "dest": "/server/src/index.ts" },
     { "src": "/product/([^/]+)", "dest": "/product.html" },
     { "src": "/category/([^/]+)", "dest": "/category.html" },
+    { "src": "/(shop|cart|checkout|orders|profile|wishlist|address|track-order|shipping|about|contact|faq|terms|privacy|refund|returns|exchange|warranty|admin)", "dest": "/$1.html" },
     { "handle": "filesystem" },
     { "src": "/", "dest": "/index.html" }
   ]

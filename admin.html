@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <base href="/">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex, nofollow">
@@ -533,7 +534,7 @@
       <span id="topbar-title">แดชบอร์ด</span>
     </div>
     <div class="topbar-right">
-      <a href="index.html" class="tb-btn">
+      <a href="/" class="tb-btn">
         <i class="fa-solid fa-store"></i><span>ดูหน้าร้าน</span>
       </a>
       <div class="tb-divider"></div>
@@ -2679,7 +2680,8 @@
 
     const win = window.open('', '_blank', 'width=500,height=700');
     win.document.write(`<!DOCTYPE html>
-<html><head><meta charset="UTF-8"><title>ใบปะหน้าพัสดุ ${shortId}</title>
+<html><head>
+  <base href="/"><meta charset="UTF-8"><title>ใบปะหน้าพัสดุ ${shortId}</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
   body { font-family: 'Segoe UI', sans-serif; padding:20px; color:#1d2327; }

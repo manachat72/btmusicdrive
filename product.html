@@ -172,7 +172,7 @@
   <div id="error" class="pt-24 text-center py-20 hidden">
     <i class="ph ph-warning-circle text-5xl text-red-400 mb-4"></i>
     <p class="text-red-500 text-lg font-semibold">ไม่พบสินค้า</p>
-    <a href="index.html" class="mt-4 inline-block text-primary hover:underline font-medium">← กลับหน้าร้าน</a>
+    <a href="/" class="mt-4 inline-block text-primary hover:underline font-medium">← กลับหน้าร้าน</a>
   </div>
 
   <!-- Product Content -->
@@ -181,9 +181,9 @@
 
       <!-- Breadcrumb -->
       <nav class="mb-6 text-sm text-gray-500">
-        <a href="index.html" class="hover:text-primary">หน้าแรก</a>
+        <a href="/" class="hover:text-primary">หน้าแรก</a>
         <span class="mx-2">/</span>
-        <a href="shop.html" class="hover:text-primary">ร้านค้า</a>
+        <a href="/shop" class="hover:text-primary">ร้านค้า</a>
         <span class="mx-2">/</span>
         <span id="bc-name" class="text-gray-700 font-medium"></span>
       </nav>
@@ -516,7 +516,7 @@
                     ไม่ครอบคลุมความเสียหายจากการใช้งานผิดวิธี
                   </li>
                 </ul>
-                <a href="warranty.html" class="mt-4 inline-flex items-center gap-1 text-xs text-primary font-semibold hover:underline">
+                <a href="/warranty" class="mt-4 inline-flex items-center gap-1 text-xs text-primary font-semibold hover:underline">
                   อ่านเงื่อนไขการรับประกันเพิ่มเติม <i class="ph ph-arrow-right"></i>
                 </a>
               </div>
@@ -550,7 +550,7 @@
                     ไม่รับคืนกรณีสินค้าถูกดัดแปลงหรือลบข้อมูล
                   </li>
                 </ul>
-                <a href="returns.html" class="mt-4 inline-flex items-center gap-1 text-xs text-primary font-semibold hover:underline">
+                <a href="/returns" class="mt-4 inline-flex items-center gap-1 text-xs text-primary font-semibold hover:underline">
                   อ่านนโยบายการคืนสินค้าเพิ่มเติม <i class="ph ph-arrow-right"></i>
                 </a>
               </div>
@@ -637,7 +637,7 @@
             <h3 class="text-xl font-extrabold text-gray-900"><i class="ph ph-squares-four text-primary mr-2"></i>สินค้าที่เกี่ยวข้อง</h3>
             <p class="text-sm text-gray-400 mt-1">สินค้าในหมวดหมู่เดียวกันที่คุณอาจสนใจ</p>
           </div>
-          <a href="shop.html" class="text-sm text-primary font-semibold hover:underline flex items-center gap-1">ดูทั้งหมด <i class="ph ph-arrow-right"></i></a>
+          <a href="/shop" class="text-sm text-primary font-semibold hover:underline flex items-center gap-1">ดูทั้งหมด <i class="ph ph-arrow-right"></i></a>
         </div>
         <!-- Slider wrapper -->
         <div class="relative">
@@ -1468,7 +1468,7 @@
 
   function buyNow() {
     addToCartFromDetail();
-    window.location.href = 'checkout.html';
+    window.location.href = '/checkout';
   }
 
   // ── Utils ────────────────────────────────────────────────────────────────────

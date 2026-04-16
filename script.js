@@ -76,7 +76,7 @@ const DEFAULT_MENUS = [
     { label: 'หมวดหมู่', url: '#categories', icon: null },
     { label: 'เกี่ยวกับ', url: 'about.html', icon: null },
     { label: 'ติดต่อเรา', url: 'contact.html', icon: 'ph ph-envelope' },
-    { label: 'ติดตามพัสดุ', url: 'track-order.html', icon: 'ph ph-package' },
+    { label: 'ติดตามพัสดุ', url: '/track-order', icon: 'ph ph-package' },
 ];
 
 async function loadNavMenus() {
@@ -125,7 +125,7 @@ function renderNavMenus(menus) {
             ).join('');
         }
         return html;
-    }).join('') + `<a href="admin.html" id="admin-nav-link-mobile" class="hidden px-3 py-2 rounded-md text-base font-medium text-secondary hover:text-primary hover:bg-amber-50 flex items-center gap-2"><i class="ph ph-shield-check"></i> Admin Dashboard</a>`;
+    }).join('') + `<a href="/admin" id="admin-nav-link-mobile" class="hidden px-3 py-2 rounded-md text-base font-medium text-secondary hover:text-primary hover:bg-amber-50 flex items-center gap-2"><i class="ph ph-shield-check"></i> Admin Dashboard</a>`;
 }
 
 // Fetch Products from API or fallback to local JSON

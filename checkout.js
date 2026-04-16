@@ -318,7 +318,7 @@ function renderOrderSummary() {
             <div class="flex flex-col items-center justify-center py-10 text-gray-400">
                 <i class="ph ph-shopping-cart text-4xl mb-2"></i>
                 <p class="text-sm">ตะกร้าของคุณว่างอยู่</p>
-                <a href="index.html" class="mt-3 text-sm text-primary font-medium hover:underline">เลือกดูสินค้า</a>
+                <a href="/" class="mt-3 text-sm text-primary font-medium hover:underline">เลือกดูสินค้า</a>
             </div>`;
         updateTotals();
         return;
@@ -570,7 +570,7 @@ async function processStripeOrder(method, shippingAddress, phone, btn, btnMobile
         const { error, paymentIntent } = await stripeInstance.confirmPayment({
             elements,
             confirmParams: {
-                return_url: window.location.origin + '/checkout.html',
+                return_url: window.location.origin + '//checkout',
             },
             redirect: 'if_required',
         });

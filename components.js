@@ -36,13 +36,13 @@ function _navbarHTML() {
   <nav class="bg-secondary shadow-sm fixed w-full z-50 top-0 transition-all duration-300" id="navbar">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between h-16 items-center">
-        <a href="index.html" class="flex-shrink-0 flex items-center cursor-pointer no-underline">
+        <a href="/" class="flex-shrink-0 flex items-center cursor-pointer no-underline">
           <img src="images/logo.png" alt="btmusicdrive" class="h-9 w-9 rounded-full mr-2">
           <span class="font-bold text-xl tracking-tight text-white">btmusicdrive</span>
         </a>
         <div class="hidden md:flex items-center gap-1" id="desktop-nav"></div>
         <div class="hidden md:flex items-center">
-          <a href="admin.html" id="admin-nav-link" class="hidden text-gray-300 hover:text-primary transition-colors font-medium flex items-center gap-1 text-sm ml-4">
+          <a href="/admin" id="admin-nav-link" class="hidden text-gray-300 hover:text-primary transition-colors font-medium flex items-center gap-1 text-sm ml-4">
             <i class="ph ph-shield-check text-base"></i> Admin
           </a>
         </div>
@@ -88,7 +88,7 @@ function _cartSidebarHTML() {
       <div class="flex justify-between text-base font-medium text-gray-900 mb-4">
         <p>ยอดรวม</p><p id="cart-total">฿0.00</p>
       </div>
-      <button onclick="window.location='checkout.html'" class="w-full bg-primary hover:bg-secondary text-white font-bold py-3 px-4 rounded-lg transition-colors shadow-md flex items-center justify-center gap-2">
+      <button onclick="window.location='/checkout'" class="w-full bg-primary hover:bg-secondary text-white font-bold py-3 px-4 rounded-lg transition-colors shadow-md flex items-center justify-center gap-2">
         <i class="ph ph-lock-key"></i> ดำเนินการชำระเงิน
       </button>
     </div>
@@ -168,7 +168,7 @@ function _footerHTML() {
 
         <!-- Logo + Description + Shop Links -->
 <div>
-  <div class="flex items-center mb-4 cursor-pointer" onclick="window.location='index.html'">
+  <div class="flex items-center mb-4 cursor-pointer" onclick="window.location='/'">
     <img src="images/logo.png" alt="btmusicdrive" class="h-10 w-10 rounded-full mr-3">
     <span class="font-bold text-2xl tracking-tight text-white">btmusicdrive</span>
   </div>
@@ -179,11 +179,11 @@ function _footerHTML() {
         <div>
           <h4 class="font-bold text-white mb-5 text-base">บริการลูกค้า</h4>
           <ul class="space-y-3">
-            <li><a href="shipping.html" class="text-gray-400 hover:text-primary transition-colors text-sm">การจัดส่งสินค้า</a></li>
-            <li><a href="warranty.html" class="text-gray-400 hover:text-primary transition-colors text-sm">การรับประกันสินค้า</a></li>
-            <li><a href="returns.html" class="text-gray-400 hover:text-primary transition-colors text-sm">การคืนสินค้าและการคืนเงิน</a></li>
-            <li><a href="exchange.html" class="text-gray-400 hover:text-primary transition-colors text-sm">การยกเลิกการสั่งซื้อสินค้า</a></li>
-            <li><a href="track-order.html" class="text-gray-400 hover:text-primary transition-colors text-sm">เช็คสถานะการจัดส่ง</a></li>
+            <li><a href="/shipping" class="text-gray-400 hover:text-primary transition-colors text-sm">การจัดส่งสินค้า</a></li>
+            <li><a href="/warranty" class="text-gray-400 hover:text-primary transition-colors text-sm">การรับประกันสินค้า</a></li>
+            <li><a href="/returns" class="text-gray-400 hover:text-primary transition-colors text-sm">การคืนสินค้าและการคืนเงิน</a></li>
+            <li><a href="/exchange" class="text-gray-400 hover:text-primary transition-colors text-sm">การยกเลิกการสั่งซื้อสินค้า</a></li>
+            <li><a href="/track-order" class="text-gray-400 hover:text-primary transition-colors text-sm">เช็คสถานะการจัดส่ง</a></li>
           </ul>
         </div>
 
@@ -191,11 +191,11 @@ function _footerHTML() {
         <div>
           <h4 class="font-bold text-white mb-5 text-base">เกี่ยวกับเรา</h4>
           <ul class="space-y-3">
-            <li><a href="contact.html" class="text-gray-400 hover:text-primary transition-colors text-sm">ติดต่อเรา</a></li>
-            <li><a href="about.html" class="text-gray-400 hover:text-primary transition-colors text-sm">เกี่ยวกับเรา</a></li>
-            <li><a href="faq.html" class="text-gray-400 hover:text-primary transition-colors text-sm">คำถามที่พบบ่อย</a></li>
-            <li><a href="terms.html" class="text-gray-400 hover:text-primary transition-colors text-sm">ข้อกำหนดและเงื่อนไข</a></li>
-            <li><a href="privacy.html" class="text-gray-400 hover:text-primary transition-colors text-sm">นโยบายความเป็นส่วนตัว</a></li>
+            <li><a href="/contact" class="text-gray-400 hover:text-primary transition-colors text-sm">ติดต่อเรา</a></li>
+            <li><a href="/about" class="text-gray-400 hover:text-primary transition-colors text-sm">เกี่ยวกับเรา</a></li>
+            <li><a href="/faq" class="text-gray-400 hover:text-primary transition-colors text-sm">คำถามที่พบบ่อย</a></li>
+            <li><a href="/terms" class="text-gray-400 hover:text-primary transition-colors text-sm">ข้อกำหนดและเงื่อนไข</a></li>
+            <li><a href="/privacy" class="text-gray-400 hover:text-primary transition-colors text-sm">นโยบายความเป็นส่วนตัว</a></li>
           </ul>
         </div>
 
@@ -250,9 +250,9 @@ function _footerHTML() {
       <div class="border-t border-gray-700 pt-6 hidden md:flex flex-col md:flex-row justify-between items-center gap-4">
         <p class="text-gray-500 text-sm">&copy; 2026 btmusicdrive สงวนลิขสิทธิ์ทุกประการ</p>
         <div class="flex items-center gap-4 text-gray-500 text-xs">
-          <a href="terms.html" class="hover:text-white transition-colors">ข้อกำหนดและเงื่อนไข</a>
+          <a href="/terms" class="hover:text-white transition-colors">ข้อกำหนดและเงื่อนไข</a>
           <span>|</span>
-          <a href="privacy.html" class="hover:text-white transition-colors">นโยบายความเป็นส่วนตัว</a>
+          <a href="/privacy" class="hover:text-white transition-colors">นโยบายความเป็นส่วนตัว</a>
         </div>
       </div>
     </div>
@@ -271,15 +271,15 @@ function _mobileBottomNavHTML() {
   <!-- ── Mobile Bottom Bar ── -->
   <nav id="mobile-bottom-nav" class="fixed bottom-0 left-0 right-0 z-50 md:hidden" style="background:#0F172A;border-top:1px solid rgba(139,115,85,0.18);height:60px;">
     <div class="flex h-full">
-      <a href="index.html" id="bnav-home" class="flex flex-col items-center justify-center flex-1 gap-[3px] no-underline" style="color:#64748b;">
+      <a href="/" id="bnav-home" class="flex flex-col items-center justify-center flex-1 gap-[3px] no-underline" style="color:#64748b;">
         <i class="ph ph-house" style="font-size:21px;line-height:1;"></i>
         <span style="font-size:9px;letter-spacing:0.04em;font-weight:500;">หน้าแรก</span>
       </a>
-      <a href="shop.html" class="flex flex-col items-center justify-center flex-1 gap-[3px] no-underline" style="color:#64748b;">
+      <a href="/shop" class="flex flex-col items-center justify-center flex-1 gap-[3px] no-underline" style="color:#64748b;">
         <i class="ph ph-storefront" style="font-size:21px;line-height:1;"></i>
         <span style="font-size:9px;letter-spacing:0.04em;font-weight:500;">ร้านค้า</span>
       </a>
-      <a href="cart.html" id="bnav-cart-btn" class="flex flex-col items-center justify-center flex-1 gap-[3px] relative no-underline" style="color:#64748b;">
+      <a href="/cart" id="bnav-cart-btn" class="flex flex-col items-center justify-center flex-1 gap-[3px] relative no-underline" style="color:#64748b;">
         <i class="ph ph-shopping-bag" style="font-size:21px;line-height:1;"></i>
         <span id="bnav-cart-count" class="absolute flex items-center justify-center" style="top:7px;right:calc(50% - 20px);min-width:15px;height:15px;padding:0 3px;font-size:8px;font-weight:700;color:#fff;background:#8B7355;border-radius:99px;">0</span>
         <span style="font-size:9px;letter-spacing:0.04em;font-weight:500;">ตะกร้า</span>
@@ -337,19 +337,19 @@ function _mobileBottomNavHTML() {
 
       <p style="margin:0;padding:14px 20px 6px;font-size:9px;font-weight:600;letter-spacing:0.13em;text-transform:uppercase;color:rgba(139,115,85,0.5);">เมนูหลัก</p>
 
-      <a href="index.html" class="_dlink" style="display:flex;align-items:center;gap:13px;padding:11px 20px;text-decoration:none;transition:background 0.15s;">
+      <a href="/" class="_dlink" style="display:flex;align-items:center;gap:13px;padding:11px 20px;text-decoration:none;transition:background 0.15s;">
         <span style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(139,115,85,0.1);flex-shrink:0;"><i class="ph ph-house" style="font-size:17px;color:#8B7355;"></i></span>
         <span style="font-size:13.5px;font-weight:500;color:#cbd5e1;">หน้าแรก</span>
       </a>
-      <a href="shop.html" class="_dlink" style="display:flex;align-items:center;gap:13px;padding:11px 20px;text-decoration:none;transition:background 0.15s;">
+      <a href="/shop" class="_dlink" style="display:flex;align-items:center;gap:13px;padding:11px 20px;text-decoration:none;transition:background 0.15s;">
         <span style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(139,115,85,0.1);flex-shrink:0;"><i class="ph ph-storefront" style="font-size:17px;color:#8B7355;"></i></span>
         <span style="font-size:13.5px;font-weight:500;color:#cbd5e1;">ร้านค้า</span>
       </a>
-      <a href="track-order.html" class="_dlink" style="display:flex;align-items:center;gap:13px;padding:11px 20px;text-decoration:none;transition:background 0.15s;">
+      <a href="/track-order" class="_dlink" style="display:flex;align-items:center;gap:13px;padding:11px 20px;text-decoration:none;transition:background 0.15s;">
         <span style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(139,115,85,0.1);flex-shrink:0;"><i class="ph ph-truck" style="font-size:17px;color:#8B7355;"></i></span>
         <span style="font-size:13.5px;font-weight:500;color:#cbd5e1;">ติดตามพัสดุ</span>
       </a>
-      <a href="wishlist.html" class="_dlink" style="display:flex;align-items:center;gap:13px;padding:11px 20px;text-decoration:none;transition:background 0.15s;">
+      <a href="/wishlist" class="_dlink" style="display:flex;align-items:center;gap:13px;padding:11px 20px;text-decoration:none;transition:background 0.15s;">
         <span style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(139,115,85,0.1);flex-shrink:0;"><i class="ph ph-heart" style="font-size:17px;color:#8B7355;"></i></span>
         <span style="font-size:13.5px;font-weight:500;color:#cbd5e1;">สินค้าที่ถูกใจ</span>
       </a>
@@ -358,15 +358,15 @@ function _mobileBottomNavHTML() {
 
       <p style="margin:0;padding:10px 20px 6px;font-size:9px;font-weight:600;letter-spacing:0.13em;text-transform:uppercase;color:rgba(139,115,85,0.5);">บัญชี</p>
 
-      <a href="orders.html" class="_dlink" style="display:flex;align-items:center;gap:13px;padding:11px 20px;text-decoration:none;transition:background 0.15s;">
+      <a href="/orders" class="_dlink" style="display:flex;align-items:center;gap:13px;padding:11px 20px;text-decoration:none;transition:background 0.15s;">
         <span style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(139,115,85,0.1);flex-shrink:0;"><i class="ph ph-package" style="font-size:17px;color:#8B7355;"></i></span>
         <span style="font-size:13.5px;font-weight:500;color:#cbd5e1;">คำสั่งซื้อ</span>
       </a>
-      <a href="profile.html" class="_dlink" style="display:flex;align-items:center;gap:13px;padding:11px 20px;text-decoration:none;transition:background 0.15s;">
+      <a href="/profile" class="_dlink" style="display:flex;align-items:center;gap:13px;padding:11px 20px;text-decoration:none;transition:background 0.15s;">
         <span style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(139,115,85,0.1);flex-shrink:0;"><i class="ph ph-user-circle" style="font-size:17px;color:#8B7355;"></i></span>
         <span style="font-size:13.5px;font-weight:500;color:#cbd5e1;">ข้อมูลส่วนตัว</span>
       </a>
-      <a href="address.html" class="_dlink" style="display:flex;align-items:center;gap:13px;padding:11px 20px;text-decoration:none;transition:background 0.15s;">
+      <a href="/address" class="_dlink" style="display:flex;align-items:center;gap:13px;padding:11px 20px;text-decoration:none;transition:background 0.15s;">
         <span style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(139,115,85,0.1);flex-shrink:0;"><i class="ph ph-map-pin" style="font-size:17px;color:#8B7355;"></i></span>
         <span style="font-size:13.5px;font-weight:500;color:#cbd5e1;">ที่อยู่จัดส่ง</span>
       </a>
@@ -375,11 +375,11 @@ function _mobileBottomNavHTML() {
 
       <p style="margin:0;padding:10px 20px 6px;font-size:9px;font-weight:600;letter-spacing:0.13em;text-transform:uppercase;color:rgba(139,115,85,0.5);">ช่วยเหลือ</p>
 
-      <a href="contact.html" class="_dlink" style="display:flex;align-items:center;gap:13px;padding:11px 20px;text-decoration:none;transition:background 0.15s;">
+      <a href="/contact" class="_dlink" style="display:flex;align-items:center;gap:13px;padding:11px 20px;text-decoration:none;transition:background 0.15s;">
         <span style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(139,115,85,0.1);flex-shrink:0;"><i class="ph ph-chat-circle-dots" style="font-size:17px;color:#8B7355;"></i></span>
         <span style="font-size:13.5px;font-weight:500;color:#cbd5e1;">ติดต่อเรา</span>
       </a>
-      <a href="about.html" class="_dlink" style="display:flex;align-items:center;gap:13px;padding:11px 20px;text-decoration:none;transition:background 0.15s;">
+      <a href="/about" class="_dlink" style="display:flex;align-items:center;gap:13px;padding:11px 20px;text-decoration:none;transition:background 0.15s;">
         <span style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(139,115,85,0.1);flex-shrink:0;"><i class="ph ph-info" style="font-size:17px;color:#8B7355;"></i></span>
         <span style="font-size:13.5px;font-weight:500;color:#cbd5e1;">เกี่ยวกับเรา</span>
       </a>
@@ -470,10 +470,10 @@ function _highlightActiveSidebar() {
 
 // ── Dynamic Navigation Menus ────────────────────────────────────────────────
 const _DEFAULT_MENUS = [
-  { label: 'หน้าแรก', url: 'index.html', icon: 'ph ph-house' },
-  { label: 'ร้านค้า', url: 'shop.html', icon: 'ph ph-storefront' },
+  { label: 'หน้าแรก', url: '/', icon: 'ph ph-house' },
+  { label: 'ร้านค้า', url: '/shop', icon: 'ph ph-storefront' },
   { label: 'หมวดหมู่', url: '#', icon: 'ph ph-squares-four', children: [
-    { label: 'สินค้าทั้งหมด', url: 'shop.html', icon: 'ph ph-package' },
+    { label: 'สินค้าทั้งหมด', url: '/shop', icon: 'ph ph-package' },
     { label: 'เพื่อชีวิต', url: '/category/phuea-chiwit', icon: 'ph ph-microphone-stage' },
     { label: 'เพลงสตริง', url: '/category/phleng-satring', icon: 'ph ph-music-notes' },
     { label: 'ลูกทุ่ง', url: '/category/lukthung', icon: 'ph ph-vinyl-record' },
@@ -481,8 +481,8 @@ const _DEFAULT_MENUS = [
     { label: 'เพลงสากล', url: '/category/international', icon: 'ph ph-globe' },
     { label: 'ลูกกรุง', url: '/category/luk-krung', icon: 'ph ph-music-note' },
   ]},
-  { label: 'เกี่ยวกับ', url: 'about.html', icon: 'ph ph-info' },
-  { label: 'ติดตามพัสดุ', url: 'track-order.html', icon: 'ph ph-package' },
+  { label: 'เกี่ยวกับ', url: '/about', icon: 'ph ph-info' },
+  { label: 'ติดตามพัสดุ', url: '/track-order', icon: 'ph ph-package' },
 ];
 
 async function _loadNavMenus() {
@@ -530,7 +530,7 @@ function _renderNavMenus(menus) {
       ).join('');
     }
     return html;
-  }).join('') + `<a href="admin.html" id="admin-nav-link-mobile" class="hidden px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-primary hover:bg-white/10 flex items-center gap-2"><i class="ph ph-shield-check"></i> Admin Dashboard</a>`;
+  }).join('') + `<a href="/admin" id="admin-nav-link-mobile" class="hidden px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-primary hover:bg-white/10 flex items-center gap-2"><i class="ph ph-shield-check"></i> Admin Dashboard</a>`;
 }
 
 // ── Auth ─────────────────────────────────────────────────────────────────────
@@ -971,7 +971,7 @@ function _setupSharedEvents() {
     _currentUser = null;
     _checkAuthState();
     _toggleAccountDrawer(false);
-    location.href = 'index.html';
+    location.href = '/';
   });
   bnavLoginBtn?.addEventListener('click', (e) => {
     e.preventDefault();

@@ -108,7 +108,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-3">
             <!-- Breadcrumb — above chips, left-aligned -->
             <div class="flex items-center gap-2 text-sm text-gray-400 mb-2">
-                <a href="index.html" class="hover:text-primary transition-colors">หน้าแรก</a>
+                <a href="/" class="hover:text-primary transition-colors">หน้าแรก</a>
                 <i class="ph ph-caret-right text-xs"></i>
                 <span id="breadcrumb-cat" class="text-gray-700 font-medium">หมวดหมู่</span>
             </div>
@@ -302,7 +302,7 @@
         const container = document.getElementById('cat-chips');
         const savedCats = getCategoriesFromStorage();
 
-        let html = `<a href="shop.html" class="flex-shrink-0 px-4 py-2 rounded-full border border-gray-200 text-sm font-medium text-gray-600 hover:border-primary hover:text-primary transition-all">ทั้งหมด</a>`;
+        let html = `<a href="/shop" class="flex-shrink-0 px-4 py-2 rounded-full border border-gray-200 text-sm font-medium text-gray-600 hover:border-primary hover:text-primary transition-all">ทั้งหมด</a>`;
         allCats.forEach(cat => {
             const isActive = cat === activeCat;
             const savedCat = savedCats.find(c => c.name === cat);

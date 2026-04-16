@@ -90,7 +90,11 @@ app.get('/api/config/stripe', (req, res) => {
   res.json({ publishableKey });
 });
 
-// Clean URL routing — serve HTML for slug-based pages (mirrors vercel.json)
+// Clean URL routing — mirrors vercel.json routing rules
+const _pages = ['shop','cart','checkout','orders','profile','wishlist','address','track-order','shipping','about','contact','faq','terms','privacy','refund','returns','exchange','warranty','admin'];
+_pages.forEach(p => {
+  app.get(`/${p}`, (req, res) => res.sendFile(path.join(__dirname, `../../${p}.html`)));
+});
 app.get('/category/:slug', (req, res) => {
   res.sendFile(path.join(__dirname, '../../category.html'));
 });

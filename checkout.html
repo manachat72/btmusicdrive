@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
+  <base href="/">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#8B7355">
@@ -74,11 +75,11 @@
     <!-- Navbar -->
     <nav class="bg-secondary shadow-sm sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <a href="index.html" class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors">
+            <a href="/" class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors">
                 <i class="ph ph-arrow-left text-xl"></i>
                 <span class="text-sm font-medium">กลับไปหน้าร้าน</span>
             </a>
-            <div class="flex items-center gap-2 cursor-pointer" onclick="window.location='index.html'">
+            <div class="flex items-center gap-2 cursor-pointer" onclick="window.location='/'">
                 <img src="images/logo.png" alt="btmusicdrive" class="h-8 w-8 rounded-full">
                 <span class="font-bold text-lg tracking-tight text-white">btmusicdrive</span>
             </div>
@@ -91,7 +92,7 @@
         <div class="border-t border-gray-700">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
                 <div class="flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm">
-                    <a href="cart.html" class="flex items-center gap-1.5 text-primary font-semibold hover:opacity-80 transition-opacity">
+                    <a href="/cart" class="flex items-center gap-1.5 text-primary font-semibold hover:opacity-80 transition-opacity">
                         <span class="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold">1</span>
                         <span class="text-gray-300">ตะกร้า</span>
                     </a>
@@ -115,7 +116,7 @@
         <p class="text-amber-800 text-sm">
             <i class="ph ph-warning mr-1"></i>
             คุณต้องเข้าสู่ระบบก่อนชำระเงิน
-            <button onclick="window.location='index.html'" class="font-bold underline hover:text-amber-900 ml-1">เข้าสู่ระบบที่นี่</button>
+            <button onclick="window.location='/'" class="font-bold underline hover:text-amber-900 ml-1">เข้าสู่ระบบที่นี่</button>
         </p>
     </div>
 
@@ -433,10 +434,10 @@
             <p class="text-gray-500 mb-1" id="order-id-display">เราได้รับคำสั่งซื้อของคุณแล้ว</p>
             <p class="text-sm text-gray-400 mb-6">อีเมลยืนยันจะถูกส่งไปยังอีเมลของคุณ</p>
             <div class="space-y-3">
-                <button onclick="window.location='index.html'" class="w-full bg-secondary hover:bg-slate-800 text-white font-bold py-3 px-6 rounded-xl transition-colors flex items-center justify-center gap-2">
+                <button onclick="window.location='/'" class="w-full bg-secondary hover:bg-slate-800 text-white font-bold py-3 px-6 rounded-xl transition-colors flex items-center justify-center gap-2">
                     <i class="ph ph-storefront"></i> เลือกซื้อสินค้าต่อ
                 </button>
-                <button onclick="window.location='track-order.html'" class="w-full bg-white border-2 border-gray-200 hover:border-primary text-gray-700 hover:text-primary font-bold py-3 px-6 rounded-xl transition-colors flex items-center justify-center gap-2">
+                <button onclick="window.location='/track-order'" class="w-full bg-white border-2 border-gray-200 hover:border-primary text-gray-700 hover:text-primary font-bold py-3 px-6 rounded-xl transition-colors flex items-center justify-center gap-2">
                     <i class="ph ph-package"></i> ติดตามคำสั่งซื้อ
                 </button>
             </div>
@@ -457,18 +458,18 @@
                 <div>
                     <h4 class="font-bold text-white mb-4 text-base">บริการลูกค้า</h4>
                     <ul class="space-y-2 text-sm">
-                        <li><a href="shipping.html" class="text-gray-400 hover:text-white transition-colors">การจัดส่งสินค้า</a></li>
-                        <li><a href="warranty.html" class="text-gray-400 hover:text-white transition-colors">การรับประกันสินค้า</a></li>
-                        <li><a href="returns.html" class="text-gray-400 hover:text-white transition-colors">การคืนสินค้าและการคืนเงิน</a></li>
+                        <li><a href="/shipping" class="text-gray-400 hover:text-white transition-colors">การจัดส่งสินค้า</a></li>
+                        <li><a href="/warranty" class="text-gray-400 hover:text-white transition-colors">การรับประกันสินค้า</a></li>
+                        <li><a href="/returns" class="text-gray-400 hover:text-white transition-colors">การคืนสินค้าและการคืนเงิน</a></li>
                     </ul>
                 </div>
                 <div>
                     <h4 class="font-bold text-white mb-4 text-base">เกี่ยวกับเรา</h4>
                     <ul class="space-y-2 text-sm">
-                        <li><a href="contact.html" class="text-gray-400 hover:text-white transition-colors">ติดต่อเรา</a></li>
-                        <li><a href="about.html" class="text-gray-400 hover:text-white transition-colors">เกี่ยวกับเรา</a></li>
-                        <li><a href="terms.html" class="text-gray-400 hover:text-white transition-colors">ข้อกำหนดและเงื่อนไข</a></li>
-                        <li><a href="privacy.html" class="text-gray-400 hover:text-white transition-colors">นโยบายความเป็นส่วนตัว</a></li>
+                        <li><a href="/contact" class="text-gray-400 hover:text-white transition-colors">ติดต่อเรา</a></li>
+                        <li><a href="/about" class="text-gray-400 hover:text-white transition-colors">เกี่ยวกับเรา</a></li>
+                        <li><a href="/terms" class="text-gray-400 hover:text-white transition-colors">ข้อกำหนดและเงื่อนไข</a></li>
+                        <li><a href="/privacy" class="text-gray-400 hover:text-white transition-colors">นโยบายความเป็นส่วนตัว</a></li>
                     </ul>
                 </div>
                 <div>
@@ -487,9 +488,9 @@
             <div class="border-t border-gray-700 pt-5 flex flex-col md:flex-row justify-between items-center gap-3">
                 <p class="text-gray-500 text-xs">&copy; 2026 btmusicdrive สงวนลิขสิทธิ์ทุกประการ</p>
                 <div class="flex items-center gap-4 text-gray-500 text-xs">
-                    <a href="terms.html" class="hover:text-white transition-colors">ข้อกำหนดและเงื่อนไข</a>
+                    <a href="/terms" class="hover:text-white transition-colors">ข้อกำหนดและเงื่อนไข</a>
                     <span>|</span>
-                    <a href="privacy.html" class="hover:text-white transition-colors">นโยบายความเป็นส่วนตัว</a>
+                    <a href="/privacy" class="hover:text-white transition-colors">นโยบายความเป็นส่วนตัว</a>
                 </div>
             </div>
         </div>
