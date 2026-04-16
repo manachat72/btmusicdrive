@@ -272,23 +272,28 @@
     // Read category from URL param
     const urlParams = new URLSearchParams(window.location.search);
     const urlCategory = urlParams.get('category');
+    const urlSearch = urlParams.get('search');
 
-    // Redirect shop.html?category=X → /category/:slug (clean URL)
-    if (urlCategory) {
-        fetch('categories.json').then(r => r.json()).then(cats => {
-            const match = cats.find(c => c.name === urlCategory);
-            if (match?.slug) {
-                window.location.replace(`/category/${match.slug}`);
-            }
-        }).catch(() => {});
+    // Pre-fill search from URL param
+    if (urlSearch) {
+        searchQuery = urlSearch;
     }
 
     document.addEventListener('DOMContentLoaded', async () => {
         await loadCategoryData();
+        // Redirect ?category=X → /category/:slug using loaded categoryData
+        if (urlCategory) {
+            const match = categoryData.find(c => c.name === urlCategory);
+            if (match?.slug) { window.location.replace(`/category/${match.slug}`); return; }
+        }
         await loadShopProducts();
         setupShopEvents();
         setupMobileFilterDrawer();
         renderRecentlyViewed();
+        if (urlSearch) {
+            const inp = document.getElementById('search-input');
+            if (inp) inp.value = urlSearch;
+        }
     });
 
     async function loadShopProducts() {
@@ -588,24 +593,32 @@
         document.getElementById('category-chips').addEventListener('click', e => {
             const chip = e.target.closest('.category-chip');
             if (!chip) return;
-            activeCategory = chip.dataset.cat;
+            const catName = chip.dataset.cat;
+            if (catName !== 'all') {
+                const cat = categoryData.find(c => c.name === catName);
+                if (cat?.slug) { window.location.href = `/category/${cat.slug}`; return; }
+            }
+            activeCategory = catName;
             document.getElementById('page-title').textContent = activeCategory === 'all' ? 'สินค้าทั้งหมด' : activeCategory;
             document.getElementById('breadcrumb-current').textContent = activeCategory === 'all' ? 'สินค้าทั้งหมด' : activeCategory;
             renderCategoryChips();
             renderSidebarCategories();
             renderShopProducts();
             updateCategoryBanner(activeCategory);
-            // Update URL
             const url = new URL(window.location);
-            if (activeCategory === 'all') url.searchParams.delete('category');
-            else url.searchParams.set('category', activeCategory);
+            url.searchParams.delete('category');
             history.replaceState(null, '', url);
         });
 
         // Sidebar category radios
         document.getElementById('sidebar-categories').addEventListener('change', e => {
             if (e.target.name === 'sidebar-cat') {
-                activeCategory = e.target.value;
+                const catName = e.target.value;
+                if (catName !== 'all') {
+                    const cat = categoryData.find(c => c.name === catName);
+                    if (cat?.slug) { window.location.href = `/category/${cat.slug}`; return; }
+                }
+                activeCategory = catName;
                 document.getElementById('page-title').textContent = activeCategory === 'all' ? 'สินค้าทั้งหมด' : activeCategory;
                 document.getElementById('breadcrumb-current').textContent = activeCategory === 'all' ? 'สินค้าทั้งหมด' : activeCategory;
                 renderCategoryChips();
@@ -619,7 +632,11 @@
         document.getElementById('search-input').addEventListener('input', e => {
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
-                searchQuery = e.target.value.trim();
+                const newQuery = e.target.value.trim();
+                if (newQuery && newQuery !== searchQuery && typeof fbq === 'function') {
+                    fbq('track', 'Search', { search_string: newQuery });
+                }
+                searchQuery = newQuery;
                 renderShopProducts();
             }, 300);
         });

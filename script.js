@@ -413,7 +413,8 @@ async function handleAuthSubmit(e) {
         updateUserUI();
         toggleAuthModal();
         showToast(isLoginMode ? 'Successfully logged in!' : 'Account created successfully!');
-        
+        if (!isLoginMode && typeof fbq === 'function') fbq('track', 'CompleteRegistration');
+
         // Sync cart after login/register
         await syncLocalCartToDatabase();
         

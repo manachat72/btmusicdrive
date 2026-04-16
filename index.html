@@ -377,6 +377,7 @@
             const product = (typeof products !== 'undefined') ? products.find(p => p.id === pid) : null;
             if (product) {
                 wishlist.push({ id: product.id, name: product.name, price: product.price, image: product.imageUrl || product.image });
+                if (typeof fbq === 'function') fbq('track', 'AddToWishlist', { content_ids: [product.id], content_name: product.name, value: product.price, currency: 'THB' });
             }
             if (icon) { icon.className = 'ph-fill ph-heart text-xl text-red-500'; }
             if (typeof _showToast === 'function') _showToast('เพิ่มในรายการที่ถูกใจแล้ว ❤');

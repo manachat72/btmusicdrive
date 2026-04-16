@@ -47,7 +47,7 @@ function _navbarHTML() {
           </a>
         </div>
         <div class="flex items-center space-x-4">
-          <button class="text-gray-300 hover:text-primary transition-colors"><i class="ph ph-magnifying-glass text-2xl"></i></button>
+          <button id="navbar-search-btn" class="text-gray-300 hover:text-primary transition-colors"><i class="ph ph-magnifying-glass text-2xl"></i></button>
           <button class="hidden md:block text-gray-300 hover:text-primary transition-colors relative group" id="auth-btn">
             <i class="ph ph-user text-2xl"></i>
             <span id="user-greeting" class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs font-medium text-white hidden whitespace-nowrap bg-gray-800 px-2 py-1 rounded shadow-sm"></span>
@@ -65,7 +65,15 @@ function _navbarHTML() {
     <div class="md:hidden hidden bg-secondary border-t border-gray-700 absolute w-full" id="mobile-menu">
       <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 shadow-lg" id="mobile-nav"></div>
     </div>
-  </nav>`;
+  </nav>
+  <div id="search-overlay-backdrop" class="fixed inset-0 bg-black/60 z-[100] hidden"></div>
+  <div id="navbar-search-bar" class="fixed top-0 left-0 right-0 z-[101] bg-secondary shadow-2xl transform -translate-y-full transition-transform duration-300 ease-in-out">
+    <div class="max-w-3xl mx-auto px-4 py-5 flex items-center gap-3">
+      <i class="ph ph-magnifying-glass text-2xl text-primary flex-shrink-0"></i>
+      <input type="text" id="navbar-search-input" placeholder="ค้นหาสินค้า เช่น เพลงลูกทุ่ง, ป๊อปเกาหลี..." autocomplete="off" class="flex-1 bg-transparent text-white placeholder-gray-400 text-lg outline-none">
+      <button id="navbar-search-close" class="text-gray-400 hover:text-white transition-colors p-1 flex-shrink-0"><i class="ph ph-x text-xl"></i></button>
+    </div>
+  </div>`;
 }
 
 function _cartSidebarHTML() {
@@ -977,6 +985,37 @@ function _setupSharedEvents() {
     e.preventDefault();
     _toggleAccountDrawer(false);
     _toggleAuthModal();
+  });
+
+  // Navbar search overlay
+  const _searchBtn = document.getElementById('navbar-search-btn');
+  const _searchBar = document.getElementById('navbar-search-bar');
+  const _searchInput = document.getElementById('navbar-search-input');
+  const _searchClose = document.getElementById('navbar-search-close');
+  const _searchBackdrop = document.getElementById('search-overlay-backdrop');
+
+  function _openSearch() {
+    _searchBar?.classList.remove('-translate-y-full');
+    _searchBackdrop?.classList.remove('hidden');
+    setTimeout(() => _searchInput?.focus(), 150);
+  }
+  function _closeSearch() {
+    _searchBar?.classList.add('-translate-y-full');
+    _searchBackdrop?.classList.add('hidden');
+    if (_searchInput) _searchInput.value = '';
+  }
+  _searchBtn?.addEventListener('click', _openSearch);
+  _searchClose?.addEventListener('click', _closeSearch);
+  _searchBackdrop?.addEventListener('click', _closeSearch);
+  _searchInput?.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { _closeSearch(); return; }
+    if (e.key === 'Enter') {
+      const q = _searchInput.value.trim();
+      if (!q) return;
+      if (typeof fbq === 'function') fbq('track', 'Search', { search_string: q });
+      _closeSearch();
+      window.location.href = `/shop?search=${encodeURIComponent(q)}`;
+    }
   });
 
   if (navbar) {

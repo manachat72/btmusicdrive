@@ -1368,6 +1368,7 @@
       showToast('ลบออกจากรายการที่ถูกใจแล้ว');
     } else {
       list.push({ id: product.id, name: product.name, price: product.price, image: product.imageUrl });
+      if (typeof fbq === 'function') fbq('track', 'AddToWishlist', { content_ids: [product.id], content_name: product.name, value: product.price, currency: 'THB' });
       showToast('เพิ่มในรายการที่ถูกใจแล้ว ❤');
     }
     saveWishlistData(list);

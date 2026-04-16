@@ -478,7 +478,18 @@
             if (!btn) return;
             const productId = btn.dataset.wishlist;
             const product = allProducts.find(p => p.id === productId);
-            if (product && typeof toggleWishlist === 'function') toggleWishlist(product);
+            if (!product) return;
+            let wl = JSON.parse(localStorage.getItem('btmusicdrive_wishlist') || '[]');
+            const idx = wl.findIndex(w => w.id === productId);
+            if (idx >= 0) {
+                wl.splice(idx, 1);
+                if (typeof _showToast === 'function') _showToast('ลบออกจากรายการที่ถูกใจ');
+            } else {
+                wl.push({ id: product.id, name: product.name, price: product.price, image: product.imageUrl });
+                if (typeof fbq === 'function') fbq('track', 'AddToWishlist', { content_ids: [product.id], content_name: product.name, value: product.price, currency: 'THB' });
+                if (typeof _showToast === 'function') _showToast('เพิ่มในรายการที่ถูกใจแล้ว ❤');
+            }
+            localStorage.setItem('btmusicdrive_wishlist', JSON.stringify(wl));
             renderCatProducts();
         });
     }
