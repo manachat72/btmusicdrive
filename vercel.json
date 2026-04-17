@@ -148,11 +148,7 @@
       "dest": "/category.html"
     },
     {
-      "src": "/bt-admin",
-      "dest": "/bt_panel_secure.html"
-    },
-    {
-      "src": "/(shop|cart|checkout|orders|profile|wishlist|address|track-order|shipping|about|contact|faq|terms|privacy|refund|returns|exchange|warranty)",
+      "src": "/(shop|cart|checkout|orders|profile|wishlist|address|track-order|shipping|about|contact|faq|terms|privacy|refund|returns|exchange|warranty|admin)",
       "dest": "/$1.html"
     },
     {
