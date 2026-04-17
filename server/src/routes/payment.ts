@@ -5,6 +5,7 @@ import { authenticateToken, AuthRequest } from '../middleware/auth';
 import prisma from '../lib/prisma';
 import { sendOrderConfirmationEmail } from '../services/emailService';
 import { sendPurchaseEvent } from '../lib/meta-capi';
+import { sendTikTokPurchaseEvent, sendTikTokPlaceOrderEvent } from '../lib/tiktok-events';
 
 type StripeClient = InstanceType<typeof Stripe>;
 
@@ -265,7 +266,7 @@ router.post('/confirm-order', authenticateToken, async (req: AuthRequest, res: R
     }
 
     // Meta CAPI Purchase event (non-blocking)
-    sendPurchaseEvent({
+    const _cardEventData = {
       orderId: order.id,
       totalAmount,
       contentIds: cart.items.map((i: any) => i.productId),
@@ -276,7 +277,9 @@ router.post('/confirm-order', authenticateToken, async (req: AuthRequest, res: R
         clientIp: (req.headers['x-forwarded-for'] as string)?.split(',')[0] || req.ip,
         userAgent: req.headers['user-agent'],
       },
-    }).catch(() => {});
+    };
+    sendPurchaseEvent(_cardEventData).catch(() => {});
+    sendTikTokPurchaseEvent(_cardEventData).catch(() => {});
 
     return res.json({
       orderId: order.id,
@@ -393,8 +396,8 @@ router.post('/cod-order', authenticateToken, async (req: AuthRequest, res: Respo
       }).catch((err: any) => console.error('[Email] Confirmation skip:', err));
     }
 
-    // Meta CAPI Purchase event (non-blocking)
-    sendPurchaseEvent({
+    // Meta CAPI + TikTok Events API Purchase event (non-blocking)
+    const _codEventData = {
       orderId: order.id,
       totalAmount,
       contentIds: cart.items.map((i: any) => i.productId),
@@ -405,6 +408,13 @@ router.post('/cod-order', authenticateToken, async (req: AuthRequest, res: Respo
         clientIp: (req.headers['x-forwarded-for'] as string)?.split(',')[0] || req.ip,
         userAgent: req.headers['user-agent'],
       },
+    };
+    sendPurchaseEvent(_codEventData).catch(() => {});
+    sendTikTokPlaceOrderEvent({
+      orderId: order.id,
+      totalAmount,
+      products: cart.items.map((i: any) => ({ id: i.productId, name: i.product?.name, price: Number(i.priceAtTime) })),
+      userData: _codEventData.userData,
     }).catch(() => {});
 
     return res.json({

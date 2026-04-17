@@ -5,6 +5,7 @@ import { OAuth2Client } from 'google-auth-library';
 import prisma from '../lib/prisma';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
 import { authLimiter } from '../middleware/rateLimiter';
+import { sendTikTokRegistrationEvent } from '../lib/tiktok-events';
 
 const router = express.Router();
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -135,6 +136,15 @@ router.post('/register', authLimiter, async (req: Request, res: Response) => {
       process.env.JWT_SECRET as string,
       { expiresIn: '7d' }
     );
+
+    sendTikTokRegistrationEvent({
+      userId: user.id,
+      userData: {
+        email: user.email,
+        clientIp: (req.headers['x-forwarded-for'] as string)?.split(',')[0] || req.ip,
+        userAgent: req.headers['user-agent'],
+      },
+    }).catch(() => {});
 
     res.status(201).json({
       message: 'User registered successfully',
