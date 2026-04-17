@@ -1,5 +1,6 @@
 ﻿<!DOCTYPE html>
 <html lang="th">
+
 <head>
   <base href="/">
   <meta charset="UTF-8" />
@@ -9,8 +10,10 @@
 
   <!-- ══ SEO: Title & Description (updated dynamically by JS after product loads) ══ -->
   <title>แฟลชไดร์ฟเพลง MP3 — Bt music drive</title>
-  <meta name="description" content="ซื้อแฟลชไดร์ฟเพลง MP3 คุณภาพสูง เสียบปุ๊บฟังปั๊บ ไม่ต้องโหลด เสียงชัด HD รองรับรถยนต์ทุกรุ่น จัดส่งทั่วไทย — Bt music drive">
-  <meta name="keywords" content="แฟลชไดร์ฟเพลง MP3, USB เพลง, เพลงลูกทุ่ง, หมอลำ, สตริง, เพลงสากล, เสียบปุ๊บฟังปั๊บ, เสียงชัด HD, ฟังเพลงในรถ">
+  <meta name="description"
+    content="ซื้อแฟลชไดร์ฟเพลง MP3 คุณภาพสูง เสียบปุ๊บฟังปั๊บ ไม่ต้องโหลด เสียงชัด HD รองรับรถยนต์ทุกรุ่น จัดส่งทั่วไทย — Bt music drive">
+  <meta name="keywords"
+    content="แฟลชไดร์ฟเพลง MP3, USB เพลง, เพลงลูกทุ่ง, หมอลำ, สตริง, เพลงสากล, เสียบปุ๊บฟังปั๊บ, เสียงชัด HD, ฟังเพลงในรถ">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://btmusicdrive.com/product.html">
 
@@ -18,7 +21,8 @@
   <meta property="og:type" content="product">
   <meta property="og:site_name" content="Bt music drive">
   <meta property="og:title" content="แฟลชไดร์ฟเพลง MP3 — Bt music drive">
-  <meta property="og:description" content="รวมเพลงฮิตคุณภาพเสียง HD เสียบปุ๊บฟังปั๊บ ไม่ต้องลงโปรแกรม รองรับรถยนต์ทุกรุ่น จัดส่งด่วนทั่วไทย">
+  <meta property="og:description"
+    content="รวมเพลงฮิตคุณภาพเสียง HD เสียบปุ๊บฟังปั๊บ ไม่ต้องลงโปรแกรม รองรับรถยนต์ทุกรุ่น จัดส่งด่วนทั่วไทย">
   <meta property="og:image" content="https://btmusicdrive.com/images/og-product.webp">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -52,12 +56,28 @@
 
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Inter', sans-serif; }
+    body {
+      font-family: 'Inter', sans-serif;
+    }
 
     /* Gallery */
-    .thumb { border: 2px solid transparent; cursor: pointer; transition: border-color .2s; border-radius: 8px; overflow: hidden; }
-    .thumb.active { border-color: #8B7355; }
-    .thumb:hover { border-color: #8B7355; opacity: .85; }
+    .thumb {
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: border-color .2s;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .thumb.active {
+      border-color: #8B7355;
+    }
+
+    .thumb:hover {
+      border-color: #8B7355;
+      opacity: .85;
+    }
+
     .gallery-main {
       aspect-ratio: 1;
       background: #f8fafc;
@@ -69,49 +89,141 @@
       border: 1px solid #e2e8f0;
       position: relative;
     }
+
     .gallery-main img {
-      max-width: 100%; max-height: 100%; object-fit: contain;
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
       transition: transform 0.4s ease;
       cursor: zoom-in;
     }
-    .gallery-main:hover img { transform: scale(1.08); }
-    .gallery-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,.9); box-shadow: 0 2px 8px rgba(0,0,0,.14); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all .2s; z-index: 5; }
-    .gallery-nav:hover { background: #fff; box-shadow: 0 4px 16px rgba(0,0,0,.18); transform: translateY(-50%) scale(1.08); }
+
+    .gallery-main:hover img {
+      transform: scale(1.08);
+    }
+
+    .gallery-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .9);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .14);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all .2s;
+      z-index: 5;
+    }
+
+    .gallery-nav:hover {
+      background: #fff;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, .18);
+      transform: translateY(-50%) scale(1.08);
+    }
 
     /* Tabs */
-    .tab-btn { position: relative; padding: 12px 24px; font-weight: 600; color: #64748b; transition: color .2s; white-space: nowrap; }
-    .tab-btn.active { color: #0F172A; }
-    .tab-btn.active::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: #8B7355; border-radius: 3px 3px 0 0; }
-    .tab-btn:hover { color: #334155; }
+    .tab-btn {
+      position: relative;
+      padding: 12px 24px;
+      font-weight: 600;
+      color: #64748b;
+      transition: color .2s;
+      white-space: nowrap;
+    }
+
+    .tab-btn.active {
+      color: #0F172A;
+    }
+
+    .tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: #8B7355;
+      border-radius: 3px 3px 0 0;
+    }
+
+    .tab-btn:hover {
+      color: #334155;
+    }
 
     /* Specs */
-    .spec-row:nth-child(even) { background: #f8fafc; }
+    .spec-row:nth-child(even) {
+      background: #f8fafc;
+    }
 
     /* Tags */
-    .tag { display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; transition: opacity .2s; }
-    .tag:hover { opacity: .8; }
+    .tag {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity .2s;
+    }
+
+    .tag:hover {
+      opacity: .8;
+    }
 
     /* Quantity */
-    .qty-btn { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; transition: background .15s, color .15s; }
-    .qty-btn:hover { background: #8B7355; color: #fff; }
+    .qty-btn {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+      transition: background .15s, color .15s;
+    }
+
+    .qty-btn:hover {
+      background: #8B7355;
+      color: #fff;
+    }
 
     /* Add to Cart button animation */
     .btn-add-cart {
-      transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1), background-color 0.2s, box-shadow 0.2s;
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.2s, box-shadow 0.2s;
     }
+
     .btn-add-cart:hover {
       transform: translateY(-3px) scale(1.02);
-      box-shadow: 0 8px 24px rgba(139,115,85,0.35);
+      box-shadow: 0 8px 24px rgba(139, 115, 85, 0.35);
     }
-    .btn-add-cart:active { transform: scale(0.97); }
+
+    .btn-add-cart:active {
+      transform: scale(0.97);
+    }
 
     /* Buy Now button */
-    .btn-buy-now { transition: background 0.2s, transform 0.15s, box-shadow 0.2s; }
-    .btn-buy-now:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(15,23,42,0.3); }
+    .btn-buy-now {
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    }
+
+    .btn-buy-now:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(15, 23, 42, 0.3);
+    }
 
     /* Trust badges */
-    .trust-badge { transition: transform 0.2s, box-shadow 0.2s; }
-    .trust-badge:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    .trust-badge {
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .trust-badge:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
 
     /* Price gold */
     .price-current {
@@ -122,44 +234,132 @@
     }
 
     /* Related product cards */
-    .related-card { transition: transform 0.25s ease, box-shadow 0.25s ease; }
-    .related-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(139,115,85,0.15); }
+    .related-card {
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .related-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(139, 115, 85, 0.15);
+    }
 
     /* Product Detail Tabs */
-    .ptab-btn { cursor: pointer; }
-    .ptab-btn.ptab-active { color: #8B7355; border-bottom-color: #8B7355; }
-    .ptab-btn:not(.ptab-active) { border-bottom-color: transparent; color: #64748b; }
-    .ptab-btn:not(.ptab-active):hover { color: #1e293b; background: rgba(139,115,85,0.04); }
+    .ptab-btn {
+      cursor: pointer;
+    }
+
+    .ptab-btn.ptab-active {
+      color: #8B7355;
+      border-bottom-color: #8B7355;
+    }
+
+    .ptab-btn:not(.ptab-active) {
+      border-bottom-color: transparent;
+      color: #64748b;
+    }
+
+    .ptab-btn:not(.ptab-active):hover {
+      color: #1e293b;
+      background: rgba(139, 115, 85, 0.04);
+    }
 
     /* Specs table rows */
-    #specs-table-all tr:nth-child(even) { background: #fafaf8; }
-    #specs-table-all td { padding: 10px 14px; font-size: 13px; }
-    #specs-table-all td:first-child { font-weight: 600; color: #374151; width: 40%; border-right: 1px solid rgba(139,115,85,0.1); }
-    #specs-table-all td:last-child { color: #4b5563; }
+    #specs-table-all tr:nth-child(even) {
+      background: #fafaf8;
+    }
+
+    #specs-table-all td {
+      padding: 10px 14px;
+      font-size: 13px;
+    }
+
+    #specs-table-all td:first-child {
+      font-weight: 600;
+      color: #374151;
+      width: 40%;
+      border-right: 1px solid rgba(139, 115, 85, 0.1);
+    }
+
+    #specs-table-all td:last-child {
+      color: #4b5563;
+    }
 
     /* Tracklist rows */
-    #tracklist-full .tl-row { display: flex; align-items: center; gap: 10px; padding: 10px 16px; transition: background .15s; }
-    #tracklist-full .tl-row:hover { background: #fdf8f3; }
-    #tracklist-full .tl-num { font-size: 11px; font-weight: 700; color: #8B7355; min-width: 28px; text-align: right; }
-    #tracklist-full .tl-name { font-size: 13.5px; color: #374151; flex: 1; min-width: 0; }
-    #tracklist-full .tl-artist { font-size: 11px; color: #9ca3af; white-space: nowrap; }
+    #tracklist-full .tl-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      transition: background .15s;
+    }
+
+    #tracklist-full .tl-row:hover {
+      background: #fdf8f3;
+    }
+
+    #tracklist-full .tl-num {
+      font-size: 11px;
+      font-weight: 700;
+      color: #8B7355;
+      min-width: 28px;
+      text-align: right;
+    }
+
+    #tracklist-full .tl-name {
+      font-size: 13.5px;
+      color: #374151;
+      flex: 1;
+      min-width: 0;
+    }
+
+    #tracklist-full .tl-artist {
+      font-size: 11px;
+      color: #9ca3af;
+      white-space: nowrap;
+    }
 
     /* Shop links */
-    .shop-link { display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; border: 1.5px solid #e2e8f0; color: #64748b; transition: all .2s; cursor: pointer; }
-    .shop-link:hover { border-color: #8B7355; color: #8B7355; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(139,115,85,.18); }
-    .shop-link svg { width: 20px; height: 20px; }
+    .shop-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 1.5px solid #e2e8f0;
+      color: #64748b;
+      transition: all .2s;
+      cursor: pointer;
+    }
+
+    .shop-link:hover {
+      border-color: #8B7355;
+      color: #8B7355;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(139, 115, 85, .18);
+    }
+
+    .shop-link svg {
+      width: 20px;
+      height: 20px;
+    }
   </style>
   <!-- Meta Pixel Code -->
-  <script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-  n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-  n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-  t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}
-  (window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
-  fbq('init','269855615506465');fbq('track','PageView');</script>
+  <script>!function (f, b, e, v, n, t, s) {
+      if (f.fbq) return; n = f.fbq = function () {
+        n.callMethod ?
+          n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+      }; if (!f._fbq) f._fbq = n;
+      n.push = n; n.loaded = !0; n.version = '2.0'; n.queue = []; t = b.createElement(e); t.async = !0;
+      t.src = v; s = b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t, s)
+    }
+      (window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '269855615506465'); fbq('track', 'PageView');</script>
   <noscript><img height="1" width="1" style="display:none"
-  src="https://www.facebook.com/tr?id=269855615506465&ev=PageView&noscript=1"/></noscript>
+      src="https://www.facebook.com/tr?id=269855615506465&ev=PageView&noscript=1" /></noscript>
   <!-- End Meta Pixel Code -->
 </head>
+
 <body class="bg-gray-50 text-gray-800 antialiased">
 
   <!-- Shared Navbar -->
@@ -209,7 +409,9 @@
           <!-- Badge -->
           <div class="flex items-center gap-2 mb-3">
             <span id="stock-badge" class="inline-block px-3 py-1 rounded-full text-xs font-bold"></span>
-            <span id="low-stock-alert" class="hidden inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-600 animate-pulse"><i class="ph ph-warning text-sm"></i> <span id="low-stock-text"></span></span>
+            <span id="low-stock-alert"
+              class="hidden inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-600 animate-pulse"><i
+                class="ph ph-warning text-sm"></i> <span id="low-stock-text"></span></span>
           </div>
 
           <h1 id="p-name" class="text-2xl md:text-3xl font-extrabold text-gray-900 mb-2 leading-tight"></h1>
@@ -230,25 +432,30 @@
             <span class="text-sm font-semibold text-gray-600 shrink-0">จำนวน</span>
             <div class="flex items-center border-2 border-gray-200 rounded-xl overflow-hidden">
               <button class="qty-btn" onclick="changeQty(-1)">−</button>
-              <input id="qty" type="text" value="01" class="w-14 text-center font-bold text-base border-x-2 border-gray-200 py-2" readonly>
+              <input id="qty" type="text" value="01"
+                class="w-14 text-center font-bold text-base border-x-2 border-gray-200 py-2" readonly>
               <button class="qty-btn" onclick="changeQty(1)">+</button>
             </div>
           </div>
 
           <!-- Buttons -->
           <div class="flex flex-col sm:flex-row gap-3 mb-4">
-            <button onclick="addToCartFromDetail()" class="btn-add-cart flex-1 bg-primary text-white font-bold py-3.5 px-4 sm:px-6 rounded-xl flex items-center justify-center gap-2 text-base shadow-md">
+            <button onclick="addToCartFromDetail()"
+              class="btn-add-cart flex-1 bg-primary text-white font-bold py-3.5 px-4 sm:px-6 rounded-xl flex items-center justify-center gap-2 text-base shadow-md">
               <i class="ph ph-shopping-cart text-xl"></i> เพิ่มในตะกร้า
             </button>
-            <button onclick="buyNow()" class="btn-buy-now flex-1 bg-secondary hover:bg-slate-800 text-white font-bold py-3.5 px-4 sm:px-6 rounded-xl flex items-center justify-center gap-2 text-base shadow-md">
+            <button onclick="buyNow()"
+              class="btn-buy-now flex-1 bg-secondary hover:bg-slate-800 text-white font-bold py-3.5 px-4 sm:px-6 rounded-xl flex items-center justify-center gap-2 text-base shadow-md">
               <i class="ph ph-lightning text-xl"></i> ซื้อเลย
             </button>
           </div>
 
           <!-- Wishlist Button -->
           <div class="mb-5">
-            <button id="wishlist-btn" onclick="toggleWishlist()" class="flex items-center gap-2 text-gray-500 hover:text-red-500 transition-colors text-sm font-medium">
-              <i id="wishlist-icon" class="ph ph-heart text-xl"></i> <span id="wishlist-text">เพิ่มในรายการที่ถูกใจ</span>
+            <button id="wishlist-btn" onclick="toggleWishlist()"
+              class="flex items-center gap-2 text-gray-500 hover:text-red-500 transition-colors text-sm font-medium">
+              <i id="wishlist-icon" class="ph ph-heart text-xl"></i> <span
+                id="wishlist-text">เพิ่มในรายการที่ถูกใจ</span>
             </button>
           </div>
 
@@ -257,17 +464,26 @@
             <span class="text-xs text-gray-400 font-medium mr-1">แชร์:</span>
             <a id="share-facebook" href="#" target="_blank" rel="noopener" title="แชร์ Facebook"
               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-semibold text-gray-600 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700 transition-all">
-              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.988H7.898V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg>
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <path
+                  d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.988H7.898V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" />
+              </svg>
               Facebook
             </a>
             <a id="share-line" href="#" target="_blank" rel="noopener" title="แชร์ LINE"
               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-semibold text-gray-600 hover:bg-green-50 hover:border-green-300 hover:text-green-700 transition-all">
-              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.070 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <path
+                  d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.070 9.436-6.975C23.176 14.393 24 12.458 24 10.314" />
+              </svg>
               LINE
             </a>
             <a id="share-twitter" href="#" target="_blank" rel="noopener" title="แชร์ X (Twitter)"
               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-semibold text-gray-600 hover:bg-gray-100 hover:border-gray-400 transition-all">
-              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.911-5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <path
+                  d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.911-5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+              </svg>
               X
             </a>
             <button id="share-copy" onclick="copyProductLink()" title="คัดลอกลิงก์"
@@ -324,13 +540,16 @@
           <div class="pt-4 border-t border-gray-100">
             <p class="text-xs text-gray-400 mb-2 font-medium">ช้อปได้ที่</p>
             <div class="flex items-center gap-3">
-              <a href="https://www.tiktok.com/@btmusicdrive" target="_blank" rel="noopener" class="shop-link" title="TikTok Shop">
+              <a href="https://www.tiktok.com/@btmusicdrive" target="_blank" rel="noopener" class="shop-link"
+                title="TikTok Shop">
                 <img src="images/tiktok.webp" alt="TikTok" class="w-20 h-20 object-contain" loading="lazy">
               </a>
-              <a href="https://shopee.co.th/shop/134575937" target="_blank" rel="noopener" class="shop-link" title="Shopee">
+              <a href="https://shopee.co.th/shop/134575937" target="_blank" rel="noopener" class="shop-link"
+                title="Shopee">
                 <img src="images/shopeer.webp" alt="Shopee" class="w-20 h-20 object-contain" loading="lazy">
               </a>
-              <a href="https://www.lazada.co.th/shop/buythrrm1992/" target="_blank" rel="noopener" class="shop-link" title="Lazada">
+              <a href="https://www.lazada.co.th/shop/buythrrm1992/" target="_blank" rel="noopener" class="shop-link"
+                title="Lazada">
                 <img src="images/lazada.webp" alt="Lazada" class="w-20 h-20 object-contain" loading="lazy">
               </a>
             </div>
@@ -432,7 +651,8 @@
           <!-- ── Tab: Tracklist / Specs ── -->
           <div id="ptab-tracklist" class="hidden">
             <!-- Specs summary row -->
-            <div class="px-6 md:px-8 pt-6 pb-4 grid grid-cols-2 sm:grid-cols-3 gap-3 border-b border-primary/10" id="specs-summary-row">
+            <div class="px-6 md:px-8 pt-6 pb-4 grid grid-cols-2 sm:grid-cols-3 gap-3 border-b border-primary/10"
+              id="specs-summary-row">
               <div class="flex items-center gap-2.5 p-3 bg-amber-50 rounded-xl border border-primary/15">
                 <i class="ph ph-hard-drives text-xl text-primary"></i>
                 <div>
@@ -447,7 +667,8 @@
                   <p class="text-sm font-bold text-gray-800" id="spec-quality">MP3 128-320kbps</p>
                 </div>
               </div>
-              <div class="flex items-center gap-2.5 p-3 bg-amber-50 rounded-xl border border-primary/15 col-span-2 sm:col-span-1">
+              <div
+                class="flex items-center gap-2.5 p-3 bg-amber-50 rounded-xl border border-primary/15 col-span-2 sm:col-span-1">
                 <i class="ph ph-music-notes-simple text-xl text-primary"></i>
                 <div>
                   <p class="text-[10px] text-gray-400 uppercase tracking-wider">จำนวนเพลง</p>
@@ -460,7 +681,8 @@
             <div class="p-6 md:p-8" id="tracklist-section-all">
               <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                 <div>
-                  <h3 class="text-base font-bold text-gray-900"><i class="ph ph-queue text-primary mr-1.5"></i>รายชื่อเพลงทั้งหมด</h3>
+                  <h3 class="text-base font-bold text-gray-900"><i
+                      class="ph ph-queue text-primary mr-1.5"></i>รายชื่อเพลงทั้งหมด</h3>
                   <p id="tracklist-count" class="text-xs text-gray-400 mt-0.5"></p>
                 </div>
                 <div class="relative">
@@ -519,7 +741,8 @@
                     ไม่ครอบคลุมความเสียหายจากการใช้งานผิดวิธี
                   </li>
                 </ul>
-                <a href="/warranty" class="mt-4 inline-flex items-center gap-1 text-xs text-primary font-semibold hover:underline">
+                <a href="/warranty"
+                  class="mt-4 inline-flex items-center gap-1 text-xs text-primary font-semibold hover:underline">
                   อ่านเงื่อนไขการรับประกันเพิ่มเติม <i class="ph ph-arrow-right"></i>
                 </a>
               </div>
@@ -553,7 +776,8 @@
                     ไม่รับคืนกรณีสินค้าถูกดัดแปลงหรือลบข้อมูล
                   </li>
                 </ul>
-                <a href="/returns" class="mt-4 inline-flex items-center gap-1 text-xs text-primary font-semibold hover:underline">
+                <a href="/returns"
+                  class="mt-4 inline-flex items-center gap-1 text-xs text-primary font-semibold hover:underline">
                   อ่านนโยบายการคืนสินค้าเพิ่มเติม <i class="ph ph-arrow-right"></i>
                 </a>
               </div>
@@ -572,7 +796,7 @@
                 <ul class="space-y-2.5">
                   <li class="flex items-start gap-2 text-sm text-gray-600">
                     <i class="ph ph-check-circle text-green-500 text-base mt-0.5 shrink-0"></i>
-                    จัดส่งด่วนผ่าน Kerry / Flash / J&T Express
+                    จัดส่งด่วนผ่าน Kerry
                   </li>
                   <li class="flex items-start gap-2 text-sm text-gray-600">
                     <i class="ph ph-check-circle text-green-500 text-base mt-0.5 shrink-0"></i>
@@ -627,8 +851,14 @@
       <!-- legacy hidden elements kept for JS compatibility -->
       <div class="hidden">
         <div id="tab-all"></div>
-        <div id="tab-details"><div id="p-description-2"></div></div>
-        <div id="tab-specs"><table><tbody id="specs-table"></tbody></table></div>
+        <div id="tab-details">
+          <div id="p-description-2"></div>
+        </div>
+        <div id="tab-specs">
+          <table>
+            <tbody id="specs-table"></tbody>
+          </table>
+        </div>
         <div id="tab-tracklist"></div>
         <button id="tracklist-tab-btn"></button>
       </div>
@@ -637,10 +867,12 @@
       <div id="frequently-bought" class="mt-14 hidden">
         <div class="flex items-center justify-between mb-6">
           <div>
-            <h3 class="text-xl font-extrabold text-gray-900"><i class="ph ph-squares-four text-primary mr-2"></i>สินค้าที่เกี่ยวข้อง</h3>
+            <h3 class="text-xl font-extrabold text-gray-900"><i
+                class="ph ph-squares-four text-primary mr-2"></i>สินค้าที่เกี่ยวข้อง</h3>
             <p class="text-sm text-gray-400 mt-1">สินค้าในหมวดหมู่เดียวกันที่คุณอาจสนใจ</p>
           </div>
-          <a href="/shop" class="text-sm text-primary font-semibold hover:underline flex items-center gap-1">ดูทั้งหมด <i class="ph ph-arrow-right"></i></a>
+          <a href="/shop" class="text-sm text-primary font-semibold hover:underline flex items-center gap-1">ดูทั้งหมด
+            <i class="ph ph-arrow-right"></i></a>
         </div>
         <!-- Slider wrapper -->
         <div class="relative">
@@ -670,7 +902,8 @@
           <h3 class="text-xl font-bold text-gray-900"><i class="ph ph-star mr-1"></i> รีวิวจากลูกค้า</h3>
           <p class="text-sm text-gray-500 mt-1" id="reviews-summary"></p>
         </div>
-        <button onclick="openReviewModal()" class="bg-primary hover:bg-amber-700 text-white font-bold py-2.5 px-5 rounded-lg transition-colors text-sm flex items-center gap-2">
+        <button onclick="openReviewModal()"
+          class="bg-primary hover:bg-amber-700 text-white font-bold py-2.5 px-5 rounded-lg transition-colors text-sm flex items-center gap-2">
           <i class="ph ph-pencil-line"></i> เขียนรีวิว
         </button>
       </div>
@@ -701,33 +934,45 @@
     <div class="bg-white rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl">
       <div class="flex items-center justify-between p-5 border-b border-gray-100">
         <h3 class="text-lg font-bold text-gray-900">เขียนรีวิวสินค้า</h3>
-        <button onclick="closeReviewModal()" class="text-gray-400 hover:text-gray-600"><i class="ph ph-x text-2xl"></i></button>
+        <button onclick="closeReviewModal()" class="text-gray-400 hover:text-gray-600"><i
+            class="ph ph-x text-2xl"></i></button>
       </div>
       <div class="p-5">
         <div class="mb-5">
           <label class="block text-sm font-medium text-gray-700 mb-2">ให้คะแนน</label>
           <div id="star-input" class="flex gap-1">
-            <button type="button" onclick="setRating(1)" class="text-3xl text-gray-300 hover:text-yellow-400 transition-colors"><i class="ph ph-star"></i></button>
-            <button type="button" onclick="setRating(2)" class="text-3xl text-gray-300 hover:text-yellow-400 transition-colors"><i class="ph ph-star"></i></button>
-            <button type="button" onclick="setRating(3)" class="text-3xl text-gray-300 hover:text-yellow-400 transition-colors"><i class="ph ph-star"></i></button>
-            <button type="button" onclick="setRating(4)" class="text-3xl text-gray-300 hover:text-yellow-400 transition-colors"><i class="ph ph-star"></i></button>
-            <button type="button" onclick="setRating(5)" class="text-3xl text-gray-300 hover:text-yellow-400 transition-colors"><i class="ph ph-star"></i></button>
+            <button type="button" onclick="setRating(1)"
+              class="text-3xl text-gray-300 hover:text-yellow-400 transition-colors"><i class="ph ph-star"></i></button>
+            <button type="button" onclick="setRating(2)"
+              class="text-3xl text-gray-300 hover:text-yellow-400 transition-colors"><i class="ph ph-star"></i></button>
+            <button type="button" onclick="setRating(3)"
+              class="text-3xl text-gray-300 hover:text-yellow-400 transition-colors"><i class="ph ph-star"></i></button>
+            <button type="button" onclick="setRating(4)"
+              class="text-3xl text-gray-300 hover:text-yellow-400 transition-colors"><i class="ph ph-star"></i></button>
+            <button type="button" onclick="setRating(5)"
+              class="text-3xl text-gray-300 hover:text-yellow-400 transition-colors"><i class="ph ph-star"></i></button>
           </div>
         </div>
         <div class="mb-5">
           <label class="block text-sm font-medium text-gray-700 mb-2">ชื่อผู้รีวิว</label>
-          <input type="text" id="review-name" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary" placeholder="ชื่อของคุณ">
+          <input type="text" id="review-name"
+            class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary"
+            placeholder="ชื่อของคุณ">
         </div>
         <div class="mb-5">
           <label class="block text-sm font-medium text-gray-700 mb-2">เขียนรีวิว</label>
-          <textarea id="review-text" rows="4" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none" placeholder="แชร์ประสบการณ์การใช้งานของคุณ..."></textarea>
+          <textarea id="review-text" rows="4"
+            class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none"
+            placeholder="แชร์ประสบการณ์การใช้งานของคุณ..."></textarea>
         </div>
         <div class="mb-5">
           <label class="block text-sm font-medium text-gray-700 mb-2">แนบรูปภาพ (ไม่บังคับ)</label>
-          <input type="file" id="review-image" accept="image/*" multiple class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20">
+          <input type="file" id="review-image" accept="image/*" multiple
+            class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20">
           <div id="review-image-preview" class="flex gap-2 mt-2 flex-wrap"></div>
         </div>
-        <button onclick="submitReview()" class="w-full bg-primary hover:bg-amber-700 text-white font-bold py-3 rounded-lg transition-colors">ส่งรีวิว</button>
+        <button onclick="submitReview()"
+          class="w-full bg-primary hover:bg-amber-700 text-white font-bold py-3 rounded-lg transition-colors">ส่งรีวิว</button>
       </div>
     </div>
   </div>
@@ -735,399 +980,398 @@
   <!-- Toast -->
   <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-<script>
-  const PRODUCT_API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
-    ? 'http://localhost:5000/api' : '/api';
+  <script>
+    const PRODUCT_API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
+      ? 'http://localhost:5000/api' : '/api';
 
-  let product = null;
-  let currentImageIndex = 0;
-  let allImages = [];
-  let reviewRating = 0;
-  let allProducts = [];
+    let product = null;
+    let currentImageIndex = 0;
+    let allImages = [];
+    let reviewRating = 0;
+    let allProducts = [];
 
-  // ── Load Product ─────────────────────────────────────────────────────────────
-  async function loadProduct() {
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get('id');
+    // ── Load Product ─────────────────────────────────────────────────────────────
+    async function loadProduct() {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get('id');
 
-    // Support clean slug URL: /product/some-slug
-    const _pathParts = window.location.pathname.split('/').filter(Boolean);
-    const urlSlug = (_pathParts[0] === 'product' && _pathParts[1]) ? decodeURIComponent(_pathParts[1]) : null;
+      // Support clean slug URL: /product/some-slug
+      const _pathParts = window.location.pathname.split('/').filter(Boolean);
+      const urlSlug = (_pathParts[0] === 'product' && _pathParts[1]) ? decodeURIComponent(_pathParts[1]) : null;
 
-    if (!id && !urlSlug) { showError(); return; }
+      if (!id && !urlSlug) { showError(); return; }
 
-    // 1. โหลด product — ถ้ามี slug ใช้ /products/slug/:slug, ไม่งั้นใช้ /products/:id
-    try {
-      if (urlSlug) {
-        res = await fetch(`${PRODUCT_API_BASE}/products/slug/${urlSlug}`);
-      } else {
-        res = await fetch(`${PRODUCT_API_BASE}/products/${id}`);
-      }
-      if (res.ok) product = await res.json();
-    } catch (_) {}
-
-    if (!product) {
+      // 1. โหลด product — ถ้ามี slug ใช้ /products/slug/:slug, ไม่งั้นใช้ /products/:id
       try {
-        const fb = await fetch('products.json');
-        const all = await fb.json();
-        const list = Array.isArray(all) ? all : (all.data || []);
-        product = (urlSlug
-          ? list.find(p => p.slug === urlSlug)
-          : list.find(p => p.id === id)) || null;
-      } catch (_) {}
-    }
-
-    if (!product) { showError(); return; }
-
-    // 2. Merge tracklist จาก products.json ถ้า API ไม่มี
-    const lookupId = product.id;
-    if (!product.tracklist || !product.tracklist.length) {
-      try {
-        const fb = await fetch('products.json');
-        const localAll = await fb.json();
-        const localList = Array.isArray(localAll) ? localAll : (localAll.data || []);
-        const local = localList.find(p => p.id === lookupId);
-        if (local && local.tracklist) product.tracklist = local.tracklist;
-      } catch (_) {}
-    }
-
-    // 3. โหลดสินค้าทั้งหมดสำหรับ related products
-    try {
-      const allRes = await fetch(`${PRODUCT_API_BASE}/products`);
-      if (allRes.ok) {
-        const json = await allRes.json();
-        allProducts = Array.isArray(json) ? json : (json.data || []);
-      } else throw new Error();
-    } catch (_) {
-      try { const fb = await fetch('products.json'); const j = await fb.json(); allProducts = Array.isArray(j) ? j : (j.data || []); } catch (_) { allProducts = []; }
-    }
-
-    renderProduct();
-    renderTracklist();
-    renderLowStock();
-    renderFrequentlyBought();
-    renderReviews();
-    updateWishlistUI();
-    if (typeof fbq === 'function') fbq('track', 'ViewContent', {
-      content_ids: [product.id],
-      content_name: product.name,
-      content_type: 'product',
-      value: product.price,
-      currency: 'THB'
-    });
-    if (typeof ttq !== 'undefined') ttq.track('ViewContent', { content_id: product.id, content_name: product.name, price: product.price, currency: 'THB' });
-  }
-
-  function showError() {
-    document.getElementById('loading').classList.add('hidden');
-    document.getElementById('product-content').classList.add('hidden');
-    document.getElementById('error').classList.remove('hidden');
-  }
-
-  // ── Render ───────────────────────────────────────────────────────────────────
-  function renderProduct() {
-    // ── Dynamic SEO & OG update ──────────────────────────────────────────────
-    const seoTitle = `${product.name} | แฟลชไดร์ฟเพลง MP3 — Bt music drive`;
-    const seoDesc  = product.description
-      ? product.description.substring(0, 155).replace(/\s+/g, ' ').trim() + '…'
-      : `${product.name} แฟลชไดร์ฟเพลง MP3 คุณภาพเสียง HD เสียบปุ๊บฟังปั๊บ ฟังในรถยนต์ได้ทันที — Bt music drive`;
-    const ogImage  = product.imageUrl || 'https://btmusicdrive.com/images/og-product.webp';
-    const cleanPath = product.slug ? `/product/${product.slug}` : `/product.html?id=${product.id}`;
-    const pageUrl  = `https://btmusicdrive.com${cleanPath}`;
-
-    document.title = seoTitle;
-
-    const setMeta = (sel, val) => { const el = document.querySelector(sel); if (el) el.setAttribute('content', val); };
-    setMeta('meta[name="description"]', seoDesc);
-    setMeta('meta[property="og:title"]', seoTitle);
-    setMeta('meta[property="og:description"]', seoDesc);
-    setMeta('meta[property="og:image"]', ogImage);
-    setMeta('meta[property="og:url"]', pageUrl);
-    setMeta('meta[property="og:type"]', 'product');
-    setMeta('meta[name="twitter:title"]', seoTitle);
-    setMeta('meta[name="twitter:description"]', seoDesc);
-    setMeta('meta[name="twitter:image"]', ogImage);
-
-    // ── Canonical URL update ──
-    const canonLink = document.querySelector('link[rel="canonical"]');
-    if (canonLink) canonLink.setAttribute('href', pageUrl);
-
-    // ── Schema.org Product JSON-LD ──────────────────────────────────────────
-    const ld = {
-      "@context": "https://schema.org/",
-      "@type": "Product",
-      "name": product.name,
-      "description": seoDesc,
-      "image": ogImage,
-      "brand": { "@type": "Brand", "name": "Bt music drive" },
-      "offers": {
-        "@type": "Offer",
-        "priceCurrency": "THB",
-        "price": product.price,
-        "availability": (product.stock > 0) ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-        "url": pageUrl,
-        "seller": { "@type": "Organization", "name": "Bt music drive" },
-        "shippingDetails": {
-          "@type": "OfferShippingDetails",
-          "shippingRate": {
-            "@type": "MonetaryAmount",
-            "value": "50",
-            "currency": "THB"
-          },
-          "shippingDestination": {
-            "@type": "DefinedRegion",
-            "addressCountry": "TH"
-          },
-          "deliveryTime": {
-            "@type": "ShippingDeliveryTime",
-            "handlingTime": {
-              "@type": "QuantitativeValue",
-              "minValue": 0,
-              "maxValue": 1,
-              "unitCode": "DAY"
-            },
-            "transitTime": {
-              "@type": "QuantitativeValue",
-              "minValue": 1,
-              "maxValue": 3,
-              "unitCode": "DAY"
-            }
-          }
-        },
-        "hasMerchantReturnPolicy": {
-          "@type": "MerchantReturnPolicy",
-          "applicableCountry": "TH",
-          "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
-          "merchantReturnDays": 7,
-          "returnMethod": "https://schema.org/ReturnByMail",
-          "returnFees": "https://schema.org/FreeReturn"
+        if (urlSlug) {
+          res = await fetch(`${PRODUCT_API_BASE}/products/slug/${urlSlug}`);
+        } else {
+          res = await fetch(`${PRODUCT_API_BASE}/products/${id}`);
         }
+        if (res.ok) product = await res.json();
+      } catch (_) { }
+
+      if (!product) {
+        try {
+          const fb = await fetch('products.json');
+          const all = await fb.json();
+          const list = Array.isArray(all) ? all : (all.data || []);
+          product = (urlSlug
+            ? list.find(p => p.slug === urlSlug)
+            : list.find(p => p.id === id)) || null;
+        } catch (_) { }
       }
-    };
-    if (product.rating) { ld.aggregateRating = { "@type": "AggregateRating", "ratingValue": product.rating, "reviewCount": product.reviews || 1 }; }
-    let ldScript = document.getElementById('product-jsonld');
-    if (!ldScript) { ldScript = document.createElement('script'); ldScript.id = 'product-jsonld'; ldScript.type = 'application/ld+json'; document.head.appendChild(ldScript); }
-    ldScript.textContent = JSON.stringify(ld);
-    // ── End SEO update ───────────────────────────────────────────────────────
 
-    // ── Share buttons ─────────────────────────────────────────────────────────
-    const shareUrl = encodeURIComponent(pageUrl);
-    const shareText = encodeURIComponent(product.name + ' — Bt music drive');
-    const fbEl = document.getElementById('share-facebook');
-    if (fbEl) fbEl.href = `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`;
-    const lineEl = document.getElementById('share-line');
-    if (lineEl) lineEl.href = `https://line.me/R/msg/text/?${shareText}%20${shareUrl}`;
-    const twEl = document.getElementById('share-twitter');
-    if (twEl) twEl.href = `https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}`;
+      if (!product) { showError(); return; }
 
-    document.getElementById('bc-name').textContent = product.name;
-    document.getElementById('p-name').textContent = product.name;
+      // 2. Merge tracklist จาก products.json ถ้า API ไม่มี
+      const lookupId = product.id;
+      if (!product.tracklist || !product.tracklist.length) {
+        try {
+          const fb = await fetch('products.json');
+          const localAll = await fb.json();
+          const localList = Array.isArray(localAll) ? localAll : (localAll.data || []);
+          const local = localList.find(p => p.id === lookupId);
+          if (local && local.tracklist) product.tracklist = local.tracklist;
+        } catch (_) { }
+      }
 
-    // Price
-    document.getElementById('p-price').textContent = `฿${Number(product.price).toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
-    if (product.originalPrice && product.originalPrice > product.price) {
-      const el = document.getElementById('p-original-price');
-      el.textContent = `฿${Number(product.originalPrice).toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
-      el.classList.remove('hidden');
-    }
+      // 3. โหลดสินค้าทั้งหมดสำหรับ related products
+      try {
+        const allRes = await fetch(`${PRODUCT_API_BASE}/products`);
+        if (allRes.ok) {
+          const json = await allRes.json();
+          allProducts = Array.isArray(json) ? json : (json.data || []);
+        } else throw new Error();
+      } catch (_) {
+        try { const fb = await fetch('products.json'); const j = await fb.json(); allProducts = Array.isArray(j) ? j : (j.data || []); } catch (_) { allProducts = []; }
+      }
 
-    // Stock badge
-    const badge = document.getElementById('stock-badge');
-    if (product.stock > 0) {
-      badge.textContent = 'มีสินค้า';
-      badge.className = 'inline-block px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700';
-    } else {
-      badge.textContent = 'สินค้าหมด';
-      badge.className = 'inline-block px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-600';
-    }
-
-    // Brand & SKU
-    if (product.brand) {
-      document.getElementById('p-brand').textContent = product.brand;
-      document.getElementById('p-brand-wrap').classList.remove('hidden');
-    }
-    if (product.sku) {
-      document.getElementById('p-sku').textContent = product.sku;
-      document.getElementById('p-sku-wrap').classList.remove('hidden');
-    }
-
-    // Images
-    allImages = [];
-    if (product.imageUrl) allImages.push(product.imageUrl);
-    if (Array.isArray(product.images)) {
-      product.images.forEach(url => {
-        if (url && !allImages.includes(url)) allImages.push(url);
+      renderProduct();
+      renderTracklist();
+      renderLowStock();
+      renderFrequentlyBought();
+      renderReviews();
+      updateWishlistUI();
+      if (typeof fbq === 'function') fbq('track', 'ViewContent', {
+        content_ids: [product.id],
+        content_name: product.name,
+        content_type: 'product',
+        value: product.price,
+        currency: 'THB'
       });
     }
-    if (allImages.length === 0) allImages.push('https://via.placeholder.com/600x600?text=No+Image');
-    renderGallery();
 
-    // Description
-    const desc = product.description || 'ไม่มีรายละเอียดสินค้า';
-    document.getElementById('p-description').textContent = desc;
-    document.getElementById('p-description-2').textContent = desc;
-
-    // Specs
-    renderSpecs();
-
-    // Tags
-    const tagsEl = document.getElementById('p-tags');
-    const tagColors = ['bg-red-600', 'bg-blue-600', 'bg-green-600', 'bg-purple-600', 'bg-amber-600', 'bg-teal-600', 'bg-pink-600'];
-    if (Array.isArray(product.tags) && product.tags.length > 0) {
-      tagsEl.innerHTML = product.tags.map((t, i) =>
-        `<span class="tag text-white ${tagColors[i % tagColors.length]}">#${escHtml(t)}</span>`
-      ).join('');
+    function showError() {
+      document.getElementById('loading').classList.add('hidden');
+      document.getElementById('product-content').classList.add('hidden');
+      document.getElementById('error').classList.remove('hidden');
     }
 
-    // Show — ซ่อน error และ loading ก่อนเสมอ
-    document.getElementById('loading').classList.add('hidden');
-    document.getElementById('error').classList.add('hidden');
-    document.getElementById('product-content').classList.remove('hidden');
+    // ── Render ───────────────────────────────────────────────────────────────────
+    function renderProduct() {
+      // ── Dynamic SEO & OG update ──────────────────────────────────────────────
+      const seoTitle = `${product.name} | แฟลชไดร์ฟเพลง MP3 — Bt music drive`;
+      const seoDesc = product.description
+        ? product.description.substring(0, 155).replace(/\s+/g, ' ').trim() + '…'
+        : `${product.name} แฟลชไดร์ฟเพลง MP3 คุณภาพเสียง HD เสียบปุ๊บฟังปั๊บ ฟังในรถยนต์ได้ทันที — Bt music drive`;
+      const ogImage = product.imageUrl || 'https://btmusicdrive.com/images/og-product.webp';
+      const cleanPath = product.slug ? `/product/${product.slug}` : `/product.html?id=${product.id}`;
+      const pageUrl = `https://btmusicdrive.com${cleanPath}`;
 
-    // Populate mobile sticky cart bar
-    const stickyBar = document.getElementById('mobile-sticky-cart');
-    if (stickyBar) {
-      document.getElementById('sticky-product-name').textContent = product.name;
-      document.getElementById('sticky-product-price').textContent = `฿${Number(product.price).toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
-      stickyBar.classList.remove('hidden');
+      document.title = seoTitle;
+
+      const setMeta = (sel, val) => { const el = document.querySelector(sel); if (el) el.setAttribute('content', val); };
+      setMeta('meta[name="description"]', seoDesc);
+      setMeta('meta[property="og:title"]', seoTitle);
+      setMeta('meta[property="og:description"]', seoDesc);
+      setMeta('meta[property="og:image"]', ogImage);
+      setMeta('meta[property="og:url"]', pageUrl);
+      setMeta('meta[property="og:type"]', 'product');
+      setMeta('meta[name="twitter:title"]', seoTitle);
+      setMeta('meta[name="twitter:description"]', seoDesc);
+      setMeta('meta[name="twitter:image"]', ogImage);
+
+      // ── Canonical URL update ──
+      const canonLink = document.querySelector('link[rel="canonical"]');
+      if (canonLink) canonLink.setAttribute('href', pageUrl);
+
+      // ── Schema.org Product JSON-LD ──────────────────────────────────────────
+      const ld = {
+        "@context": "https://schema.org/",
+        "@type": "Product",
+        "name": product.name,
+        "description": seoDesc,
+        "image": ogImage,
+        "brand": { "@type": "Brand", "name": "Bt music drive" },
+        "offers": {
+          "@type": "Offer",
+          "priceCurrency": "THB",
+          "price": product.price,
+          "availability": (product.stock > 0) ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+          "url": pageUrl,
+          "seller": { "@type": "Organization", "name": "Bt music drive" },
+          "shippingDetails": {
+            "@type": "OfferShippingDetails",
+            "shippingRate": {
+              "@type": "MonetaryAmount",
+              "value": "50",
+              "currency": "THB"
+            },
+            "shippingDestination": {
+              "@type": "DefinedRegion",
+              "addressCountry": "TH"
+            },
+            "deliveryTime": {
+              "@type": "ShippingDeliveryTime",
+              "handlingTime": {
+                "@type": "QuantitativeValue",
+                "minValue": 0,
+                "maxValue": 1,
+                "unitCode": "DAY"
+              },
+              "transitTime": {
+                "@type": "QuantitativeValue",
+                "minValue": 1,
+                "maxValue": 3,
+                "unitCode": "DAY"
+              }
+            }
+          },
+          "hasMerchantReturnPolicy": {
+            "@type": "MerchantReturnPolicy",
+            "applicableCountry": "TH",
+            "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+            "merchantReturnDays": 7,
+            "returnMethod": "https://schema.org/ReturnByMail",
+            "returnFees": "https://schema.org/FreeReturn"
+          }
+        }
+      };
+      if (product.rating) { ld.aggregateRating = { "@type": "AggregateRating", "ratingValue": product.rating, "reviewCount": product.reviews || 1 }; }
+      let ldScript = document.getElementById('product-jsonld');
+      if (!ldScript) { ldScript = document.createElement('script'); ldScript.id = 'product-jsonld'; ldScript.type = 'application/ld+json'; document.head.appendChild(ldScript); }
+      ldScript.textContent = JSON.stringify(ld);
+      // ── End SEO update ───────────────────────────────────────────────────────
+
+      // ── Share buttons ─────────────────────────────────────────────────────────
+      const shareUrl = encodeURIComponent(pageUrl);
+      const shareText = encodeURIComponent(product.name + ' — Bt music drive');
+      const fbEl = document.getElementById('share-facebook');
+      if (fbEl) fbEl.href = `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`;
+      const lineEl = document.getElementById('share-line');
+      if (lineEl) lineEl.href = `https://line.me/R/msg/text/?${shareText}%20${shareUrl}`;
+      const twEl = document.getElementById('share-twitter');
+      if (twEl) twEl.href = `https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}`;
+
+      document.getElementById('bc-name').textContent = product.name;
+      document.getElementById('p-name').textContent = product.name;
+
+      // Price
+      document.getElementById('p-price').textContent = `฿${Number(product.price).toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
+      if (product.originalPrice && product.originalPrice > product.price) {
+        const el = document.getElementById('p-original-price');
+        el.textContent = `฿${Number(product.originalPrice).toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
+        el.classList.remove('hidden');
+      }
+
+      // Stock badge
+      const badge = document.getElementById('stock-badge');
+      if (product.stock > 0) {
+        badge.textContent = 'มีสินค้า';
+        badge.className = 'inline-block px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700';
+      } else {
+        badge.textContent = 'สินค้าหมด';
+        badge.className = 'inline-block px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-600';
+      }
+
+      // Brand & SKU
+      if (product.brand) {
+        document.getElementById('p-brand').textContent = product.brand;
+        document.getElementById('p-brand-wrap').classList.remove('hidden');
+      }
+      if (product.sku) {
+        document.getElementById('p-sku').textContent = product.sku;
+        document.getElementById('p-sku-wrap').classList.remove('hidden');
+      }
+
+      // Images
+      allImages = [];
+      if (product.imageUrl) allImages.push(product.imageUrl);
+      if (Array.isArray(product.images)) {
+        product.images.forEach(url => {
+          if (url && !allImages.includes(url)) allImages.push(url);
+        });
+      }
+      if (allImages.length === 0) allImages.push('https://via.placeholder.com/600x600?text=No+Image');
+      renderGallery();
+
+      // Description
+      const desc = product.description || 'ไม่มีรายละเอียดสินค้า';
+      document.getElementById('p-description').textContent = desc;
+      document.getElementById('p-description-2').textContent = desc;
+
+      // Specs
+      renderSpecs();
+
+      // Tags
+      const tagsEl = document.getElementById('p-tags');
+      const tagColors = ['bg-red-600', 'bg-blue-600', 'bg-green-600', 'bg-purple-600', 'bg-amber-600', 'bg-teal-600', 'bg-pink-600'];
+      if (Array.isArray(product.tags) && product.tags.length > 0) {
+        tagsEl.innerHTML = product.tags.map((t, i) =>
+          `<span class="tag text-white ${tagColors[i % tagColors.length]}">#${escHtml(t)}</span>`
+        ).join('');
+      }
+
+      // Show — ซ่อน error และ loading ก่อนเสมอ
+      document.getElementById('loading').classList.add('hidden');
+      document.getElementById('error').classList.add('hidden');
+      document.getElementById('product-content').classList.remove('hidden');
+
+      // Populate mobile sticky cart bar
+      const stickyBar = document.getElementById('mobile-sticky-cart');
+      if (stickyBar) {
+        document.getElementById('sticky-product-name').textContent = product.name;
+        document.getElementById('sticky-product-price').textContent = `฿${Number(product.price).toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
+        stickyBar.classList.remove('hidden');
+      }
     }
-  }
 
-  // ── Low Stock Alert ──────────────────────────────────────────────────────────
-  function renderLowStock() {
-    if (product.stock > 0 && product.stock <= 5) {
-      const alert = document.getElementById('low-stock-alert');
-      document.getElementById('low-stock-text').textContent = `สินค้าเหลือเพียง ${product.stock} ชิ้นสุดท้าย!`;
-      alert.classList.remove('hidden');
+    // ── Low Stock Alert ──────────────────────────────────────────────────────────
+    function renderLowStock() {
+      if (product.stock > 0 && product.stock <= 5) {
+        const alert = document.getElementById('low-stock-alert');
+        document.getElementById('low-stock-text').textContent = `สินค้าเหลือเพียง ${product.stock} ชิ้นสุดท้าย!`;
+        alert.classList.remove('hidden');
+      }
     }
-  }
 
-  // ── Tracklist ────────────────────────────────────────────────────────────────
-  function renderTracklist() {
-    const tracklist = product.tracklist;
-    const hasTracklist = tracklist && Array.isArray(tracklist) && tracklist.length > 0;
+    // ── Tracklist ────────────────────────────────────────────────────────────────
+    function renderTracklist() {
+      const tracklist = product.tracklist;
+      const hasTracklist = tracklist && Array.isArray(tracklist) && tracklist.length > 0;
 
-    // Update tab label
-    const labelEl = document.getElementById('ptab-tracklist-label');
-    if (labelEl) labelEl.textContent = hasTracklist ? `รายชื่อเพลง (${tracklist.length})` : 'รายชื่อเพลง / สเปค';
+      // Update tab label
+      const labelEl = document.getElementById('ptab-tracklist-label');
+      if (labelEl) labelEl.textContent = hasTracklist ? `รายชื่อเพลง (${tracklist.length})` : 'รายชื่อเพลง / สเปค';
 
-    // Populate specs summary cards
-    populateSpecsSummary();
+      // Populate specs summary cards
+      populateSpecsSummary();
 
-    if (hasTracklist) {
-      const section = document.getElementById('tracklist-section-all');
-      const emptyEl = document.getElementById('tracklist-empty');
-      if (section) section.classList.remove('hidden');
-      if (emptyEl) emptyEl.classList.add('hidden');
+      if (hasTracklist) {
+        const section = document.getElementById('tracklist-section-all');
+        const emptyEl = document.getElementById('tracklist-empty');
+        if (section) section.classList.remove('hidden');
+        if (emptyEl) emptyEl.classList.add('hidden');
 
-      const countEl = document.getElementById('tracklist-count');
-      if (countEl) countEl.textContent = `ทั้งหมด ${tracklist.length} เพลง`;
+        const countEl = document.getElementById('tracklist-count');
+        if (countEl) countEl.textContent = `ทั้งหมด ${tracklist.length} เพลง`;
 
-      renderTracklistFull(tracklist);
-    } else {
-      const section = document.getElementById('tracklist-section-all');
-      const emptyEl = document.getElementById('tracklist-empty');
-      if (section) section.classList.add('hidden');
-      if (emptyEl) emptyEl.classList.remove('hidden');
+        renderTracklistFull(tracklist);
+      } else {
+        const section = document.getElementById('tracklist-section-all');
+        const emptyEl = document.getElementById('tracklist-empty');
+        if (section) section.classList.add('hidden');
+        if (emptyEl) emptyEl.classList.remove('hidden');
+      }
     }
-  }
 
-  function populateSpecsSummary() {
-    if (!product) return;
-    const specs = product.specs || {};
-    const capacity = specs['ความจุ'] || specs['capacity'] || '—';
-    const quality = specs['ไฟล์เพลง'] || specs['quality'] || 'MP3 128-320kbps';
-    const trackCount = (product.tracklist && product.tracklist.length > 0)
-      ? `${product.tracklist.length} เพลง`
-      : (specs['จำนวนเพลง'] || '—');
-    const capEl = document.getElementById('spec-capacity');
-    const qualEl = document.getElementById('spec-quality');
-    const countEl = document.getElementById('spec-track-count');
-    if (capEl) capEl.textContent = capacity;
-    if (qualEl) qualEl.textContent = quality;
-    if (countEl) countEl.textContent = trackCount;
-  }
+    function populateSpecsSummary() {
+      if (!product) return;
+      const specs = product.specs || {};
+      const capacity = specs['ความจุ'] || specs['capacity'] || '—';
+      const quality = specs['ไฟล์เพลง'] || specs['quality'] || 'MP3 128-320kbps';
+      const trackCount = (product.tracklist && product.tracklist.length > 0)
+        ? `${product.tracklist.length} เพลง`
+        : (specs['จำนวนเพลง'] || '—');
+      const capEl = document.getElementById('spec-capacity');
+      const qualEl = document.getElementById('spec-quality');
+      const countEl = document.getElementById('spec-track-count');
+      if (capEl) capEl.textContent = capacity;
+      if (qualEl) qualEl.textContent = quality;
+      if (countEl) countEl.textContent = trackCount;
+    }
 
-  function renderTracklistFull(list) {
-    const el = document.getElementById('tracklist-full');
-    if (!el) return;
-    el.innerHTML = list.map((t, i) => {
-      const name = escHtml(typeof t === 'string' ? t : t.name || '');
-      const artist = typeof t === 'object' && t.artist ? escHtml(t.artist) : '';
-      return `<div class="tl-row tracklist-item">
+    function renderTracklistFull(list) {
+      const el = document.getElementById('tracklist-full');
+      if (!el) return;
+      el.innerHTML = list.map((t, i) => {
+        const name = escHtml(typeof t === 'string' ? t : t.name || '');
+        const artist = typeof t === 'object' && t.artist ? escHtml(t.artist) : '';
+        return `<div class="tl-row tracklist-item">
         <span class="tl-num"></span>
         <i class="ph ph-music-note text-primary/60 text-sm shrink-0"></i>
         <span class="tl-name track-name">${name}</span>
         ${artist ? `<span class="tl-artist">${artist}</span>` : ''}
       </div>`;
-    }).join('');
-    const noResult = document.getElementById('tracklist-no-result');
-    if (noResult) noResult.classList.add('hidden');
-  }
-
-  function filterTracklist() {
-    const q = document.getElementById('tracklist-search').value.trim().toLowerCase();
-    const tracklist = product.tracklist || [];
-    if (!q) { renderTracklistFull(tracklist); return; }
-    const filtered = tracklist.filter(t => {
-      const name = (typeof t === 'string' ? t : t.name || '').toLowerCase();
-      const artist = (typeof t === 'object' ? t.artist || '' : '').toLowerCase();
-      return name.includes(q) || artist.includes(q);
-    });
-    if (filtered.length === 0) {
-      document.getElementById('tracklist-full').innerHTML = '';
-      document.getElementById('tracklist-no-result').classList.remove('hidden');
-    } else {
-      renderTracklistFull(filtered);
-    }
-  }
-
-  // ── Related Products (same category, 2-col with slider if >2) ────────────────
-  let _relatedProducts = [];
-  let _relatedPage = 0;
-  const RELATED_PER_PAGE = 4;
-
-  function renderFrequentlyBought() {
-    if (!product || allProducts.length < 2) return;
-
-    // Try same category first; fallback to all other products
-    let sameCat = allProducts.filter(p => p.id !== product.id &&
-      (p.categoryId === product.categoryId || p.category?.id === product.category?.id ||
-       (p.category?.name || p.category) === (product.category?.name || product.category)));
-    if (sameCat.length === 0) {
-      sameCat = allProducts.filter(p => p.id !== product.id);
-    }
-    if (sameCat.length === 0) return;
-
-    _relatedProducts = sameCat;
-    _relatedPage = 0;
-
-    const prevBtn = document.getElementById('related-prev');
-    const nextBtn = document.getElementById('related-next');
-
-    if (_relatedProducts.length > RELATED_PER_PAGE) {
-      if (prevBtn) prevBtn.classList.remove('hidden');
-      if (nextBtn) nextBtn.classList.remove('hidden');
+      }).join('');
+      const noResult = document.getElementById('tracklist-no-result');
+      if (noResult) noResult.classList.add('hidden');
     }
 
-    renderRelatedPage();
-    document.getElementById('frequently-bought').classList.remove('hidden');
-  }
+    function filterTracklist() {
+      const q = document.getElementById('tracklist-search').value.trim().toLowerCase();
+      const tracklist = product.tracklist || [];
+      if (!q) { renderTracklistFull(tracklist); return; }
+      const filtered = tracklist.filter(t => {
+        const name = (typeof t === 'string' ? t : t.name || '').toLowerCase();
+        const artist = (typeof t === 'object' ? t.artist || '' : '').toLowerCase();
+        return name.includes(q) || artist.includes(q);
+      });
+      if (filtered.length === 0) {
+        document.getElementById('tracklist-full').innerHTML = '';
+        document.getElementById('tracklist-no-result').classList.remove('hidden');
+      } else {
+        renderTracklistFull(filtered);
+      }
+    }
 
-  function renderRelatedPage() {
-    const container = document.getElementById('same-category-grid');
-    const start = _relatedPage * RELATED_PER_PAGE;
-    const items = _relatedProducts.slice(start, start + RELATED_PER_PAGE);
+    // ── Related Products (same category, 2-col with slider if >2) ────────────────
+    let _relatedProducts = [];
+    let _relatedPage = 0;
+    const RELATED_PER_PAGE = 4;
 
-    container.innerHTML = items.map(p => {
-      const disc = p.originalPrice && p.originalPrice > p.price
-        ? `<span class="text-xs text-gray-400 line-through ml-1">฿${Number(p.originalPrice).toLocaleString('th-TH', {minimumFractionDigits:2})}</span>`
-        : '';
-      const relUrl = p.slug ? `/product/${p.slug}` : `product.html?id=${p.id}`;
-      return `<a href="${relUrl}" class="related-card bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.06)] group block">
+    function renderFrequentlyBought() {
+      if (!product || allProducts.length < 2) return;
+
+      // Try same category first; fallback to all other products
+      let sameCat = allProducts.filter(p => p.id !== product.id &&
+        (p.categoryId === product.categoryId || p.category?.id === product.category?.id ||
+          (p.category?.name || p.category) === (product.category?.name || product.category)));
+      if (sameCat.length === 0) {
+        sameCat = allProducts.filter(p => p.id !== product.id);
+      }
+      if (sameCat.length === 0) return;
+
+      _relatedProducts = sameCat;
+      _relatedPage = 0;
+
+      const prevBtn = document.getElementById('related-prev');
+      const nextBtn = document.getElementById('related-next');
+
+      if (_relatedProducts.length > RELATED_PER_PAGE) {
+        if (prevBtn) prevBtn.classList.remove('hidden');
+        if (nextBtn) nextBtn.classList.remove('hidden');
+      }
+
+      renderRelatedPage();
+      document.getElementById('frequently-bought').classList.remove('hidden');
+    }
+
+    function renderRelatedPage() {
+      const container = document.getElementById('same-category-grid');
+      const start = _relatedPage * RELATED_PER_PAGE;
+      const items = _relatedProducts.slice(start, start + RELATED_PER_PAGE);
+
+      container.innerHTML = items.map(p => {
+        const disc = p.originalPrice && p.originalPrice > p.price
+          ? `<span class="text-xs text-gray-400 line-through ml-1">฿${Number(p.originalPrice).toLocaleString('th-TH', { minimumFractionDigits: 2 })}</span>`
+          : '';
+        const relUrl = p.slug ? `/product/${p.slug}` : `product.html?id=${p.id}`;
+        return `<a href="${relUrl}" class="related-card bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.06)] group block">
         <div class="aspect-square bg-gray-50 overflow-hidden relative">
           <img src="${escHtml(p.imageUrl)}" alt="${escHtml(p.name)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-400">
-          ${p.originalPrice && p.originalPrice > p.price ? `<span class="absolute top-2 left-2 bg-red-500 text-white px-2 py-0.5 rounded-full text-xs font-bold">-${Math.round((1-p.price/p.originalPrice)*100)}%</span>` : ''}
+          ${p.originalPrice && p.originalPrice > p.price ? `<span class="absolute top-2 left-2 bg-red-500 text-white px-2 py-0.5 rounded-full text-xs font-bold">-${Math.round((1 - p.price / p.originalPrice) * 100)}%</span>` : ''}
         </div>
         <div class="p-3">
           <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">${escHtml(p.category?.name || p.category || '')}</p>
@@ -1137,112 +1381,112 @@
           </div>
         </div>
       </a>`;
-    }).join('');
+      }).join('');
 
-    // Update nav button states
-    const maxPage = Math.ceil(_relatedProducts.length / RELATED_PER_PAGE) - 1;
-    const prevBtn = document.getElementById('related-prev');
-    const nextBtn = document.getElementById('related-next');
-    if (prevBtn) prevBtn.style.opacity = _relatedPage === 0 ? '0.3' : '1';
-    if (nextBtn) nextBtn.style.opacity = _relatedPage >= maxPage ? '0.3' : '1';
-  }
-
-  function slideRelated(dir) {
-    const maxPage = Math.ceil(_relatedProducts.length / RELATED_PER_PAGE) - 1;
-    _relatedPage = Math.max(0, Math.min(maxPage, _relatedPage + dir));
-    renderRelatedPage();
-  }
-
-  function copyProductLink() {
-    const url = window.location.href;
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(url).then(() => showToast('คัดลอกลิงก์แล้ว!'));
-    } else {
-      const ta = document.createElement('textarea');
-      ta.value = url; document.body.appendChild(ta); ta.select();
-      document.execCommand('copy'); document.body.removeChild(ta);
-      showToast('คัดลอกลิงก์แล้ว!');
+      // Update nav button states
+      const maxPage = Math.ceil(_relatedProducts.length / RELATED_PER_PAGE) - 1;
+      const prevBtn = document.getElementById('related-prev');
+      const nextBtn = document.getElementById('related-next');
+      if (prevBtn) prevBtn.style.opacity = _relatedPage === 0 ? '0.3' : '1';
+      if (nextBtn) nextBtn.style.opacity = _relatedPage >= maxPage ? '0.3' : '1';
     }
-  }
 
-  function addBundleToCart() {
-    if (!window._bundleProducts) return;
-    let cart = [];
-    try { cart = JSON.parse(localStorage.getItem('btmusicdrive_cart') || '[]'); } catch {}
-    window._bundleProducts.forEach(p => {
-      const existing = cart.find(c => c.id === p.id);
-      if (existing) { existing.quantity += 1; }
-      else {
-        cart.push({ id: p.id, name: p.name, price: p.price, image: p.imageUrl, category: p.category?.name || '', quantity: 1 });
+    function slideRelated(dir) {
+      const maxPage = Math.ceil(_relatedProducts.length / RELATED_PER_PAGE) - 1;
+      _relatedPage = Math.max(0, Math.min(maxPage, _relatedPage + dir));
+      renderRelatedPage();
+    }
+
+    function copyProductLink() {
+      const url = window.location.href;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(url).then(() => showToast('คัดลอกลิงก์แล้ว!'));
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = url; document.body.appendChild(ta); ta.select();
+        document.execCommand('copy'); document.body.removeChild(ta);
+        showToast('คัดลอกลิงก์แล้ว!');
       }
-    });
-    localStorage.setItem('btmusicdrive_cart', JSON.stringify(cart));
-    if (typeof _loadCartFromStorage === 'function') _loadCartFromStorage();
-    if (typeof _updateCartUI === 'function') _updateCartUI();
-    showToast(`เพิ่ม ${window._bundleProducts.length} สินค้าเข้าตะกร้าแล้ว!`);
-  }
-
-  // ── Reviews ──────────────────────────────────────────────────────────────────
-  function getReviews() {
-    const key = `btmusicdrive_reviews_${product.id}`;
-    return JSON.parse(localStorage.getItem(key) || '[]');
-  }
-  function saveReviews(list) {
-    localStorage.setItem(`btmusicdrive_reviews_${product.id}`, JSON.stringify(list));
-  }
-
-  function renderReviews() {
-    const reviews = getReviews();
-    const list = document.getElementById('reviews-list');
-    const noReviews = document.getElementById('no-reviews');
-
-    // Summary
-    const totalFromProduct = product.reviews || 0;
-    const totalLocal = reviews.length;
-    const total = totalFromProduct + totalLocal;
-    const avgFromProduct = product.rating || 0;
-    const localAvg = totalLocal > 0 ? reviews.reduce((s, r) => s + r.rating, 0) / totalLocal : 0;
-    const avg = total > 0 ? ((avgFromProduct * totalFromProduct) + (localAvg * totalLocal)) / total : 0;
-
-    document.getElementById('avg-rating').textContent = avg.toFixed(1);
-    document.getElementById('total-reviews-count').textContent = total;
-    document.getElementById('reviews-summary').textContent = `คะแนนเฉลี่ย ${avg.toFixed(1)} จาก ${total} รีวิว`;
-
-    // Stars
-    let starsHtml = '';
-    for (let i = 1; i <= 5; i++) {
-      if (i <= Math.floor(avg)) starsHtml += '<i class="ph-fill ph-star text-yellow-400 text-xl"></i>';
-      else if (i === Math.ceil(avg) && !Number.isInteger(avg)) starsHtml += '<i class="ph-fill ph-star-half text-yellow-400 text-xl"></i>';
-      else starsHtml += '<i class="ph ph-star text-gray-300 text-xl"></i>';
     }
-    document.getElementById('avg-stars').innerHTML = starsHtml;
 
-    // Rating bars
-    const bars = document.getElementById('rating-bars');
-    const counts = [0, 0, 0, 0, 0];
-    reviews.forEach(r => { if (r.rating >= 1 && r.rating <= 5) counts[r.rating - 1]++; });
-    bars.innerHTML = [5, 4, 3, 2, 1].map(star => {
-      const c = counts[star - 1];
-      const pct = totalLocal > 0 ? (c / totalLocal * 100) : 0;
-      return `<div class="flex items-center gap-3">
+    function addBundleToCart() {
+      if (!window._bundleProducts) return;
+      let cart = [];
+      try { cart = JSON.parse(localStorage.getItem('btmusicdrive_cart') || '[]'); } catch { }
+      window._bundleProducts.forEach(p => {
+        const existing = cart.find(c => c.id === p.id);
+        if (existing) { existing.quantity += 1; }
+        else {
+          cart.push({ id: p.id, name: p.name, price: p.price, image: p.imageUrl, category: p.category?.name || '', quantity: 1 });
+        }
+      });
+      localStorage.setItem('btmusicdrive_cart', JSON.stringify(cart));
+      if (typeof _loadCartFromStorage === 'function') _loadCartFromStorage();
+      if (typeof _updateCartUI === 'function') _updateCartUI();
+      showToast(`เพิ่ม ${window._bundleProducts.length} สินค้าเข้าตะกร้าแล้ว!`);
+    }
+
+    // ── Reviews ──────────────────────────────────────────────────────────────────
+    function getReviews() {
+      const key = `btmusicdrive_reviews_${product.id}`;
+      return JSON.parse(localStorage.getItem(key) || '[]');
+    }
+    function saveReviews(list) {
+      localStorage.setItem(`btmusicdrive_reviews_${product.id}`, JSON.stringify(list));
+    }
+
+    function renderReviews() {
+      const reviews = getReviews();
+      const list = document.getElementById('reviews-list');
+      const noReviews = document.getElementById('no-reviews');
+
+      // Summary
+      const totalFromProduct = product.reviews || 0;
+      const totalLocal = reviews.length;
+      const total = totalFromProduct + totalLocal;
+      const avgFromProduct = product.rating || 0;
+      const localAvg = totalLocal > 0 ? reviews.reduce((s, r) => s + r.rating, 0) / totalLocal : 0;
+      const avg = total > 0 ? ((avgFromProduct * totalFromProduct) + (localAvg * totalLocal)) / total : 0;
+
+      document.getElementById('avg-rating').textContent = avg.toFixed(1);
+      document.getElementById('total-reviews-count').textContent = total;
+      document.getElementById('reviews-summary').textContent = `คะแนนเฉลี่ย ${avg.toFixed(1)} จาก ${total} รีวิว`;
+
+      // Stars
+      let starsHtml = '';
+      for (let i = 1; i <= 5; i++) {
+        if (i <= Math.floor(avg)) starsHtml += '<i class="ph-fill ph-star text-yellow-400 text-xl"></i>';
+        else if (i === Math.ceil(avg) && !Number.isInteger(avg)) starsHtml += '<i class="ph-fill ph-star-half text-yellow-400 text-xl"></i>';
+        else starsHtml += '<i class="ph ph-star text-gray-300 text-xl"></i>';
+      }
+      document.getElementById('avg-stars').innerHTML = starsHtml;
+
+      // Rating bars
+      const bars = document.getElementById('rating-bars');
+      const counts = [0, 0, 0, 0, 0];
+      reviews.forEach(r => { if (r.rating >= 1 && r.rating <= 5) counts[r.rating - 1]++; });
+      bars.innerHTML = [5, 4, 3, 2, 1].map(star => {
+        const c = counts[star - 1];
+        const pct = totalLocal > 0 ? (c / totalLocal * 100) : 0;
+        return `<div class="flex items-center gap-3">
         <span class="text-sm font-medium text-gray-600 w-6">${star} <i class="ph-fill ph-star text-yellow-400 text-xs"></i></span>
         <div class="flex-1 h-2.5 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-yellow-400 rounded-full" style="width:${pct}%"></div></div>
         <span class="text-xs text-gray-400 w-8 text-right">${c}</span>
       </div>`;
-    }).join('');
+      }).join('');
 
-    // Render reviews
-    if (reviews.length === 0) {
-      list.innerHTML = '';
-      noReviews.classList.remove('hidden');
-      return;
-    }
-    noReviews.classList.add('hidden');
-    list.innerHTML = reviews.sort((a, b) => new Date(b.date) - new Date(a.date)).map(r => {
-      let rStars = '';
-      for (let i = 1; i <= 5; i++) rStars += i <= r.rating ? '<i class="ph-fill ph-star text-yellow-400 text-sm"></i>' : '<i class="ph ph-star text-gray-300 text-sm"></i>';
-      const images = (r.images || []).map(img => `<img src="${img}" class="w-16 h-16 rounded-lg object-cover cursor-pointer hover:opacity-80 transition-opacity" onclick="window.open('${img}','_blank')" alt="">`).join('');
-      return `<div class="bg-white rounded-xl border border-gray-100 p-5">
+      // Render reviews
+      if (reviews.length === 0) {
+        list.innerHTML = '';
+        noReviews.classList.remove('hidden');
+        return;
+      }
+      noReviews.classList.add('hidden');
+      list.innerHTML = reviews.sort((a, b) => new Date(b.date) - new Date(a.date)).map(r => {
+        let rStars = '';
+        for (let i = 1; i <= 5; i++) rStars += i <= r.rating ? '<i class="ph-fill ph-star text-yellow-400 text-sm"></i>' : '<i class="ph ph-star text-gray-300 text-sm"></i>';
+        const images = (r.images || []).map(img => `<img src="${img}" class="w-16 h-16 rounded-lg object-cover cursor-pointer hover:opacity-80 transition-opacity" onclick="window.open('${img}','_blank')" alt="">`).join('');
+        return `<div class="bg-white rounded-xl border border-gray-100 p-5">
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">${escHtml((r.name || 'ลูกค้า')[0])}</div>
@@ -1256,262 +1500,264 @@
         <p class="text-gray-600 text-sm leading-relaxed">${escHtml(r.text)}</p>
         ${images ? `<div class="flex gap-2 mt-3">${images}</div>` : ''}
       </div>`;
-    }).join('');
-  }
-
-  function openReviewModal() {
-    const m = document.getElementById('review-modal');
-    m.classList.remove('hidden');
-    m.classList.add('flex');
-  }
-  function closeReviewModal() {
-    const m = document.getElementById('review-modal');
-    m.classList.add('hidden');
-    m.classList.remove('flex');
-    reviewRating = 0;
-    document.querySelectorAll('#star-input button i').forEach(i => { i.className = 'ph ph-star'; });
-    document.getElementById('review-name').value = '';
-    document.getElementById('review-text').value = '';
-    document.getElementById('review-image').value = '';
-    document.getElementById('review-image-preview').innerHTML = '';
-  }
-
-  function setRating(n) {
-    reviewRating = n;
-    document.querySelectorAll('#star-input button').forEach((btn, i) => {
-      btn.querySelector('i').className = i < n ? 'ph-fill ph-star' : 'ph ph-star';
-      btn.classList.toggle('text-yellow-400', i < n);
-      btn.classList.toggle('text-gray-300', i >= n);
-    });
-  }
-
-  function submitReview() {
-    if (reviewRating === 0) { showToast('กรุณาให้คะแนนก่อน'); return; }
-    const name = document.getElementById('review-name').value.trim() || 'ลูกค้า';
-    const text = document.getElementById('review-text').value.trim();
-    if (!text) { showToast('กรุณาเขียนรีวิว'); return; }
-
-    // Handle images (convert to dataURL for localStorage)
-    const fileInput = document.getElementById('review-image');
-    const files = Array.from(fileInput.files || []);
-
-    const processAndSave = (imageUrls) => {
-      const reviews = getReviews();
-      reviews.push({ rating: reviewRating, name, text, images: imageUrls, date: new Date().toISOString() });
-      saveReviews(reviews);
-      renderReviews();
-      closeReviewModal();
-      showToast('ขอบคุณสำหรับรีวิว!');
-    };
-
-    if (files.length > 0) {
-      const urls = [];
-      let loaded = 0;
-      files.slice(0, 3).forEach(file => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          urls.push(e.target.result);
-          loaded++;
-          if (loaded === Math.min(files.length, 3)) processAndSave(urls);
-        };
-        reader.readAsDataURL(file);
-      });
-    } else {
-      processAndSave([]);
+      }).join('');
     }
-  }
 
-  // Image preview for review
-  document.addEventListener('DOMContentLoaded', () => {
-    const fileInput = document.getElementById('review-image');
-    if (fileInput) {
-      fileInput.addEventListener('change', () => {
-        const preview = document.getElementById('review-image-preview');
-        preview.innerHTML = '';
-        Array.from(fileInput.files).slice(0, 3).forEach(file => {
+    function openReviewModal() {
+      const m = document.getElementById('review-modal');
+      m.classList.remove('hidden');
+      m.classList.add('flex');
+    }
+    function closeReviewModal() {
+      const m = document.getElementById('review-modal');
+      m.classList.add('hidden');
+      m.classList.remove('flex');
+      reviewRating = 0;
+      document.querySelectorAll('#star-input button i').forEach(i => { i.className = 'ph ph-star'; });
+      document.getElementById('review-name').value = '';
+      document.getElementById('review-text').value = '';
+      document.getElementById('review-image').value = '';
+      document.getElementById('review-image-preview').innerHTML = '';
+    }
+
+    function setRating(n) {
+      reviewRating = n;
+      document.querySelectorAll('#star-input button').forEach((btn, i) => {
+        btn.querySelector('i').className = i < n ? 'ph-fill ph-star' : 'ph ph-star';
+        btn.classList.toggle('text-yellow-400', i < n);
+        btn.classList.toggle('text-gray-300', i >= n);
+      });
+    }
+
+    function submitReview() {
+      if (reviewRating === 0) { showToast('กรุณาให้คะแนนก่อน'); return; }
+      const name = document.getElementById('review-name').value.trim() || 'ลูกค้า';
+      const text = document.getElementById('review-text').value.trim();
+      if (!text) { showToast('กรุณาเขียนรีวิว'); return; }
+
+      // Handle images (convert to dataURL for localStorage)
+      const fileInput = document.getElementById('review-image');
+      const files = Array.from(fileInput.files || []);
+
+      const processAndSave = (imageUrls) => {
+        const reviews = getReviews();
+        reviews.push({ rating: reviewRating, name, text, images: imageUrls, date: new Date().toISOString() });
+        saveReviews(reviews);
+        renderReviews();
+        closeReviewModal();
+        showToast('ขอบคุณสำหรับรีวิว!');
+      };
+
+      if (files.length > 0) {
+        const urls = [];
+        let loaded = 0;
+        files.slice(0, 3).forEach(file => {
           const reader = new FileReader();
           reader.onload = (e) => {
-            preview.innerHTML += `<img src="${e.target.result}" class="w-16 h-16 rounded-lg object-cover border border-gray-200" alt="">`;
+            urls.push(e.target.result);
+            loaded++;
+            if (loaded === Math.min(files.length, 3)) processAndSave(urls);
           };
           reader.readAsDataURL(file);
         });
-      });
+      } else {
+        processAndSave([]);
+      }
     }
-  });
 
-  // ── Wishlist ─────────────────────────────────────────────────────────────────
-  function getWishlist() { return JSON.parse(localStorage.getItem('btmusicdrive_wishlist') || '[]'); }
-  function saveWishlistData(list) { localStorage.setItem('btmusicdrive_wishlist', JSON.stringify(list)); }
+    // Image preview for review
+    document.addEventListener('DOMContentLoaded', () => {
+      const fileInput = document.getElementById('review-image');
+      if (fileInput) {
+        fileInput.addEventListener('change', () => {
+          const preview = document.getElementById('review-image-preview');
+          preview.innerHTML = '';
+          Array.from(fileInput.files).slice(0, 3).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              preview.innerHTML += `<img src="${e.target.result}" class="w-16 h-16 rounded-lg object-cover border border-gray-200" alt="">`;
+            };
+            reader.readAsDataURL(file);
+          });
+        });
+      }
+    });
 
-  function isInWishlist() {
-    return getWishlist().some(w => w.id === product.id);
-  }
+    // ── Wishlist ─────────────────────────────────────────────────────────────────
+    function getWishlist() { return JSON.parse(localStorage.getItem('btmusicdrive_wishlist') || '[]'); }
+    function saveWishlistData(list) { localStorage.setItem('btmusicdrive_wishlist', JSON.stringify(list)); }
 
-  function updateWishlistUI() {
-    const icon = document.getElementById('wishlist-icon');
-    const text = document.getElementById('wishlist-text');
-    if (isInWishlist()) {
-      icon.className = 'ph-fill ph-heart text-xl text-red-500';
-      text.textContent = 'เพิ่มในรายการที่ถูกใจแล้ว';
-      document.getElementById('wishlist-btn').classList.add('text-red-500');
-      document.getElementById('wishlist-btn').classList.remove('text-gray-500');
-    } else {
-      icon.className = 'ph ph-heart text-xl';
-      text.textContent = 'เพิ่มในรายการที่ถูกใจ';
-      document.getElementById('wishlist-btn').classList.remove('text-red-500');
-      document.getElementById('wishlist-btn').classList.add('text-gray-500');
+    function isInWishlist() {
+      return getWishlist().some(w => w.id === product.id);
     }
-  }
 
-  function toggleWishlist() {
-    if (!product) return;
-    let list = getWishlist();
-    const idx = list.findIndex(w => w.id === product.id);
-    if (idx >= 0) {
-      list.splice(idx, 1);
-      showToast('ลบออกจากรายการที่ถูกใจแล้ว');
-    } else {
-      list.push({ id: product.id, name: product.name, price: product.price, image: product.imageUrl });
-      if (typeof fbq === 'function') fbq('track', 'AddToWishlist', { content_ids: [product.id], content_name: product.name, value: product.price, currency: 'THB' });
-      showToast('เพิ่มในรายการที่ถูกใจแล้ว ❤');
+    function updateWishlistUI() {
+      const icon = document.getElementById('wishlist-icon');
+      const text = document.getElementById('wishlist-text');
+      if (isInWishlist()) {
+        icon.className = 'ph-fill ph-heart text-xl text-red-500';
+        text.textContent = 'เพิ่มในรายการที่ถูกใจแล้ว';
+        document.getElementById('wishlist-btn').classList.add('text-red-500');
+        document.getElementById('wishlist-btn').classList.remove('text-gray-500');
+      } else {
+        icon.className = 'ph ph-heart text-xl';
+        text.textContent = 'เพิ่มในรายการที่ถูกใจ';
+        document.getElementById('wishlist-btn').classList.remove('text-red-500');
+        document.getElementById('wishlist-btn').classList.add('text-gray-500');
+      }
     }
-    saveWishlistData(list);
-    updateWishlistUI();
-  }
 
-  // ── Gallery ──────────────────────────────────────────────────────────────────
-  function renderGallery() {
-    document.getElementById('main-image').src = allImages[0];
-    const thumbsEl = document.getElementById('thumbs');
-    thumbsEl.innerHTML = allImages.map((url, i) =>
-      `<div class="thumb flex-shrink-0 w-20 h-20 ${i === 0 ? 'active' : ''}" onclick="selectImage(${i})">
+    function toggleWishlist() {
+      if (!product) return;
+      let list = getWishlist();
+      const idx = list.findIndex(w => w.id === product.id);
+      if (idx >= 0) {
+        list.splice(idx, 1);
+        showToast('ลบออกจากรายการที่ถูกใจแล้ว');
+      } else {
+        list.push({ id: product.id, name: product.name, price: product.price, image: product.imageUrl });
+        if (typeof fbq === 'function') fbq('track', 'AddToWishlist', { content_ids: [product.id], content_name: product.name, value: product.price, currency: 'THB' });
+        showToast('เพิ่มในรายการที่ถูกใจแล้ว ❤');
+      }
+      saveWishlistData(list);
+      updateWishlistUI();
+    }
+
+    // ── Gallery ──────────────────────────────────────────────────────────────────
+    function renderGallery() {
+      document.getElementById('main-image').src = allImages[0];
+      const thumbsEl = document.getElementById('thumbs');
+      thumbsEl.innerHTML = allImages.map((url, i) =>
+        `<div class="thumb flex-shrink-0 w-20 h-20 ${i === 0 ? 'active' : ''}" onclick="selectImage(${i})">
         <img src="${escHtml(url)}" alt="" class="w-full h-full object-cover">
       </div>`
-    ).join('');
-  }
-
-  function selectImage(idx) {
-    currentImageIndex = idx;
-    document.getElementById('main-image').src = allImages[idx];
-    document.querySelectorAll('.thumb').forEach((t, i) => t.classList.toggle('active', i === idx));
-  }
-
-  function prevImage() { selectImage((currentImageIndex - 1 + allImages.length) % allImages.length); }
-  function nextImage() { selectImage((currentImageIndex + 1) % allImages.length); }
-
-  // ── Specs Table ──────────────────────────────────────────────────────────────
-  function renderSpecs() {
-    const specs = product.specs;
-    if (!specs || (Array.isArray(specs) && specs.length === 0) || (typeof specs === 'object' && Object.keys(specs).length === 0)) {
-      document.getElementById('specs-section').classList.add('hidden');
-      return;
-    }
-    let rows = '';
-    if (Array.isArray(specs)) {
-      rows = specs.map((s) =>
-        `<tr class="spec-row"><td class="px-6 py-3 font-semibold text-gray-800 w-1/3 border-b border-gray-100">${escHtml(s.key || s.label || '')}</td><td class="px-6 py-3 text-gray-600 border-b border-gray-100">${escHtml(s.value || '')}</td></tr>`
-      ).join('');
-    } else {
-      rows = Object.entries(specs).map(([k, v]) =>
-        `<tr class="spec-row"><td class="px-6 py-3 font-semibold text-gray-800 w-1/3 border-b border-gray-100">${escHtml(k)}</td><td class="px-6 py-3 text-gray-600 border-b border-gray-100">${escHtml(String(v))}</td></tr>`
       ).join('');
     }
-    document.getElementById('specs-table-all').innerHTML = rows;
-    document.getElementById('specs-table').innerHTML = rows;
-  }
 
-  // ── Legacy Tabs (kept for backward-compat, no longer visible) ──────────────
-  function switchTab(tab) {
-    // no-op — UI now uses switchPTab
-  }
-
-  // ── Product Detail Tabs ──────────────────────────────────────────────────────
-  function switchPTab(tab) {
-    // Buttons
-    document.querySelectorAll('.ptab-btn').forEach(b => {
-      b.classList.remove('ptab-active', 'text-primary', 'border-primary');
-      b.classList.add('text-gray-500', 'border-transparent');
-    });
-    const activeBtn = document.getElementById('ptab-btn-' + tab);
-    if (activeBtn) {
-      activeBtn.classList.add('ptab-active', 'text-primary', 'border-primary');
-      activeBtn.classList.remove('text-gray-500', 'border-transparent');
+    function selectImage(idx) {
+      currentImageIndex = idx;
+      document.getElementById('main-image').src = allImages[idx];
+      document.querySelectorAll('.thumb').forEach((t, i) => t.classList.toggle('active', i === idx));
     }
-    // Panels
-    ['desc', 'tracklist', 'shipping'].forEach(t => {
-      const el = document.getElementById('ptab-' + t);
-      if (el) el.classList.toggle('hidden', t !== tab);
-    });
-  }
 
+    function prevImage() { selectImage((currentImageIndex - 1 + allImages.length) % allImages.length); }
+    function nextImage() { selectImage((currentImageIndex + 1) % allImages.length); }
 
-  // ── Quantity ─────────────────────────────────────────────────────────────────
-  function changeQty(delta) {
-    const el = document.getElementById('qty');
-    let val = parseInt(el.value) || 1;
-    val = Math.max(1, Math.min(99, val + delta));
-    el.value = String(val).padStart(2, '0');
-  }
-
-  // ── Cart Actions ─────────────────────────────────────────────────────────────
-  function addToCartFromDetail() {
-    if (!product) return;
-    const qty = parseInt(document.getElementById('qty').value) || 1;
-    let cart = [];
-    try { cart = JSON.parse(localStorage.getItem('btmusicdrive_cart') || '[]'); } catch {}
-    const existing = cart.find(c => c.id === product.id);
-    if (existing) {
-      existing.quantity += qty;
-    } else {
-      cart.push({ id: product.id, name: product.name, price: product.price, image: product.imageUrl, category: product.category?.name || '', quantity: qty });
+    // ── Specs Table ──────────────────────────────────────────────────────────────
+    function renderSpecs() {
+      const specs = product.specs;
+      if (!specs || (Array.isArray(specs) && specs.length === 0) || (typeof specs === 'object' && Object.keys(specs).length === 0)) {
+        document.getElementById('specs-section').classList.add('hidden');
+        return;
+      }
+      let rows = '';
+      if (Array.isArray(specs)) {
+        rows = specs.map((s) =>
+          `<tr class="spec-row"><td class="px-6 py-3 font-semibold text-gray-800 w-1/3 border-b border-gray-100">${escHtml(s.key || s.label || '')}</td><td class="px-6 py-3 text-gray-600 border-b border-gray-100">${escHtml(s.value || '')}</td></tr>`
+        ).join('');
+      } else {
+        rows = Object.entries(specs).map(([k, v]) =>
+          `<tr class="spec-row"><td class="px-6 py-3 font-semibold text-gray-800 w-1/3 border-b border-gray-100">${escHtml(k)}</td><td class="px-6 py-3 text-gray-600 border-b border-gray-100">${escHtml(String(v))}</td></tr>`
+        ).join('');
+      }
+      document.getElementById('specs-table-all').innerHTML = rows;
+      document.getElementById('specs-table').innerHTML = rows;
     }
-    localStorage.setItem('btmusicdrive_cart', JSON.stringify(cart));
-    if (typeof _loadCartFromStorage === 'function') _loadCartFromStorage();
-    if (typeof _updateCartUI === 'function') _updateCartUI();
-    showToast(`เพิ่ม "${product.name}" ลงตะกร้าแล้ว (${qty} ชิ้น)`);
-  }
 
-  function buyNow() {
-    addToCartFromDetail();
-    window.location.href = '/checkout';
-  }
+    // ── Legacy Tabs (kept for backward-compat, no longer visible) ──────────────
+    function switchTab(tab) {
+      // no-op — UI now uses switchPTab
+    }
 
-  // ── Utils ────────────────────────────────────────────────────────────────────
-  function escHtml(str) {
-    const d = document.createElement('div');
-    d.appendChild(document.createTextNode(String(str || '')));
-    return d.innerHTML;
-  }
+    // ── Product Detail Tabs ──────────────────────────────────────────────────────
+    function switchPTab(tab) {
+      // Buttons
+      document.querySelectorAll('.ptab-btn').forEach(b => {
+        b.classList.remove('ptab-active', 'text-primary', 'border-primary');
+        b.classList.add('text-gray-500', 'border-transparent');
+      });
+      const activeBtn = document.getElementById('ptab-btn-' + tab);
+      if (activeBtn) {
+        activeBtn.classList.add('ptab-active', 'text-primary', 'border-primary');
+        activeBtn.classList.remove('text-gray-500', 'border-transparent');
+      }
+      // Panels
+      ['desc', 'tracklist', 'shipping'].forEach(t => {
+        const el = document.getElementById('ptab-' + t);
+        if (el) el.classList.toggle('hidden', t !== tab);
+      });
+    }
 
-  function showToast(message) {
-    const container = document.getElementById('toast-container');
-    const toast = document.createElement('div');
-    toast.className = 'bg-gray-900 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 transform translate-y-10 opacity-0 transition-all duration-300';
-    toast.innerHTML = `<div class="bg-green-500 rounded-full p-1"><i class="ph ph-check text-white"></i></div><p class="text-sm font-medium">${message}</p>`;
-    container.appendChild(toast);
-    requestAnimationFrame(() => {
-      toast.classList.remove('translate-y-10', 'opacity-0');
-      toast.classList.add('translate-y-0', 'opacity-100');
-    });
-    setTimeout(() => {
-      toast.classList.remove('translate-y-0', 'opacity-100');
-      toast.classList.add('translate-y-10', 'opacity-0');
-      setTimeout(() => toast.remove(), 300);
-    }, 3000);
-  }
 
-  // ── Init ─────────────────────────────────────────────────────────────────────
-  loadProduct();
-</script>
+    // ── Quantity ─────────────────────────────────────────────────────────────────
+    function changeQty(delta) {
+      const el = document.getElementById('qty');
+      let val = parseInt(el.value) || 1;
+      val = Math.max(1, Math.min(99, val + delta));
+      el.value = String(val).padStart(2, '0');
+    }
+
+    // ── Cart Actions ─────────────────────────────────────────────────────────────
+    function addToCartFromDetail() {
+      if (!product) return;
+      const qty = parseInt(document.getElementById('qty').value) || 1;
+      let cart = [];
+      try { cart = JSON.parse(localStorage.getItem('btmusicdrive_cart') || '[]'); } catch { }
+      const existing = cart.find(c => c.id === product.id);
+      if (existing) {
+        existing.quantity += qty;
+      } else {
+        cart.push({ id: product.id, name: product.name, price: product.price, image: product.imageUrl, category: product.category?.name || '', quantity: qty });
+      }
+      localStorage.setItem('btmusicdrive_cart', JSON.stringify(cart));
+      if (typeof _loadCartFromStorage === 'function') _loadCartFromStorage();
+      if (typeof _updateCartUI === 'function') _updateCartUI();
+      showToast(`เพิ่ม "${product.name}" ลงตะกร้าแล้ว (${qty} ชิ้น)`);
+    }
+
+    function buyNow() {
+      addToCartFromDetail();
+      window.location.href = '/checkout';
+    }
+
+    // ── Utils ────────────────────────────────────────────────────────────────────
+    function escHtml(str) {
+      const d = document.createElement('div');
+      d.appendChild(document.createTextNode(String(str || '')));
+      return d.innerHTML;
+    }
+
+    function showToast(message) {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'bg-gray-900 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 transform translate-y-10 opacity-0 transition-all duration-300';
+      toast.innerHTML = `<div class="bg-green-500 rounded-full p-1"><i class="ph ph-check text-white"></i></div><p class="text-sm font-medium">${message}</p>`;
+      container.appendChild(toast);
+      requestAnimationFrame(() => {
+        toast.classList.remove('translate-y-10', 'opacity-0');
+        toast.classList.add('translate-y-0', 'opacity-100');
+      });
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-10', 'opacity-0');
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    // ── Init ─────────────────────────────────────────────────────────────────────
+    loadProduct();
+  </script>
 
   <!-- Sticky Add to Cart Bar (Mobile) -->
-  <div id="mobile-sticky-cart" class="fixed bottom-14 left-0 right-0 bg-white border-t border-gray-200 z-40 md:hidden hidden">
+  <div id="mobile-sticky-cart"
+    class="fixed bottom-14 left-0 right-0 bg-white border-t border-gray-200 z-40 md:hidden hidden">
     <div class="flex items-center gap-3 px-4 py-2.5">
       <div class="flex-1 min-w-0">
         <p id="sticky-product-name" class="text-sm font-semibold text-gray-900 truncate"></p>
         <p id="sticky-product-price" class="text-base font-bold text-red-600"></p>
       </div>
-      <button onclick="addToCartFromDetail()" class="bg-primary hover:bg-amber-700 text-white font-bold py-2.5 px-5 rounded-lg transition-colors flex items-center gap-2 whitespace-nowrap text-sm">
+      <button onclick="addToCartFromDetail()"
+        class="bg-primary hover:bg-amber-700 text-white font-bold py-2.5 px-5 rounded-lg transition-colors flex items-center gap-2 whitespace-nowrap text-sm">
         <i class="ph ph-shopping-cart text-lg"></i> เพิ่มในตะกร้า
       </button>
     </div>
@@ -1522,5 +1768,5 @@
 
   <script src="components.min.js"></script>
 </body>
-</html>
 
+</html>
