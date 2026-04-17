@@ -39,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
             value: subtotal,
             currency: 'THB'
         });
+        if (typeof ttq !== 'undefined') ttq.track('InitiateCheckout', { value: subtotal, currency: 'THB' });
     }
 });
 
@@ -626,6 +627,7 @@ async function processStripeOrder(method, shippingAddress, phone, btn, btnMobile
                 value: confirmData.totalAmount || cart.reduce((s,i)=>s+i.price*i.quantity,0),
                 currency: 'THB'
             });
+            if (typeof ttq !== 'undefined') ttq.track('CompletePayment', { value: confirmData.totalAmount || cart.reduce((s,i)=>s+i.price*i.quantity,0), currency: 'THB' });
             cart = [];
             localStorage.removeItem('btmusicdrive_cart');
             showSuccessModal(confirmData.orderId, method === 'card' ? 'card' : 'promptpay');
@@ -680,6 +682,7 @@ async function processCodOrder(shippingAddress, phone, btn, btnMobile) {
             value: data.totalAmount || cart.reduce((s,i)=>s+i.price*i.quantity,0),
             currency: 'THB'
         });
+        if (typeof ttq !== 'undefined') ttq.track('CompletePayment', { value: data.totalAmount || cart.reduce((s,i)=>s+i.price*i.quantity,0), currency: 'THB' });
         cart = [];
         localStorage.removeItem('btmusicdrive_cart');
         showSuccessModal(data.orderId, 'cod');

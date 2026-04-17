@@ -815,6 +815,7 @@
       value: product.price,
       currency: 'THB'
     });
+    if (typeof ttq !== 'undefined') ttq.track('ViewContent', { content_id: product.id, content_name: product.name, price: product.price, currency: 'THB' });
   }
 
   function showError() {

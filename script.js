@@ -414,6 +414,7 @@ async function handleAuthSubmit(e) {
         toggleAuthModal();
         showToast(isLoginMode ? 'Successfully logged in!' : 'Account created successfully!');
         if (!isLoginMode && typeof fbq === 'function') fbq('track', 'CompleteRegistration');
+        if (!isLoginMode && typeof ttq !== 'undefined') ttq.track('CompleteRegistration');
 
         // Sync cart after login/register
         await syncLocalCartToDatabase();
@@ -606,6 +607,7 @@ async function addToCart(productId) {
         value: product.price,
         currency: 'THB'
     });
+    if (typeof ttq !== 'undefined') ttq.track('AddToCart', { content_id: product.id, content_name: product.name, quantity: 1, price: product.price, currency: 'THB' });
     
     // Auto-open cart on desktop
     if (window.innerWidth >= 768 && cartSidebar && cartSidebar.classList.contains('translate-x-full')) {
