@@ -110,6 +110,15 @@
       ]
     },
     {
+      "source": "/(products|categories)\\.json",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600, stale-while-revalidate=86400"
+        }
+      ]
+    },
+    {
       "source": "/(.*)\\.html",
       "headers": [
         {
@@ -120,6 +129,12 @@
     }
   ],
   "routes": [
+    {
+      "src": "/(.*)",
+      "has": [{ "type": "header", "key": "x-forwarded-proto", "value": "http" }],
+      "headers": { "Location": "https://btmusicdrive.com/$1" },
+      "status": 301
+    },
     {
       "src": "/api/(.*)",
       "dest": "/server/src/index.ts"

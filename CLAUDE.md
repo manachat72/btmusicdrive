@@ -1,7 +1,7 @@
 # CLAUDE.md — BT Music Drive
 
 > คู่มือสำหรับ Claude Code อ่านไฟล์นี้ก่อนเริ่มงานทุกครั้ง
-> อัปเดตล่าสุด: 2026-04-10
+> อัปเดตล่าสุด: 2026-04-17
 
 ---
 
@@ -55,7 +55,7 @@ btmusicdrive/
 | Database | **Neon** (serverless PostgreSQL) |
 | Auth | JWT (`jsonwebtoken`) + bcrypt |
 | Payment | **Stripe** (PaymentIntent flow) |
-| Shipping | **SHIPPOP API** (`https://api.shippop.com/v2`) |
+| Shipping | Flash Express (manual tracking via admin panel) |
 | Email | Nodemailer via Gmail SMTP |
 | Image Upload | Multer (local disk) |
 | Deploy | **Vercel** (serverless functions) |
@@ -83,7 +83,7 @@ secondary: '#0F172A' // Dark slate (navbar/footer bg)
 | `profile.html` | User profile edit |
 | `address.html` | Saved addresses management |
 | `wishlist.html` | User wishlist |
-| `track-order.html` | Track parcel by order ID or phone (with SHIPPOP/Kerry/Flash links) |
+| `track-order.html` | Track parcel by order ID or phone (Flash Express tracking link) |
 | `shipping.html` | Shipping info page — features, timeline, delivery time table, FAQ |
 | `about.html` | About page |
 | `contact.html` | Contact page |
@@ -115,7 +115,6 @@ secondary: '#0F172A' // Dark slate (navbar/footer bg)
 | `users.ts` | `/api/users` | profile update, admin user list |
 | `menus.ts` | `/api/menus` | nav menu CRUD + reorder |
 | `images.ts` | `/api/images` | multer image upload/delete/list |
-| `shipping.ts` | `/api/shipping` | SHIPPOP booking, confirm, label, rates, callback webhook |
 
 ---
 
@@ -174,15 +173,6 @@ POST   /api/promo              [ADMIN]
 PATCH  /api/promo/:id          [ADMIN]
 DELETE /api/promo/:id          [ADMIN]
 GET    /api/promo/:code        public
-```
-
-### Shipping (SHIPPOP)
-```
-POST /api/shipping/booking     [ADMIN] { orderId, courierCode }
-POST /api/shipping/confirm     [ADMIN] { purchaseId }
-GET  /api/shipping/label/:purchaseId  [ADMIN] ?size=A4|THERMAL
-POST /api/shipping/rates       [ADMIN] { weight, from_postcode, to_postcode }
-POST /api/shipping/callback    ← SHIPPOP webhook (no auth)
 ```
 
 ### Other
@@ -256,10 +246,6 @@ STRIPE_WEBHOOK_SECRET="whsec_..."
 GOOGLE_CLIENT_ID="..."
 GOOGLE_CLIENT_SECRET="..."
 
-# SHIPPOP Shipping
-SHIPPOP_API_KEY=""                     # ยังไม่มี — ต้องสมัครที่ shippop.com
-SHIPPOP_EMAIL=""
-
 # Email
 SMTP_HOST="smtp.gmail.com"
 SMTP_PORT="587"
@@ -324,11 +310,8 @@ PromoCode  — id, code(unique), type(PERCENT|FIXED), value, minOrder, maxUses, 
 
 | ที่ | ปัญหา |
 |----|-------|
-| `server/src/routes/shipping.ts:58-66` | ที่อยู่ผู้ส่ง (from) เป็น placeholder `123 ถนนสุขุมวิท` — ต้องใส่ที่อยู่จริง |
-| `server/.env` | `SHIPPOP_API_KEY` และ `SHIPPOP_EMAIL` ยังว่างอยู่ — รอสมัคร shippop.com |
-| `server/.env` | `GOOGLE_CLIENT_ID` และ `GOOGLE_CLIENT_SECRET` ยังว่างอยู่ |
-| `admin.html` | Password `btmusicdrive-admin-2025` hardcoded ทั้ง frontend และ backend |
-| `checkout.js` | `SHIPPING_COST = 50` และ `TAX_RATE = 0.08` เป็น constants ยังไม่ dynamic |
+| `server/.env` | `GOOGLE_CLIENT_ID` และ `GOOGLE_CLIENT_SECRET` ยังว่างอยู่ — ปุ่ม Login ด้วย Google ใช้ไม่ได้ |
+| `products.json` | 5 สินค้า (ลูกทุ่ง, หมอลำ, สากล, สตริง 90s, ลูกกรุง) ยังใช้รูป Unsplash placeholder |
 
 ---
 

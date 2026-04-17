@@ -26,7 +26,14 @@
       "Bash(grep -L \"components.js\" /c/Users/manac/ProjectsPython/btmusicdrive/*.html)",
       "Bash(timeout 30 node_modules/.bin/tsc --noEmit)",
       "Bash(node_modules/.bin/tsc --noEmit)",
-      "Bash(grep -rn \"category.html\" /c/Users/manac/ProjectsPython/btmusicdrive/*.html)"
+      "Bash(grep -rn \"category.html\" /c/Users/manac/ProjectsPython/btmusicdrive/*.html)",
+      "Bash(npx --version)",
+      "Bash(command -v uglifyjs)",
+      "Bash(command -v terser)",
+      "Bash(npx terser *)",
+      "Bash(npx clean-css-cli *)",
+      "Bash(grep -v '^\\\\s*//')",
+      "Bash(grep -v '//')"
     ]
   }
 }

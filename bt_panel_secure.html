@@ -994,16 +994,8 @@
               <input type="url" id="mkt-line-url" class="settings-input" placeholder="https://line.me/R/ti/p/@yourlineid">
             </div>
             <div class="settings-row">
-              <label class="settings-label"><i class="fa-brands fa-instagram" style="color:#e1306c;margin-right:5px;"></i>Instagram URL</label>
-              <input type="url" id="mkt-ig-url" class="settings-input" placeholder="https://www.instagram.com/youraccount">
-            </div>
-            <div class="settings-row">
               <label class="settings-label"><i class="fa-brands fa-tiktok" style="margin-right:5px;"></i>TikTok URL</label>
               <input type="url" id="mkt-tt-url" class="settings-input" placeholder="https://www.tiktok.com/@youraccount">
-            </div>
-            <div class="settings-row">
-              <label class="settings-label"><i class="fa-brands fa-youtube" style="color:#ff0000;margin-right:5px;"></i>YouTube URL</label>
-              <input type="url" id="mkt-yt-url" class="settings-input" placeholder="https://www.youtube.com/@yourchannel">
             </div>
           </div>
           <div style="margin-top:14px;"><button onclick="saveSocialLinks()" class="settings-save-btn"><i class="fa-solid fa-floppy-disk"></i> บันทึก</button></div>
@@ -1531,7 +1523,7 @@
 <script>
   const API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
     ? 'http://localhost:5000/api' : '/api';
-  const ADMIN_PASSWORD = 'nu3gtXBTlef6i4wmnqjjcw';
+  const ADMIN_PASSWORD = 'BtM$c@Admin_2026!Px400c2594';
 
   function adminHeaders(json = true) {
     const token = localStorage.getItem('btmusicdrive_token');
@@ -2264,7 +2256,6 @@
     'mkt-line-url': 'btmd_social_line',
     'mkt-ig-url':   'btmd_social_instagram',
     'mkt-tt-url':   'btmd_social_tiktok',
-    'mkt-yt-url':   'btmd_social_youtube',
   };
 
   function loadMarketingSettings() {

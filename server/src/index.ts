@@ -13,7 +13,7 @@ import productRoutes from './routes/product';
 import userRoutes from './routes/user';
 import menuRoutes from './routes/menu';
 import imageRoutes from './routes/images';
-import shippingRoutes from './routes/shipping';
+import contactRoutes from './routes/contact';
 
 dotenv.config();
 
@@ -79,7 +79,7 @@ app.use('/api/products', productRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/menus', menuRoutes);
 app.use('/api/images', imageRoutes);
-app.use('/api/shipping', shippingRoutes);
+app.use('/api/contact', contactRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });

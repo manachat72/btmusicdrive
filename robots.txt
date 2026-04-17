@@ -4,21 +4,17 @@
 User-agent: *
 
 # Block private / user-specific pages
-Disallow: /admin
+Disallow: /bt-admin
 Disallow: /cart
 Disallow: /checkout
 Disallow: /orders
 Disallow: /profile
 Disallow: /address
 Disallow: /wishlist
-Disallow: /*.html$
 
-# Block server-side and build artifacts
+# Block API and server internals
+Disallow: /api/
 Disallow: /server/
-Disallow: /images/
-
-# Allow all other public pages
-Allow: /
 
 # Sitemap location
 Sitemap: https://btmusicdrive.com/sitemap.xml
