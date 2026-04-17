@@ -4,18 +4,18 @@
 User-agent: *
 
 # Block private / user-specific pages
-Disallow: /admin.html
-Disallow: /cart.html
-Disallow: /checkout.html
-Disallow: /orders.html
-Disallow: /profile.html
-Disallow: /address.html
-Disallow: /wishlist.html
+Disallow: /admin
+Disallow: /cart
+Disallow: /checkout
+Disallow: /orders
+Disallow: /profile
+Disallow: /address
+Disallow: /wishlist
+Disallow: /*.html$
 
 # Block server-side and build artifacts
 Disallow: /server/
-Disallow: /node_modules/
-Disallow: /Downloads/
+Disallow: /images/
 
 # Allow all other public pages
 Allow: /

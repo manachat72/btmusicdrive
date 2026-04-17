@@ -650,7 +650,7 @@
     <!-- ── ORDERS SECTION ─────────────────────────────────────────────────── -->
     <section id="section-orders" style="display:none;">
       <div class="wp-page-hdr">
-        <h1 class="wp-page-title">คำสั่งซื้อ</h1>
+        <h2 class="wp-page-title">คำสั่งซื้อ</h2>
         <div style="display:flex;gap:8px;">
           <button onclick="exportFlashExcel()" class="wp-btn" style="background:#e8a000;color:#fff;border-color:#e8a000;">
             <i class="fa-solid fa-file-excel"></i> Export Flash Express
@@ -705,7 +705,7 @@
     <section id="section-products" style="display:none;">
       <div class="wp-page-hdr">
         <div>
-          <h1 class="wp-page-title">สินค้า</h1>
+          <h2 class="wp-page-title">สินค้า</h2>
           <p class="wp-page-desc" id="products-count-label">จัดการคาตาล็อกสินค้า</p>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -758,7 +758,7 @@
     <section id="section-customers" style="display:none;">
       <div class="wp-page-hdr">
         <div>
-          <h1 class="wp-page-title">ลูกค้า</h1>
+          <h2 class="wp-page-title">ลูกค้า</h2>
           <p class="wp-page-desc" id="customers-count-label">บัญชีที่ลงทะเบียนทั้งหมด</p>
         </div>
         <button onclick="loadCustomers()" class="wp-btn"><i class="fa-solid fa-arrows-rotate"></i> รีเฟรช</button>
@@ -795,7 +795,7 @@
     <section id="section-categories" style="display:none;">
       <div class="wp-page-hdr">
         <div>
-          <h1 class="wp-page-title">หมวดหมู่</h1>
+          <h2 class="wp-page-title">หมวดหมู่</h2>
           <p class="wp-page-desc" id="categories-count-label">จัดการหมวดหมู่สินค้าและแบนเนอร์</p>
         </div>
         <div style="display:flex;gap:8px;">
@@ -833,7 +833,7 @@
     <section id="section-menus" style="display:none;">
       <div class="wp-page-hdr">
         <div>
-          <h1 class="wp-page-title">เมนู</h1>
+          <h2 class="wp-page-title">เมนู</h2>
           <p class="wp-page-desc" id="menus-count-label">จัดการเมนูนำทางของหน้าร้าน</p>
         </div>
         <div style="display:flex;gap:8px;">
@@ -877,7 +877,7 @@
     <!-- ── SHIPPING ─────────────────────────────────────────────────────── -->
     <section id="section-shipping" style="display:none;">
       <div class="wp-page-hdr">
-        <h1 class="wp-page-title">จัดส่ง</h1>
+        <h2 class="wp-page-title">จัดส่ง</h2>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
           <button onclick="exportFlashExcel()" class="wp-btn" style="background:#e8a000;color:#fff;border-color:#e8a000;">
             <i class="fa-solid fa-file-excel"></i> Export Flash Express
@@ -946,7 +946,7 @@
     <!-- ── SETTINGS ──────────────────────────────────────────────────────── -->
     <!-- ═══════════════════════════════════════ MARKETING ═══════════════════ -->
     <section id="section-marketing" style="display:none;">
-      <div class="wp-page-hdr"><h1 class="wp-page-title">การตลาด</h1></div>
+      <div class="wp-page-hdr"><h2 class="wp-page-title">การตลาด</h2></div>
 
       <!-- Meta Pixel & CAPI -->
       <div class="wp-card" style="margin-bottom:18px;">
@@ -1091,7 +1091,7 @@
     </section>
 
     <section id="section-settings" style="display:none;">
-      <div class="wp-page-hdr"><h1 class="wp-page-title">ตั้งค่า</h1></div>
+      <div class="wp-page-hdr"><h2 class="wp-page-title">ตั้งค่า</h2></div>
 
       <!-- Store Info -->
       <div class="wp-card" style="margin-bottom:18px;">
@@ -2026,7 +2026,7 @@
     const url = document.getElementById('pm-image-url').value.trim();
     const box = document.getElementById('pm-main-preview');
     if (url) {
-      box.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<i class=\\'fa-solid fa-image-slash\\' style=\\'color:#d63638;\\'></i>'">`;
+      box.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<i class=\\'fa-solid fa-image-slash\\' style=\\'color:#d63638;\\' alt=""></i>'">`;
     } else {
       box.innerHTML = '<i class="fa-solid fa-image"></i>';
     }
@@ -2045,7 +2045,7 @@
     row.innerHTML = `
       <input type="text" class="settings-input pm-extra-img-input" placeholder="https://example.com/image2.webp" value="${url}" style="flex:1;" oninput="previewExtraImage(this)">
       <div class="pm-extra-preview" style="width:36px;height:36px;border-radius:4px;border:1px solid var(--card-border);background:#f6f7f7;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#c3c4c7;font-size:14px;">
-        ${url ? `<img src="${url}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<i class=\\'fa-solid fa-image-slash\\'></i>'">` : '<i class="fa-solid fa-image"></i>'}
+        ${url ? `<img src="${url}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<i class=\\'fa-solid fa-image-slash\\' alt=""></i>'">` : '<i class="fa-solid fa-image"></i>'}
       </div>
       <button type="button" onclick="this.closest('div').remove()" style="background:none;border:none;cursor:pointer;color:#d63638;font-size:14px;padding:4px;"><i class="fa-solid fa-xmark"></i></button>`;
     const inp = row.querySelector('.pm-extra-img-input');
@@ -2058,7 +2058,7 @@
     const url = input.value.trim();
     const box = input.nextElementSibling;
     if (url) {
-      box.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<i class=\\'fa-solid fa-image-slash\\' style=\\'color:#d63638;\\'></i>'">`;
+      box.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<i class=\\'fa-solid fa-image-slash\\' style=\\'color:#d63638;\\' alt=""></i>'">`;
     } else {
       box.innerHTML = '<i class="fa-solid fa-image"></i>';
     }
@@ -2068,7 +2068,7 @@
     const url = document.getElementById('cm-banner-url').value.trim();
     const box = document.getElementById('cm-banner-preview');
     if (url) {
-      box.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<i class=\\'fa-solid fa-image-slash\\' style=\\'color:#d63638;\\'></i>'">`;
+      box.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<i class=\\'fa-solid fa-image-slash\\' style=\\'color:#d63638;\\' alt=""></i>'">`;
     } else {
       box.innerHTML = '<i class="fa-solid fa-image"></i>';
     }
@@ -2707,7 +2707,7 @@
 </head><body>
 <div class="label">
   <div class="label-header">
-    <h1>btmusicdrive</h1>
+    <h2>btmusicdrive</h2>
     <p>ใบปะหน้าพัสดุ</p>
   </div>
   <div class="section">
@@ -3459,7 +3459,7 @@
       const name = f.split('/').pop();
       return `<div onclick="selectPickerImage('${url.replace(/'/g, "\\'")}')" style="cursor:pointer;border-radius:6px;overflow:hidden;border:2px solid transparent;transition:border-color .15s;background:#f6f7f7;" title="${name}" onmouseover="this.style.borderColor='#2271b1'" onmouseout="this.style.borderColor='transparent'">
         <div style="width:100%;aspect-ratio:1;overflow:hidden;background:#eee;">
-          <img src="${url}" loading="lazy" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none';this.parentElement.innerHTML='<div style=\\'height:100%;display:flex;align-items:center;justify-content:center;color:#aaa;\\'><i class=\\'fa-solid fa-image-slash\\'></i></div>'">
+          <img src="${url}" loading="lazy" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none';this.parentElement.innerHTML='<div style=\\'height:100%;display:flex;align-items:center;justify-content:center;color:#aaa;\\' alt=""><i class=\\'fa-solid fa-image-slash\\'></i></div>'">
         </div>
         <p style="margin:0;padding:4px 6px;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--muted,#555);">${name}</p>
       </div>`;

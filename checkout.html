@@ -122,10 +122,17 @@
 
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <h1 class="sr-only">ชำระเงิน</h1>
         <div class="lg:grid lg:grid-cols-12 lg:gap-10">
 
             <!-- ========== LEFT COLUMN: Form ========== -->
             <div class="lg:col-span-7 space-y-6">
+                <!-- Security Honeypot -->
+                <div style="display:none;" aria-hidden="true" tabindex="-1">
+                    <label for="order-confirm-token">Token</label>
+                    <input type="text" id="order-confirm-token" name="order-confirm-token" autocomplete="off" tabindex="-1">
+                </div>
+
 
                 <!-- Shipping Address (เพิ่มที่อยู่สำหรับจัดส่ง) -->
                 <div class="section-card">

@@ -500,6 +500,13 @@ function validateForm() {
 // ── Place Order ───────────────────────────────────────────────────────────────
 
 async function placeOrder() {
+    const honeypot = document.getElementById('order-confirm-token');
+    if (honeypot && honeypot.value) {
+        // Bot trap
+        showCheckoutError("ระบบตรวจพบสแปม กรุณาลองใหม่ในภายหลัง");
+        return;
+    }
+
     hideError();
 
     const token = localStorage.getItem('btmusicdrive_token');

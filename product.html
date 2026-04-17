@@ -1237,7 +1237,7 @@
     list.innerHTML = reviews.sort((a, b) => new Date(b.date) - new Date(a.date)).map(r => {
       let rStars = '';
       for (let i = 1; i <= 5; i++) rStars += i <= r.rating ? '<i class="ph-fill ph-star text-yellow-400 text-sm"></i>' : '<i class="ph ph-star text-gray-300 text-sm"></i>';
-      const images = (r.images || []).map(img => `<img src="${img}" class="w-16 h-16 rounded-lg object-cover cursor-pointer hover:opacity-80 transition-opacity" onclick="window.open('${img}','_blank')">`).join('');
+      const images = (r.images || []).map(img => `<img src="${img}" class="w-16 h-16 rounded-lg object-cover cursor-pointer hover:opacity-80 transition-opacity" onclick="window.open('${img}','_blank')" alt="">`).join('');
       return `<div class="bg-white rounded-xl border border-gray-100 p-5">
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center gap-3">
@@ -1327,7 +1327,7 @@
         Array.from(fileInput.files).slice(0, 3).forEach(file => {
           const reader = new FileReader();
           reader.onload = (e) => {
-            preview.innerHTML += `<img src="${e.target.result}" class="w-16 h-16 rounded-lg object-cover border border-gray-200">`;
+            preview.innerHTML += `<img src="${e.target.result}" class="w-16 h-16 rounded-lg object-cover border border-gray-200" alt="">`;
           };
           reader.readAsDataURL(file);
         });
