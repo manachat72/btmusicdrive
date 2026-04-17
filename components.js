@@ -37,7 +37,7 @@ function _navbarHTML() {
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between h-16 items-center">
         <a href="/" class="flex-shrink-0 flex items-center cursor-pointer no-underline">
-          <img src="images/logo.png" alt="btmusicdrive" class="h-9 w-9 rounded-full mr-2">
+          <img src="images/logo.webp" alt="btmusicdrive" class="h-9 w-9 rounded-full mr-2">
           <span class="font-bold text-xl tracking-tight text-white">btmusicdrive</span>
         </a>
         <div class="hidden md:flex items-center gap-1" id="desktop-nav"></div>
@@ -177,7 +177,7 @@ function _footerHTML() {
         <!-- Logo + Description + Shop Links -->
 <div>
   <div class="flex items-center mb-4 cursor-pointer" onclick="window.location='/'">
-    <img src="images/logo.png" alt="btmusicdrive" class="h-10 w-10 rounded-full mr-3">
+    <img src="images/logo.webp" alt="btmusicdrive" class="h-10 w-10 rounded-full mr-3">
     <span class="font-bold text-2xl tracking-tight text-white">btmusicdrive</span>
   </div>
   <p class="text-gray-400 mb-5 text-sm leading-relaxed">ร้านขายแฟลชไดร์ฟเพลง MP3 คุณภาพเสียง HD รวมเพลงฮิตทุกแนว เสียบปุ๊บฟังปั๊บ</p>

@@ -5,7 +5,7 @@
     "price": 199,
     "originalPrice": 319,
     "description": "USB แฟลชไดรฟ์ MP3 เพลงเพื่อชีวิต คาราบาว 2GB รวม 325 เพลง ครบทุกอัลบั้ม รวมเพลงคาราบาว MP3 ครบทุกอัลบั้ม ไฟล์ MP3 พร้อมใช้งาน เสียงชัด 128kbps ความจุ USB 2GB ของแท้ เสียบฟังในรถยนต์, ลำโพง, คอมฯ, ทีวี ได้เลย เหมาะเป็นของขวัญให้คนรักเพลงเพื่อชีวิต เพลงฮิตเช่น: เมดอินไทยแลนด์ / ทะเลใจ / บัวลอย / คนล่าฝัน ตรวจสอบไฟล์ก่อนจัดส่ง รับประกันสินค้า 100% หากมีปัญหาเปลี่ยนใหม่ทันที",
-    "imageUrl": "images/carabao-usb.png",
+    "imageUrl": "images/carabao-usb.webp",
     "images": [
       "https://images.unsplash.com/photo-1524805444758-089113d48a6d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
       "https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
@@ -67,11 +67,11 @@
     "price": 199,
     "originalPrice": 239,
     "description": "USB แฟลชไดร์ฟ MP3 รวมเพลง 3 ช่าเพื่อชีวิต 2GB รวม 192 เพลง ครบทุกอัลบั้ม ไฟล์ MP3 พร้อมใช้งาน เสียงชัด 128kbps เสียบฟังในรถยนต์, ลำโพง, คอมฯ, ทีวี ได้เลย รับประกันสินค้า 100% หากมีปัญหาเปลี่ยนใหม่ทันที",
-    "imageUrl": "images/3cha.png",
+    "imageUrl": "images/3cha.webp",
     "images": [
-      "images/3cha (4).png",
-      "images/3cha (3).png",
-      "images/3cha (2).png"
+      "images/3cha (4).webp",
+      "images/3cha (3).webp",
+      "images/3cha (2).webp"
     ],
     "brand": "btmusicdrive",
     "sku": "SU-WS-002",
@@ -120,12 +120,12 @@
     "price": 199,
     "originalPrice": 319,
     "description": "USB แฟลชไดรฟ์ MP3 รวมเพลงสตริงยุค 80s 2GB รวม 194 เพลง ครบทุกอัลบั้ม ไฟล์ MP3 พร้อมใช้งาน เสียงชัด 128kbps เสียบฟังในรถยนต์, ลำโพง, คอมฯ, ทีวี ได้เลย รับประกันสินค้า 100%",
-    "imageUrl": "images/string 80_1.png",
+    "imageUrl": "images/string 80_1.webp",
     "images": [
-      "images/string 80_2.png",
-      "images/string 80_3.png",
-      "images/string 80_4.png",
-      "images/string 80_5.png"
+      "images/string 80_2.webp",
+      "images/string 80_3.webp",
+      "images/string 80_4.webp",
+      "images/string 80_5.webp"
     ],
     "brand": "btmusicdrive",
     "sku": "BC-TS-003",

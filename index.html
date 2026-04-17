@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#8B7355">
-    <link rel="icon" type="image/png" href="images/logo.png">
+    <link rel="icon" type="image/png" href="images/logo.webp">
     <title>แฟลชไดร์ฟเพลง MP3 รวมเพลงฮิต เสียบปุ๊บฟังปั๊บ เสียงชัด HD | Bt music drive</title>
     <meta name="description" content="ร้านขายแฟลชไดร์ฟเพลง MP3 รวมเพลงฮิตทุกแนว ลูกทุ่ง หมอลำ สตริง เพื่อชีวิต สากล เสียง HD คุณภาพสูง เสียบปุ๊บฟังปั๊บ ฟังในรถยนต์ จัดส่งทั่วไทย | Bt music drive">
     <meta name="keywords" content="แฟลชไดร์ฟเพลง MP3, USB เพลง, รวมเพลงฮิต, เสียบปุ๊บฟังปั๊บ, เสียงชัด HD, ลูกทุ่ง, หมอลำ, สตริง, เพื่อชีวิต, เพลงสากล, เพลงยุค 90s, ฟังเพลงในรถ, Bt music drive">
@@ -16,7 +16,7 @@
     <meta property="og:site_name" content="Bt music drive">
     <meta property="og:title" content="Bt music drive | แฟลชไดร์ฟเพลง MP3 รวมเพลงฮิต เสียบปุ๊บฟังปั๊บ เสียงชัด HD">
     <meta property="og:description" content="ร้านแฟลชไดร์ฟเพลง MP3 รวมเพลงฮิตทุกแนว ลูกทุ่ง หมอลำ สตริง เพื่อชีวิต สากล เสียงชัด HD เสียบปุ๊บฟังปั๊บ จัดส่งทั่วไทย">
-    <meta property="og:image" content="https://btmusicdrive.com/images/hero-banner.png">
+    <meta property="og:image" content="https://btmusicdrive.com/images/hero-banner.webp">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:alt" content="Bt music drive แฟลชไดร์ฟเพลง MP3 เสียงชัด HD">
@@ -25,7 +25,7 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Bt music drive | แฟลชไดร์ฟเพลง MP3 รวมเพลงฮิต เสียงชัด HD">
     <meta name="twitter:description" content="รวมเพลงฮิตทุกแนว เสียบปุ๊บฟังปั๊บ เสียงชัด HD จัดส่งทั่วไทย">
-    <meta name="twitter:image" content="https://btmusicdrive.com/images/hero-banner.png">
+    <meta name="twitter:image" content="https://btmusicdrive.com/images/hero-banner.webp">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -48,7 +48,7 @@
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.min.css">
 
     <style>
         .g_id_signin {
@@ -70,7 +70,7 @@
       "@type": "Organization",
       "name": "Bt music drive",
       "url": "https://btmusicdrive.com",
-      "logo": "https://btmusicdrive.com/images/logo.png",
+      "logo": "https://btmusicdrive.com/images/logo.webp",
       "description": "ร้านขายแฟลชไดร์ฟเพลง MP3 รวมเพลงฮิตทุกแนว เสียง HD คุณภาพสูง เสียบปุ๊บฟังปั๊บ จัดส่งทั่วไทย",
       "sameAs": []
     }
@@ -145,7 +145,7 @@
                 <div class="absolute inset-0 rounded-3xl bg-gradient-to-tr from-amber-600/40 to-yellow-400/20 blur-2xl transform scale-105"></div>
                 <!-- Floating USB image with dark overlay gradient for depth -->
                 <div class="relative z-10 animate-float">
-                    <img src="images/hero-banner.png" alt="แฟลชไดร์ฟเพลง MP3 เสียบฟังในรถยนต์" class="rounded-3xl shadow-2xl object-cover h-[280px] sm:h-[380px] md:h-[450px] lg:h-[500px] w-full">
+                    <img src="images/hero-banner.webp" alt="แฟลชไดร์ฟเพลง MP3 เสียบฟังในรถยนต์" class="rounded-3xl shadow-2xl object-cover h-[280px] sm:h-[380px] md:h-[450px] lg:h-[500px] w-full">
                     <div class="absolute inset-0 rounded-3xl bg-gradient-to-r from-black/40 via-transparent to-transparent pointer-events-none"></div>
                 </div>
 
@@ -249,12 +249,12 @@
     // Dynamic categories from admin
     (function renderDynamicCategories() {
         const DEFAULT_CATEGORIES = [
-            { name: 'เพื่อชีวิต', description: 'รวมเพลงเพื่อชีวิตยอดฮิต คาราบาว 3 ช่า', bannerUrl: 'images/category/category-songs-for-life.png', isActive: true },
-            { name: 'เพลงสตริง', description: 'เพลงสตริงยุค 80s-90s รวมทุกวง', bannerUrl: 'images/category/category-thai-pop-rock.png', isActive: true },
-            { name: 'ลูกทุ่ง', description: 'เพลงลูกทุ่งฮิตตลอดกาล', bannerUrl: 'images/category/category-thai-country.png', isActive: true },
-            { name: 'หมอลำ', description: 'หมอลำซิ่ง มันส์ๆ เสียงอีสาน', bannerUrl: 'images/category/category-southern-thai.png', isActive: true },
-            { name: 'เพลงสากล', description: 'เพลงสากลฮิต Pop Rock R&B', bannerUrl: 'images/category/category-international-hits.png', isActive: true },
-            { name: 'ลูกกรุง', description: 'เพลงลูกกรุงอมตะ คลาสสิกไพเราะ', bannerUrl: 'images/category/category-thai-oldies.png', isActive: true }
+            { name: 'เพื่อชีวิต', description: 'รวมเพลงเพื่อชีวิตยอดฮิต คาราบาว 3 ช่า', bannerUrl: 'images/category/category-songs-for-life.webp', isActive: true },
+            { name: 'เพลงสตริง', description: 'เพลงสตริงยุค 80s-90s รวมทุกวง', bannerUrl: 'images/category/category-thai-pop-rock.webp', isActive: true },
+            { name: 'ลูกทุ่ง', description: 'เพลงลูกทุ่งฮิตตลอดกาล', bannerUrl: 'images/category/category-thai-country.webp', isActive: true },
+            { name: 'หมอลำ', description: 'หมอลำซิ่ง มันส์ๆ เสียงอีสาน', bannerUrl: 'images/category/category-southern-thai.webp', isActive: true },
+            { name: 'เพลงสากล', description: 'เพลงสากลฮิต Pop Rock R&B', bannerUrl: 'images/category/category-international-hits.webp', isActive: true },
+            { name: 'ลูกกรุง', description: 'เพลงลูกกรุงอมตะ คลาสสิกไพเราะ', bannerUrl: 'images/category/category-thai-oldies.webp', isActive: true }
         ];
 
         let cats = [];
@@ -272,7 +272,7 @@
         grid.innerHTML = cats.map((c, idx) => {
             // fallback: find imageUrl from categories.json by name
             const jc = jsonCats.find(j => j.name === c.name);
-            const banner = c.bannerUrl || (jc && jc.imageUrl) || DEFAULT_CATEGORIES.find(d => d.name === c.name)?.bannerUrl || 'images/category/category-songs-for-life.png';
+            const banner = c.bannerUrl || (jc && jc.imageUrl) || DEFAULT_CATEGORIES.find(d => d.name === c.name)?.bannerUrl || 'images/category/category-songs-for-life.webp';
             const desc = c.description || c.name;
             const featured = idx === 0;
             const spanClass = featured ? 'col-span-2 row-span-2' : 'col-span-1 row-span-1';
@@ -335,8 +335,8 @@
     <!-- Shared Footer -->
     <div id="site-footer"></div>
 
-    <script src="components.js"></script>
-    <script src="script.js"></script>
+    <script src="components.min.js"></script>
+    <script src="script.min.js"></script>
     <script>
     // ── Flash Sale Countdown ──────────────────────────────────────
     (function() {

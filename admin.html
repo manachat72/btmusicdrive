@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#8B7355">
-  <link rel="icon" type="image/png" href="images/logo.png">
+  <link rel="icon" type="image/png" href="images/logo.webp">
   <title>btmusicdrive — Admin Dashboard</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -1286,7 +1286,7 @@
         <div class="settings-row">
           <label class="settings-label">รูปหลัก (URL) <span style="color:#d63638;">*</span></label>
           <div style="display:flex;gap:8px;align-items:center;">
-            <input type="text" id="pm-image-url" class="settings-input" placeholder="https://example.com/image.jpg" oninput="previewMainImage()" style="flex:1;">
+            <input type="text" id="pm-image-url" class="settings-input" placeholder="https://example.com/image.webp" oninput="previewMainImage()" style="flex:1;">
             <button type="button" onclick="openImagePicker('pm-image-url')" class="wp-btn" title="เลือกรูปจากคลัง" style="flex-shrink:0;padding:6px 8px;"><i class="fa-solid fa-folder-open"></i></button>
             <div id="pm-main-preview" style="width:48px;height:48px;border-radius:4px;border:1px solid var(--card-border);background:#f6f7f7;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#c3c4c7;font-size:18px;">
               <i class="fa-solid fa-image"></i>
@@ -1468,7 +1468,7 @@
         <div class="settings-row">
           <label class="settings-label">รูปแบนเนอร์ (URL)</label>
           <div style="display:flex;gap:8px;align-items:center;">
-            <input type="text" id="cm-banner-url" class="settings-input" placeholder="https://example.com/banner.jpg" oninput="previewCategoryBanner()" style="flex:1;">
+            <input type="text" id="cm-banner-url" class="settings-input" placeholder="https://example.com/banner.webp" oninput="previewCategoryBanner()" style="flex:1;">
             <button type="button" onclick="openImagePicker('cm-banner-url')" class="wp-btn" title="เลือกรูปจากคลัง" style="flex-shrink:0;padding:6px 8px;"><i class="fa-solid fa-folder-open"></i></button>
             <div id="cm-banner-preview" style="width:72px;height:40px;border-radius:4px;border:1px solid var(--card-border);background:#f6f7f7;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#c3c4c7;font-size:16px;">
               <i class="fa-solid fa-image"></i>
@@ -2035,15 +2035,15 @@
   function addExtraImageRow(url = '') {
     const list = document.getElementById('pm-images-list');
     const row = document.createElement('div');
-    row.style.cssText = 'display:flex;gap:6px;align-items:center;';
+    row.style.min.cssText = 'display:flex;gap:6px;align-items:center;';
     const pickBtn = document.createElement('button');
     pickBtn.type = 'button';
     pickBtn.title = 'เลือกรูปจากคลัง';
     pickBtn.className = 'wp-btn';
-    pickBtn.style.cssText = 'flex-shrink:0;padding:4px 6px;';
+    pickBtn.style.min.cssText = 'flex-shrink:0;padding:4px 6px;';
     pickBtn.innerHTML = '<i class="fa-solid fa-folder-open"></i>';
     row.innerHTML = `
-      <input type="text" class="settings-input pm-extra-img-input" placeholder="https://example.com/image2.jpg" value="${url}" style="flex:1;" oninput="previewExtraImage(this)">
+      <input type="text" class="settings-input pm-extra-img-input" placeholder="https://example.com/image2.webp" value="${url}" style="flex:1;" oninput="previewExtraImage(this)">
       <div class="pm-extra-preview" style="width:36px;height:36px;border-radius:4px;border:1px solid var(--card-border);background:#f6f7f7;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#c3c4c7;font-size:14px;">
         ${url ? `<img src="${url}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<i class=\\'fa-solid fa-image-slash\\'></i>'">` : '<i class="fa-solid fa-image"></i>'}
       </div>
@@ -3544,7 +3544,7 @@
     const headers = IMPORT_COLS.map(c => c.label);
     const example = [
       'ไดร์ฟเพลงลูกทุ่ง 100 เพลง', '299', '399', 'ลูกทุ่ง', 'BTMusic', 'SKU-001',
-      '50', 'https://example.com/img.jpg', 'ลูกทุ่ง, ใหม่',
+      '50', 'https://example.com/img.webp', 'ลูกทุ่ง, ใหม่',
       'ไดร์ฟเพลงคุณภาพสูง', 'เมดอินไทยแลนด์\nทะเลใจ\nบัวลอย',
       'ความจุ=16GB\nระบบ=MP3/WAV',
     ];
