@@ -2027,12 +2027,12 @@
   function addExtraImageRow(url = '') {
     const list = document.getElementById('pm-images-list');
     const row = document.createElement('div');
-    row.style.min.cssText = 'display:flex;gap:6px;align-items:center;';
+    row.style.cssText = 'display:flex;gap:6px;align-items:center;';
     const pickBtn = document.createElement('button');
     pickBtn.type = 'button';
     pickBtn.title = 'เลือกรูปจากคลัง';
     pickBtn.className = 'wp-btn';
-    pickBtn.style.min.cssText = 'flex-shrink:0;padding:4px 6px;';
+    pickBtn.style.cssText = 'flex-shrink:0;padding:4px 6px;';
     pickBtn.innerHTML = '<i class="fa-solid fa-folder-open"></i>';
     row.innerHTML = `
       <input type="text" class="settings-input pm-extra-img-input" placeholder="https://example.com/image2.webp" value="${url}" style="flex:1;" oninput="previewExtraImage(this)">
