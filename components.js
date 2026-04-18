@@ -101,6 +101,15 @@ function _cartSidebarHTML() {
         <div class="absolute inset-0 rounded-full pointer-events-none" style="background:linear-gradient(180deg,rgba(255,255,255,0.3) 0%,transparent 60%)"></div>
       </div>
     </div>
+    <!-- Upsell: cheap products to reach free shipping -->
+    <div id="free-ship-recs" class="hidden border-b border-amber-100" style="background:linear-gradient(135deg,#fffbeb,#fff7ed)">
+      <div class="px-4 pt-2.5 pb-3">
+        <p class="text-[11px] font-bold text-amber-700 uppercase tracking-wide mb-2 flex items-center gap-1.5">
+          <i class="ph ph-lightning text-amber-500"></i> เพิ่มสินค้าเพื่อรับส่งฟรี
+        </p>
+        <div id="free-ship-recs-list" class="flex gap-2.5 overflow-x-auto pb-1" style="scrollbar-width:none;-webkit-overflow-scrolling:touch"></div>
+      </div>
+    </div>
     <div id="cart-items-container" class="flex-1 overflow-y-auto p-4 space-y-4">
       <div class="text-center text-gray-500 mt-10" id="empty-cart-msg">
         <i class="ph ph-shopping-cart text-6xl mb-4 text-gray-300"></i>
@@ -871,6 +880,85 @@ function _updateCartUI() {
   if (totalEl) totalEl.textContent = `\u0E3F${total.toFixed(2)}`;
 }
 
+let _freeShipRecsCache = null;
+let _freeShipRecsLastCartKey = '';
+
+async function _loadFreeShipRecs() {
+  if (_freeShipRecsCache) return _freeShipRecsCache;
+  try {
+    const res = await fetch(`${API_BASE}/products?limit=8`);
+    if (res.ok) {
+      const json = await res.json();
+      _freeShipRecsCache = (json.data || json).slice(0, 6);
+    }
+  } catch (_) {}
+  if (!_freeShipRecsCache) {
+    try {
+      const res = await fetch('/products.json');
+      if (res.ok) _freeShipRecsCache = (await res.json()).slice(0, 6);
+    } catch (_) {}
+  }
+  return _freeShipRecsCache || [];
+}
+
+async function _renderFreeShipRecs(total) {
+  const threshold = Number(localStorage.getItem('btmd_free_shipping_threshold') || 200);
+  const sec = document.getElementById('free-ship-recs');
+  const list = document.getElementById('free-ship-recs-list');
+  if (!sec || !list) return;
+
+  if (total >= threshold) { sec.classList.add('hidden'); return; }
+  sec.classList.remove('hidden');
+
+  const cartKey = _cart.map(i => i.id).sort().join(',');
+  if (cartKey === _freeShipRecsLastCartKey && list.children.length > 0) return;
+  _freeShipRecsLastCartKey = cartKey;
+
+  const prods = await _loadFreeShipRecs();
+  if (!prods.length) { sec.classList.add('hidden'); return; }
+
+  // Filter out items already in cart, prefer cheapest
+  const cartIds = new Set(_cart.map(i => i.id));
+  const sorted = [...prods].sort((a, b) => a.price - b.price);
+  const toShow = sorted.filter(p => !cartIds.has(p.id)).slice(0, 5);
+  if (!toShow.length) { sec.classList.add('hidden'); return; }
+
+  list.innerHTML = toShow.map(p => {
+    const img = _escapeHtml(p.imageUrl || p.image || '');
+    const name = _escapeHtml(p.name || '');
+    const id = _escapeHtml(p.id || '');
+    const price = Number(p.price || 0);
+    return `
+    <div class="flex-shrink-0 w-[108px] bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm hover:shadow-md hover:border-amber-300 transition-all duration-200">
+      <div class="relative">
+        <img src="${img}" alt="${name}" class="w-full h-[72px] object-cover" loading="lazy" onerror="this.src='images/logo.webp'">
+        <div class="absolute bottom-1 right-1 bg-primary text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow">฿${price}</div>
+      </div>
+      <div class="p-1.5">
+        <p class="text-[10px] font-semibold text-gray-800 leading-tight mb-1.5" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.4em">${name}</p>
+        <button onclick="_addRecToCart(this,'${id}','${name}',${price},'${img}')"
+          class="w-full text-[10px] bg-primary hover:bg-amber-700 text-white font-bold rounded-lg py-1 transition-colors flex items-center justify-center gap-0.5">
+          <i class="ph ph-plus text-[10px]"></i> เพิ่ม
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function _addRecToCart(btn, id, name, price, img) {
+  const existing = _cart.find(i => i.id === id);
+  if (existing) { existing.quantity += 1; }
+  else { _cart.push({ id, name, price, image: img, quantity: 1 }); }
+  _saveCartToStorage();
+  _updateCartUI();
+  btn.innerHTML = '<i class="ph ph-check text-[10px]"></i> เพิ่มแล้ว';
+  btn.style.background = '#16a34a';
+  // Remove this product card from list after brief feedback
+  setTimeout(() => { btn.closest('.flex-shrink-0')?.remove(); }, 1200);
+  _showToast(`เพิ่ม "${name}" ลงตะกร้าแล้ว`);
+}
+window._addRecToCart = _addRecToCart;
+
 function _updateFreeShippingBar(total) {
   const threshold = Number(localStorage.getItem('btmd_free_shipping_threshold') || 200);
   const bar      = document.getElementById('free-shipping-bar');
@@ -882,6 +970,8 @@ function _updateFreeShippingBar(total) {
 
   const pct = Math.min((total / threshold) * 100, 100);
   progress.style.width = pct + '%';
+
+  _renderFreeShipRecs(total);
 
   if (total >= threshold) {
     // ฉลอง!

@@ -33,7 +33,8 @@
       "Bash(npx terser *)",
       "Bash(npx clean-css-cli *)",
       "Bash(grep -v '^\\\\s*//')",
-      "Bash(grep -v '//')"
+      "Bash(grep -v '//')",
+      "Bash(echo \"exit:$?\")"
     ]
   }
 }
