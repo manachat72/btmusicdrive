@@ -125,12 +125,12 @@
                     </div>
                     <div class="border-t border-gray-200 mt-4 pt-4 flex justify-between items-center">
                         <span class="text-lg font-bold text-gray-900">ยอดรวม</span>
-                        <span class="text-2xl font-extrabold text-red-600" id="cart-total-price">฿0.00</span>
+                        <span class="text-2xl font-extrabold text-primary" id="cart-total-price">฿0.00</span>
                     </div>
                     <p class="text-xs text-gray-400 mt-1">ยอดรวม (รวมภาษีมูลค่าเพิ่ม)</p>
 
-                    <button id="cart-checkout-btn" onclick="window.location='/checkout'" class="w-full mt-5 bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-6 rounded-xl transition-colors text-base flex items-center justify-center gap-2 shadow-lg">
-                        สั่งซื้อ (<span id="cart-btn-total">฿0.00</span>)
+                    <button id="cart-checkout-btn" onclick="window.location='/checkout'" class="w-full mt-5 bg-primary hover:bg-amber-700 text-white font-bold py-4 px-6 rounded-xl transition-colors text-base flex items-center justify-center gap-2 shadow-lg">
+                        <i class="ph ph-lock-key"></i> ดำเนินการชำระเงิน (<span id="cart-btn-total">฿0.00</span>)
                     </button>
 
                     <!-- Trust badges -->
@@ -227,19 +227,20 @@
 
         listDiv.innerHTML = pageCart.map(item => {
             const img = item.image || 'https://via.placeholder.com/120x120?text=No+Image';
+            const fmtP = p => `฿${Math.round(p).toLocaleString('th-TH')}`;
             const originalPriceHtml = item.originalPrice
-                ? `<span class="text-xs text-gray-400 line-through ml-2">฿${item.originalPrice.toLocaleString()}</span>`
+                ? `<span class="text-[10px] sm:text-xs text-gray-400 line-through ml-1.5">${fmtP(item.originalPrice)}</span>`
                 : '';
 
             return `
-            <div class="flex items-center gap-4 p-4 sm:p-5" data-id="${item.id}">
+            <div class="flex items-center gap-3 sm:gap-4 p-4 sm:p-5" data-id="${item.id}">
                 <a href="product.html?id=${item.id}" class="flex-shrink-0">
-                    <img src="${img}" alt="${item.name}" class="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-lg border border-gray-100">
+                    <img src="${img}" alt="${item.name}" class="w-18 h-18 sm:w-24 sm:h-24 object-cover rounded-xl border border-gray-100" style="width:72px;height:72px">
                 </a>
                 <div class="flex-1 min-w-0">
-                    <a href="product.html?id=${item.id}" class="text-sm sm:text-base font-semibold text-gray-900 hover:text-primary line-clamp-2 transition-colors">${item.name}</a>
-                    <div class="flex items-center mt-1">
-                        <span class="text-base sm:text-lg font-bold text-red-600">฿${item.price.toLocaleString()}</span>
+                    <a href="product.html?id=${item.id}" class="text-xs sm:text-sm font-semibold text-gray-900 hover:text-primary line-clamp-2 transition-colors">${item.name}</a>
+                    <div class="flex items-baseline gap-1 mt-1">
+                        <span class="text-sm sm:text-base font-extrabold text-primary">${fmtP(item.price)}</span>
                         ${originalPriceHtml}
                     </div>
                     <div class="flex items-center gap-3 mt-3">

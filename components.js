@@ -116,13 +116,51 @@ function _cartSidebarHTML() {
         <p>ตะกร้าของคุณว่างเปล่า</p>
       </div>
     </div>
-    <div class="p-4 border-t border-gray-200 bg-gray-50">
-      <div class="flex justify-between text-base font-medium text-gray-900 mb-4">
-        <p>ยอดรวม</p><p id="cart-total">฿0.00</p>
+    <div class="border-t border-gray-200 bg-white">
+      <!-- Promo Code -->
+      <div class="px-4 pt-3 pb-2">
+        <div class="flex gap-2">
+          <div class="flex-1 relative">
+            <i class="ph ph-tag absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+            <input id="cart-promo-input" type="text" placeholder="รหัสคูปอง" autocomplete="off" maxlength="30"
+              class="w-full pl-8 pr-3 py-2 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none bg-gray-50 font-mono tracking-wider uppercase"
+              oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter')_applyCartPromo()">
+          </div>
+          <button onclick="_applyCartPromo()" id="cart-promo-btn"
+            class="px-3 py-2 bg-secondary hover:bg-slate-700 text-white text-sm font-bold rounded-xl transition-colors whitespace-nowrap flex items-center gap-1">
+            <i class="ph ph-check-circle text-sm"></i> ใช้
+          </button>
+        </div>
+        <div id="cart-promo-msg" class="hidden mt-1.5 text-xs px-1 flex items-center gap-1"></div>
+        <div id="cart-promo-minorder" class="hidden mt-1 text-[11px] text-amber-600 px-1 flex items-center gap-1">
+          <i class="ph ph-info text-xs"></i> <span id="cart-promo-minorder-text"></span>
+        </div>
       </div>
-      <button onclick="window.location='/checkout'" class="w-full bg-primary hover:bg-secondary text-white font-bold py-3 px-4 rounded-lg transition-colors shadow-md flex items-center justify-center gap-2">
-        <i class="ph ph-lock-key"></i> ดำเนินการชำระเงิน
-      </button>
+      <!-- Price Breakdown -->
+      <div class="px-4 pb-3 space-y-1.5 text-sm">
+        <div class="flex justify-between text-gray-500">
+          <span>ราคาสินค้า</span>
+          <span id="cart-subtotal-display">฿0.00</span>
+        </div>
+        <div id="cart-discount-row" class="hidden flex-row justify-between text-green-600 font-semibold">
+          <span class="flex items-center gap-1"><i class="ph ph-tag text-xs"></i><span id="cart-discount-label">ส่วนลด</span></span>
+          <span id="cart-discount-display">-฿0.00</span>
+        </div>
+        <div class="flex justify-between text-gray-500">
+          <span class="flex items-center gap-1.5"><i class="ph ph-truck text-xs"></i>ค่าจัดส่ง</span>
+          <span id="cart-shipping-display" class="font-medium">฿35.00</span>
+        </div>
+        <div class="flex justify-between font-bold text-gray-900 text-base border-t border-dashed border-gray-200 pt-2 mt-1">
+          <span>ยอดสุทธิ</span>
+          <span id="cart-total">฿0.00</span>
+        </div>
+      </div>
+      <!-- Checkout -->
+      <div class="px-4 pb-4">
+        <button onclick="window.location='/checkout'" class="w-full bg-primary hover:bg-amber-700 text-white font-bold py-3 px-4 rounded-xl transition-colors shadow-md flex items-center justify-center gap-2 text-base">
+          <i class="ph ph-lock-key"></i> ดำเนินการชำระเงิน
+        </button>
+      </div>
     </div>
   </div>
   <div id="cart-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden transition-opacity"></div>`;
@@ -299,10 +337,17 @@ function _mobileBottomNavHTML() {
         <i class="ph ph-storefront" style="font-size:21px;line-height:1;"></i>
         <span style="font-size:9px;letter-spacing:0.04em;font-weight:500;">ร้านค้า</span>
       </a>
-      <a href="/cart" id="bnav-cart-btn" class="flex flex-col items-center justify-center flex-1 gap-[3px] relative no-underline" style="color:#64748b;">
-        <i class="ph ph-shopping-bag" style="font-size:21px;line-height:1;"></i>
-        <span id="bnav-cart-count" class="absolute flex items-center justify-center" style="top:7px;right:calc(50% - 20px);min-width:15px;height:15px;padding:0 3px;font-size:8px;font-weight:700;color:#fff;background:#8B7355;border-radius:99px;">0</span>
-        <span style="font-size:9px;letter-spacing:0.04em;font-weight:500;">ตะกร้า</span>
+      <a href="/cart" id="bnav-cart-btn" class="flex flex-col items-center justify-center flex-1 relative no-underline" style="color:#64748b;gap:2px;padding-top:2px;">
+        <!-- progress strip at top of button -->
+        <div id="bnav-ship-strip" style="position:absolute;top:0;left:4px;right:4px;height:2px;border-radius:0 0 2px 2px;background:rgba(255,255,255,0.07);overflow:hidden;">
+          <div id="bnav-ship-strip-fill" style="height:100%;width:0%;background:linear-gradient(90deg,#f59e0b,#ef4444);transition:width 0.6s ease;border-radius:inherit;"></div>
+        </div>
+        <div class="relative flex-shrink-0" style="width:28px;height:24px;display:flex;align-items:center;justify-content:center;">
+          <i class="ph ph-shopping-bag" style="font-size:21px;line-height:1;"></i>
+          <span id="bnav-cart-count" class="absolute flex items-center justify-center" style="top:-2px;right:-4px;min-width:14px;height:14px;padding:0 3px;font-size:7.5px;font-weight:700;color:#fff;background:#8B7355;border-radius:99px;transition:background 0.3s;">0</span>
+        </div>
+        <span id="bnav-cart-label" style="font-size:9px;letter-spacing:0.04em;font-weight:500;">ตะกร้า</span>
+        <span id="bnav-cart-amount" style="font-size:8px;font-weight:700;color:#8B7355;letter-spacing:0.02em;display:none;line-height:1;"></span>
       </a>
       <button id="bnav-account-btn" class="flex flex-col items-center justify-center flex-1 gap-[3px]" style="background:none;border:none;cursor:pointer;color:#64748b;">
         <span style="width:30px;height:30px;border-radius:50%;background:rgba(139,115,85,0.12);border:1.5px solid rgba(139,115,85,0.28);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -838,11 +883,12 @@ function _updateCartUI() {
 
   const _cartSubtotal = _cart.reduce((s, i) => s + i.price * i.quantity, 0);
   _updateFreeShippingBar(_cartSubtotal);
+  _updateBnavCart(_cartSubtotal);
 
   if (_cart.length === 0) {
     if (emptyMsg) emptyMsg.style.display = 'block';
     if (container) { container.innerHTML = ''; container.appendChild(emptyMsg); }
-    if (totalEl) totalEl.textContent = '\u0E3F0.00';
+    _updateCartPriceBreakdown(0, 0, 0);
     if (clearBtn) clearBtn.classList.add('hidden');
     return;
   }
@@ -877,11 +923,138 @@ function _updateCartUI() {
       </div>`;
     container.appendChild(el);
   });
-  if (totalEl) totalEl.textContent = `\u0E3F${total.toFixed(2)}`;
+
+  // Calculate discount & shipping
+  const shippingThreshold = Number(localStorage.getItem('btmd_free_shipping_threshold') || 200);
+  const shippingCost = Number(localStorage.getItem('btmd_shipping_cost') || 35);
+  let discount = 0;
+  if (_appliedPromo) {
+    discount = _appliedPromo.type === 'PERCENT'
+      ? Math.round(total * _appliedPromo.value / 100 * 100) / 100
+      : _appliedPromo.discount;
+  }
+  const discountedTotal = Math.max(total - discount, 0);
+  const shipping = discountedTotal >= shippingThreshold ? 0 : shippingCost;
+  const grandTotal = discountedTotal + shipping;
+
+  _updateCartPriceBreakdown(total, discount, shipping, grandTotal);
+}
+
+function _updateCartPriceBreakdown(subtotal, discount, shipping, grandTotal) {
+  const totalEl = document.getElementById('cart-total');
+  const subtotalEl = document.getElementById('cart-subtotal-display');
+  const discountRow = document.getElementById('cart-discount-row');
+  const discountLabel = document.getElementById('cart-discount-label');
+  const discountEl = document.getElementById('cart-discount-display');
+  const shippingEl = document.getElementById('cart-shipping-display');
+
+  if (subtotalEl) subtotalEl.textContent = `\u0E3F${subtotal.toFixed(2)}`;
+  if (discountRow) {
+    if (discount > 0) {
+      discountRow.style.display = 'flex';
+      if (discountLabel) discountLabel.textContent = _appliedPromo ? `ส่วนลด (${_appliedPromo.code})` : 'ส่วนลด';
+      if (discountEl) discountEl.textContent = `-\u0E3F${discount.toFixed(2)}`;
+    } else {
+      discountRow.style.display = 'none';
+    }
+  }
+  if (shippingEl) {
+    if (shipping === 0) {
+      shippingEl.textContent = 'ฟรี';
+      shippingEl.className = 'font-semibold text-green-600';
+    } else {
+      shippingEl.textContent = `\u0E3F${shipping.toFixed(2)}`;
+      shippingEl.className = 'font-medium text-gray-600';
+    }
+  }
+  if (totalEl) totalEl.textContent = `\u0E3F${(grandTotal ?? subtotal).toFixed(2)}`;
+}
+
+function _updateBnavCart(subtotal) {
+  const threshold = Number(localStorage.getItem('btmd_free_shipping_threshold') || 200);
+  const amountEl = document.getElementById('bnav-cart-amount');
+  const labelEl  = document.getElementById('bnav-cart-label');
+  const countEl  = document.getElementById('bnav-cart-count');
+  const stripFill = document.getElementById('bnav-ship-strip-fill');
+  const pct = Math.min((subtotal / threshold) * 100, 100);
+
+  if (stripFill) stripFill.style.width = pct + '%';
+  if (stripFill) stripFill.style.background = pct >= 100
+    ? '#16a34a'
+    : `linear-gradient(90deg,#f59e0b,#ef4444)`;
+  if (countEl) countEl.style.background = pct >= 100 ? '#16a34a' : '#8B7355';
+
+  if (subtotal > 0) {
+    if (amountEl) { amountEl.textContent = `\u0E3F${subtotal.toFixed(0)}`; amountEl.style.display = 'block'; }
+    if (labelEl) labelEl.style.display = 'none';
+  } else {
+    if (amountEl) amountEl.style.display = 'none';
+    if (labelEl) labelEl.style.display = 'block';
+  }
 }
 
 let _freeShipRecsCache = null;
 let _freeShipRecsLastCartKey = '';
+let _appliedPromo = null; // { code, discount, type, value, minOrder, label }
+
+async function _applyCartPromo() {
+  const input = document.getElementById('cart-promo-input');
+  const msg   = document.getElementById('cart-promo-msg');
+  const minEl = document.getElementById('cart-promo-minorder');
+  const minTx = document.getElementById('cart-promo-minorder-text');
+  const btn   = document.getElementById('cart-promo-btn');
+  if (!input || !msg) return;
+
+  const code = input.value.trim().toUpperCase();
+  if (!code) return;
+
+  // Clear previous
+  if (_appliedPromo && _appliedPromo.code === code) {
+    _appliedPromo = null;
+    input.value = '';
+    msg.className = 'hidden mt-1.5 text-xs px-1';
+    if (minEl) minEl.className = 'hidden mt-1 text-[11px] text-amber-600 px-1 flex items-center gap-1';
+    _updateCartUI();
+    return;
+  }
+
+  btn.disabled = true;
+  msg.className = 'mt-1.5 text-xs px-1 flex items-center gap-1 text-gray-400';
+  msg.innerHTML = '<i class="ph ph-spinner animate-spin text-xs"></i> กำลังตรวจสอบ...';
+
+  const subtotal = _cart.reduce((s, i) => s + i.price * i.quantity, 0);
+  try {
+    const token = localStorage.getItem('token');
+    const res = await fetch(`${API_BASE}/promo/validate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+      body: JSON.stringify({ code, cartTotal: subtotal })
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      msg.className = 'mt-1.5 text-xs px-1 flex items-center gap-1 text-red-500';
+      msg.innerHTML = `<i class="ph ph-x-circle text-xs"></i> ${data.error || 'รหัสไม่ถูกต้อง'}`;
+      if (data.minOrder) {
+        if (minEl && minTx) { minTx.textContent = `ต้องซื้อขั้นต่ำ ฿${data.minOrder} (ยอดปัจจุบัน ฿${subtotal.toFixed(0)})`; minEl.className = 'mt-1 text-[11px] text-amber-600 px-1 flex items-center gap-1'; }
+      } else { if (minEl) minEl.className = 'hidden'; }
+      _appliedPromo = null;
+    } else {
+      _appliedPromo = { code, discount: data.discount, type: data.type, value: data.value, minOrder: data.minOrder || 0 };
+      msg.className = 'mt-1.5 text-xs px-1 flex items-center gap-1 text-green-600';
+      msg.innerHTML = `<i class="ph ph-check-circle text-xs"></i> ใช้คูปอง <strong>${code}</strong> แล้ว — กด "ใช้" อีกครั้งเพื่อยกเลิก`;
+      if (minEl && minTx && data.minOrder) {
+        minTx.textContent = `ขั้นต่ำ ฿${data.minOrder}`;
+        minEl.className = 'mt-1 text-[11px] text-green-500 px-1 flex items-center gap-1';
+      } else if (minEl) { minEl.className = 'hidden'; }
+      _updateCartUI();
+    }
+  } catch (_) {
+    msg.className = 'mt-1.5 text-xs px-1 flex items-center gap-1 text-red-400';
+    msg.innerHTML = '<i class="ph ph-warning text-xs"></i> ไม่สามารถเชื่อมต่อได้';
+  }
+  btn.disabled = false;
+}
+window._applyCartPromo = _applyCartPromo;
 
 async function _loadFreeShipRecs() {
   if (_freeShipRecsCache) return _freeShipRecsCache;

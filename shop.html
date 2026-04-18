@@ -477,24 +477,34 @@
             const isWishlisted = wishlist.some(w => w.id === product.id);
             const heartClass = isWishlisted ? 'ph-fill ph-heart text-xl text-red-500' : 'ph ph-heart text-xl';
 
-            const discountHtml = product.originalPrice ? `<span class="text-sm text-gray-400 line-through ml-2">฿${product.originalPrice.toFixed(2)}</span><span class="ml-2 text-xs font-bold text-red-500 bg-red-50 px-2 py-0.5 rounded-full">-${Math.round((1 - product.price / product.originalPrice) * 100)}%</span>` : '';
+            const hasDiscount = product.originalPrice && product.originalPrice > product.price;
+            const discPct = hasDiscount ? Math.round((1 - product.price / product.originalPrice) * 100) : 0;
+            const fmtP = p => `฿${Math.round(p).toLocaleString('th-TH')}`;
+            const origHtml = hasDiscount ? `<span class="text-[10px] sm:text-xs text-gray-400 line-through">${fmtP(product.originalPrice)}</span>` : '';
+            const discBadge = hasDiscount ? `<span class="absolute top-2 left-2 bg-red-500 text-white px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold shadow-sm">-${discPct}%</span>` : '';
 
             const pUrl = product.slug ? `/product/${product.slug}` : `product.html?id=${product.id}`;
             if (viewMode === 'list') {
                 return `
-                <div class="bg-white rounded-2xl border border-gray-100 flex overflow-hidden hover:shadow-lg transition-shadow animate-fade-in-up" style="animation-delay:${index * 0.05}s">
-                    <a href="${pUrl}" class="w-48 h-48 flex-shrink-0 overflow-hidden">
-                        <img src="${product.imageUrl}" alt="${product.name} แฟลชไดร์ฟเพลง MP3 — Bt music drive" loading="lazy" decoding="async" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                <div class="bg-white rounded-2xl border border-gray-100 flex overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_12px_36px_rgba(139,115,85,0.16)] transition-all duration-300 animate-fade-in-up" style="animation-delay:${index * 0.05}s">
+                    <a href="${pUrl}" class="w-36 sm:w-48 flex-shrink-0 overflow-hidden relative">
+                        <img src="${product.imageUrl}" alt="${product.name}" loading="lazy" decoding="async" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                        ${discBadge}
                     </a>
-                    <div class="p-5 flex-1 flex flex-col justify-between">
+                    <div class="p-3 sm:p-5 flex-1 flex flex-col justify-between min-w-0">
                         <div>
-                            <div class="text-xs text-gray-500 font-medium uppercase tracking-wider mb-1">${product.category?.name || product.category || ''}</div>
-                            <a href="${pUrl}" class="block"><h3 class="text-lg font-bold text-gray-900 hover:text-primary transition-colors">${product.name}</h3></a>
-                            <div class="flex items-center mt-2">${starsHtml}<span class="text-xs text-gray-500 ml-2">(${reviews} รีวิว)</span></div>
+                            <div class="text-[10px] sm:text-xs text-gray-400 font-medium uppercase tracking-wider mb-0.5">${product.category?.name || product.category || ''}</div>
+                            <a href="${pUrl}" class="block"><h3 class="text-sm sm:text-base font-bold text-gray-900 hover:text-primary transition-colors line-clamp-2">${product.name}</h3></a>
+                            <div class="flex items-center mt-1.5">${starsHtml}<span class="text-[10px] sm:text-xs text-gray-400 ml-1.5">(${reviews})</span></div>
                         </div>
-                        <div class="flex items-center justify-between mt-3">
-                            <div class="flex items-center"><span class="text-xl font-bold text-gray-900">฿${product.price.toFixed(2)}</span>${discountHtml}</div>
-                            <button class="shop-add-cart bg-primary hover:bg-secondary text-white font-semibold py-2 px-5 rounded-lg text-sm transition-colors" data-id="${product.id}" onclick="event.preventDefault();"><i class="ph ph-shopping-cart mr-1"></i> เพิ่มลงตะกร้า</button>
+                        <div class="flex items-center justify-between mt-3 gap-2 flex-wrap">
+                            <div class="flex items-baseline gap-1.5 flex-wrap">
+                                <span class="text-base sm:text-xl font-extrabold text-primary">${fmtP(product.price)}</span>
+                                ${origHtml}
+                            </div>
+                            <button class="shop-add-cart bg-primary hover:bg-amber-700 active:scale-95 text-white font-bold py-2 px-4 rounded-xl text-xs sm:text-sm transition-all flex items-center gap-1.5 flex-shrink-0" data-id="${product.id}" onclick="event.preventDefault();event.stopPropagation();">
+                                <i class="ph ph-shopping-cart text-sm"></i> เพิ่มลงตะกร้า
+                            </button>
                         </div>
                     </div>
                 </div>`;
@@ -503,9 +513,12 @@
             return `
             <div class="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_12px_36px_rgba(139,115,85,0.16)] transition-all duration-300 animate-fade-in-up" style="animation-delay:${index * 0.05}s">
                 <a href="${pUrl}" class="block relative aspect-square overflow-hidden group cursor-pointer">
-                    <img src="${product.imageUrl}" alt="${product.name} แฟลชไดร์ฟเพลง MP3 คุณภาพ HD — Bt music drive" loading="lazy" decoding="async" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                    <img src="${product.imageUrl}" alt="${product.name}" loading="lazy" decoding="async" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    ${product.originalPrice ? `<span class="absolute top-2 left-2 bg-red-500 text-white px-2 py-0.5 rounded-full text-xs font-bold shadow-sm">-${Math.round((1 - product.price / product.originalPrice) * 100)}%</span>` : ''}
+                    ${discBadge}
+                    <button class="absolute top-2 right-2 bg-white/90 backdrop-blur-sm p-1.5 rounded-full text-gray-400 hover:text-red-500 shadow-sm transition-colors z-10 shop-wishlist-btn" data-id="${product.id}" onclick="event.preventDefault();event.stopPropagation();">
+                        <i class="${heartClass}"></i>
+                    </button>
                 </a>
                 <div class="p-2.5 sm:p-4">
                     <div class="text-[10px] sm:text-xs text-gray-400 font-medium mb-0.5 uppercase tracking-wider">${product.category?.name || product.category || ''}</div>
@@ -514,10 +527,13 @@
                         <div class="flex mr-1">${starsHtml}</div>
                         <span class="text-[10px] sm:text-xs text-gray-400">(${reviews})</span>
                     </div>
-                    <div class="flex items-baseline flex-wrap gap-x-1 min-w-0">
-                        <span class="text-sm sm:text-base font-extrabold text-gray-900">฿${product.price.toFixed(2)}</span>
-                        ${product.originalPrice ? `<span class="text-[10px] sm:text-xs text-gray-400 line-through">฿${product.originalPrice.toFixed(2)}</span>` : ''}
+                    <div class="flex items-baseline gap-1.5 flex-wrap mb-2">
+                        <span class="text-sm sm:text-base font-extrabold text-primary">${fmtP(product.price)}</span>
+                        ${origHtml}
                     </div>
+                    <button class="shop-add-cart w-full bg-primary hover:bg-amber-700 active:scale-95 text-white font-bold py-2 sm:py-2.5 rounded-xl flex items-center justify-center gap-1.5 text-xs sm:text-sm transition-all" data-id="${product.id}" onclick="event.preventDefault();event.stopPropagation();">
+                        <i class="ph ph-shopping-cart text-sm"></i> เพิ่มลงตะกร้า
+                    </button>
                 </div>
             </div>`;
         }).join('');
@@ -528,6 +544,29 @@
                 e.preventDefault();
                 e.stopPropagation();
                 _handleShopAddToCart(this.dataset.id);
+            });
+        });
+
+        // Wishlist buttons on grid cards
+        container.querySelectorAll('.shop-wishlist-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                const id = this.dataset.id;
+                const p = shopProducts.find(x => x.id === id);
+                if (!p) return;
+                let wl = [];
+                try { wl = JSON.parse(localStorage.getItem('btmusicdrive_wishlist') || '[]'); } catch { }
+                const idx = wl.findIndex(x => x.id === id);
+                if (idx >= 0) {
+                    wl.splice(idx, 1);
+                    this.querySelector('i').className = 'ph ph-heart text-base';
+                } else {
+                    wl.push({ id: p.id, name: p.name, price: p.price, image: p.imageUrl });
+                    this.querySelector('i').className = 'ph-fill ph-heart text-base text-red-500';
+                }
+                localStorage.setItem('btmusicdrive_wishlist', JSON.stringify(wl));
+                if (typeof _updateWishlistBadge === 'function') _updateWishlistBadge();
             });
         });
     }

@@ -183,43 +183,51 @@ function renderProducts() {
             }
         }
 
-        // Badge HTML
-        const badgeHtml = product.badge ? 
-            `<span class="absolute top-4 left-4 bg-white px-3 py-1 rounded-full text-xs font-bold text-gray-900 shadow-sm">${product.badge}</span>` : '';
+        // Discount badge (หรือ custom badge ถ้าไม่มี originalPrice)
+        const hasDiscount = product.originalPrice && product.originalPrice > product.price;
+        const discPct = hasDiscount ? Math.round((1 - product.price / product.originalPrice) * 100) : 0;
+        const badgeHtml = hasDiscount
+            ? `<span class="absolute top-2 left-2 bg-red-500 text-white px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold shadow-sm">-${discPct}%</span>`
+            : (product.badge ? `<span class="absolute top-2 left-2 bg-white/90 backdrop-blur-sm px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold text-gray-900 shadow-sm">${product.badge}</span>` : '');
 
-        // Low stock HTML
+        // Low stock
         const lowStockHtml = (product.stock > 0 && product.stock <= 5) ?
-            `<div class="text-xs font-bold text-red-600 flex items-center gap-1 mt-1"><i class="ph ph-warning"></i> เหลือเพียง ${product.stock} ชิ้นสุดท้าย!</div>` : '';
+            `<div class="text-xs font-bold text-red-500 flex items-center gap-1 mt-1.5"><i class="ph ph-warning"></i> เหลือ ${product.stock} ชิ้น!</div>` : '';
 
-        // Check wishlist status
+        // Wishlist
         const wishlist = JSON.parse(localStorage.getItem('btmusicdrive_wishlist') || '[]');
         const isWishlisted = wishlist.some(w => w.id === product.id);
-        const heartClass = isWishlisted ? 'ph-fill ph-heart text-xl text-red-500' : 'ph ph-heart text-xl';
+        const heartClass = isWishlisted ? 'ph-fill ph-heart text-base text-red-500' : 'ph ph-heart text-base';
+
+        // Price display
+        const fmtP = p => `฿${Math.round(p).toLocaleString('th-TH')}`;
+        const origHtml = hasDiscount
+            ? `<span class="text-[10px] sm:text-xs text-gray-400 line-through">${fmtP(product.originalPrice)}</span>`
+            : '';
 
         const _pUrl = product.slug ? `/product/${product.slug}` : `/product?id=${encodeURIComponent(product.id)}`;
         productCard.innerHTML = `
-            <a href="${_pUrl}" class="block relative h-40 sm:h-64 overflow-hidden group cursor-pointer">
-                <img src="${escapeHtml(product.imageUrl)}" alt="${escapeHtml(product.name)}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+            <a href="${_pUrl}" class="block relative aspect-square overflow-hidden group cursor-pointer">
+                <img src="${escapeHtml(product.imageUrl)}" alt="${escapeHtml(product.name)}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy">
                 ${badgeHtml}
                 <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <button class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm p-2 rounded-full text-gray-400 hover:text-red-500 shadow-sm transition-colors z-10" data-wishlist="${escapeHtml(product.id)}" onclick="event.preventDefault();event.stopPropagation();">
+                <button class="absolute top-2 right-2 bg-white/90 backdrop-blur-sm p-1.5 rounded-full text-gray-400 hover:text-red-500 shadow-sm transition-colors z-10" data-wishlist="${escapeHtml(product.id)}" onclick="event.preventDefault();event.stopPropagation();">
                     <i class="${heartClass}"></i>
                 </button>
             </a>
-            <div class="p-3 sm:p-5">
-                <div class="text-xs text-gray-500 font-medium mb-1 uppercase tracking-wider hidden sm:block">${escapeHtml(product.category?.name || product.category || '')}</div>
-                <a href="${_pUrl}" class="block"><h3 class="text-sm sm:text-lg font-bold text-gray-900 mb-1 sm:mb-2 line-clamp-2 hover:text-primary transition-colors">${escapeHtml(product.name)}</h3></a>
-                <div class="hidden sm:flex items-center mb-3">
-                    <div class="flex mr-2">
-                        ${starsHtml}
-                    </div>
-                    <span class="text-xs text-gray-500">(${reviews})</span>
+            <div class="p-2.5 sm:p-4">
+                <div class="text-[10px] sm:text-xs text-gray-400 font-medium mb-0.5 uppercase tracking-wider">${escapeHtml(product.category?.name || product.category || '')}</div>
+                <a href="${_pUrl}" class="block"><h3 class="text-xs sm:text-sm font-bold text-gray-900 mb-1 line-clamp-2 hover:text-primary transition-colors leading-snug">${escapeHtml(product.name)}</h3></a>
+                <div class="hidden sm:flex items-center mb-2">
+                    <div class="flex mr-1">${starsHtml}</div>
+                    <span class="text-xs text-gray-400">(${reviews})</span>
                 </div>
-                <div class="mb-2">
-                    <span class="text-base sm:text-xl font-bold text-gray-900">฿${product.price.toFixed(2)}</span>
+                <div class="flex items-baseline gap-1.5 flex-wrap mb-2">
+                    <span class="text-sm sm:text-base font-extrabold text-primary">${fmtP(product.price)}</span>
+                    ${origHtml}
                 </div>
-                <button class="add-to-cart-btn w-full bg-primary hover:bg-primary/90 active:scale-95 text-white font-bold py-2 sm:py-2.5 rounded-full flex items-center justify-center gap-2 text-xs sm:text-sm transition-all" data-id="${escapeHtml(product.id)}" onclick="event.preventDefault();event.stopPropagation();">
-                    <i class="ph ph-shopping-cart text-sm sm:text-base"></i> หยิบใส่ตะกร้า
+                <button class="add-to-cart-btn w-full bg-primary hover:bg-amber-700 active:scale-95 text-white font-bold py-2 sm:py-2.5 rounded-xl flex items-center justify-center gap-1.5 text-xs sm:text-sm transition-all" data-id="${escapeHtml(product.id)}" onclick="event.preventDefault();event.stopPropagation();">
+                    <i class="ph ph-shopping-cart text-sm sm:text-base"></i> เพิ่มลงตะกร้า
                 </button>
                 ${lowStockHtml}
             </div>
