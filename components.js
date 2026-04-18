@@ -117,37 +117,14 @@ function _cartSidebarHTML() {
       </div>
     </div>
     <div class="border-t border-gray-200 bg-white">
-      <!-- Promo Code -->
-      <div class="px-4 pt-3 pb-2">
-        <div class="flex gap-2">
-          <div class="flex-1 relative">
-            <i class="ph ph-tag absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
-            <input id="cart-promo-input" type="text" placeholder="รหัสคูปอง" autocomplete="off" maxlength="30"
-              class="w-full pl-8 pr-3 py-2 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none bg-gray-50 font-mono tracking-wider uppercase"
-              oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter')_applyCartPromo()">
-          </div>
-          <button onclick="_applyCartPromo()" id="cart-promo-btn"
-            class="px-3 py-2 bg-secondary hover:bg-slate-700 text-white text-sm font-bold rounded-xl transition-colors whitespace-nowrap flex items-center gap-1">
-            <i class="ph ph-check-circle text-sm"></i> ใช้
-          </button>
-        </div>
-        <div id="cart-promo-msg" class="hidden mt-1.5 text-xs px-1 flex items-center gap-1"></div>
-        <div id="cart-promo-minorder" class="hidden mt-1 text-[11px] text-amber-600 px-1 flex items-center gap-1">
-          <i class="ph ph-info text-xs"></i> <span id="cart-promo-minorder-text"></span>
-        </div>
-      </div>
       <!-- Price Breakdown -->
-      <div class="px-4 pb-3 space-y-1.5 text-sm">
+      <div class="px-4 pt-3 pb-3 space-y-1.5 text-sm">
         <div class="flex justify-between text-gray-500">
           <span>ราคาสินค้า</span>
           <span id="cart-subtotal-display">฿0.00</span>
         </div>
-        <div id="cart-discount-row" class="hidden flex-row justify-between text-green-600 font-semibold">
-          <span class="flex items-center gap-1"><i class="ph ph-tag text-xs"></i><span id="cart-discount-label">ส่วนลด</span></span>
-          <span id="cart-discount-display">-฿0.00</span>
-        </div>
         <div class="flex justify-between text-gray-500">
-          <span class="flex items-center gap-1.5"><i class="ph ph-truck text-xs"></i>ค่าจัดส่ง</span>
+          <span class="flex items-center gap-1.5"><i class="ph ph-truck text-xs text-primary"></i>ค่าจัดส่ง</span>
           <span id="cart-shipping-display" class="font-medium">฿35.00</span>
         </div>
         <div class="flex justify-between font-bold text-gray-900 text-base border-t border-dashed border-gray-200 pt-2 mt-1">
@@ -889,6 +866,7 @@ function _updateCartUI() {
     if (emptyMsg) emptyMsg.style.display = 'block';
     if (container) { container.innerHTML = ''; container.appendChild(emptyMsg); }
     _updateCartPriceBreakdown(0, 0, 0);
+
     if (clearBtn) clearBtn.classList.add('hidden');
     return;
   }
@@ -924,47 +902,28 @@ function _updateCartUI() {
     container.appendChild(el);
   });
 
-  // Calculate discount & shipping
+  // Calculate shipping
   const shippingThreshold = Number(localStorage.getItem('btmd_free_shipping_threshold') || 200);
   const shippingCost = Number(localStorage.getItem('btmd_shipping_cost') || 35);
-  let discount = 0;
-  if (_appliedPromo) {
-    discount = _appliedPromo.type === 'PERCENT'
-      ? Math.round(total * _appliedPromo.value / 100 * 100) / 100
-      : _appliedPromo.discount;
-  }
-  const discountedTotal = Math.max(total - discount, 0);
-  const shipping = discountedTotal >= shippingThreshold ? 0 : shippingCost;
-  const grandTotal = discountedTotal + shipping;
+  const shipping = total >= shippingThreshold ? 0 : shippingCost;
+  const grandTotal = total + shipping;
 
-  _updateCartPriceBreakdown(total, discount, shipping, grandTotal);
+  _updateCartPriceBreakdown(total, shipping, grandTotal);
 }
 
-function _updateCartPriceBreakdown(subtotal, discount, shipping, grandTotal) {
+function _updateCartPriceBreakdown(subtotal, shipping, grandTotal) {
   const totalEl = document.getElementById('cart-total');
   const subtotalEl = document.getElementById('cart-subtotal-display');
-  const discountRow = document.getElementById('cart-discount-row');
-  const discountLabel = document.getElementById('cart-discount-label');
-  const discountEl = document.getElementById('cart-discount-display');
   const shippingEl = document.getElementById('cart-shipping-display');
 
   if (subtotalEl) subtotalEl.textContent = `\u0E3F${subtotal.toFixed(2)}`;
-  if (discountRow) {
-    if (discount > 0) {
-      discountRow.style.display = 'flex';
-      if (discountLabel) discountLabel.textContent = _appliedPromo ? `ส่วนลด (${_appliedPromo.code})` : 'ส่วนลด';
-      if (discountEl) discountEl.textContent = `-\u0E3F${discount.toFixed(2)}`;
-    } else {
-      discountRow.style.display = 'none';
-    }
-  }
   if (shippingEl) {
     if (shipping === 0) {
       shippingEl.textContent = 'ฟรี';
       shippingEl.className = 'font-semibold text-green-600';
     } else {
       shippingEl.textContent = `\u0E3F${shipping.toFixed(2)}`;
-      shippingEl.className = 'font-medium text-gray-600';
+      shippingEl.className = 'font-medium text-gray-500';
     }
   }
   if (totalEl) totalEl.textContent = `\u0E3F${(grandTotal ?? subtotal).toFixed(2)}`;
@@ -995,66 +954,6 @@ function _updateBnavCart(subtotal) {
 
 let _freeShipRecsCache = null;
 let _freeShipRecsLastCartKey = '';
-let _appliedPromo = null; // { code, discount, type, value, minOrder, label }
-
-async function _applyCartPromo() {
-  const input = document.getElementById('cart-promo-input');
-  const msg   = document.getElementById('cart-promo-msg');
-  const minEl = document.getElementById('cart-promo-minorder');
-  const minTx = document.getElementById('cart-promo-minorder-text');
-  const btn   = document.getElementById('cart-promo-btn');
-  if (!input || !msg) return;
-
-  const code = input.value.trim().toUpperCase();
-  if (!code) return;
-
-  // Clear previous
-  if (_appliedPromo && _appliedPromo.code === code) {
-    _appliedPromo = null;
-    input.value = '';
-    msg.className = 'hidden mt-1.5 text-xs px-1';
-    if (minEl) minEl.className = 'hidden mt-1 text-[11px] text-amber-600 px-1 flex items-center gap-1';
-    _updateCartUI();
-    return;
-  }
-
-  btn.disabled = true;
-  msg.className = 'mt-1.5 text-xs px-1 flex items-center gap-1 text-gray-400';
-  msg.innerHTML = '<i class="ph ph-spinner animate-spin text-xs"></i> กำลังตรวจสอบ...';
-
-  const subtotal = _cart.reduce((s, i) => s + i.price * i.quantity, 0);
-  try {
-    const token = localStorage.getItem('token');
-    const res = await fetch(`${API_BASE}/promo/validate`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-      body: JSON.stringify({ code, cartTotal: subtotal })
-    });
-    const data = await res.json();
-    if (!res.ok) {
-      msg.className = 'mt-1.5 text-xs px-1 flex items-center gap-1 text-red-500';
-      msg.innerHTML = `<i class="ph ph-x-circle text-xs"></i> ${data.error || 'รหัสไม่ถูกต้อง'}`;
-      if (data.minOrder) {
-        if (minEl && minTx) { minTx.textContent = `ต้องซื้อขั้นต่ำ ฿${data.minOrder} (ยอดปัจจุบัน ฿${subtotal.toFixed(0)})`; minEl.className = 'mt-1 text-[11px] text-amber-600 px-1 flex items-center gap-1'; }
-      } else { if (minEl) minEl.className = 'hidden'; }
-      _appliedPromo = null;
-    } else {
-      _appliedPromo = { code, discount: data.discount, type: data.type, value: data.value, minOrder: data.minOrder || 0 };
-      msg.className = 'mt-1.5 text-xs px-1 flex items-center gap-1 text-green-600';
-      msg.innerHTML = `<i class="ph ph-check-circle text-xs"></i> ใช้คูปอง <strong>${code}</strong> แล้ว — กด "ใช้" อีกครั้งเพื่อยกเลิก`;
-      if (minEl && minTx && data.minOrder) {
-        minTx.textContent = `ขั้นต่ำ ฿${data.minOrder}`;
-        minEl.className = 'mt-1 text-[11px] text-green-500 px-1 flex items-center gap-1';
-      } else if (minEl) { minEl.className = 'hidden'; }
-      _updateCartUI();
-    }
-  } catch (_) {
-    msg.className = 'mt-1.5 text-xs px-1 flex items-center gap-1 text-red-400';
-    msg.innerHTML = '<i class="ph ph-warning text-xs"></i> ไม่สามารถเชื่อมต่อได้';
-  }
-  btn.disabled = false;
-}
-window._applyCartPromo = _applyCartPromo;
 
 async function _loadFreeShipRecs() {
   if (_freeShipRecsCache) return _freeShipRecsCache;
