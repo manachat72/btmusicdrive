@@ -89,6 +89,18 @@ function _cartSidebarHTML() {
         <button id="close-cart-btn" class="text-gray-500 hover:text-red-500 transition-colors"><i class="ph ph-x text-2xl"></i></button>
       </div>
     </div>
+    <!-- Free Shipping Progress Bar -->
+    <div id="free-shipping-bar" class="px-4 pt-3 pb-3 border-b border-amber-100" style="background:linear-gradient(135deg,#fffbeb 0%,#fef3c7 100%)">
+      <div class="flex items-center gap-2 mb-2">
+        <span id="free-ship-icon" class="text-lg flex-shrink-0">🚚</span>
+        <p id="free-shipping-msg" class="text-xs font-semibold text-amber-800 leading-tight flex-1">เพิ่มอีก <strong id="free-ship-remaining" class="text-amber-900">฿200</strong> เพื่อ <span class="text-orange-600">ส่งฟรี!</span></p>
+        <span id="free-shipping-pct" class="text-xs font-bold text-amber-600 flex-shrink-0">0%</span>
+      </div>
+      <div class="relative w-full rounded-full h-3 overflow-hidden" style="background:rgba(251,191,36,0.25)">
+        <div id="free-shipping-progress" class="h-full rounded-full transition-all duration-700 ease-out" style="width:0%;background:linear-gradient(90deg,#f59e0b,#ef4444)"></div>
+        <div class="absolute inset-0 rounded-full pointer-events-none" style="background:linear-gradient(180deg,rgba(255,255,255,0.3) 0%,transparent 60%)"></div>
+      </div>
+    </div>
     <div id="cart-items-container" class="flex-1 overflow-y-auto p-4 space-y-4">
       <div class="text-center text-gray-500 mt-10" id="empty-cart-msg">
         <i class="ph ph-shopping-cart text-6xl mb-4 text-gray-300"></i>
@@ -815,6 +827,9 @@ function _updateCartUI() {
 
   const clearBtn = document.getElementById('clear-cart-btn');
 
+  const _cartSubtotal = _cart.reduce((s, i) => s + i.price * i.quantity, 0);
+  _updateFreeShippingBar(_cartSubtotal);
+
   if (_cart.length === 0) {
     if (emptyMsg) emptyMsg.style.display = 'block';
     if (container) { container.innerHTML = ''; container.appendChild(emptyMsg); }
@@ -854,6 +869,45 @@ function _updateCartUI() {
     container.appendChild(el);
   });
   if (totalEl) totalEl.textContent = `\u0E3F${total.toFixed(2)}`;
+}
+
+function _updateFreeShippingBar(total) {
+  const threshold = Number(localStorage.getItem('btmd_free_shipping_threshold') || 200);
+  const bar      = document.getElementById('free-shipping-bar');
+  const msgEl    = document.getElementById('free-shipping-msg');
+  const pctEl    = document.getElementById('free-shipping-pct');
+  const progress = document.getElementById('free-shipping-progress');
+  const iconEl   = document.getElementById('free-ship-icon');
+  if (!bar || !progress) return;
+
+  const pct = Math.min((total / threshold) * 100, 100);
+  progress.style.width = pct + '%';
+
+  if (total >= threshold) {
+    // ฉลอง!
+    bar.style.background = 'linear-gradient(135deg,#f0fdf4 0%,#dcfce7 100%)';
+    bar.style.borderColor = '#bbf7d0';
+    if (iconEl) iconEl.textContent = '🎉';
+    if (pctEl) { pctEl.textContent = 'ฟรี!'; pctEl.style.color = '#16a34a'; }
+    if (msgEl) msgEl.innerHTML = '<span style="color:#15803d;font-weight:700">ยินดีด้วย! คุณได้รับ <span style="text-decoration:underline">ส่งฟรี</span> แล้ว</span>';
+    progress.style.background = 'linear-gradient(90deg,#4ade80,#16a34a)';
+  } else {
+    const remaining = (threshold - total).toFixed(0);
+    const ratio = pct / 100;
+    // gradient เปลี่ยนสีตาม progress: เหลือง → ส้ม → แดง
+    const r1 = Math.round(245 + (239 - 245) * ratio);
+    const g1 = Math.round(158 + (68  - 158) * ratio);
+    const b1 = Math.round(11  + (68  -  11) * ratio);
+    const r2 = Math.round(239 + (220 - 239) * ratio);
+    const g2 = Math.round(68  + (38  -  68) * ratio);
+    const b2 = Math.round(68  + (38  -  68) * ratio);
+    progress.style.background = `linear-gradient(90deg,rgb(${r1},${g1},${b1}),rgb(${r2},${g2},${b2}))`;
+    bar.style.background = 'linear-gradient(135deg,#fffbeb 0%,#fef3c7 100%)';
+    bar.style.borderColor = '#fde68a';
+    if (iconEl) iconEl.textContent = '🚚';
+    if (pctEl) { pctEl.textContent = Math.round(pct) + '%'; pctEl.style.color = '#d97706'; }
+    if (msgEl) msgEl.innerHTML = `เพิ่มอีก <strong style="color:#92400e">฿${remaining}</strong> เพื่อ <span style="color:#ea580c">ส่งฟรี!</span>`;
+  }
 }
 
 function _updateWishlistBadge() {
