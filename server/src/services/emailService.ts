@@ -82,7 +82,7 @@ function buildOrderEmailHtml(data: OrderEmailData): string {
 
       <!-- Logo area -->
       <div style="background:linear-gradient(180deg,#1a1a1a 0%,#111111 100%);padding:36px 40px 28px;text-align:center;border-bottom:1px solid #2a2a2a;">
-        <img src="https://btmusicdrive.com/images/logo%20(60%20x%2060%20px)%20(1).png"
+        <img src="https://btmusicdrive.vercel.app/images/logo.webp"
              alt="BT Music Drive"
              width="80"
              style="display:block;margin:0 auto 16px;border-radius:50%;"
