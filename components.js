@@ -557,7 +557,7 @@ function _renderNavMenus(menus) {
         `<a href="${c.url}" class="block pl-7 pr-3 py-[6px] text-xs text-gray-400 hover:text-primary hover:bg-white/10 rounded-md flex items-center gap-2">${c.icon ? `<i class="${c.icon}"></i>` : ''}${c.label}</a>`
       ).join('');
       return `<div class="mob-has-sub">
-        <button class="mob-sub-toggle w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-primary hover:bg-white/10" data-sub="${i}">
+        <button type="button" class="mob-sub-toggle w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-primary hover:bg-white/10" data-sub="${i}" aria-expanded="false">
           ${icon}<span class="flex-1 text-left">${m.label}</span>
           <i class="mob-caret" style="font-size:10px;transition:transform .2s;">▾</i>
         </button>
@@ -572,16 +572,31 @@ function _renderNavMenus(menus) {
     mobile._subMenuBound = true;
     mobile.addEventListener('click', function(e) {
       const btn = e.target.closest('.mob-sub-toggle');
-      if (!btn) return;
-      const key = btn.dataset.sub;
-      const panel = mobile.querySelector(`.mob-sub-panel[data-sub="${key}"]`);
-      const caret = btn.querySelector('.mob-caret');
-      if (!panel) return;
-      const open = panel.style.display !== 'none';
-      panel.style.display = open ? 'none' : 'block';
-      if (caret) caret.style.transform = open ? '' : 'rotate(180deg)';
+      if (btn) {
+        const key = btn.dataset.sub;
+        const panel = mobile.querySelector(`.mob-sub-panel[data-sub="${key}"]`);
+        const caret = btn.querySelector('.mob-caret');
+        if (!panel) return;
+        const open = panel.style.display !== 'none';
+        panel.style.display = open ? 'none' : 'block';
+        btn.setAttribute('aria-expanded', String(!open));
+        if (caret) caret.style.transform = open ? '' : 'rotate(180deg)';
+        return;
+      }
+
+      const navLink = e.target.closest('a[href]');
+      if (!navLink || !mobile.contains(navLink)) return;
+
+      closeMobileMenu(mobile);
     });
   }
+}
+
+function closeMobileMenu(mobile) {
+  document.getElementById('mobile-menu')?.classList.add('hidden');
+  mobile.querySelectorAll('.mob-sub-panel').forEach(panel => { panel.style.display = 'none'; });
+  mobile.querySelectorAll('.mob-sub-toggle').forEach(btn => btn.setAttribute('aria-expanded', 'false'));
+  mobile.querySelectorAll('.mob-caret').forEach(caret => { caret.style.transform = ''; });
 }
 
 // ── Auth ─────────────────────────────────────────────────────────────────────

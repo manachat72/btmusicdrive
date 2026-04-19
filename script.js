@@ -145,18 +145,31 @@ function bindMobileNavDropdowns(mobile) {
 
     mobile.addEventListener('click', (event) => {
         const toggleBtn = event.target.closest('.mob-sub-toggle');
-        if (!toggleBtn || !mobile.contains(toggleBtn)) return;
+        if (toggleBtn && mobile.contains(toggleBtn)) {
+            const key = toggleBtn.dataset.sub;
+            const panel = mobile.querySelector(`.mob-sub-panel[data-sub="${key}"]`);
+            const caret = toggleBtn.querySelector('.mob-caret');
+            if (!panel) return;
 
-        const key = toggleBtn.dataset.sub;
-        const panel = mobile.querySelector(`.mob-sub-panel[data-sub="${key}"]`);
-        const caret = toggleBtn.querySelector('.mob-caret');
-        if (!panel) return;
+            const isOpen = !panel.classList.contains('hidden');
+            panel.classList.toggle('hidden', isOpen);
+            toggleBtn.setAttribute('aria-expanded', String(!isOpen));
+            caret?.classList.toggle('rotate-180', !isOpen);
+            return;
+        }
 
-        const isOpen = !panel.classList.contains('hidden');
-        panel.classList.toggle('hidden', isOpen);
-        toggleBtn.setAttribute('aria-expanded', String(!isOpen));
-        caret?.classList.toggle('rotate-180', !isOpen);
+        const navLink = event.target.closest('a[href]');
+        if (!navLink || !mobile.contains(navLink)) return;
+
+        closeMobileNavMenu(mobile);
     });
+}
+
+function closeMobileNavMenu(mobile) {
+    document.getElementById('mobile-menu')?.classList.add('hidden');
+    mobile.querySelectorAll('.mob-sub-panel').forEach(panel => panel.classList.add('hidden'));
+    mobile.querySelectorAll('.mob-sub-toggle').forEach(btn => btn.setAttribute('aria-expanded', 'false'));
+    mobile.querySelectorAll('.mob-caret').forEach(caret => caret.classList.remove('rotate-180'));
 }
 
 // Fetch Products from API or fallback to local JSON
