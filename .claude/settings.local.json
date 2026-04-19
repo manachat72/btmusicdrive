@@ -39,7 +39,9 @@
       "Bash(sed -i 's/bg-violet-50 w-10 h-10 rounded-full/bg-amber-100 w-10 h-10 rounded-full/g; s/text-xl text-violet-600/text-xl text-primary/g' /c/Users/manac/ProjectsPython/btmusicdrive/address.html)",
       "Bash(sed -i 's/bg-blue-100 text-blue-600 w-\\\\[72px\\\\]/bg-amber-100 text-primary w-[72px]/g; \\\\ *)",
       "Bash(sed -i 's/hover:bg-blue-50 hover:shadow-md/hover:bg-amber-50 hover:shadow-md/g; \\\\ *)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(python _inject_gtm.py)",
+      "Bash(python _inject_ga4.py)"
     ]
   }
 }
