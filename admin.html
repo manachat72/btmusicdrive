@@ -2589,6 +2589,12 @@
             <input type="number" id="ie-sort-${m.id}" class="settings-input" value="${m.sortOrder||0}" min="0">
           </div>
         </div>
+        <div style="margin-bottom:10px;">
+          <label class="settings-label">เมนูหลัก <span style="color:var(--muted);font-weight:400;font-size:11px;">(เลือกเพื่อทำให้เป็นเมนูย่อย)</span></label>
+          <select id="ie-parent-${m.id}" class="settings-input">
+            <option value="">— ไม่มี (เมนูหลัก) —</option>
+          </select>
+        </div>
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
           <label class="settings-label" style="margin:0;">เปิดใช้</label>
           <label class="toggle-switch">
@@ -2614,13 +2620,28 @@
     const open = el.style.display === 'none';
     el.style.display = open ? 'block' : 'none';
     if (chev) chev.style.transform = open ? 'rotate(180deg)' : '';
+    if (open) _populateItemParentSelect(id);
+  }
+
+  function _populateItemParentSelect(id) {
+    const sel = document.getElementById('ie-parent-' + id);
+    if (!sel) return;
+    let currentParentId = null;
+    for (const m of _menus) {
+      if (m.children) { if (m.children.find(c => c.id === id)) { currentParentId = m.id; break; } }
+    }
+    sel.innerHTML = '<option value="">— ไม่มี (เมนูหลัก) —</option>';
+    _menus.forEach(m => {
+      if (m.id === id) return; // ห้ามเลือกตัวเอง
+      sel.innerHTML += `<option value="${m.id}"${currentParentId === m.id ? ' selected' : ''}>${escHtml(m.label)}</option>`;
+    });
   }
 
   async function saveMenuItemEdit(id) {
-    let item = null, parentId = null;
+    let item = null;
     for (const m of _menus) {
       if (m.id === id) { item = m; break; }
-      if (m.children) { const c = m.children.find(c => c.id === id); if (c) { item = c; parentId = m.id; break; } }
+      if (m.children) { const c = m.children.find(c => c.id === id); if (c) { item = c; break; } }
     }
     if (!item) return;
     const label = document.getElementById('ie-label-' + id).value.trim();
@@ -2628,10 +2649,11 @@
     const icon = document.getElementById('ie-icon-' + id).value.trim();
     const sortOrder = parseInt(document.getElementById('ie-sort-' + id).value) || 0;
     const isActive = document.getElementById('ie-active-' + id).checked;
+    const parentId = document.getElementById('ie-parent-' + id).value || null;
     if (!label || !url) { showToast('กรุณากรอกชื่อและ URL', true); return; }
-    const body = { label, url, icon: icon || null, sortOrder, isActive, parentId: item.parentId || parentId || null };
+    const body = { label, url, icon: icon || null, sortOrder, isActive, parentId };
     if (_menusOffline) {
-      Object.assign(item, { label, url, icon: icon || null, sortOrder, isActive });
+      Object.assign(item, { label, url, icon: icon || null, sortOrder, isActive, parentId });
       _lsSaveMenus(_menus); showToast('อัปเดตแล้ว (ออฟไลน์)'); loadMenus(); return;
     }
     try {
