@@ -836,12 +836,7 @@
           <h2 class="wp-page-title">เมนู</h2>
           <p class="wp-page-desc" id="menus-count-label">จัดการเมนูนำทางของหน้าร้าน</p>
         </div>
-        <div style="display:flex;gap:8px;">
-          <button onclick="loadMenus()" class="wp-btn"><i class="fa-solid fa-arrows-rotate"></i> รีเฟรช</button>
-          <button onclick="openMenuModal(null,null)" class="wp-btn" style="background:var(--accent);color:#fff;border-color:var(--accent);">
-            <i class="fa-solid fa-plus"></i> เพิ่มเมนู
-          </button>
-        </div>
+        <button onclick="loadMenus()" class="wp-btn"><i class="fa-solid fa-arrows-rotate"></i> รีเฟรช</button>
       </div>
 
       <div id="menus-loading" class="wp-card" style="display:none;">
@@ -851,26 +846,88 @@
         <strong>ข้อผิดพลาด:</strong> <span id="menus-error-text"></span>
       </div>
 
-      <div id="menus-table-wrapper" class="wp-card" style="display:none;">
-        <div class="card-body nopad" style="overflow-x:auto;">
-          <table class="wp-tbl">
-            <thead>
-              <tr>
-                <th style="width:40px;">#</th>
-                <th>ชื่อ</th>
-                <th>URL</th>
-                <th>ไอคอน</th>
-                <th style="width:70px;">เปิดใช้</th>
-                <th style="width:120px;">จัดการ</th>
-              </tr>
-            </thead>
-            <tbody id="menus-tbody"></tbody>
-          </table>
-        </div>
-      </div>
+      <div style="display:grid;grid-template-columns:1fr 360px;gap:18px;align-items:start;">
 
-      <div id="menus-empty" class="wp-empty-box" style="display:none;">
-        <i class="fa-solid fa-bars"></i><p>ยังไม่มีเมนู กด "เพิ่มเมนู" เพื่อสร้างเมนูแรก</p>
+        <!-- ซ้าย: ตารางเมนู -->
+        <div class="wp-card">
+          <div class="card-hdr">
+            <h2><i class="fa-solid fa-bars"></i> รายการเมนู</h2>
+            <button onclick="openMenuModal(null,null)" class="wp-btn" style="background:var(--accent);color:#fff;border-color:var(--accent);">
+              <i class="fa-solid fa-plus"></i> เพิ่มเมนูใหม่
+            </button>
+          </div>
+          <div id="menus-table-wrapper" style="display:none;">
+            <div class="card-body nopad" style="overflow-x:auto;">
+              <table class="wp-tbl">
+                <thead>
+                  <tr>
+                    <th style="width:40px;">#</th>
+                    <th>ชื่อ</th>
+                    <th>URL</th>
+                    <th>ไอคอน</th>
+                    <th style="width:70px;">เปิดใช้</th>
+                    <th style="width:130px;">จัดการ</th>
+                  </tr>
+                </thead>
+                <tbody id="menus-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+          <div id="menus-empty" style="display:none;padding:32px;text-align:center;color:var(--muted);">
+            <i class="fa-solid fa-bars" style="font-size:32px;display:block;margin-bottom:8px;opacity:.3;"></i>
+            <p>ยังไม่มีเมนู กด "เพิ่มเมนูใหม่" เพื่อสร้างเมนูแรก</p>
+          </div>
+        </div>
+
+        <!-- ขวา: ฟอร์มเพิ่ม/แก้ไขเมนู -->
+        <div class="wp-card" id="menu-panel" style="position:sticky;top:80px;">
+          <div class="card-hdr">
+            <h2 id="menu-modal-title"><i class="fa-solid fa-plus"></i> เพิ่มเมนู</h2>
+          </div>
+          <div style="padding:16px;">
+            <input type="hidden" id="mm-id">
+            <div class="settings-grid">
+              <div class="settings-row">
+                <label class="settings-label">ชื่อเมนู <span style="color:#d63638;">*</span></label>
+                <input type="text" id="mm-label" class="settings-input" placeholder="เช่น หน้าแรก">
+              </div>
+              <div class="settings-row">
+                <label class="settings-label">URL <span style="color:#d63638;">*</span></label>
+                <input type="text" id="mm-url" class="settings-input" placeholder="เช่น / หรือ /shop">
+              </div>
+              <div class="settings-row">
+                <label class="settings-label">เมนูหลัก <span style="color:var(--muted);font-weight:400;font-size:11px;">(ถ้าเป็นเมนูย่อย)</span></label>
+                <select id="mm-parent" class="settings-input">
+                  <option value="">— ไม่มี (เมนูหลัก) —</option>
+                </select>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                <div class="settings-row">
+                  <label class="settings-label">ไอคอน</label>
+                  <input type="text" id="mm-icon" class="settings-input" placeholder="ph ph-house">
+                  <p class="settings-hint">คลาส Phosphor Icons</p>
+                </div>
+                <div class="settings-row">
+                  <label class="settings-label">ลำดับ</label>
+                  <input type="number" id="mm-sort" class="settings-input" value="0" min="0">
+                </div>
+              </div>
+              <div class="settings-row" style="flex-direction:row;align-items:center;gap:10px;">
+                <label class="settings-label" style="margin:0;flex:none;">เปิดใช้</label>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="mm-active" checked>
+                  <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                </label>
+              </div>
+            </div>
+            <div id="mm-error" style="display:none;color:#d63638;font-size:12px;margin-top:10px;padding:8px 12px;background:#fcf0f1;border-radius:3px;border-left:3px solid #d63638;"></div>
+            <div style="margin-top:14px;display:flex;gap:8px;">
+              <button onclick="closeMenuModal()" class="wp-btn" style="flex:1;">ล้างฟอร์ม</button>
+              <button onclick="saveMenu()" id="mm-save-btn" class="settings-save-btn" style="flex:2;"><i class="fa-solid fa-floppy-disk"></i> บันทึกเมนู</button>
+            </div>
+          </div>
+        </div>
+
       </div>
     </section>
 
@@ -1359,58 +1416,7 @@
   </div>
 </div>
 
-<!-- ── MENU MODAL ──────────────────────────────────────────────────────────── -->
-<div id="menu-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;align-items:center;justify-content:center;">
-  <div style="background:#fff;border-radius:6px;width:100%;max-width:440px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3);margin:16px;">
-    <div style="padding:16px 20px;border-bottom:1px solid var(--card-border);display:flex;align-items:center;justify-content:space-between;">
-      <h2 id="menu-modal-title" style="font-size:15px;font-weight:700;">เพิ่มเมนู</h2>
-      <button onclick="closeMenuModal()" style="background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;line-height:1;">&#x2715;</button>
-    </div>
-    <div style="padding:20px;">
-      <input type="hidden" id="mm-id">
-      <div class="settings-grid">
-        <div class="settings-row">
-          <label class="settings-label">ชื่อ <span style="color:#d63638;">*</span></label>
-          <input type="text" id="mm-label" class="settings-input" placeholder="เช่น หน้าแรก">
-        </div>
-        <div class="settings-row">
-          <label class="settings-label">URL <span style="color:#d63638;">*</span></label>
-          <input type="text" id="mm-url" class="settings-input" placeholder="e.g. # or /shop or https://...">
-        </div>
-        <div class="settings-row">
-          <label class="settings-label">เมนูหลัก <span style="color:var(--muted);font-weight:400;">(ไม่บังคับ — เลือกเพื่อเป็นเมนูย่อย)</span></label>
-          <select id="mm-parent" class="settings-input">
-            <option value="">— ไม่มี (เมนูหลัก) —</option>
-          </select>
-          <p class="settings-hint">เลือกเมนูหลักเพื่อทำให้เป็นเมนูย่อย (dropdown)</p>
-        </div>
-        <div style="display:flex;gap:10px;">
-          <div class="settings-row" style="flex:1;">
-            <label class="settings-label">คลาสไอคอน <span style="color:var(--muted);font-weight:400;">(ไม่บังคับ)</span></label>
-            <input type="text" id="mm-icon" class="settings-input" placeholder="เช่น ph ph-house">
-            <p class="settings-hint">ชื่อคลาส Phosphor Icons</p>
-          </div>
-          <div class="settings-row" style="flex:1;">
-            <label class="settings-label">ลำดับ</label>
-            <input type="number" id="mm-sort" class="settings-input" value="0" min="0">
-          </div>
-        </div>
-        <div class="settings-row" style="flex-direction:row;align-items:center;gap:10px;">
-          <label class="settings-label" style="margin:0;flex:none;">เปิดใช้</label>
-          <label class="toggle-switch">
-            <input type="checkbox" id="mm-active" checked>
-            <span class="toggle-track"><span class="toggle-thumb"></span></span>
-          </label>
-        </div>
-      </div>
-      <div id="mm-error" style="display:none;color:#d63638;font-size:12px;margin-top:10px;padding:8px 12px;background:#fcf0f1;border-radius:3px;border-left:3px solid #d63638;"></div>
-      <div style="margin-top:16px;display:flex;gap:8px;justify-content:flex-end;">
-        <button onclick="closeMenuModal()" class="wp-btn">ยกเลิก</button>
-        <button onclick="saveMenu()" id="mm-save-btn" class="settings-save-btn"><i class="fa-solid fa-floppy-disk"></i> บันทึกเมนู</button>
-      </div>
-    </div>
-  </div>
-</div>
+<!-- #menu-modal removed — ใช้ inline panel #menu-panel แทน -->
 
 <!-- ── MENU DELETE CONFIRM MODAL ──────────────────────────────────────────── -->
 <div id="menu-confirm-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:600;align-items:center;justify-content:center;">
@@ -2456,7 +2462,6 @@
   }
 
   function openMenuModal(id, presetParentId) {
-    const modal = document.getElementById('menu-modal');
     const errEl = document.getElementById('mm-error');
     errEl.style.display = 'none';
 
@@ -2471,7 +2476,7 @@
         }
       }
       if (!item) { showToast('ไม่พบเมนู', true); return; }
-      document.getElementById('menu-modal-title').textContent = 'แก้ไขเมนู';
+      document.getElementById('menu-modal-title').innerHTML = '<i class="fa-solid fa-pen-to-square"></i> แก้ไขเมนู';
       document.getElementById('mm-id').value = item.id;
       document.getElementById('mm-label').value = item.label;
       document.getElementById('mm-url').value = item.url;
@@ -2480,7 +2485,9 @@
       document.getElementById('mm-active').checked = item.isActive;
       _populateParentSelect(item.id, item.parentId || parentId || '');
     } else {
-      document.getElementById('menu-modal-title').textContent = presetParentId ? 'เพิ่มเมนูย่อย' : 'เพิ่มเมนู';
+      document.getElementById('menu-modal-title').innerHTML = presetParentId
+        ? '<i class="fa-solid fa-plus"></i> เพิ่มเมนูย่อย'
+        : '<i class="fa-solid fa-plus"></i> เพิ่มเมนู';
       document.getElementById('mm-id').value = '';
       document.getElementById('mm-label').value = '';
       document.getElementById('mm-url').value = '';
@@ -2489,11 +2496,20 @@
       document.getElementById('mm-active').checked = true;
       _populateParentSelect(null, presetParentId || '');
     }
-    modal.style.display = 'flex';
+    document.getElementById('menu-panel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    document.getElementById('mm-label').focus();
   }
 
   function closeMenuModal() {
-    document.getElementById('menu-modal').style.display = 'none';
+    document.getElementById('menu-modal-title').innerHTML = '<i class="fa-solid fa-plus"></i> เพิ่มเมนู';
+    document.getElementById('mm-id').value = '';
+    document.getElementById('mm-label').value = '';
+    document.getElementById('mm-url').value = '';
+    document.getElementById('mm-icon').value = '';
+    document.getElementById('mm-sort').value = 0;
+    document.getElementById('mm-active').checked = true;
+    document.getElementById('mm-error').style.display = 'none';
+    _populateParentSelect(null, '');
   }
 
   function askDeleteMenu(id, label) {
@@ -2648,8 +2664,7 @@
     }
   }
 
-  // Close menu modals on backdrop click
-  document.getElementById('menu-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeMenuModal(); });
+  // Close confirm modal on backdrop click
   document.getElementById('menu-confirm-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeMenuConfirm(); });
 
   // ══════════════════════════════════════════════════════════════════════════
