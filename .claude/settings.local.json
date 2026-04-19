@@ -41,7 +41,8 @@
       "Bash(sed -i 's/hover:bg-blue-50 hover:shadow-md/hover:bg-amber-50 hover:shadow-md/g; \\\\ *)",
       "Bash(npm run *)",
       "Bash(python _inject_gtm.py)",
-      "Bash(python _inject_ga4.py)"
+      "Bash(python _inject_ga4.py)",
+      "Bash(npx --yes terser components.js -c -m -o components.min.js)"
     ]
   }
 }
