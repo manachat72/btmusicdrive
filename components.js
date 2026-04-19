@@ -566,32 +566,36 @@ function _renderNavMenus(menus) {
   mobile.innerHTML = menus.map((m, i) => {
     const icon = m.icon ? `<i class="${m.icon}"></i>` : '';
     if (m.children && m.children.length > 0) {
-      const subId = `mob-sub-${i}`;
       const subItems = m.children.map(c =>
-        `<a href="${c.url}" class="block pl-8 pr-3 py-2 rounded-md text-sm text-gray-400 hover:text-primary hover:bg-white/10 flex items-center gap-2">${c.icon ? `<i class="${c.icon}"></i>` : ''}${c.label}</a>`
+        `<a href="${c.url}" class="block pl-7 pr-3 py-[6px] text-xs text-gray-400 hover:text-primary hover:bg-white/10 rounded-md flex items-center gap-2">${c.icon ? `<i class="${c.icon}"></i>` : ''}${c.label}</a>`
       ).join('');
-      return `
-        <div>
-          <button onclick="toggleMobSub('${subId}',this)" class="w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-primary hover:bg-white/10">
-            ${icon} <span class="flex-1 text-left">${m.label}</span>
-            <i class="ph ph-caret-down text-xs transition-transform duration-200"></i>
-          </button>
-          <div id="${subId}" style="display:none;">${subItems}</div>
-        </div>`;
+      return `<div class="mob-has-sub">
+        <button class="mob-sub-toggle w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-primary hover:bg-white/10" data-sub="${i}">
+          ${icon}<span class="flex-1 text-left">${m.label}</span>
+          <i class="mob-caret" style="font-size:10px;transition:transform .2s;">▾</i>
+        </button>
+        <div class="mob-sub-panel" data-sub="${i}" style="display:none;">${subItems}</div>
+      </div>`;
     }
-    return `<a href="${m.url}" class="block px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-primary hover:bg-white/10 flex items-center gap-2">${icon} ${m.label}</a>`;
+    return `<a href="${m.url}" class="block px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-primary hover:bg-white/10 flex items-center gap-2">${icon}${m.label}</a>`;
   }).join('') + `<a href="/admin" id="admin-nav-link-mobile" class="hidden px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-primary hover:bg-white/10 flex items-center gap-2"><i class="ph ph-shield-check"></i> Admin Dashboard</a>`;
-}
 
-function toggleMobSub(id, btn) {
-  const sub = document.getElementById(id);
-  if (!sub) return;
-  const open = sub.style.display !== 'none' && sub.style.display !== '';
-  sub.style.display = open ? 'none' : 'block';
-  const caret = btn.querySelector('i[class*="caret-down"]') || btn.querySelector('svg');
-  if (caret) caret.style.transform = open ? '' : 'rotate(180deg)';
+  // Event delegation ผ่าน parent ที่ไม่ถูก re-render
+  if (!mobile._subMenuBound) {
+    mobile._subMenuBound = true;
+    mobile.addEventListener('click', function(e) {
+      const btn = e.target.closest('.mob-sub-toggle');
+      if (!btn) return;
+      const key = btn.dataset.sub;
+      const panel = mobile.querySelector(`.mob-sub-panel[data-sub="${key}"]`);
+      const caret = btn.querySelector('.mob-caret');
+      if (!panel) return;
+      const open = panel.style.display !== 'none';
+      panel.style.display = open ? 'none' : 'block';
+      if (caret) caret.style.transform = open ? '' : 'rotate(-90deg)';
+    });
+  }
 }
-window.toggleMobSub = toggleMobSub;
 
 // ── Auth ─────────────────────────────────────────────────────────────────────
 
