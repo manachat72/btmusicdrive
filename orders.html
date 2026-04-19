@@ -59,7 +59,7 @@
             <ul class="space-y-1">
               <li><a href="/profile" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"><i class="ph ph-user-circle text-lg"></i> ข้อมูลส่วนตัว</a></li>
               <li><a href="/address" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"><i class="ph ph-map-pin text-lg"></i> ที่อยู่สำหรับจัดส่ง</a></li>
-              <li><a href="#" onclick="localStorage.removeItem('token');localStorage.removeItem('user');location.href='/';" class="flex items-center gap-2 px-3 py-2 rounded-lg text-red-500 hover:bg-red-50 transition-colors"><i class="ph ph-sign-out text-lg"></i> ออกจากระบบ</a></li>
+              <li><a href="/" onclick="localStorage.removeItem('token');localStorage.removeItem('user');location.href='/'; return false;" class="flex items-center gap-2 px-3 py-2 rounded-lg text-red-500 hover:bg-red-50 transition-colors"><i class="ph ph-sign-out text-lg"></i> ออกจากระบบ</a></li>
             </ul>
           </div>
         </aside>
@@ -217,4 +217,3 @@
   </script>
 </body>
 </html>
-
