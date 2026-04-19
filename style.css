@@ -110,7 +110,10 @@
 
 /* ── Hero Grainy Gradient ───────────────────────────────────────────── */
 .hero-grainy {
-    background: linear-gradient(135deg, #1a120b 0%, #2e1f10 30%, #4a3420 55%, #6b4f30 75%, #8B7355 100%);
+    background:
+        radial-gradient(ellipse at 20% 0%, rgba(200,168,78,0.12) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 100%, rgba(139,115,85,0.18) 0%, transparent 60%),
+        linear-gradient(140deg, #0e0a07 0%, #1a120d 35%, #2a1d13 65%, #3a2818 100%);
     position: relative;
 }
 

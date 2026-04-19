@@ -77,7 +77,8 @@ gtag('config', 'G-1QVJ5HDNZ5');
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     <!-- Custom CSS -->
-    <link rel="preload" href="images/hero-banner.webp" as="image" fetchpriority="high">
+    <link rel="preload" as="image" href="images/hero-mobile.webp" media="(max-width: 767px)" fetchpriority="high">
+    <link rel="preload" as="image" href="images/hero-desktop.webp" media="(min-width: 768px)" fetchpriority="high">
     <link rel="stylesheet" href="style.min.css">
 
     <style>
@@ -208,9 +209,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 </div>
                 <!-- Floating USB image with dark overlay gradient for depth -->
                 <div class="relative z-10 animate-float">
-                    <img src="images/hero-banner.webp" alt="แฟลชไดร์ฟเพลง MP3 เสียบฟังในรถยนต์"
-                        class="rounded-3xl shadow-2xl object-cover h-[280px] sm:h-[380px] md:h-[450px] lg:h-[500px] w-full"
-                        fetchpriority="high">
+                    <picture>
+                        <source media="(max-width: 767px)" srcset="images/hero-mobile.webp">
+                        <source media="(min-width: 768px)" srcset="images/hero-desktop.webp">
+                        <img src="images/hero-desktop.webp" alt="แฟลชไดร์ฟเพลง MP3 เสียบฟังในรถยนต์"
+                            class="rounded-3xl shadow-2xl object-cover h-[280px] sm:h-[380px] md:h-[450px] lg:h-[500px] w-full"
+                            fetchpriority="high" width="1920" height="1080">
+                    </picture>
                     <div
                         class="absolute inset-0 rounded-3xl bg-gradient-to-r from-black/40 via-transparent to-transparent pointer-events-none">
                     </div>

@@ -42,7 +42,10 @@
       "Bash(npm run *)",
       "Bash(python _inject_gtm.py)",
       "Bash(python _inject_ga4.py)",
-      "Bash(npx --yes terser components.js -c -m -o components.min.js)"
+      "Bash(npx --yes terser components.js -c -m -o components.min.js)",
+      "Bash(npx --yes clean-css-cli style.css -o style.min.css)",
+      "Bash(mv \"Hero banner.webp\" hero-desktop.webp)",
+      "Bash(mv \"Mobile hero.webp\" hero-mobile.webp)"
     ]
   }
 }
