@@ -49,7 +49,8 @@
       "Bash(npm init *)",
       "Bash(npm i *)",
       "Bash(npx tailwindcss *)",
-      "Bash(xargs -I{} basename {})"
+      "Bash(xargs -I{} basename {})",
+      "WebFetch(domain:pagespeed.web.dev)"
     ]
   }
 }
