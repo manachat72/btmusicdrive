@@ -1400,7 +1400,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         const relUrl = p.slug ? `/product/${p.slug}` : `product.html?id=${p.id}`;
         return `<a href="${relUrl}" class="related-card bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.06)] group block">
         <div class="aspect-square bg-gray-50 overflow-hidden relative">
-          <img src="${escHtml(p.imageUrl)}" alt="${escHtml(p.name)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-400">
+          <img src="${escHtml(p.imageUrl)}" alt="${escHtml(p.name)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-400" loading="lazy" decoding="async">
           ${p.originalPrice && p.originalPrice > p.price ? `<span class="absolute top-2 left-2 bg-red-500 text-white px-2 py-0.5 rounded-full text-xs font-bold">-${Math.round((1 - p.price / p.originalPrice) * 100)}%</span>` : ''}
         </div>
         <div class="p-3">
@@ -1515,7 +1515,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       list.innerHTML = reviews.sort((a, b) => new Date(b.date) - new Date(a.date)).map(r => {
         let rStars = '';
         for (let i = 1; i <= 5; i++) rStars += i <= r.rating ? '<i class="ph-fill ph-star text-yellow-400 text-sm"></i>' : '<i class="ph ph-star text-gray-300 text-sm"></i>';
-        const images = (r.images || []).map((img, idx) => `<img src="${img}" class="w-16 h-16 rounded-lg object-cover cursor-pointer hover:opacity-80 transition-opacity" onclick="window.open('${img}','_blank')" alt="รูปรีวิวจากลูกค้า ${idx + 1}">`).join('');
+        const images = (r.images || []).map((img, idx) => `<img src="${img}" class="w-16 h-16 rounded-lg object-cover cursor-pointer hover:opacity-80 transition-opacity" onclick="window.open('${img}','_blank')" alt="รูปรีวิวจากลูกค้า ${idx + 1}" loading="lazy" decoding="async">`).join('');
         return `<div class="bg-white rounded-xl border border-gray-100 p-5">
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center gap-3">
@@ -1605,7 +1605,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           Array.from(fileInput.files).slice(0, 3).forEach(file => {
             const reader = new FileReader();
             reader.onload = (e) => {
-              preview.innerHTML += `<img src="${e.target.result}" class="w-16 h-16 rounded-lg object-cover border border-gray-200" alt="รูปตัวอย่างรีวิวที่อัปโหลด">`;
+              preview.innerHTML += `<img src="${e.target.result}" class="w-16 h-16 rounded-lg object-cover border border-gray-200" alt="รูปตัวอย่างรีวิวที่อัปโหลด" loading="lazy" decoding="async">`;
             };
             reader.readAsDataURL(file);
           });
@@ -1661,7 +1661,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const thumbsEl = document.getElementById('thumbs');
       thumbsEl.innerHTML = allImages.map((url, i) =>
         `<div class="thumb flex-shrink-0 w-20 h-20 ${i === 0 ? 'active' : ''}" onclick="selectImage(${i})">
-        <img src="${escHtml(url)}" alt="${escHtml(product?.name || 'สินค้า')} รูปที่ ${i + 1}" class="w-full h-full object-cover">
+        <img src="${escHtml(url)}" alt="${escHtml(product?.name || 'สินค้า')} รูปที่ ${i + 1}" class="w-full h-full object-cover" loading="lazy" decoding="async">
       </div>`
       ).join('');
     }

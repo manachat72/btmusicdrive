@@ -363,7 +363,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 const badge = featured ? '<span class="inline-block mb-2 text-xs font-bold bg-amber-400 text-gray-900 px-2.5 py-0.5 rounded-full uppercase tracking-wide">ขายดีที่สุด</span><br>' : '';
                 return `
                 <a href="${c.slug ? `/category/${c.slug}` : `category.html?cat=${encodeURIComponent(c.name)}`}" class="group relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 ${spanClass}">
-                    <img src="${banner}" alt="${c.name}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                    <img src="${banner}" alt="${c.name}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" decoding="async">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent group-hover:from-black/80 transition-all duration-300"></div>
                     <div class="absolute bottom-5 left-5 right-5">
                         ${badge}
@@ -401,7 +401,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="max-w-7xl mx-auto bg-gray-900 rounded-3xl overflow-hidden relative">
             <div class="absolute inset-0">
                 <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80"
-                    alt="โปรโมชั่นแฟลชไดร์ฟเพลง ส่งฟรี" class="w-full h-full object-cover opacity-40">
+                    alt="โปรโมชั่นแฟลชไดร์ฟเพลง ส่งฟรี" class="w-full h-full object-cover opacity-40" loading="lazy" decoding="async">
             </div>
             <div class="relative z-10 py-16 px-8 md:px-16 md:w-2/3">
                 <span

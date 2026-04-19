@@ -3089,7 +3089,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const url = document.getElementById('pm-image-url').value.trim();
       const box = document.getElementById('pm-main-preview');
       if (url) {
-        box.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<i class=\\'fa-solid fa-image-slash\\' style=\\'color:#d63638;\\' alt=""></i>'">`;
+        box.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<i class=\\'fa-solid fa-image-slash\\' style=\\'color:#d63638;\\' alt="" loading="lazy" decoding="async"></i>'">`;
       } else {
         box.innerHTML = '<i class="fa-solid fa-image"></i>';
       }
@@ -3108,7 +3108,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       row.innerHTML = `
       <input type="text" class="settings-input pm-extra-img-input" placeholder="https://example.com/image2.webp" value="${url}" style="flex:1;" oninput="previewExtraImage(this)">
       <div class="pm-extra-preview" style="width:36px;height:36px;border-radius:4px;border:1px solid var(--card-border);background:#f6f7f7;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#c3c4c7;font-size:14px;">
-        ${url ? `<img src="${url}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<i class=\\'fa-solid fa-image-slash\\' alt=""></i>'">` : '<i class="fa-solid fa-image"></i>'}
+        ${url ? `<img src="${url}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<i class=\\'fa-solid fa-image-slash\\' alt="" loading="lazy" decoding="async"></i>'">` : '<i class="fa-solid fa-image"></i>'}
       </div>
       <button type="button" onclick="this.closest('div').remove()" style="background:none;border:none;cursor:pointer;color:#d63638;font-size:14px;padding:4px;"><i class="fa-solid fa-xmark"></i></button>`;
       const inp = row.querySelector('.pm-extra-img-input');
@@ -3121,7 +3121,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const url = input.value.trim();
       const box = input.nextElementSibling;
       if (url) {
-        box.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<i class=\\'fa-solid fa-image-slash\\' style=\\'color:#d63638;\\' alt=""></i>'">`;
+        box.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<i class=\\'fa-solid fa-image-slash\\' style=\\'color:#d63638;\\' alt="" loading="lazy" decoding="async"></i>'">`;
       } else {
         box.innerHTML = '<i class="fa-solid fa-image"></i>';
       }
@@ -3131,7 +3131,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const url = document.getElementById('cm-banner-url').value.trim();
       const box = document.getElementById('cm-banner-preview');
       if (url) {
-        box.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<i class=\\'fa-solid fa-image-slash\\' style=\\'color:#d63638;\\' alt=""></i>'">`;
+        box.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<i class=\\'fa-solid fa-image-slash\\' style=\\'color:#d63638;\\' alt="" loading="lazy" decoding="async"></i>'">`;
       } else {
         box.innerHTML = '<i class="fa-solid fa-image"></i>';
       }
@@ -4314,7 +4314,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       document.getElementById('categories-tbody').innerHTML = sorted.map(c => `
       <tr>
         <td>${c.bannerUrl
-          ? `<img src="${escHtml(c.bannerUrl)}" class="prod-thumb" alt="" style="width:60px;height:36px;border-radius:3px;">`
+          ? `<img src="${escHtml(c.bannerUrl)}" class="prod-thumb" alt="" style="width:60px;height:36px;border-radius:3px;" loading="lazy" decoding="async">`
           : `<div class="prod-thumb-placeholder" style="width:60px;height:36px;border-radius:3px;"><i class="fa-solid fa-image"></i></div>`}</td>
         <td><strong>${escHtml(c.name)}</strong></td>
         <td style="color:var(--muted);font-size:12px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(c.description || '—')}</td>
