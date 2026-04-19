@@ -435,6 +435,16 @@
     /* ── ซ่อน Element ── */
     .hidden { display: none !important; }
 
+    /* ── Menu Page Tabs ── */
+    .menu-tab { background:none; border:none; border-bottom:2px solid transparent; padding:6px 10px; font-size:12px; cursor:pointer; color:var(--muted); font-family:inherit; }
+    .menu-tab.active { color:var(--accent); border-bottom-color:var(--accent); font-weight:600; }
+    .menu-acc-hdr:hover { background:#f8f9fa; border-radius:5px 5px 0 0; }
+    .page-check-row { display:flex; align-items:center; gap:8px; padding:5px 0; font-size:13px; cursor:pointer; border-bottom:1px solid #f0f0f1; }
+    .page-check-row:last-child { border-bottom:none; }
+    .page-check-row input[type=checkbox] { width:15px; height:15px; accent-color:var(--accent); flex-shrink:0; cursor:pointer; }
+    .page-check-row span { flex:1; }
+    .page-check-row code { font-size:10px; color:var(--muted); }
+
     /* ── Menu Structure Items ── */
     .msi { border:1px solid var(--card-border); border-radius:5px; background:#fff; margin-bottom:6px; transition:box-shadow .15s; }
     .msi-head { display:flex; align-items:center; gap:8px; padding:10px 12px; cursor:pointer; user-select:none; border-radius:5px; }
@@ -857,68 +867,90 @@
 
       <div style="display:grid;grid-template-columns:280px 1fr;gap:18px;align-items:start;">
 
-        <!-- ซ้าย: ฟอร์มเพิ่มรายการ -->
-        <div class="wp-card" id="menu-panel" style="position:sticky;top:80px;">
-          <div class="card-hdr">
-            <h2 id="menu-modal-title"><i class="fa-solid fa-plus"></i> เพิ่มรายการ</h2>
-          </div>
-          <div style="padding:16px;">
-            <input type="hidden" id="mm-id">
-            <input type="hidden" id="mm-sort" value="0">
-            <div class="settings-grid">
-              <div class="settings-row">
-                <label class="settings-label">ชื่อเมนู <span style="color:#d63638;">*</span></label>
-                <input type="text" id="mm-label" class="settings-input" placeholder="เช่น หน้าแรก">
+        <!-- ซ้าย: เพิ่มรายการ -->
+        <div style="position:sticky;top:80px;display:flex;flex-direction:column;gap:10px;">
+
+          <!-- accordion: หน้าต่างๆ -->
+          <div class="wp-card">
+            <div class="card-hdr menu-acc-hdr" onclick="toggleAccordion('acc-pages','acc-pages-chev')" style="cursor:pointer;">
+              <h2>หน้าต่างๆ</h2>
+              <i class="fa-solid fa-chevron-down" id="acc-pages-chev" style="color:var(--muted);font-size:12px;transition:transform .2s;"></i>
+            </div>
+            <div id="acc-pages">
+              <div style="padding:0 12px;">
+                <div style="display:flex;border-bottom:1px solid var(--card-border);margin-bottom:8px;">
+                  <button class="menu-tab active" id="tab-recent" onclick="switchPageTab('recent')">ล่าสุด</button>
+                  <button class="menu-tab" id="tab-all" onclick="switchPageTab('all')">ทั้งหมด</button>
+                </div>
+                <div id="pages-list" style="max-height:200px;overflow-y:auto;"></div>
               </div>
-              <div class="settings-row">
-                <label class="settings-label">URL <span style="color:#d63638;">*</span></label>
-                <input type="text" id="mm-url" class="settings-input" placeholder="/ หรือ /shop">
-              </div>
-              <div class="settings-row">
-                <label class="settings-label">ไอคอน</label>
-                <input type="text" id="mm-icon" class="settings-input" placeholder="ph ph-house">
-                <p class="settings-hint">คลาส Phosphor Icons</p>
-              </div>
-              <div class="settings-row">
-                <label class="settings-label">เมนูหลัก <span style="color:var(--muted);font-size:11px;font-weight:400;">(ถ้าเป็นเมนูย่อย)</span></label>
-                <select id="mm-parent" class="settings-input">
-                  <option value="">— ไม่มี (เมนูหลัก) —</option>
-                </select>
-              </div>
-              <div class="settings-row" style="flex-direction:row;align-items:center;gap:10px;">
-                <label class="settings-label" style="margin:0;flex:none;">เปิดใช้</label>
-                <label class="toggle-switch">
-                  <input type="checkbox" id="mm-active" checked>
-                  <span class="toggle-track"><span class="toggle-thumb"></span></span>
-                </label>
+              <div style="padding:8px 12px 12px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--card-border);margin-top:6px;">
+                <a onclick="toggleSelectAllPages()" id="select-all-lbl" style="cursor:pointer;font-size:12px;color:var(--accent);text-decoration:underline;">เลือกทั้งหมด</a>
+                <button onclick="addCheckedPages()" class="wp-btn" style="background:var(--accent);color:#fff;border-color:var(--accent);font-size:12px;padding:5px 12px;">เพิ่มในเมนู</button>
               </div>
             </div>
-            <div id="mm-error" style="display:none;color:#d63638;font-size:12px;margin-top:10px;padding:8px 12px;background:#fcf0f1;border-radius:3px;border-left:3px solid #d63638;"></div>
-            <button onclick="saveMenu()" id="mm-save-btn" class="settings-save-btn" style="width:100%;margin-top:14px;justify-content:center;">
-              <i class="fa-solid fa-plus"></i> เพิ่มในเมนู
-            </button>
-            <button onclick="closeMenuModal()" class="wp-btn" style="width:100%;margin-top:6px;justify-content:center;">
-              <i class="fa-solid fa-xmark"></i> ล้างฟอร์ม
-            </button>
           </div>
+
+          <!-- accordion: Custom Links -->
+          <div class="wp-card">
+            <div class="card-hdr menu-acc-hdr" onclick="toggleAccordion('acc-custom','acc-custom-chev')" style="cursor:pointer;">
+              <h2>Custom Links</h2>
+              <i class="fa-solid fa-chevron-down" id="acc-custom-chev" style="color:var(--muted);font-size:12px;transition:transform .2s;transform:rotate(180deg);"></i>
+            </div>
+            <div id="acc-custom">
+              <div style="padding:12px;">
+                <div class="settings-row" style="margin-bottom:8px;">
+                  <label class="settings-label">URL <span style="color:#d63638;">*</span></label>
+                  <input type="text" id="cl-url" class="settings-input" placeholder="https:// หรือ /shop">
+                </div>
+                <div class="settings-row" style="margin-bottom:8px;">
+                  <label class="settings-label">ชื่อ Link <span style="color:#d63638;">*</span></label>
+                  <input type="text" id="cl-label" class="settings-input" placeholder="เช่น ร้านค้า">
+                </div>
+                <div class="settings-row" style="margin-bottom:8px;">
+                  <label class="settings-label">ไอคอน <span style="color:var(--muted);font-weight:400;font-size:11px;">(ph ph-house)</span></label>
+                  <input type="text" id="cl-icon" class="settings-input" placeholder="ph ph-house">
+                </div>
+                <div class="settings-row" style="margin-bottom:12px;">
+                  <label class="settings-label">เมนูหลัก <span style="color:var(--muted);font-size:11px;font-weight:400;">(ถ้าเป็นเมนูย่อย)</span></label>
+                  <select id="cl-parent" class="settings-input">
+                    <option value="">— ไม่มี (เมนูหลัก) —</option>
+                  </select>
+                </div>
+                <button onclick="addCustomLink()" class="settings-save-btn" style="width:100%;justify-content:center;">
+                  <i class="fa-solid fa-plus"></i> เพิ่มในเมนู
+                </button>
+              </div>
+            </div>
+          </div>
+
         </div>
 
         <!-- ขวา: โครงสร้างเมนู -->
         <div class="wp-card">
           <div class="card-hdr">
             <h2><i class="fa-solid fa-sitemap"></i> โครงสร้างเมนู</h2>
-            <span style="font-size:12px;color:var(--muted);">ลากเพื่อเรียงลำดับ • คลิกเพื่อแก้ไข</span>
+            <span style="font-size:12px;color:var(--muted);">ลากเพื่อเรียงลำดับ • คลิกชื่อเพื่อแก้ไข</span>
           </div>
-          <div style="padding:16px;padding-top:10px;">
-            <div id="menu-sortable" style="min-height:60px;"></div>
-            <div id="menus-empty" style="display:none;text-align:center;padding:40px 20px;color:var(--muted);">
-              <i class="fa-solid fa-bars" style="font-size:36px;display:block;margin-bottom:12px;opacity:.25;"></i>
-              <p>ยังไม่มีรายการ — เพิ่มเมนูจากแผงด้านซ้าย</p>
+          <div style="padding:4px 16px 4px;">
+            <p style="font-size:12px;color:var(--muted);padding:8px 0 6px;">ลากแต่ละรายการเพื่อจัดลำดับตามที่ต้องการ คลิกลูกศรทางขวาเพื่อแสดงตัวเลือกเพิ่มเติม</p>
+          </div>
+          <div style="padding:0 16px 16px;">
+            <div id="menu-sortable" style="min-height:80px;"></div>
+            <div id="menus-empty" style="display:none;text-align:center;padding:48px 20px;color:var(--muted);">
+              <i class="fa-solid fa-bars" style="font-size:40px;display:block;margin-bottom:14px;opacity:.2;"></i>
+              <p style="font-size:14px;">ยังไม่มีรายการในเมนู</p>
+              <p style="font-size:12px;margin-top:4px;">เลือกหน้าจากด้านซ้าย หรือเพิ่ม Custom Link</p>
             </div>
           </div>
         </div>
 
       </div>
+
+      <!-- hidden fields ที่ JS ยังอาจใช้ -->
+      <input type="hidden" id="mm-id">
+      <input type="hidden" id="mm-parent">
+      <input type="hidden" id="mm-sort" value="0">
     </section>
 
     <!-- ── SHIPPING ─────────────────────────────────────────────────────── -->
@@ -2375,6 +2407,103 @@
   }
   function _uuid() { return 'local-' + Date.now() + '-' + Math.random().toString(36).slice(2, 9); }
 
+  const SITE_PAGES = [
+    { label: 'หน้าแรก', url: '/' },
+    { label: 'ร้านค้า', url: '/shop' },
+    { label: 'หมวดหมู่', url: '/category' },
+    { label: 'สินค้า', url: '/product' },
+    { label: 'ตะกร้าสินค้า', url: '/cart' },
+    { label: 'ติดตามพัสดุ', url: '/track-order' },
+    { label: 'ข้อมูลการจัดส่ง', url: '/shipping' },
+    { label: 'เกี่ยวกับเรา', url: '/about' },
+    { label: 'ติดต่อเรา', url: '/contact' },
+    { label: 'คำถามที่พบบ่อย', url: '/faq' },
+    { label: 'นโยบายความเป็นส่วนตัว', url: '/privacy' },
+    { label: 'ข้อกำหนดการใช้งาน', url: '/terms' },
+    { label: 'นโยบายคืนสินค้า', url: '/refund' },
+    { label: 'การแลกเปลี่ยนสินค้า', url: '/exchange' },
+    { label: 'การรับประกัน', url: '/warranty' },
+  ];
+  let _pageTabMode = 'recent';
+
+  function renderPagesList() {
+    const pages = _pageTabMode === 'recent' ? SITE_PAGES.slice(0, 7) : SITE_PAGES;
+    document.getElementById('pages-list').innerHTML = pages.map(p => `
+      <label class="page-check-row">
+        <input type="checkbox" class="page-check" data-label="${escHtml(p.label)}" data-url="${escHtml(p.url)}">
+        <span>${escHtml(p.label)}</span>
+        <code>${escHtml(p.url)}</code>
+      </label>`).join('');
+  }
+
+  function switchPageTab(mode) {
+    _pageTabMode = mode;
+    document.getElementById('tab-recent').classList.toggle('active', mode === 'recent');
+    document.getElementById('tab-all').classList.toggle('active', mode === 'all');
+    renderPagesList();
+  }
+
+  let _allPagesSelected = false;
+  function toggleSelectAllPages() {
+    _allPagesSelected = !_allPagesSelected;
+    document.querySelectorAll('.page-check').forEach(c => c.checked = _allPagesSelected);
+    document.getElementById('select-all-lbl').textContent = _allPagesSelected ? 'ยกเลิกทั้งหมด' : 'เลือกทั้งหมด';
+  }
+
+  function toggleAccordion(id, chevId) {
+    const el = document.getElementById(id);
+    const chev = document.getElementById(chevId);
+    const open = el.style.display !== 'none';
+    el.style.display = open ? 'none' : 'block';
+    if (chev) chev.style.transform = open ? '' : 'rotate(180deg)';
+  }
+
+  async function addCheckedPages() {
+    const checked = [...document.querySelectorAll('.page-check:checked')];
+    if (!checked.length) { showToast('กรุณาเลือกหน้าก่อน', true); return; }
+    let added = 0;
+    for (const el of checked) {
+      const body = { label: el.dataset.label, url: el.dataset.url, icon: null, sortOrder: _menus.length + added, isActive: true, parentId: null };
+      if (_menusOffline) {
+        _menus.push({ ...body, id: _uuid(), children: [], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
+      } else {
+        try { await fetch(`${API_BASE}/menus`, { method: 'POST', headers: adminHeaders(), body: JSON.stringify(body) }); } catch {}
+      }
+      added++;
+    }
+    if (_menusOffline) _lsSaveMenus(_menus);
+    showToast(`เพิ่ม ${added} รายการแล้ว${_menusOffline ? ' (ออฟไลน์)' : ''}`);
+    document.querySelectorAll('.page-check').forEach(c => c.checked = false);
+    _allPagesSelected = false;
+    document.getElementById('select-all-lbl').textContent = 'เลือกทั้งหมด';
+    loadMenus();
+  }
+
+  async function addCustomLink() {
+    const label = document.getElementById('cl-label').value.trim();
+    const url = document.getElementById('cl-url').value.trim();
+    const icon = document.getElementById('cl-icon').value.trim();
+    const parentId = document.getElementById('cl-parent').value || null;
+    if (!label || !url) { showToast('กรุณากรอกชื่อและ URL', true); return; }
+    const body = { label, url, icon: icon || null, sortOrder: _menus.length, isActive: true, parentId };
+    if (_menusOffline) {
+      _menus.push({ ...body, id: _uuid(), children: [], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
+      _lsSaveMenus(_menus);
+      showToast('เพิ่มแล้ว (ออฟไลน์)');
+    } else {
+      try {
+        const res = await fetch(`${API_BASE}/menus`, { method: 'POST', headers: adminHeaders(), body: JSON.stringify(body) });
+        if (res.ok) { showToast('เพิ่มลิงก์แล้ว!'); }
+        else { const d = await res.json().catch(() => ({})); showToast(d.error || 'เพิ่มไม่สำเร็จ', true); return; }
+      } catch { showToast('เครือข่ายผิดพลาด', true); return; }
+    }
+    document.getElementById('cl-label').value = '';
+    document.getElementById('cl-url').value = '';
+    document.getElementById('cl-icon').value = '';
+    document.getElementById('cl-parent').value = '';
+    loadMenus();
+  }
+
   async function loadMenus() {
     vis('menus-loading', true);
     vis('menus-error', false);
@@ -2401,7 +2530,10 @@
 
     document.getElementById('menus-count-label').textContent =
       _menus.length + ' รายการเมนู' + (_menusOffline ? ' (โหมดออฟไลน์ — ข้อมูลเก็บใน Browser)' : '');
-    _populateParentSelect(null, '');
+
+    // อัปเดต parent select ใน Custom Links
+    _populateParentSelect(null, '', 'cl-parent');
+    renderPagesList();
 
     if (!_menus.length) { vis('menus-empty', true); return; }
     renderMenuStructure(_menus);
@@ -2550,8 +2682,9 @@
     } catch { showToast('บันทึกลำดับไม่สำเร็จ', true); }
   }
 
-  function _populateParentSelect(editingId, preselect) {
-    const sel = document.getElementById('mm-parent');
+  function _populateParentSelect(editingId, preselect, selId = 'mm-parent') {
+    const sel = document.getElementById(selId);
+    if (!sel) return;
     sel.innerHTML = '<option value="">— ไม่มี (เมนูหลัก) —</option>';
     _menus.forEach(m => {
       if (m.id === editingId) return;
@@ -2560,32 +2693,23 @@
   }
 
   function openMenuModal(id, presetParentId) {
-    // เพิ่มเมนูย่อย: pre-select parent ในฟอร์มซ้าย
-    document.getElementById('mm-id').value = '';
-    document.getElementById('mm-label').value = '';
-    document.getElementById('mm-url').value = '';
-    document.getElementById('mm-icon').value = '';
-    document.getElementById('mm-sort').value = _menus.length;
-    document.getElementById('mm-active').checked = true;
-    document.getElementById('mm-error').style.display = 'none';
-    _populateParentSelect(null, presetParentId || '');
-    document.getElementById('menu-modal-title').innerHTML = presetParentId
-      ? '<i class="fa-solid fa-plus"></i> เพิ่มเมนูย่อย'
-      : '<i class="fa-solid fa-plus"></i> เพิ่มรายการ';
-    document.getElementById('menu-panel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    document.getElementById('mm-label').focus();
+    // pre-select parent ใน Custom Links accordion
+    if (presetParentId) {
+      _populateParentSelect(null, presetParentId, 'cl-parent');
+      // เปิด accordion
+      const acc = document.getElementById('acc-custom');
+      const chev = document.getElementById('acc-custom-chev');
+      acc.style.display = 'block';
+      if (chev) chev.style.transform = 'rotate(180deg)';
+      document.getElementById('cl-url').focus();
+    }
   }
 
   function closeMenuModal() {
-    document.getElementById('mm-id').value = '';
-    document.getElementById('mm-label').value = '';
-    document.getElementById('mm-url').value = '';
-    document.getElementById('mm-icon').value = '';
-    document.getElementById('mm-sort').value = 0;
-    document.getElementById('mm-active').checked = true;
-    document.getElementById('mm-error').style.display = 'none';
-    document.getElementById('menu-modal-title').innerHTML = '<i class="fa-solid fa-plus"></i> เพิ่มรายการ';
-    _populateParentSelect(null, '');
+    // reset custom links form
+    const fields = ['cl-label','cl-url','cl-icon'];
+    fields.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+    _populateParentSelect(null, '', 'cl-parent');
   }
 
   function askDeleteMenu(id, label) {
