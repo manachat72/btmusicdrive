@@ -116,16 +116,47 @@ function renderNavMenus(menus) {
     }).join('');
 
     // Mobile
-    mobile.innerHTML = menus.map(m => {
-        const iconHtml = m.icon ? `<i class="${escapeHtml(m.icon)}"></i> ` : '';
-        let html = `<a href="${escapeHtml(m.url)}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50 flex items-center gap-2">${iconHtml}${escapeHtml(m.label)}</a>`;
+    mobile.innerHTML = menus.map((m, i) => {
+        const iconHtml = m.icon ? `<i class="${escapeHtml(m.icon)}"></i>` : '';
         if (m.children && m.children.length > 0) {
-            html += m.children.map(c =>
-                `<a href="${escapeHtml(c.url)}" class="block pl-8 pr-3 py-2 rounded-md text-sm text-gray-600 hover:text-primary hover:bg-gray-50">${c.icon ? `<i class="${escapeHtml(c.icon)}"></i> ` : ''}${escapeHtml(c.label)}</a>`
+            const submenu = m.children.map(c =>
+                `<a href="${escapeHtml(c.url)}" class="block pl-7 pr-3 py-2 rounded-md text-sm text-gray-400 hover:text-primary hover:bg-white/10 flex items-center gap-2">${c.icon ? `<i class="${escapeHtml(c.icon)}"></i>` : ''}${escapeHtml(c.label)}</a>`
             ).join('');
+            return `<div class="mob-has-sub">
+                <button type="button" class="mob-sub-toggle w-full flex items-center gap-2 px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-primary hover:bg-white/10" data-sub="${i}" aria-expanded="false">
+                    ${iconHtml}
+                    <span class="flex-1 text-left">${escapeHtml(m.label)}</span>
+                    <i class="ph ph-caret-down mob-caret text-sm transition-transform duration-200"></i>
+                </button>
+                <div class="mob-sub-panel hidden" data-sub="${i}">
+                    ${submenu}
+                </div>
+            </div>`;
         }
-        return html;
-    }).join('') + `<a href="/admin" id="admin-nav-link-mobile" class="hidden px-3 py-2 rounded-md text-base font-medium text-secondary hover:text-primary hover:bg-amber-50 flex items-center gap-2"><i class="ph ph-shield-check"></i> Admin Dashboard</a>`;
+        return `<a href="${escapeHtml(m.url)}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-primary hover:bg-white/10 flex items-center gap-2">${iconHtml}${escapeHtml(m.label)}</a>`;
+    }).join('') + `<a href="/admin" id="admin-nav-link-mobile" class="hidden px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-primary hover:bg-white/10 flex items-center gap-2"><i class="ph ph-shield-check"></i> Admin Dashboard</a>`;
+
+    bindMobileNavDropdowns(mobile);
+}
+
+function bindMobileNavDropdowns(mobile) {
+    if (mobile._subMenuBound) return;
+    mobile._subMenuBound = true;
+
+    mobile.addEventListener('click', (event) => {
+        const toggleBtn = event.target.closest('.mob-sub-toggle');
+        if (!toggleBtn || !mobile.contains(toggleBtn)) return;
+
+        const key = toggleBtn.dataset.sub;
+        const panel = mobile.querySelector(`.mob-sub-panel[data-sub="${key}"]`);
+        const caret = toggleBtn.querySelector('.mob-caret');
+        if (!panel) return;
+
+        const isOpen = !panel.classList.contains('hidden');
+        panel.classList.toggle('hidden', isOpen);
+        toggleBtn.setAttribute('aria-expanded', String(!isOpen));
+        caret?.classList.toggle('rotate-180', !isOpen);
+    });
 }
 
 // Fetch Products from API or fallback to local JSON
