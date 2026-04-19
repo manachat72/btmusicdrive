@@ -1,0 +1,28 @@
+{
+  "name": "btmusicdrive",
+  "version": "1.0.0",
+  "description": "",
+  "main": "checkout.js",
+  "scripts": {
+    "build:css": "tailwindcss -i ./tailwind.input.css -o ./tailwind.min.css --minify",
+    "watch:css": "tailwindcss -i ./tailwind.input.css -o ./tailwind.min.css --watch",
+    "hash:assets": "node scripts/hash-assets.js",
+    "build": "npm run build:css && npm run hash:assets",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/manachat72/btmusicdrive.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/manachat72/btmusicdrive/issues"
+  },
+  "homepage": "https://github.com/manachat72/btmusicdrive#readme",
+  "devDependencies": {
+    "tailwindcss": "^3.4.19"
+  }
+}

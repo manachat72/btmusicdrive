@@ -56,22 +56,9 @@ gtag('config', 'G-1QVJ5HDNZ5');
     <meta name="twitter:description" content="รวมเพลงฮิตทุกแนว เสียบปุ๊บฟังปั๊บ เสียงชัด HD จัดส่งทั่วไทย">
     <meta name="twitter:image" content="https://btmusicdrive.com/images/logo1.png">
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#8B7355', // Bronze
-                        secondary: '#0F172A', // Slate
-                    }
-                }
-            }
-        }
-    </script>
-
+    <link rel="stylesheet" href="tailwind.min.css?v=693249bd">
     <!-- Phosphor Icons -->
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script defer src="https://unpkg.com/@phosphor-icons/web"></script>
 
     <!-- Google Identity Services -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -79,7 +66,7 @@ gtag('config', 'G-1QVJ5HDNZ5');
     <!-- Custom CSS -->
     <link rel="preload" as="image" href="images/hero-mobile.webp" media="(max-width: 767px)" fetchpriority="high">
     <link rel="preload" as="image" href="images/hero-desktop.webp" media="(min-width: 768px)" fetchpriority="high">
-    <link rel="stylesheet" href="style.min.css">
+    <link rel="stylesheet" href="style.min.css?v=b223d081">
 
     <style>
         .g_id_signin {
@@ -91,9 +78,12 @@ gtag('config', 'G-1QVJ5HDNZ5');
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
+    <link rel="preload" as="style"
+        href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap">
     <link
         href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
+        rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"></noscript>
     <style>
         body {
             font-family: 'Kanit', 'Inter', sans-serif;
@@ -431,8 +421,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- Shared Footer -->
     <div id="site-footer"></div>
 
-    <script src="components.min.js"></script>
-    <script src="script.min.js"></script>
+    <script src="components.min.js?v=0f26018f"></script>
+    <script src="script.min.js?v=39118cc0"></script>
     <script>
         // ── Flash Sale Countdown ──────────────────────────────────────
         (function () {

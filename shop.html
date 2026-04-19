@@ -50,26 +50,16 @@ gtag('config', 'G-1QVJ5HDNZ5');
     <meta name="twitter:title" content="ร้านค้าแฟลชไดร์ฟเพลง MP3 — Bt music drive">
     <meta name="twitter:description" content="เลือกซื้อแฟลชไดร์ฟเพลง MP3 ทุกแนว เสียงชัด HD เสียบปุ๊บฟังปั๊บ จัดส่งทั่วไทย">
     <meta name="twitter:image" content="https://btmusicdrive.com/images/logo1.png">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#8B7355',
-                        secondary: '#0F172A',
-                    }
-                }
-            }
-        };
-    </script>
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="tailwind.min.css?v=693249bd">
+    <script defer src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <link rel="stylesheet" href="style.min.css">
+    <link rel="stylesheet" href="style.min.css?v=b223d081">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"></noscript>
     <style>
         body { font-family: 'Kanit', 'Inter', sans-serif; }
         .category-chip { transition: all .2s; }
@@ -280,7 +270,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- Shared Footer -->
     <div id="site-footer"></div>
 
-    <script src="components.min.js"></script>
+    <script src="components.min.js?v=0f26018f"></script>
     <script>
     // ── Shop Page Logic ──────────────────────────────────────────────
     // API_BASE is already defined in components.min.js

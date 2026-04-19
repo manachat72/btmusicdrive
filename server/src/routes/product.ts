@@ -26,6 +26,9 @@ router.get('/', async (req: Request, res: Response) => {
       prisma.product.count({ where }),
     ]);
 
+    if (!isAdmin) {
+      res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
+    }
     return res.json({ data: products, total, page, limit, totalPages: Math.ceil(total / limit) });
   } catch (error) {
     console.error('Error fetching products:', error);
@@ -42,6 +45,7 @@ router.get('/slug/:slug', async (req: Request, res: Response) => {
       include: { category: { select: { name: true, slug: true } } },
     });
     if (!product) return res.status(404).json({ error: 'Product not found' });
+    res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
     return res.json(product);
   } catch (error) {
     console.error('Error fetching product by slug:', error);
@@ -57,6 +61,7 @@ router.get('/:id', async (req: Request, res: Response) => {
       include: { category: { select: { name: true, slug: true } } },
     });
     if (!product) return res.status(404).json({ error: 'Product not found' });
+    res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
     return res.json(product);
   } catch (error) {
     console.error('Error fetching product:', error);

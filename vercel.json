@@ -32,6 +32,10 @@
       "use": "@vercel/static"
     },
     {
+      "src": "tailwind.min.css",
+      "use": "@vercel/static"
+    },
+    {
       "src": "products.json",
       "use": "@vercel/static"
     },
@@ -105,7 +109,7 @@
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "public, max-age=300, stale-while-revalidate=86400, must-revalidate"
+          "value": "public, max-age=31536000, immutable"
         }
       ]
     },
