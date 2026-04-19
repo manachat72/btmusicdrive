@@ -563,16 +563,32 @@ function _renderNavMenus(menus) {
     return `<a href="${m.url}" class="text-gray-300 hover:text-primary transition-colors font-medium flex items-center gap-1 px-3 py-2 rounded-lg hover:bg-white/10">${icon}${m.label}</a>`;
   }).join('');
 
-  mobile.innerHTML = menus.map(m => {
+  mobile.innerHTML = menus.map((m, i) => {
     const icon = m.icon ? `<i class="${m.icon}"></i>` : '';
-    let html = `<a href="${m.url}" class="block px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-primary hover:bg-white/10 flex items-center gap-2">${icon} ${m.label}</a>`;
     if (m.children && m.children.length > 0) {
-      html += m.children.map(c =>
+      const subId = `mob-sub-${i}`;
+      const subItems = m.children.map(c =>
         `<a href="${c.url}" class="block pl-8 pr-3 py-2 rounded-md text-sm text-gray-400 hover:text-primary hover:bg-white/10 flex items-center gap-2">${c.icon ? `<i class="${c.icon}"></i>` : ''}${c.label}</a>`
       ).join('');
+      return `
+        <div>
+          <button onclick="toggleMobSub('${subId}',this)" class="w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-primary hover:bg-white/10">
+            ${icon} <span class="flex-1 text-left">${m.label}</span>
+            <i class="ph ph-caret-down text-xs transition-transform duration-200"></i>
+          </button>
+          <div id="${subId}" class="hidden">${subItems}</div>
+        </div>`;
     }
-    return html;
+    return `<a href="${m.url}" class="block px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-primary hover:bg-white/10 flex items-center gap-2">${icon} ${m.label}</a>`;
   }).join('') + `<a href="/admin" id="admin-nav-link-mobile" class="hidden px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-primary hover:bg-white/10 flex items-center gap-2"><i class="ph ph-shield-check"></i> Admin Dashboard</a>`;
+}
+
+function toggleMobSub(id, btn) {
+  const sub = document.getElementById(id);
+  const caret = btn.querySelector('.ph-caret-down');
+  const open = !sub.classList.contains('hidden');
+  sub.classList.toggle('hidden', open);
+  if (caret) caret.style.transform = open ? '' : 'rotate(180deg)';
 }
 
 // ── Auth ─────────────────────────────────────────────────────────────────────
