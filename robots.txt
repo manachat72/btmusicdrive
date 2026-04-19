@@ -4,7 +4,8 @@
 User-agent: *
 
 # Block private / user-specific pages
-Disallow: /bt-admin
+Disallow: /admin
+Disallow: /bt_panel_secure.html
 Disallow: /cart
 Disallow: /checkout
 Disallow: /orders
