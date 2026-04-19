@@ -433,9 +433,18 @@
     .prod-toggle input:checked ~ .prod-toggle-thumb { transform:translateX(16px); }
 
     /* ── ซ่อน Element ── */
-    .hidden {
-      display: none !important;
-    }
+    .hidden { display: none !important; }
+
+    /* ── Menu Structure Items ── */
+    .msi { border:1px solid var(--card-border); border-radius:5px; background:#fff; margin-bottom:6px; transition:box-shadow .15s; }
+    .msi-head { display:flex; align-items:center; gap:8px; padding:10px 12px; cursor:pointer; user-select:none; border-radius:5px; }
+    .msi-head:hover { background:#f8f9fa; }
+    .msi-grip { color:#ccc; cursor:grab; flex-shrink:0; font-size:13px; }
+    .msi-name { flex:1; font-weight:600; font-size:13px; color:var(--text); }
+    .msi-badge { font-size:10px; background:#f0f0f1; color:#666; padding:2px 7px; border-radius:3px; flex-shrink:0; }
+    .msi-chev { color:var(--muted); font-size:11px; transition:transform .2s; flex-shrink:0; }
+    .msi-edit { padding:14px; border-top:1px solid var(--card-border); background:#fafafa; border-radius:0 0 5px 5px; }
+    .msi-drag-over { box-shadow:0 0 0 2px var(--accent); background:#fffbf5; }
   </style>
   <!-- Meta Pixel Code -->
   <script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -833,7 +842,7 @@
     <section id="section-menus" style="display:none;">
       <div class="wp-page-hdr">
         <div>
-          <h2 class="wp-page-title">เมนู</h2>
+          <h2 class="wp-page-title">จัดการเมนู</h2>
           <p class="wp-page-desc" id="menus-count-label">จัดการเมนูนำทางของหน้าร้าน</p>
         </div>
         <button onclick="loadMenus()" class="wp-btn"><i class="fa-solid fa-arrows-rotate"></i> รีเฟรช</button>
@@ -846,46 +855,16 @@
         <strong>ข้อผิดพลาด:</strong> <span id="menus-error-text"></span>
       </div>
 
-      <div style="display:grid;grid-template-columns:1fr 360px;gap:18px;align-items:start;">
+      <div style="display:grid;grid-template-columns:280px 1fr;gap:18px;align-items:start;">
 
-        <!-- ซ้าย: ตารางเมนู -->
-        <div class="wp-card">
-          <div class="card-hdr">
-            <h2><i class="fa-solid fa-bars"></i> รายการเมนู</h2>
-            <button onclick="openMenuModal(null,null)" class="wp-btn" style="background:var(--accent);color:#fff;border-color:var(--accent);">
-              <i class="fa-solid fa-plus"></i> เพิ่มเมนูใหม่
-            </button>
-          </div>
-          <div id="menus-table-wrapper" style="display:none;">
-            <div class="card-body nopad" style="overflow-x:auto;">
-              <table class="wp-tbl">
-                <thead>
-                  <tr>
-                    <th style="width:40px;">#</th>
-                    <th>ชื่อ</th>
-                    <th>URL</th>
-                    <th>ไอคอน</th>
-                    <th style="width:70px;">เปิดใช้</th>
-                    <th style="width:130px;">จัดการ</th>
-                  </tr>
-                </thead>
-                <tbody id="menus-tbody"></tbody>
-              </table>
-            </div>
-          </div>
-          <div id="menus-empty" style="display:none;padding:32px;text-align:center;color:var(--muted);">
-            <i class="fa-solid fa-bars" style="font-size:32px;display:block;margin-bottom:8px;opacity:.3;"></i>
-            <p>ยังไม่มีเมนู กด "เพิ่มเมนูใหม่" เพื่อสร้างเมนูแรก</p>
-          </div>
-        </div>
-
-        <!-- ขวา: ฟอร์มเพิ่ม/แก้ไขเมนู -->
+        <!-- ซ้าย: ฟอร์มเพิ่มรายการ -->
         <div class="wp-card" id="menu-panel" style="position:sticky;top:80px;">
           <div class="card-hdr">
-            <h2 id="menu-modal-title"><i class="fa-solid fa-plus"></i> เพิ่มเมนู</h2>
+            <h2 id="menu-modal-title"><i class="fa-solid fa-plus"></i> เพิ่มรายการ</h2>
           </div>
           <div style="padding:16px;">
             <input type="hidden" id="mm-id">
+            <input type="hidden" id="mm-sort" value="0">
             <div class="settings-grid">
               <div class="settings-row">
                 <label class="settings-label">ชื่อเมนู <span style="color:#d63638;">*</span></label>
@@ -893,24 +872,18 @@
               </div>
               <div class="settings-row">
                 <label class="settings-label">URL <span style="color:#d63638;">*</span></label>
-                <input type="text" id="mm-url" class="settings-input" placeholder="เช่น / หรือ /shop">
+                <input type="text" id="mm-url" class="settings-input" placeholder="/ หรือ /shop">
               </div>
               <div class="settings-row">
-                <label class="settings-label">เมนูหลัก <span style="color:var(--muted);font-weight:400;font-size:11px;">(ถ้าเป็นเมนูย่อย)</span></label>
+                <label class="settings-label">ไอคอน</label>
+                <input type="text" id="mm-icon" class="settings-input" placeholder="ph ph-house">
+                <p class="settings-hint">คลาส Phosphor Icons</p>
+              </div>
+              <div class="settings-row">
+                <label class="settings-label">เมนูหลัก <span style="color:var(--muted);font-size:11px;font-weight:400;">(ถ้าเป็นเมนูย่อย)</span></label>
                 <select id="mm-parent" class="settings-input">
                   <option value="">— ไม่มี (เมนูหลัก) —</option>
                 </select>
-              </div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-                <div class="settings-row">
-                  <label class="settings-label">ไอคอน</label>
-                  <input type="text" id="mm-icon" class="settings-input" placeholder="ph ph-house">
-                  <p class="settings-hint">คลาส Phosphor Icons</p>
-                </div>
-                <div class="settings-row">
-                  <label class="settings-label">ลำดับ</label>
-                  <input type="number" id="mm-sort" class="settings-input" value="0" min="0">
-                </div>
               </div>
               <div class="settings-row" style="flex-direction:row;align-items:center;gap:10px;">
                 <label class="settings-label" style="margin:0;flex:none;">เปิดใช้</label>
@@ -921,9 +894,26 @@
               </div>
             </div>
             <div id="mm-error" style="display:none;color:#d63638;font-size:12px;margin-top:10px;padding:8px 12px;background:#fcf0f1;border-radius:3px;border-left:3px solid #d63638;"></div>
-            <div style="margin-top:14px;display:flex;gap:8px;">
-              <button onclick="closeMenuModal()" class="wp-btn" style="flex:1;">ล้างฟอร์ม</button>
-              <button onclick="saveMenu()" id="mm-save-btn" class="settings-save-btn" style="flex:2;"><i class="fa-solid fa-floppy-disk"></i> บันทึกเมนู</button>
+            <button onclick="saveMenu()" id="mm-save-btn" class="settings-save-btn" style="width:100%;margin-top:14px;justify-content:center;">
+              <i class="fa-solid fa-plus"></i> เพิ่มในเมนู
+            </button>
+            <button onclick="closeMenuModal()" class="wp-btn" style="width:100%;margin-top:6px;justify-content:center;">
+              <i class="fa-solid fa-xmark"></i> ล้างฟอร์ม
+            </button>
+          </div>
+        </div>
+
+        <!-- ขวา: โครงสร้างเมนู -->
+        <div class="wp-card">
+          <div class="card-hdr">
+            <h2><i class="fa-solid fa-sitemap"></i> โครงสร้างเมนู</h2>
+            <span style="font-size:12px;color:var(--muted);">ลากเพื่อเรียงลำดับ • คลิกเพื่อแก้ไข</span>
+          </div>
+          <div style="padding:16px;padding-top:10px;">
+            <div id="menu-sortable" style="min-height:60px;"></div>
+            <div id="menus-empty" style="display:none;text-align:center;padding:40px 20px;color:var(--muted);">
+              <i class="fa-solid fa-bars" style="font-size:36px;display:block;margin-bottom:12px;opacity:.25;"></i>
+              <p>ยังไม่มีรายการ — เพิ่มเมนูจากแผงด้านซ้าย</p>
             </div>
           </div>
         </div>
@@ -2387,9 +2377,10 @@
 
   async function loadMenus() {
     vis('menus-loading', true);
-    vis('menus-table-wrapper', false);
     vis('menus-error', false);
     vis('menus-empty', false);
+    const sortable = document.getElementById('menu-sortable');
+    if (sortable) sortable.innerHTML = '';
 
     try {
       const res = await fetch(`${API_BASE}/menus/all`, { headers: adminHeaders(false) });
@@ -2401,10 +2392,8 @@
       if (!res.ok) throw new Error('server');
       _menus = await res.json();
       _menusOffline = false;
-      // sync to localStorage
       _lsSaveMenus(_menus);
     } catch {
-      // ── FALLBACK: localStorage ──
       vis('menus-loading', false);
       _menusOffline = true;
       _menus = _lsGetMenus();
@@ -2412,44 +2401,153 @@
 
     document.getElementById('menus-count-label').textContent =
       _menus.length + ' รายการเมนู' + (_menusOffline ? ' (โหมดออฟไลน์ — ข้อมูลเก็บใน Browser)' : '');
+    _populateParentSelect(null, '');
 
     if (!_menus.length) { vis('menus-empty', true); return; }
-    renderMenusTable(_menus);
-    vis('menus-table-wrapper', true);
+    renderMenuStructure(_menus);
   }
 
-  function renderMenusTable(menus) {
-    let rows = '';
-    menus.forEach((m, i) => {
-      rows += menuRow(m, i + 1, false);
+  function renderMenuStructure(menus) {
+    const container = document.getElementById('menu-sortable');
+    let html = '';
+    menus.forEach(m => {
+      html += menuStructItem(m, false);
       if (m.children && m.children.length) {
-        m.children.forEach((c, ci) => {
-          rows += menuRow(c, `${i + 1}.${ci + 1}`, true);
-        });
+        m.children.forEach(c => { html += menuStructItem(c, true); });
       }
     });
-    document.getElementById('menus-tbody').innerHTML = rows;
+    container.innerHTML = html;
+    initDragDrop();
   }
 
-  function menuRow(m, num, isChild) {
-    const activeHtml = m.isActive
-      ? '<span style="color:#00a32a;font-weight:700;">✓</span>'
-      : '<span style="color:#d63638;font-weight:700;">✗</span>';
-    const iconHtml = m.icon ? `<i class="${escHtml(m.icon)}"></i> <code style="font-size:11px;">${escHtml(m.icon)}</code>` : '<span style="color:var(--muted);">—</span>';
-    const indent = isChild ? 'padding-left:28px;color:var(--muted);font-size:12px;' : '';
-    const addSubBtn = !isChild ? `<button class="action-btn" onclick="openMenuModal(null,'${m.id}')" title="เพิ่มเมนูย่อย"><i class="fa-solid fa-plus"></i> ย่อย</button>` : '';
-    return `<tr>
-      <td style="${indent}">${num}</td>
-      <td style="${isChild ? 'padding-left:28px;' : ''}"><strong>${isChild ? '<i class="fa-solid fa-turn-up" style="transform:rotate(90deg);font-size:10px;color:var(--muted);margin-right:6px;"></i>' : ''}${escHtml(m.label)}</strong></td>
-      <td><code style="font-size:12px;">${escHtml(m.url)}</code></td>
-      <td>${iconHtml}</td>
-      <td style="text-align:center;">${activeHtml}</td>
-      <td>
-        <button class="action-btn" onclick="openMenuModal('${m.id}')"><i class="fa-solid fa-pen-to-square"></i> แก้ไข</button>
-        ${addSubBtn}
-        <button class="action-btn del" onclick="askDeleteMenu('${m.id}','${escHtml(m.label)}')"><i class="fa-solid fa-trash"></i></button>
-      </td>
-    </tr>`;
+  function menuStructItem(m, isChild) {
+    const indent = isChild ? 'margin-left:28px;' : '';
+    const childIcon = isChild ? '<i class="fa-solid fa-turn-up" style="transform:rotate(90deg);font-size:10px;color:var(--muted);"></i>' : '';
+    const iconPrev = m.icon ? `<i class="${escHtml(m.icon)}" style="font-size:14px;color:var(--accent);"></i>` : '';
+    const dimmed = m.isActive ? '' : 'opacity:.5;';
+    const inactiveBadge = m.isActive ? '' : '<span class="msi-badge" style="background:#fef2f2;color:#d63638;">ปิดใช้</span>';
+    return `<div class="msi" draggable="true" data-id="${m.id}" style="${indent}${dimmed}">
+      <div class="msi-head" onclick="toggleMenuItemEdit('${m.id}')">
+        <i class="fa-solid fa-grip-vertical msi-grip"></i>
+        ${childIcon}${iconPrev}
+        <span class="msi-name">${escHtml(m.label)}</span>
+        <code style="font-size:11px;color:var(--muted);font-weight:400;">${escHtml(m.url)}</code>
+        <span class="msi-badge">${isChild ? 'เมนูย่อย' : 'เมนูหลัก'}</span>
+        ${inactiveBadge}
+        <i class="fa-solid fa-chevron-down msi-chev" id="chev-${m.id}"></i>
+      </div>
+      <div class="msi-edit" id="item-edit-${m.id}" style="display:none;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+          <div>
+            <label class="settings-label">ชื่อ</label>
+            <input type="text" id="ie-label-${m.id}" class="settings-input" value="${escHtml(m.label)}">
+          </div>
+          <div>
+            <label class="settings-label">URL</label>
+            <input type="text" id="ie-url-${m.id}" class="settings-input" value="${escHtml(m.url)}">
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 80px;gap:8px;margin-bottom:10px;">
+          <div>
+            <label class="settings-label">ไอคอน <span style="color:var(--muted);font-weight:400;">(ph ph-house)</span></label>
+            <input type="text" id="ie-icon-${m.id}" class="settings-input" value="${escHtml(m.icon||'')}" placeholder="ph ph-house">
+          </div>
+          <div>
+            <label class="settings-label">ลำดับ</label>
+            <input type="number" id="ie-sort-${m.id}" class="settings-input" value="${m.sortOrder||0}" min="0">
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+          <label class="settings-label" style="margin:0;">เปิดใช้</label>
+          <label class="toggle-switch">
+            <input type="checkbox" id="ie-active-${m.id}"${m.isActive ? ' checked' : ''}>
+            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          </label>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <a onclick="askDeleteMenu('${m.id}','${escHtml(m.label)}')" style="color:#d63638;cursor:pointer;font-size:12px;">
+            <i class="fa-solid fa-trash"></i> ลบออกจากเมนู
+          </a>
+          <button onclick="saveMenuItemEdit('${m.id}')" class="settings-save-btn" style="font-size:12px;padding:6px 14px;">
+            <i class="fa-solid fa-floppy-disk"></i> บันทึก
+          </button>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function toggleMenuItemEdit(id) {
+    const el = document.getElementById('item-edit-' + id);
+    const chev = document.getElementById('chev-' + id);
+    const open = el.style.display === 'none';
+    el.style.display = open ? 'block' : 'none';
+    if (chev) chev.style.transform = open ? 'rotate(180deg)' : '';
+  }
+
+  async function saveMenuItemEdit(id) {
+    let item = null, parentId = null;
+    for (const m of _menus) {
+      if (m.id === id) { item = m; break; }
+      if (m.children) { const c = m.children.find(c => c.id === id); if (c) { item = c; parentId = m.id; break; } }
+    }
+    if (!item) return;
+    const label = document.getElementById('ie-label-' + id).value.trim();
+    const url = document.getElementById('ie-url-' + id).value.trim();
+    const icon = document.getElementById('ie-icon-' + id).value.trim();
+    const sortOrder = parseInt(document.getElementById('ie-sort-' + id).value) || 0;
+    const isActive = document.getElementById('ie-active-' + id).checked;
+    if (!label || !url) { showToast('กรุณากรอกชื่อและ URL', true); return; }
+    const body = { label, url, icon: icon || null, sortOrder, isActive, parentId: item.parentId || parentId || null };
+    if (_menusOffline) {
+      Object.assign(item, { label, url, icon: icon || null, sortOrder, isActive });
+      _lsSaveMenus(_menus); showToast('อัปเดตแล้ว (ออฟไลน์)'); loadMenus(); return;
+    }
+    try {
+      const res = await fetch(`${API_BASE}/menus/${id}`, { method: 'PATCH', headers: adminHeaders(), body: JSON.stringify(body) });
+      if (res.ok) { showToast('อัปเดตเมนูแล้ว!'); loadMenus(); }
+      else { const d = await res.json().catch(() => ({})); showToast(d.error || 'บันทึกไม่สำเร็จ', true); }
+    } catch { showToast('เครือข่ายผิดพลาด', true); }
+  }
+
+  function initDragDrop() {
+    const items = document.querySelectorAll('.msi');
+    let dragSrc = null;
+    items.forEach(el => {
+      el.addEventListener('dragstart', e => { dragSrc = el; setTimeout(() => el.style.opacity = '.4', 0); });
+      el.addEventListener('dragend', () => {
+        el.style.opacity = '1';
+        document.querySelectorAll('.msi').forEach(i => i.classList.remove('msi-drag-over'));
+      });
+      el.addEventListener('dragover', e => { e.preventDefault(); if (el !== dragSrc) el.classList.add('msi-drag-over'); });
+      el.addEventListener('dragleave', () => el.classList.remove('msi-drag-over'));
+      el.addEventListener('drop', e => {
+        e.preventDefault(); el.classList.remove('msi-drag-over');
+        if (!dragSrc || dragSrc === el) return;
+        const all = [...document.getElementById('menu-sortable').querySelectorAll('.msi')];
+        if (all.indexOf(dragSrc) < all.indexOf(el)) el.after(dragSrc);
+        else el.before(dragSrc);
+        saveMenuOrder();
+      });
+    });
+  }
+
+  async function saveMenuOrder() {
+    const updates = [...document.querySelectorAll('.msi')].map((el, i) => ({ id: el.dataset.id, sortOrder: i }));
+    if (_menusOffline) {
+      updates.forEach(u => {
+        for (const m of _menus) {
+          if (m.id === u.id) { m.sortOrder = u.sortOrder; break; }
+          if (m.children) { const c = m.children.find(c => c.id === u.id); if (c) { c.sortOrder = u.sortOrder; break; } }
+        }
+      });
+      _lsSaveMenus(_menus); showToast('บันทึกลำดับแล้ว (ออฟไลน์)'); return;
+    }
+    try {
+      await Promise.all(updates.map(u => fetch(`${API_BASE}/menus/${u.id}`, {
+        method: 'PATCH', headers: adminHeaders(), body: JSON.stringify({ sortOrder: u.sortOrder })
+      })));
+      showToast('บันทึกลำดับเมนูแล้ว!');
+    } catch { showToast('บันทึกลำดับไม่สำเร็จ', true); }
   }
 
   function _populateParentSelect(editingId, preselect) {
@@ -2462,46 +2560,23 @@
   }
 
   function openMenuModal(id, presetParentId) {
-    const errEl = document.getElementById('mm-error');
-    errEl.style.display = 'none';
-
-    if (id) {
-      let item = null;
-      let parentId = null;
-      for (const m of _menus) {
-        if (m.id === id) { item = m; break; }
-        if (m.children) {
-          const child = m.children.find(c => c.id === id);
-          if (child) { item = child; parentId = m.id; break; }
-        }
-      }
-      if (!item) { showToast('ไม่พบเมนู', true); return; }
-      document.getElementById('menu-modal-title').innerHTML = '<i class="fa-solid fa-pen-to-square"></i> แก้ไขเมนู';
-      document.getElementById('mm-id').value = item.id;
-      document.getElementById('mm-label').value = item.label;
-      document.getElementById('mm-url').value = item.url;
-      document.getElementById('mm-icon').value = item.icon || '';
-      document.getElementById('mm-sort').value = item.sortOrder || 0;
-      document.getElementById('mm-active').checked = item.isActive;
-      _populateParentSelect(item.id, item.parentId || parentId || '');
-    } else {
-      document.getElementById('menu-modal-title').innerHTML = presetParentId
-        ? '<i class="fa-solid fa-plus"></i> เพิ่มเมนูย่อย'
-        : '<i class="fa-solid fa-plus"></i> เพิ่มเมนู';
-      document.getElementById('mm-id').value = '';
-      document.getElementById('mm-label').value = '';
-      document.getElementById('mm-url').value = '';
-      document.getElementById('mm-icon').value = '';
-      document.getElementById('mm-sort').value = _menus.length;
-      document.getElementById('mm-active').checked = true;
-      _populateParentSelect(null, presetParentId || '');
-    }
+    // เพิ่มเมนูย่อย: pre-select parent ในฟอร์มซ้าย
+    document.getElementById('mm-id').value = '';
+    document.getElementById('mm-label').value = '';
+    document.getElementById('mm-url').value = '';
+    document.getElementById('mm-icon').value = '';
+    document.getElementById('mm-sort').value = _menus.length;
+    document.getElementById('mm-active').checked = true;
+    document.getElementById('mm-error').style.display = 'none';
+    _populateParentSelect(null, presetParentId || '');
+    document.getElementById('menu-modal-title').innerHTML = presetParentId
+      ? '<i class="fa-solid fa-plus"></i> เพิ่มเมนูย่อย'
+      : '<i class="fa-solid fa-plus"></i> เพิ่มรายการ';
     document.getElementById('menu-panel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     document.getElementById('mm-label').focus();
   }
 
   function closeMenuModal() {
-    document.getElementById('menu-modal-title').innerHTML = '<i class="fa-solid fa-plus"></i> เพิ่มเมนู';
     document.getElementById('mm-id').value = '';
     document.getElementById('mm-label').value = '';
     document.getElementById('mm-url').value = '';
@@ -2509,6 +2584,7 @@
     document.getElementById('mm-sort').value = 0;
     document.getElementById('mm-active').checked = true;
     document.getElementById('mm-error').style.display = 'none';
+    document.getElementById('menu-modal-title').innerHTML = '<i class="fa-solid fa-plus"></i> เพิ่มรายการ';
     _populateParentSelect(null, '');
   }
 
