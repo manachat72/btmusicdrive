@@ -273,7 +273,7 @@ router.post('/confirm-order', authenticateToken, async (req: AuthRequest, res: R
       numItems: cart.items.reduce((s: number, i: any) => s + (i.quantity || 1), 0),
       userData: {
         email: order.user?.email,
-        phone: phone,
+        phone: order.user?.phone,
         clientIp: (req.headers['x-forwarded-for'] as string)?.split(',')[0] || req.ip,
         userAgent: req.headers['user-agent'],
       },
@@ -404,7 +404,7 @@ router.post('/cod-order', authenticateToken, async (req: AuthRequest, res: Respo
       numItems: cart.items.reduce((s: number, i: any) => s + (i.quantity || 1), 0),
       userData: {
         email: order.user?.email,
-        phone: phone,
+        phone: order.user?.phone,
         clientIp: (req.headers['x-forwarded-for'] as string)?.split(',')[0] || req.ip,
         userAgent: req.headers['user-agent'],
       },

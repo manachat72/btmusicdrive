@@ -441,17 +441,6 @@ function _mobileBottomNavHTML() {
 
 
 
-function _highlightActiveSidebar() {
-  const path = window.location.pathname.split('/').pop() || 'index.html';
-  document.querySelectorAll('.sidebar-link[data-page]').forEach(link => {
-    const page = link.getAttribute('data-page');
-    if (path.startsWith(page)) link.classList.add('active');
-    else link.classList.remove('active');
-  });
-  // Also highlight bottom nav
-  const bnavHome = document.getElementById('bnav-home');
-  if (bnavHome && path.startsWith('index')) bnavHome.classList.add('text-primary');
-}
 
 // ── Inject into page ────────────────────────────────────────────────────────
 (function injectComponents() {
@@ -497,8 +486,6 @@ function _highlightActiveSidebar() {
     document.body.classList.remove('overflow-x-hidden');
     document.documentElement.style.overflowX = 'hidden';
   }
-
-  _highlightActiveSidebar();
 
   // ── Vercel Web Analytics ────────────────────────────────────────────────────
   if (!document.getElementById('vercel-analytics')) {
@@ -592,7 +579,7 @@ function _renderNavMenus(menus) {
       if (!panel) return;
       const open = panel.style.display !== 'none';
       panel.style.display = open ? 'none' : 'block';
-      if (caret) caret.style.transform = open ? '' : 'rotate(-90deg)';
+      if (caret) caret.style.transform = open ? '' : 'rotate(180deg)';
     });
   }
 }
@@ -1094,15 +1081,6 @@ function _updateFreeShippingBar(total) {
   }
 }
 
-function _updateWishlistBadge() {
-  const wishlist = JSON.parse(localStorage.getItem('btmusicdrive_wishlist') || '[]');
-  const count = wishlist.length;
-  const el = document.getElementById('sidebar-wishlist-count');
-  if (el) {
-    el.textContent = count;
-    el.classList.toggle('hidden', count === 0);
-  }
-}
 
 function _removeFromCart(id) {
   _cart = _cart.filter(i => i.id !== id);
@@ -1179,7 +1157,10 @@ function _setupSharedEvents() {
   authToggle?.addEventListener('click', () => { if (typeof toggleAuthModal === 'function') return; _isLoginMode = !_isLoginMode; _updateAuthUI(); });
   authForm?.addEventListener('submit', (e) => { if (typeof handleAuthSubmit === 'function') return; _handleAuthSubmit(e); });
 
-  mobileBtn?.addEventListener('click', () => mobileMenu?.classList.toggle('hidden'));
+  mobileBtn?.addEventListener('click', () => {
+    if (typeof toggleCart === 'function') return;
+    mobileMenu?.classList.toggle('hidden');
+  });
 
   // Bottom nav events
   const bnavCartBtn = document.getElementById('bnav-cart-btn');
@@ -1199,13 +1180,9 @@ function _setupSharedEvents() {
   bnavOverlay?.addEventListener('click', () => _toggleAccountDrawer(false));
   bnavClose?.addEventListener('click', () => _toggleAccountDrawer(false));
 
-  document.addEventListener('click', (e) => {
-    // No-op: drawer uses overlay
-  });
   bnavLogoutBtn?.addEventListener('click', (e) => {
     e.preventDefault();
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    localStorage.removeItem('btmusicdrive_token');
     _currentUser = null;
     _checkAuthState();
     _toggleAccountDrawer(false);
@@ -1268,7 +1245,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   _checkAuthState();
   _loadCartFromStorage();
   _updateCartUI();
-  _updateWishlistBadge();
 });
 
 

@@ -1,4 +1,4 @@
-import rateLimit from 'express-rate-limit';
+import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
 
 // Strict limiter for auth endpoints (login/register): 10 attempts per 15 min
 export const authLimiter = rateLimit({
@@ -27,9 +27,7 @@ export const adminPasswordLimiter = rateLimit({
   legacyHeaders: false,
   message: { error: 'Too many admin login attempts, please try again later.' },
   // Only count requests that use admin password header
-  keyGenerator: (req) => {
-    return req.ip || req.headers['x-forwarded-for'] as string || 'unknown';
-  },
+  keyGenerator: (req) => ipKeyGenerator(req.ip || (req.headers['x-forwarded-for'] as string)?.split(',')[0] || 'unknown'),
   skip: (req) => {
     // Skip rate limiting if using JWT (only limit admin password attempts)
     const authHeader = req.headers['authorization'];
