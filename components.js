@@ -576,7 +576,7 @@ function _renderNavMenus(menus) {
             ${icon} <span class="flex-1 text-left">${m.label}</span>
             <i class="ph ph-caret-down text-xs transition-transform duration-200"></i>
           </button>
-          <div id="${subId}" class="hidden">${subItems}</div>
+          <div id="${subId}" style="display:none;">${subItems}</div>
         </div>`;
     }
     return `<a href="${m.url}" class="block px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-primary hover:bg-white/10 flex items-center gap-2">${icon} ${m.label}</a>`;
@@ -585,11 +585,13 @@ function _renderNavMenus(menus) {
 
 function toggleMobSub(id, btn) {
   const sub = document.getElementById(id);
-  const caret = btn.querySelector('.ph-caret-down');
-  const open = !sub.classList.contains('hidden');
-  sub.classList.toggle('hidden', open);
+  if (!sub) return;
+  const open = sub.style.display !== 'none' && sub.style.display !== '';
+  sub.style.display = open ? 'none' : 'block';
+  const caret = btn.querySelector('i[class*="caret-down"]') || btn.querySelector('svg');
   if (caret) caret.style.transform = open ? '' : 'rotate(180deg)';
 }
+window.toggleMobSub = toggleMobSub;
 
 // ── Auth ─────────────────────────────────────────────────────────────────────
 
