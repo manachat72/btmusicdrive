@@ -49,7 +49,8 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
     <link rel="preload" as="image" href="images/mobile-hero.avif" media="(max-width: 767px)" fetchpriority="high" type="image/avif">
     <link rel="preload" as="image" href="images/hero-banner1.avif" media="(min-width: 768px)" fetchpriority="high" type="image/avif">
     <link rel="preload" as="fetch" href="/api/menus" crossorigin>
-    <link rel="preload" as="fetch" href="/api/products" crossorigin>
+    <link rel="preload" as="fetch" href="/api/products?limit=8" crossorigin>
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
 
     <style>
         .g_id_signin {
@@ -186,10 +187,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <!-- Floating USB image with dark overlay gradient for depth -->
                 <div class="relative z-10 animate-float">
                     <picture>
-                        <source media="(max-width: 767px)" srcset="images/mobile-hero.avif" type="image/avif">
-                        <source media="(max-width: 767px)" srcset="images/mobile-hero.webp" type="image/webp">
-                        <source media="(min-width: 768px)" srcset="images/hero-banner1.avif" type="image/avif">
-                        <source media="(min-width: 768px)" srcset="images/hero-banner1.webp" type="image/webp">
+                        <source media="(max-width: 767px)" srcset="images/mobile-hero.avif" type="image/avif" width="750" height="1000">
+                        <source media="(max-width: 767px)" srcset="images/mobile-hero.webp" type="image/webp" width="750" height="1000">
+                        <source media="(min-width: 768px)" srcset="images/hero-banner1.avif" type="image/avif" width="1920" height="1080">
+                        <source media="(min-width: 768px)" srcset="images/hero-banner1.webp" type="image/webp" width="1920" height="1080">
                         <img src="images/hero-banner1.webp" alt="แฟลชไดร์ฟเพลง MP3 เสียบฟังในรถยนต์"
                             class="rounded-3xl shadow-2xl object-cover w-full aspect-[3/4] md:aspect-auto md:h-[450px] lg:h-[500px]"
                             fetchpriority="high" width="1920" height="1080" decoding="async">
