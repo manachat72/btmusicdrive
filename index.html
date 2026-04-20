@@ -56,6 +56,20 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
             display: flex;
             justify-content: center;
         }
+        @keyframes heroCtaSlideDown {
+            from { opacity: 0; transform: translateY(-24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .hero-cta {
+            opacity: 0;
+            animation: heroCtaSlideDown 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            will-change: transform, opacity;
+        }
+        .hero-cta-1 { animation-delay: 0.3s; }
+        .hero-cta-2 { animation-delay: 0.5s; }
+        @media (prefers-reduced-motion: reduce) {
+            .hero-cta { animation: none; opacity: 1; }
+        }
     </style>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -139,11 +153,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 </p>
                 <div class="flex flex-col sm:flex-row gap-4 pt-4">
                     <a href="/shop"
-                        class="bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-600 hover:to-yellow-500 text-gray-900 font-bold py-3 px-8 rounded-lg text-center transition-all shadow-lg hover:shadow-amber-500/40 hover:shadow-xl transform hover:-translate-y-1">
+                        class="hero-cta hero-cta-1 bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-600 hover:to-yellow-500 text-gray-900 font-bold py-3 px-8 rounded-lg text-center transition-all shadow-lg hover:shadow-amber-500/40 hover:shadow-xl transform hover:-translate-y-1">
                         สั่งซื้อเลย
                     </a>
                     <a href="/shop"
-                        class="bg-white/10 hover:bg-white/20 text-white border border-white/30 font-semibold py-3 px-8 rounded-lg text-center transition-all backdrop-blur-sm">
+                        class="hero-cta hero-cta-2 bg-white/10 hover:bg-white/20 text-white border border-white/30 font-semibold py-3 px-8 rounded-lg text-center transition-all backdrop-blur-sm">
                         ดูหมวดหมู่เพลง
                     </a>
                 </div>
