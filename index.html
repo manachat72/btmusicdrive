@@ -40,7 +40,7 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
     <meta name="twitter:image" content="https://btmusicdrive.com/images/logo1.webp">
     <!-- Tailwind CSS -->
     <!-- Phosphor Icons -->
-    <script defer src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="preload" href="/vendor/phosphor/regular/style.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><link rel="preload" href="/vendor/phosphor/fill/style.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="/vendor/phosphor/regular/style.css"><link rel="stylesheet" href="/vendor/phosphor/fill/style.css"></noscript>
 
     <!-- Google Identity Services -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -50,7 +50,6 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
     <link rel="preload" as="image" href="images/hero-banner1.avif" media="(min-width: 768px)" fetchpriority="high" type="image/avif">
     <link rel="preload" as="fetch" href="/api/menus" crossorigin>
     <link rel="preload" as="fetch" href="/api/products?limit=8" crossorigin>
-    <link rel="preconnect" href="https://unpkg.com" crossorigin>
 
     <style>
         .g_id_signin {
@@ -77,11 +76,11 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <link rel="preload" as="style"
-        href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap">
+        href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700&display=swap">
     <link
-        href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700&display=swap"
         rel="stylesheet" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"></noscript>
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700&display=swap"></noscript>
     <style>
         body {
             font-family: 'Kanit', 'Kanit Fallback', 'Inter', 'Inter Fallback', sans-serif;
