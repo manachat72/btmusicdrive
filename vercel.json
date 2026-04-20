@@ -28,6 +28,10 @@
       "use": "@vercel/static"
     },
     {
+      "src": "app.min.css",
+      "use": "@vercel/static"
+    },
+    {
       "src": "style.min.css",
       "use": "@vercel/static"
     },

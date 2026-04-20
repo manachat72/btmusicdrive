@@ -5,8 +5,7 @@ const crypto = require('crypto');
 const root = path.resolve(__dirname, '..');
 
 const ASSETS = [
-  'tailwind.min.css',
-  'style.min.css',
+  'app.min.css',
   'script.min.js',
   'components.min.js',
   'checkout.min.js',
