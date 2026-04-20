@@ -1,5 +1,26 @@
 /* Custom styles to supplement Tailwind */
 
+/* ── Font fallbacks with metric overrides (reduces CLS while display=swap) ── */
+@font-face {
+    font-family: 'Kanit Fallback';
+    src: local('Arial');
+    ascent-override: 92%;
+    descent-override: 30%;
+    line-gap-override: 0%;
+    size-adjust: 97%;
+}
+@font-face {
+    font-family: 'Inter Fallback';
+    src: local('Arial');
+    ascent-override: 90.20%;
+    descent-override: 22.48%;
+    line-gap-override: 0%;
+    size-adjust: 107.40%;
+}
+body {
+    font-family: 'Kanit', 'Kanit Fallback', 'Inter', 'Inter Fallback', sans-serif;
+}
+
 :root {
     --brand-primary: #8B7355;
     --brand-primary-strong: #735E43;
