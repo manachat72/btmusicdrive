@@ -329,3 +329,6 @@ body {
         height: 40px;
     }
 }
+
+/* Hide cart label + amount on mobile bottom nav — icon-only design */
+#bnav-cart-label, #bnav-cart-amount { display: none !important; }

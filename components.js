@@ -333,8 +333,8 @@ function _mobileBottomNavHTML() {
           <i class="ph ph-plus-circle" style="font-size:21px;line-height:1;"></i>
           <span id="bnav-cart-count" class="absolute flex items-center justify-center" style="top:-2px;right:-4px;min-width:14px;height:14px;padding:0 3px;font-size:7.5px;font-weight:700;color:#fff;background:#8B7355;border-radius:99px;transition:background 0.3s;">0</span>
         </div>
-        <span id="bnav-cart-label" style="font-size:9px;letter-spacing:0.04em;font-weight:500;">ตะกร้า</span>
-        <span id="bnav-cart-amount" style="font-size:8px;font-weight:700;color:#8B7355;letter-spacing:0.02em;display:none;line-height:1;"></span>
+        <span id="bnav-cart-label" style="display:none;"></span>
+        <span id="bnav-cart-amount" style="display:none;"></span>
       </a>
       <button id="bnav-account-btn" class="flex flex-col items-center justify-center flex-1 gap-[3px]" style="background:none;border:none;cursor:pointer;color:#64748b;">
         <span style="width:30px;height:30px;border-radius:50%;background:rgba(139,115,85,0.12);border:1.5px solid rgba(139,115,85,0.28);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -977,13 +977,8 @@ function _updateBnavCart(subtotal) {
     : `linear-gradient(90deg,#f59e0b,#ef4444)`;
   if (countEl) countEl.style.background = pct >= 100 ? '#16a34a' : '#8B7355';
 
-  if (subtotal > 0) {
-    if (amountEl) { amountEl.textContent = `\u0E3F${subtotal.toFixed(0)}`; amountEl.style.display = 'block'; }
-    if (labelEl) labelEl.style.display = 'none';
-  } else {
-    if (amountEl) amountEl.style.display = 'none';
-    if (labelEl) labelEl.style.display = 'block';
-  }
+  if (amountEl) amountEl.style.display = 'none';
+  if (labelEl) labelEl.style.display = 'none';
 }
 
 let _freeShipRecsCache = null;
