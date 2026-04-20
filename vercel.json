@@ -53,6 +53,10 @@
       "use": "@vercel/static"
     },
     {
+      "src": "vendor/**",
+      "use": "@vercel/static"
+    },
+    {
       "src": "sitemap.xml",
       "use": "@vercel/static"
     },
@@ -111,6 +115,15 @@
     },
     {
       "source": "/(.*)\\.min\\.(css|js)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/vendor/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
