@@ -68,7 +68,10 @@ window.togglePasswordVisibility = togglePasswordVisibility;
 
 // Fetch Products from API or fallback to local JSON
 async function fetchProducts() {
-    if (productsContainer) {
+    // If server pre-inlined products at build time, skip the spinner —
+    // just render over the existing cards once fresh data arrives.
+    const hasInlineProducts = productsContainer && productsContainer.querySelector('[data-id]');
+    if (productsContainer && !hasInlineProducts) {
         productsContainer.innerHTML = '<div class="col-span-full text-center py-10"><div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div><p class="mt-4 text-gray-500">Loading products...</p></div>';
     }
     try {

@@ -8,7 +8,8 @@
     "watch:css": "tailwindcss -i ./tailwind.input.css -o ./tailwind.min.css --watch",
     "combine:css": "node scripts/combine-css.js",
     "hash:assets": "node scripts/hash-assets.js",
-    "build": "npm run build:css && npm run combine:css && npm run hash:assets",
+    "inline:products": "node scripts/inline-products.js",
+    "build": "npm run build:css && npm run combine:css && npm run inline:products && npm run hash:assets",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
