@@ -27,7 +27,7 @@ router.get('/', async (req: Request, res: Response) => {
     ]);
 
     if (!isAdmin) {
-      res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
+      res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=86400');
     }
     return res.json({ data: products, total, page, limit, totalPages: Math.ceil(total / limit) });
   } catch (error) {

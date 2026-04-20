@@ -13,7 +13,7 @@ router.get('/', async (req: Request, res: Response) => {
       include: { children: { where: { isActive: true }, orderBy: { sortOrder: 'asc' } } },
       orderBy: { sortOrder: 'asc' },
     });
-    res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=3600');
+    res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
     return res.json(menus);
   } catch (error) {
     console.error('Error fetching menus:', error);
