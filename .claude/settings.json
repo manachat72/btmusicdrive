@@ -7,7 +7,8 @@
       "Bash(curl -s https://www.btmusicdrive.com/api/orders -H 'X-Admin-Password: btmusicdrive-admin-2025' -H 'Origin: https://www.btmusicdrive.com' -w '\\\\n\\\\nHTTP Status: %{http_code}')",
       "Read(//c/Users/manac/ProjectsPython/btmusicdrive/**)",
       "Bash(npx --yes terser script.js -c -m -o script.min.js)",
-      "Bash(awk '{print $5, $6, $7, $8, $9}')"
+      "Bash(awk '{print $5, $6, $7, $8, $9}')",
+      "Bash(grep -v \":0$\")"
     ]
   }
 }

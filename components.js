@@ -4,16 +4,32 @@
 // Usage: <script src="components.js"></script>  (at end of <body>)
 // ═══════════════════════════════════════════════════════════════════════════
 
-// ── Marketing Pixels (PDPA-gated, load after consent=='all') ─────────────────
+// ── Analytics + Marketing Pixels (PDPA-gated, load after consent=='all') ────
+// Stub fbq so code that calls it before lib loads doesn't crash
+window.fbq = window.fbq || function(){(window.fbq.queue = window.fbq.queue || []).push(arguments);};
 let _marketingPixelsLoaded = false;
 function _loadMarketingPixels() {
   if (_marketingPixelsLoaded) return;
   _marketingPixelsLoaded = true;
 
+  // Google Tag Manager
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});
+    var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';
+    j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
+    f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-T3F9WD5P');
+
+  // Google Analytics 4
+  var gaScript = document.createElement('script');
+  gaScript.async = true;
+  gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-1QVJ5HDNZ5';
+  document.head.appendChild(gaScript);
+  gtag('js', new Date());
+  gtag('config', 'G-1QVJ5HDNZ5');
+
   // Meta Pixel
-  !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  !function(f,b,e,v,n,t,s){if(f.fbq&&f.fbq.loaded)return;n=f.fbq=function(){n.callMethod?
   n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-  n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+  n.push=n;n.loaded=!0;n.version='2.0';n.queue=n.queue||[];t=b.createElement(e);t.async=!0;
   t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}
   (window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
   fbq('init','269855615506465');
