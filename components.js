@@ -1268,14 +1268,16 @@ function _setupSharedEvents() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
-  _initGoogleSignIn();
-  await _loadNavMenus();
+document.addEventListener('DOMContentLoaded', () => {
+  // Don't block on nav menus — let them resolve async alongside other init.
+  _loadNavMenus();
   _setupSharedEvents();
   _checkAuthState();
   _loadCartFromStorage();
   _updateCartUI();
   _initCookieConsent();
+  // Google Identity SDK is deferred: loads only when auth modal opens
+  // (see _toggleAuthModal → _initGoogleSignIn) to keep it off the critical path.
 });
 
 

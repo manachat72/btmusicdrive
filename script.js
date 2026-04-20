@@ -40,9 +40,10 @@ let isLoginMode = true;
 let currentUser = null;
 
 // Initialize App
-document.addEventListener('DOMContentLoaded', async () => {
-    await loadNavMenus();
-    await fetchProducts();
+document.addEventListener('DOMContentLoaded', () => {
+    // Nav menus are loaded by components.js (_loadNavMenus) — no duplicate fetch.
+    // Don't await fetchProducts; let it run async alongside other init.
+    fetchProducts();
     setupEventListeners();
     if (typeof _updateCartUI === 'function') _updateCartUI();
 });
@@ -63,108 +64,7 @@ function togglePasswordVisibility() {
 }
 window.togglePasswordVisibility = togglePasswordVisibility;
 
-// ── Dynamic Navigation Menus ───────────────────────────────────────────────
-const DEFAULT_MENUS = [
-    { label: 'หน้าแรก', url: '#', icon: null },
-    { label: 'สินค้า', url: '#shop', icon: null },
-    { label: 'หมวดหมู่', url: '#categories', icon: null },
-    { label: 'เกี่ยวกับ', url: 'about.html', icon: null },
-    { label: 'ติดต่อเรา', url: 'contact.html', icon: 'ph ph-envelope' },
-    { label: 'ติดตามพัสดุ', url: '/track-order', icon: 'ph ph-package' },
-];
-
-async function loadNavMenus() {
-    let menus = DEFAULT_MENUS;
-    try {
-        const res = await fetch(`${API_BASE}/menus`);
-        if (res.ok) {
-            const data = await res.json();
-            if (data.length > 0) menus = data;
-        }
-    } catch { /* use defaults */ }
-    renderNavMenus(menus);
-}
-
-function renderNavMenus(menus) {
-    const desktop = document.getElementById('desktop-nav');
-    const mobile = document.getElementById('mobile-nav');
-    if (!desktop || !mobile) return;
-
-    // Desktop
-    desktop.innerHTML = menus.map(m => {
-        const iconHtml = m.icon ? `<i class="${escapeHtml(m.icon)} text-base"></i> ` : '';
-        if (m.children && m.children.length > 0) {
-            const submenu = m.children.map(c =>
-                `<a href="${escapeHtml(c.url)}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary">${c.icon ? `<i class="${escapeHtml(c.icon)}"></i> ` : ''}${escapeHtml(c.label)}</a>`
-            ).join('');
-            return `<div class="relative group">
-                <button class="text-gray-600 hover:text-primary transition-colors font-medium flex items-center gap-1 px-3 py-2 rounded-lg hover:bg-gray-50">
-                    ${iconHtml}${escapeHtml(m.label)} <i class="ph ph-caret-down text-xs ml-1"></i>
-                </button>
-                <div class="absolute left-0 top-full mt-1 w-52 bg-white rounded-xl shadow-xl border border-gray-100 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                    ${submenu}
-                </div>
-            </div>`;
-        }
-        return `<a href="${escapeHtml(m.url)}" class="text-gray-600 hover:text-primary transition-colors font-medium flex items-center gap-1 px-3 py-2 rounded-lg hover:bg-gray-50">${iconHtml}${escapeHtml(m.label)}</a>`;
-    }).join('');
-
-    // Mobile
-    mobile.innerHTML = menus.map((m, i) => {
-        const iconHtml = m.icon ? `<i class="${escapeHtml(m.icon)}"></i>` : '';
-        if (m.children && m.children.length > 0) {
-            const submenu = m.children.map(c =>
-                `<a href="${escapeHtml(c.url)}" class="block pl-7 pr-3 py-2 rounded-md text-sm text-gray-400 hover:text-primary hover:bg-white/10 flex items-center gap-2">${c.icon ? `<i class="${escapeHtml(c.icon)}"></i>` : ''}${escapeHtml(c.label)}</a>`
-            ).join('');
-            return `<div class="mob-has-sub">
-                <button type="button" class="mob-sub-toggle w-full flex items-center gap-2 px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-primary hover:bg-white/10" data-sub="${i}" aria-expanded="false">
-                    ${iconHtml}
-                    <span class="flex-1 text-left">${escapeHtml(m.label)}</span>
-                    <i class="ph ph-caret-down mob-caret text-sm transition-transform duration-200"></i>
-                </button>
-                <div class="mob-sub-panel hidden" data-sub="${i}">
-                    ${submenu}
-                </div>
-            </div>`;
-        }
-        return `<a href="${escapeHtml(m.url)}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-primary hover:bg-white/10 flex items-center gap-2">${iconHtml}${escapeHtml(m.label)}</a>`;
-    }).join('') + `<a href="/admin" id="admin-nav-link-mobile" class="hidden px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-primary hover:bg-white/10 flex items-center gap-2"><i class="ph ph-shield-check"></i> Admin Dashboard</a>`;
-
-    bindMobileNavDropdowns(mobile);
-}
-
-function bindMobileNavDropdowns(mobile) {
-    if (mobile._subMenuBound) return;
-    mobile._subMenuBound = true;
-
-    mobile.addEventListener('click', (event) => {
-        const toggleBtn = event.target.closest('.mob-sub-toggle');
-        if (toggleBtn && mobile.contains(toggleBtn)) {
-            const key = toggleBtn.dataset.sub;
-            const panel = mobile.querySelector(`.mob-sub-panel[data-sub="${key}"]`);
-            const caret = toggleBtn.querySelector('.mob-caret');
-            if (!panel) return;
-
-            const isOpen = !panel.classList.contains('hidden');
-            panel.classList.toggle('hidden', isOpen);
-            toggleBtn.setAttribute('aria-expanded', String(!isOpen));
-            caret?.classList.toggle('rotate-180', !isOpen);
-            return;
-        }
-
-        const navLink = event.target.closest('a[href]');
-        if (!navLink || !mobile.contains(navLink)) return;
-
-        closeMobileNavMenu(mobile);
-    });
-}
-
-function closeMobileNavMenu(mobile) {
-    document.getElementById('mobile-menu')?.classList.add('hidden');
-    mobile.querySelectorAll('.mob-sub-panel').forEach(panel => panel.classList.add('hidden'));
-    mobile.querySelectorAll('.mob-sub-toggle').forEach(btn => btn.setAttribute('aria-expanded', 'false'));
-    mobile.querySelectorAll('.mob-caret').forEach(caret => caret.classList.remove('rotate-180'));
-}
+// Nav menus: handled entirely by components.js (_loadNavMenus).
 
 // Fetch Products from API or fallback to local JSON
 async function fetchProducts() {
