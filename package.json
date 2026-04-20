@@ -9,7 +9,8 @@
     "combine:css": "node scripts/combine-css.js",
     "hash:assets": "node scripts/hash-assets.js",
     "inline:products": "node scripts/inline-products.js",
-    "build": "npm run build:css && npm run combine:css && npm run inline:products && npm run hash:assets",
+    "inline:categories": "node scripts/inline-categories.js",
+    "build": "npm run build:css && npm run combine:css && npm run inline:products && npm run inline:categories && npm run hash:assets",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

@@ -51,11 +51,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // server-inlined cards and JS-rendered cards.
     document.addEventListener('click', (e) => {
         const btn = e.target.closest('.add-to-cart-btn, .add-to-cart-btn-mobile');
-        if (!btn) return;
-        e.preventDefault();
-        e.stopPropagation();
-        const productId = btn.getAttribute('data-id');
-        if (productId) addToCart(productId);
+        if (btn) {
+            e.preventDefault();
+            e.stopPropagation();
+            const productId = btn.getAttribute('data-id');
+            if (productId) addToCart(productId);
+            return;
+        }
+        // Defensive: ensure mobile hamburger menu toggles even if
+        // navbar injection timing races with initial listeners.
+        const menuBtn = e.target.closest('#mobile-menu-btn');
+        if (menuBtn) {
+            const menu = document.getElementById('mobile-menu');
+            if (menu) menu.classList.toggle('hidden');
+        }
     });
 });
 

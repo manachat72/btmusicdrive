@@ -347,6 +347,7 @@ function _mobileBottomNavHTML() {
         </div>
         <div class="relative flex-shrink-0" style="width:28px;height:24px;display:flex;align-items:center;justify-content:center;">
           <i class="ph ph-shopping-cart" style="font-size:21px;line-height:1;"></i>
+          <span id="bnav-cart-count" class="absolute flex items-center justify-center" style="top:-2px;right:-4px;min-width:14px;height:14px;padding:0 3px;font-size:7.5px;font-weight:700;color:#fff;background:#8B7355;border-radius:99px;display:none;">0</span>
         </div>
       </a>
       <button id="bnav-account-btn" class="flex flex-col items-center justify-center flex-1 gap-[3px]" style="background:none;border:none;cursor:pointer;color:#64748b;">
@@ -899,6 +900,13 @@ function _updateCartUI() {
   if (countEl) {
     countEl.textContent = totalItems;
     countEl.style.display = totalItems > 0 ? 'flex' : 'none';
+  }
+
+  // Update bottom nav cart count badge
+  const bnavCount = document.getElementById('bnav-cart-count');
+  if (bnavCount) {
+    bnavCount.textContent = totalItems;
+    bnavCount.style.display = totalItems > 0 ? 'flex' : 'none';
   }
 
   const clearBtn = document.getElementById('clear-cart-btn');
