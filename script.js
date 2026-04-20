@@ -11,15 +11,9 @@ function escapeHtml(str) {
 }
 
 // DOM Elements
+// NOTE: cart/navbar/auth-modal DOM is injected by components.js on DOMContentLoaded,
+// so refs must be resolved lazily (not cached at script load).
 const productsContainer = document.getElementById('products-container');
-const cartBtn = document.getElementById('cart-btn');
-const closeCartBtn = document.getElementById('close-cart-btn');
-const cartSidebar = document.getElementById('cart-sidebar');
-const cartOverlay = document.getElementById('cart-overlay');
-const cartItemsContainer = document.getElementById('cart-items-container');
-const cartCount = document.getElementById('cart-count');
-const cartTotal = document.getElementById('cart-total');
-const emptyCartMsg = document.getElementById('empty-cart-msg');
 const mobileMenuBtn = document.getElementById('mobile-menu-btn');
 const mobileMenu = document.getElementById('mobile-menu');
 const navbar = document.getElementById('navbar');
@@ -50,7 +44,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadNavMenus();
     await fetchProducts();
     setupEventListeners();
-    updateCartUI();
+    if (typeof _updateCartUI === 'function') _updateCartUI();
 });
 
 // ── Password Toggle ────────────────────────────────────────────────────────
@@ -292,14 +286,7 @@ function renderProducts() {
 
 // Event Listeners Setup
 function setupEventListeners() {
-    // Cart Toggle
-    if (cartBtn) cartBtn.addEventListener('click', toggleCart);
-    if (closeCartBtn) closeCartBtn.addEventListener('click', toggleCart);
-    if (cartOverlay) cartOverlay.addEventListener('click', () => {
-        if (cartSidebar && !cartSidebar.classList.contains('translate-x-full')) toggleCart();
-        if (authModal && !authModal.classList.contains('hidden')) toggleAuthModal();
-    });
-    
+    // Cart toggle/overlay handlers live in components.js (_toggleCart)
     // Auth Toggle
     if (authBtn) authBtn.addEventListener('click', () => {
         if (currentUser) {
@@ -412,7 +399,7 @@ async function handleGoogleCredentialResponse(response) {
         
         updateUserUI();
         toggleAuthModal();
-        showToast('Successfully logged in with Google!');
+        if (typeof _showToast === 'function') _showToast('Successfully logged in with Google!');
         
         // Sync cart
         await syncLocalCartToDatabase();
@@ -464,7 +451,7 @@ async function handleAuthSubmit(e) {
         
         updateUserUI();
         toggleAuthModal();
-        showToast(isLoginMode ? 'Successfully logged in!' : 'Account created successfully!');
+        if (typeof _showToast === 'function') _showToast(isLoginMode ? 'Successfully logged in!' : 'Account created successfully!');
         if (!isLoginMode && typeof fbq === 'function') fbq('track', 'CompleteRegistration');
         if (!isLoginMode && typeof ttq !== 'undefined') ttq.track('CompleteRegistration');
 
@@ -514,7 +501,7 @@ function handleLogout() {
         localStorage.removeItem('btmusicdrive_token');
         currentUser = null;
         updateUserUI();
-        showToast('Logged out successfully');
+        if (typeof _showToast === 'function') _showToast('Logged out successfully');
     }
 }
 
@@ -545,23 +532,6 @@ function updateUserUI() {
 }
 
 // Cart Functions
-function toggleCart() {
-    if (!cartSidebar || !cartOverlay) return;
-    const isCartOpen = !cartSidebar.classList.contains('translate-x-full');
-    
-    if (isCartOpen) {
-        // Close Cart
-        cartSidebar.classList.add('translate-x-full');
-        cartOverlay.classList.add('hidden');
-        document.body.style.overflow = '';
-    } else {
-        // Open Cart
-        cartSidebar.classList.remove('translate-x-full');
-        cartOverlay.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-    }
-}
-
 async function fetchUserCart() {
     if (!currentUser) return;
     
@@ -586,7 +556,7 @@ async function fetchUserCart() {
             }));
             localStorage.setItem('btmusicdrive_cart', JSON.stringify(cart));
             if (typeof _loadCartFromStorage === 'function') _loadCartFromStorage();
-            updateCartUI();
+            if (typeof _updateCartUI === 'function') _updateCartUI();
         }
     } catch (error) {
         console.error('Error fetching cart:', error);
@@ -614,7 +584,7 @@ async function syncLocalCartToDatabase() {
         
         if (response.ok) {
             await fetchUserCart(); // Refresh cart to ensure consistency
-            showToast('Local cart synced with your account');
+            if (typeof _showToast === 'function') _showToast('Local cart synced with your account');
         }
     } catch (error) {
         console.error('Error syncing cart:', error);
@@ -649,8 +619,7 @@ async function addToCart(productId) {
     if (typeof _loadCartFromStorage === 'function') _loadCartFromStorage();
     if (typeof _updateCartUI === 'function') _updateCartUI();
 
-    updateCartUI();
-    showToast(`Added ${product.name} to cart`);
+    if (typeof _showToast === 'function') _showToast(`เพิ่ม "${product.name}" ลงตะกร้าแล้ว`);
     if (typeof fbq === 'function') fbq('track', 'AddToCart', {
         content_ids: [product.id],
         content_name: product.name,
@@ -660,12 +629,15 @@ async function addToCart(productId) {
         currency: 'THB'
     });
     if (typeof ttq !== 'undefined') ttq.track('AddToCart', { content_id: product.id, content_name: product.name, quantity: 1, price: product.price, currency: 'THB' });
-    
-    // Auto-open cart on desktop
-    if (window.innerWidth >= 768 && cartSidebar && cartSidebar.classList.contains('translate-x-full')) {
-        toggleCart();
+
+    // Auto-open cart sidebar on desktop
+    if (window.innerWidth >= 768) {
+        const sidebar = document.getElementById('cart-sidebar');
+        if (sidebar && sidebar.classList.contains('translate-x-full') && typeof _toggleCart === 'function') {
+            _toggleCart();
+        }
     }
-    
+
     // Sync with backend if logged in
     if (currentUser) {
         const token = localStorage.getItem('btmusicdrive_token');
@@ -684,188 +656,5 @@ async function addToCart(productId) {
     }
 }
 
-async function removeFromCart(productId) {
-    // Local state update
-    cart = cart.filter(item => item.id !== productId);
-    localStorage.setItem('btmusicdrive_cart', JSON.stringify(cart));
-    if (typeof _loadCartFromStorage === 'function') _loadCartFromStorage();
-    if (typeof _updateCartUI === 'function') _updateCartUI();
-    updateCartUI();
-    
-    // Sync with backend if logged in
-    if (currentUser) {
-        const token = localStorage.getItem('btmusicdrive_token');
-        try {
-            await fetch(`${API_BASE}/cart/items/${productId}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-        } catch (error) {
-            console.error('Error removing item from cart:', error);
-        }
-    }
-}
-
-async function updateQuantity(productId, newQuantity) {
-    if (newQuantity < 1) return;
-    
-    // Local state update
-    const item = cart.find(i => i.id === productId);
-    if (item) {
-        item.quantity = newQuantity;
-        localStorage.setItem('btmusicdrive_cart', JSON.stringify(cart));
-        if (typeof _loadCartFromStorage === 'function') _loadCartFromStorage();
-        if (typeof _updateCartUI === 'function') _updateCartUI();
-        updateCartUI();
-        
-        // Sync with backend if logged in
-        if (currentUser) {
-            const token = localStorage.getItem('btmusicdrive_token');
-            try {
-                await fetch(`${API_BASE}/cart/items/${productId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ quantity: newQuantity })
-                });
-            } catch (error) {
-                console.error('Error updating item quantity:', error);
-            }
-        }
-    }
-}
-
-function updateCartUI() {
-    // Update Cart Count Badge
-    const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
-    if (cartCount) cartCount.textContent = totalItems;
-    
-    // If cart sidebar elements don't exist on this page, just save and return
-    if (!cartItemsContainer) return;
-    
-    // Show/Hide Empty Message
-    if (cart.length === 0) {
-        if (emptyCartMsg) emptyCartMsg.style.display = 'block';
-        cartItemsContainer.innerHTML = '';
-        if (emptyCartMsg) cartItemsContainer.appendChild(emptyCartMsg);
-        if (cartTotal) cartTotal.textContent = '฿0.00';
-        return;
-    }
-    
-    if (emptyCartMsg) emptyCartMsg.style.display = 'none';
-    
-    // Render Cart Items
-    cartItemsContainer.innerHTML = '';
-    
-    let total = 0;
-    
-    cart.forEach(item => {
-        const itemTotal = item.price * item.quantity;
-        total += itemTotal;
-        
-        const cartItemEl = document.createElement('div');
-        cartItemEl.className = 'flex gap-4 py-4 border-b border-gray-100 animate-fade-in-up';
-        
-        cartItemEl.innerHTML = `
-            <div class="w-20 h-24 flex-shrink-0 bg-gray-100 rounded-md overflow-hidden">
-                <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" class="w-full h-full object-cover">
-            </div>
-            <div class="flex-1 flex flex-col">
-                <div class="flex justify-between">
-                    <h4 class="text-sm font-bold text-gray-900 line-clamp-2 pr-4">${escapeHtml(item.name)}</h4>
-                    <button class="remove-item-btn text-gray-400 hover:text-red-500 transition-colors flex-shrink-0" data-id="${escapeHtml(item.id)}">
-                        <i class="ph ph-trash text-lg"></i>
-                    </button>
-                </div>
-                <p class="text-sm text-gray-500 mt-1">${escapeHtml(item.category?.name || item.category || '')}</p>
-                <div class="flex justify-between items-end mt-auto pt-2">
-                    <div class="flex items-center border border-gray-200 rounded-md">
-                        <button class="qty-btn minus-btn px-2 py-1 text-gray-500 hover:text-primary transition-colors" data-id="${item.id}">
-                            <i class="ph ph-minus text-xs"></i>
-                        </button>
-                        <span class="px-2 text-sm font-medium w-8 text-center">${item.quantity}</span>
-                        <button class="qty-btn plus-btn px-2 py-1 text-gray-500 hover:text-primary transition-colors" data-id="${item.id}">
-                            <i class="ph ph-plus text-xs"></i>
-                        </button>
-                    </div>
-                    <span class="font-bold text-gray-900">฿${itemTotal.toFixed(2)}</span>
-                </div>
-            </div>
-        `;
-        
-        cartItemsContainer.appendChild(cartItemEl);
-    });
-    
-    // Update Total
-    if (cartTotal) cartTotal.textContent = `฿${total.toFixed(2)}`;
-    
-    // Attach event listeners to new cart item buttons
-    document.querySelectorAll('.remove-item-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const id = e.currentTarget.getAttribute('data-id');
-            console.log('Remove item clicked:', id);
-            removeFromCart(id);
-        });
-    });
-    
-    document.querySelectorAll('.minus-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const id = e.currentTarget.getAttribute('data-id');
-            const item = cart.find(i => i.id === id);
-            if(item) updateQuantity(id, item.quantity - 1);
-        });
-    });
-    
-    document.querySelectorAll('.plus-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const id = e.currentTarget.getAttribute('data-id');
-            const item = cart.find(i => i.id === id);
-            if(item) updateQuantity(id, item.quantity + 1);
-        });
-    });
-}
-
-// Toast Notification System
-function showToast(message) {
-    // Check if toast container exists, if not create it
-    let toastContainer = document.getElementById('toast-container');
-    if (!toastContainer) {
-        toastContainer = document.createElement('div');
-        toastContainer.id = 'toast-container';
-        toastContainer.className = 'fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none';
-        document.body.appendChild(toastContainer);
-    }
-
-    const toast = document.createElement('div');
-    toast.className = 'bg-gray-900 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 transform translate-y-10 opacity-0 transition-all duration-300';
-    
-    toast.innerHTML = `
-        <div class="bg-green-500 rounded-full p-1">
-            <i class="ph ph-check text-white"></i>
-        </div>
-        <p class="text-sm font-medium">${escapeHtml(message)}</p>
-    `;
-    
-    toastContainer.appendChild(toast);
-    
-    // Trigger animation
-    requestAnimationFrame(() => {
-        toast.classList.remove('translate-y-10', 'opacity-0');
-        toast.classList.add('translate-y-0', 'opacity-100');
-    });
-    
-    // Remove after 3 seconds
-    setTimeout(() => {
-        toast.classList.remove('translate-y-0', 'opacity-100');
-        toast.classList.add('translate-y-10', 'opacity-0');
-        
-        // Remove from DOM after animation completes
-        setTimeout(() => {
-            toast.remove();
-        }, 300);
-    }, 3000);
-}
+// Cart UI rendering, toast, removeFromCart, updateQuantity are handled by
+// components.js (_updateCartUI, _showToast, _removeFromCart, _updateQty).
