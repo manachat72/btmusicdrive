@@ -77,6 +77,10 @@ function _navbarHTML() {
         </div>
         <div class="flex items-center space-x-4">
           <button id="navbar-search-btn" class="text-gray-300 hover:text-primary transition-colors"><i class="ph ph-magnifying-glass text-2xl"></i></button>
+          <button id="cart-btn" class="hidden md:block text-gray-300 hover:text-primary transition-colors relative" aria-label="ตะกร้าสินค้า">
+            <i class="ph ph-shopping-cart text-2xl"></i>
+            <span id="cart-count" class="absolute -top-1 -right-1 bg-primary text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] px-1 items-center justify-center" style="display:none;">0</span>
+          </button>
           <button class="hidden md:block text-gray-300 hover:text-primary transition-colors relative group" id="auth-btn">
             <i class="ph ph-user text-2xl"></i>
             <span id="user-greeting" class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs font-medium text-white hidden whitespace-nowrap bg-gray-800 px-2 py-1 rounded shadow-sm"></span>
@@ -343,7 +347,6 @@ function _mobileBottomNavHTML() {
         </div>
         <div class="relative flex-shrink-0" style="width:28px;height:24px;display:flex;align-items:center;justify-content:center;">
           <i class="ph ph-shopping-cart" style="font-size:21px;line-height:1;"></i>
-          <span id="bnav-cart-count" class="absolute flex items-center justify-center" style="top:-2px;right:-4px;min-width:14px;height:14px;padding:0 3px;font-size:7.5px;font-weight:700;color:#fff;background:#8B7355;border-radius:99px;transition:background 0.3s;">0</span>
         </div>
       </a>
       <button id="bnav-account-btn" class="flex flex-col items-center justify-center flex-1 gap-[3px]" style="background:none;border:none;cursor:pointer;color:#64748b;">
@@ -891,14 +894,12 @@ function _updateCartUI() {
   const totalEl = document.getElementById('cart-total');
   const container = document.getElementById('cart-items-container');
   const emptyMsg = document.getElementById('empty-cart-msg');
-  if (!countEl) return;
 
   const totalItems = _cart.reduce((s, i) => s + i.quantity, 0);
-  countEl.textContent = totalItems;
-
-  // Update bottom nav cart count
-  const bnavCount = document.getElementById('bnav-cart-count');
-  if (bnavCount) bnavCount.textContent = totalItems;
+  if (countEl) {
+    countEl.textContent = totalItems;
+    countEl.style.display = totalItems > 0 ? 'flex' : 'none';
+  }
 
   const clearBtn = document.getElementById('clear-cart-btn');
 
@@ -977,7 +978,6 @@ function _updateBnavCart(subtotal) {
   const threshold = Number(localStorage.getItem('btmd_free_shipping_threshold') || 200);
   const amountEl = document.getElementById('bnav-cart-amount');
   const labelEl  = document.getElementById('bnav-cart-label');
-  const countEl  = document.getElementById('bnav-cart-count');
   const stripFill = document.getElementById('bnav-ship-strip-fill');
   const pct = Math.min((subtotal / threshold) * 100, 100);
 
@@ -985,7 +985,6 @@ function _updateBnavCart(subtotal) {
   if (stripFill) stripFill.style.background = pct >= 100
     ? '#16a34a'
     : `linear-gradient(90deg,#f59e0b,#ef4444)`;
-  if (countEl) countEl.style.background = pct >= 100 ? '#16a34a' : '#8B7355';
 
   if (amountEl) amountEl.style.display = 'none';
   if (labelEl) labelEl.style.display = 'none';

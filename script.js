@@ -46,6 +46,17 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchProducts();
     setupEventListeners();
     if (typeof _updateCartUI === 'function') _updateCartUI();
+
+    // Event delegation for add-to-cart buttons — works on both
+    // server-inlined cards and JS-rendered cards.
+    document.addEventListener('click', (e) => {
+        const btn = e.target.closest('.add-to-cart-btn, .add-to-cart-btn-mobile');
+        if (!btn) return;
+        e.preventDefault();
+        e.stopPropagation();
+        const productId = btn.getAttribute('data-id');
+        if (productId) addToCart(productId);
+    });
 });
 
 // ── Password Toggle ────────────────────────────────────────────────────────
@@ -499,6 +510,23 @@ async function addToCart(productId) {
     let product = products.find(p => p.id === productId);
     if (!product && typeof shopProducts !== 'undefined') {
         product = shopProducts.find(p => p.id === productId);
+    }
+    // Fallback: inline/build-time cards exist before API returns — read from DOM.
+    if (!product) {
+        const btn = document.querySelector(`.add-to-cart-btn[data-id="${productId}"], .add-to-cart-btn-mobile[data-id="${productId}"]`);
+        const card = btn?.closest('.product-card');
+        if (card) {
+            const img = card.querySelector('img');
+            const priceText = card.querySelector('.text-primary')?.textContent || '';
+            const price = parseInt(priceText.replace(/[^\d]/g, ''), 10) || 0;
+            product = {
+                id: productId,
+                name: img?.alt || 'Product',
+                price,
+                imageUrl: img?.getAttribute('src') || '',
+                category: card.querySelector('.uppercase')?.textContent?.trim() || '',
+            };
+        }
     }
     if (!product) return;
 
