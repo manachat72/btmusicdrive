@@ -17,9 +17,9 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
     <link rel="icon" type="image/webp" href="images/logo.webp">
     <title>แฟลชไดร์ฟเพลง MP3 รวมเพลงฮิต เสียบปุ๊บฟังปั๊บ เสียงชัด HD | Bt music drive</title>
     <meta name="description"
-        content="ร้านขายแฟลชไดร์ฟเพลง MP3 รวมเพลงฮิตทุกแนว ลูกทุ่ง หมอลำ สตริง เพื่อชีวิต สากล เสียง HD เสียบปุ๊บฟังปั๊บ ฟังในรถยนต์ จัดส่งทั่วไทย">
+        content="ร้านขายแฟลชไดร์ฟเพลง MP3 รวมเพลงฮิตทุกแนว ลูกทุ่ง สตริง เพื่อชีวิต สากล เสียง HD เสียบปุ๊บฟังปั๊บ ฟังในรถยนต์ จัดส่งทั่วไทย">
     <meta name="keywords"
-        content="แฟลชไดร์ฟเพลง MP3, USB เพลง, รวมเพลงฮิต, เสียบปุ๊บฟังปั๊บ, เสียงชัด HD, ลูกทุ่ง, หมอลำ, สตริง, เพื่อชีวิต, เพลงสากล, เพลงยุค 90s, ฟังเพลงในรถ, Bt music drive">
+        content="แฟลชไดร์ฟเพลง MP3, USB เพลง, รวมเพลงฮิต, เสียบปุ๊บฟังปั๊บ, เสียงชัด HD, ลูกทุ่ง, สตริง, เพื่อชีวิต, เพลงสากล, เพลงยุค 90s, ฟังเพลงในรถ, Bt music drive">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://btmusicdrive.com/">
     <!-- Open Graph -->
@@ -27,7 +27,7 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
     <meta property="og:site_name" content="Bt music drive">
     <meta property="og:title" content="Bt music drive | แฟลชไดร์ฟเพลง MP3 รวมเพลงฮิต เสียบปุ๊บฟังปั๊บ เสียงชัด HD">
     <meta property="og:description"
-        content="ร้านแฟลชไดร์ฟเพลง MP3 รวมเพลงฮิตทุกแนว ลูกทุ่ง หมอลำ สตริง เพื่อชีวิต สากล เสียงชัด HD เสียบปุ๊บฟังปั๊บ จัดส่งทั่วไทย">
+        content="ร้านแฟลชไดร์ฟเพลง MP3 รวมเพลงฮิตทุกแนว ลูกทุ่ง สตริง เพื่อชีวิต สากล เสียงชัด HD เสียบปุ๊บฟังปั๊บ จัดส่งทั่วไทย">
     <meta property="og:image" content="https://btmusicdrive.com/images/logo1.webp">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -149,7 +149,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 </h1>
                 <p class="text-lg text-amber-100/80 md:max-w-md leading-relaxed">
                     เสียบปุ๊บฟังปั๊บ — เสียงชัด HD ทุกเพลง ไม่ต้องโหลด ไม่ต้องอินเทอร์เน็ต
-                    รวมเพลงฮิต ลูกทุ่ง หมอลำ สตริง สากล พร้อมฟังในรถและเครื่องเสียงได้ทันที
+                    รวมเพลงฮิต ลูกทุ่ง สตริง สากล พร้อมฟังในรถและเครื่องเสียงได้ทันที
                 </p>
                 <div class="flex flex-col sm:flex-row gap-4 pt-4">
                     <a href="#shop"
@@ -313,12 +313,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     <script>
         // Dynamic categories from admin
-        (function renderDynamicCategories() {
+        (async function renderDynamicCategories() {
             const DEFAULT_CATEGORIES = [
                 { name: 'เพื่อชีวิต', description: 'รวมเพลงเพื่อชีวิตยอดฮิต คาราบาว 3 ช่า', bannerUrl: 'images/category/category-songs-for-life.webp', isActive: true },
                 { name: 'เพลงสตริง', description: 'เพลงสตริงยุค 80s-90s รวมทุกวง', bannerUrl: 'images/category/category-thai-pop-rock.webp', isActive: true },
                 { name: 'ลูกทุ่ง', description: 'เพลงลูกทุ่งฮิตตลอดกาล', bannerUrl: 'images/category/category-thai-country.webp', isActive: true },
-                { name: 'หมอลำ', description: 'หมอลำซิ่ง มันส์ๆ เสียงอีสาน', bannerUrl: 'images/category/category-southern-thai.webp', isActive: true },
                 { name: 'เพลงสากล', description: 'เพลงสากลฮิต Pop Rock R&B', bannerUrl: 'images/category/category-international-hits.webp', isActive: true },
                 { name: 'ลูกกรุง', description: 'เพลงลูกกรุงอมตะ คลาสสิกไพเราะ', bannerUrl: 'images/category/category-thai-oldies.webp', isActive: true }
             ];
@@ -333,15 +332,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             if (Array.isArray(window.__CATEGORIES__)) {
                 jsonCats = window.__CATEGORIES__;
             } else {
-                fetch('categories.json').then(r => r.json()).then(data => { jsonCats = data; }).catch(() => { });
+                try {
+                    const r = await fetch('categories.json');
+                    jsonCats = await r.json();
+                } catch { }
             }
 
             const grid = document.getElementById('categories-grid');
             if (!grid) return;
 
             grid.innerHTML = cats.map((c, idx) => {
-                // fallback: find imageUrl from categories.json by name
+                // fallback: find imageUrl/slug from categories.json by name
                 const jc = jsonCats.find(j => j.name === c.name);
+                const slug = c.slug || (jc && jc.slug);
                 const banner = c.bannerUrl || (jc && jc.imageUrl) || DEFAULT_CATEGORIES.find(d => d.name === c.name)?.bannerUrl || 'images/category/category-songs-for-life.webp';
                 const desc = c.description || c.name;
                 const featured = idx === 0;
@@ -349,7 +352,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 const titleSize = featured ? 'text-3xl md:text-4xl' : 'text-xl';
                 const badge = featured ? '<span class="inline-block mb-2 text-xs font-bold bg-amber-400 text-gray-900 px-2.5 py-0.5 rounded-full uppercase tracking-wide">ขายดีที่สุด</span><br>' : '';
                 return `
-                <a href="${c.slug ? `/category/${c.slug}` : `category.html?cat=${encodeURIComponent(c.name)}`}" class="group relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 ${spanClass}">
+                <a href="${slug ? `/category/${slug}` : `category.html?cat=${encodeURIComponent(c.name)}`}" class="group relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 ${spanClass}">
                     <img src="${banner}" alt="${c.name}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" decoding="async">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent group-hover:from-black/80 transition-all duration-300"></div>
                     <div class="absolute bottom-5 left-5 right-5">
@@ -484,32 +487,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </div>
 <div class="bg-white rounded-2xl overflow-hidden product-card border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.07)] hover:shadow-[0_12px_36px_rgba(139,115,85,0.18)]">
-  <a href="/product?id=dcddc8d6-44f2-4218-8940-57eef92dec36" class="block relative aspect-square overflow-hidden group cursor-pointer">
-    <img src="https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?ixlib=rb-4.0.3&amp;auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="USB แฟลชไดรฟ์ MP3 รวมเพลงหมอลำซิ่ง มันส์ๆ" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" decoding="async" width="400" height="400">
-    <span class="absolute top-2 left-2 bg-red-500 text-white px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold shadow-sm">-33%</span>
-    <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-    <button class="absolute top-2 right-2 bg-white/90 backdrop-blur-sm p-1.5 rounded-full text-gray-400 hover:text-red-500 shadow-sm transition-colors z-10" data-wishlist="dcddc8d6-44f2-4218-8940-57eef92dec36" onclick="event.preventDefault();event.stopPropagation();" aria-label="Wishlist">
-      <i class="ph ph-heart text-base"></i>
-    </button>
-  </a>
-  <div class="p-2.5 sm:p-4">
-    <div class="text-[10px] sm:text-xs text-gray-400 font-medium mb-0.5 uppercase tracking-wider"></div>
-    <a href="/product?id=dcddc8d6-44f2-4218-8940-57eef92dec36" class="block"><h3 class="text-xs sm:text-sm font-bold text-gray-900 mb-1 line-clamp-2 hover:text-primary transition-colors leading-snug">USB แฟลชไดรฟ์ MP3 รวมเพลงหมอลำซิ่ง มันส์ๆ</h3></a>
-    <div class="hidden sm:flex items-center mb-2">
-      <div class="flex mr-1"><i class="ph ph-star text-gray-300 text-sm"></i><i class="ph ph-star text-gray-300 text-sm"></i><i class="ph ph-star text-gray-300 text-sm"></i><i class="ph ph-star text-gray-300 text-sm"></i><i class="ph ph-star text-gray-300 text-sm"></i></div>
-      <span class="text-xs text-gray-400">(0)</span>
-    </div>
-    <div class="flex items-center justify-between gap-2 mb-2">
-      <div class="flex items-baseline gap-1.5 flex-wrap">
-        <span class="text-sm sm:text-base font-extrabold text-primary">฿199</span>
-        <span class="text-[10px] sm:text-xs text-gray-400 line-through">฿299</span>
-      </div>
-      <button class="add-to-cart-btn bg-primary hover:bg-amber-700 active:scale-95 text-white font-bold rounded-full w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-base sm:text-lg leading-none transition-all flex-shrink-0" data-id="dcddc8d6-44f2-4218-8940-57eef92dec36" onclick="event.preventDefault();event.stopPropagation();" aria-label="เพิ่มลงตะกร้า">+</button>
-    </div>
-    
-  </div>
-</div>
-<div class="bg-white rounded-2xl overflow-hidden product-card border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.07)] hover:shadow-[0_12px_36px_rgba(139,115,85,0.18)]">
   <a href="/product?id=855db588-8899-4131-92e3-4808ef18436d" class="block relative aspect-square overflow-hidden group cursor-pointer">
     <img src="https://images.unsplash.com/photo-1459749411175-04bf5292ceea?ixlib=rb-4.0.3&amp;auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="USB แฟลชไดรฟ์ MP3 รวมเพลงสากลฮิต 90s-2000s" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" decoding="async" width="400" height="400">
     <span class="absolute top-2 left-2 bg-red-500 text-white px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold shadow-sm">-38%</span>
@@ -595,7 +572,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- Shared Footer -->
     <div id="site-footer"></div>
 
-    <script src="components.min.js?v=c18393c2"></script>
+    <script src="components.min.js?v=682f42b0"></script>
     <script src="script.min.js?v=d1ef4a53"></script>
     <script>
         // ── Flash Sale Countdown ──────────────────────────────────────

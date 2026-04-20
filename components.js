@@ -530,7 +530,6 @@ const _DEFAULT_MENUS = [
     { label: 'เพื่อชีวิต', url: '/category/phuea-chiwit', icon: 'ph ph-microphone-stage' },
     { label: 'เพลงสตริง', url: '/category/phleng-satring', icon: 'ph ph-music-notes' },
     { label: 'ลูกทุ่ง', url: '/category/lukthung', icon: 'ph ph-vinyl-record' },
-    { label: 'หมอลำ', url: '/category/mor-lam', icon: 'ph ph-speaker-high' },
     { label: 'เพลงสากล', url: '/category/international', icon: 'ph ph-globe' },
     { label: 'ลูกกรุง', url: '/category/luk-krung', icon: 'ph ph-music-note' },
   ]},
