@@ -157,7 +157,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- Shared Footer -->
     <div id="site-footer"></div>
 
-    <script src="components.min.js?v=222f13cd"></script>
+    <script src="components.min.js?v=c18393c2"></script>
     <script>
     // ── Cart Page Logic ──────────────────────────────────────────────
     let pageCart = [];
@@ -263,6 +263,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 if (!item) return;
                 if (action === 'increase') item.quantity++;
                 else if (action === 'decrease' && item.quantity > 1) item.quantity--;
+                syncCartItemToServer('PUT', id, { quantity: item.quantity });
                 saveAndRenderCart();
             });
         });
@@ -271,9 +272,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             btn.addEventListener('click', () => {
                 const id = btn.dataset.id;
                 pageCart = pageCart.filter(i => i.id !== id);
+                syncCartItemToServer('DELETE', id);
                 saveAndRenderCart();
             });
         });
+    }
+
+    function syncCartItemToServer(method, id, body) {
+        const token = localStorage.getItem('btmusicdrive_token');
+        if (!token) return;
+        const opts = { method, headers: { 'Authorization': `Bearer ${token}` } };
+        if (body) {
+            opts.headers['Content-Type'] = 'application/json';
+            opts.body = JSON.stringify(body);
+        }
+        fetch(`${API_BASE}/cart/items/${id}`, opts).catch(e => console.error('Cart sync error:', e));
     }
 
     function updateCartSummary() {

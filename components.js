@@ -1119,10 +1119,25 @@ function _updateFreeShippingBar(total) {
 }
 
 
+function _syncCartItemToServer(method, id, body) {
+  const token = localStorage.getItem('btmusicdrive_token');
+  if (!token) return;
+  const opts = {
+    method,
+    headers: { 'Authorization': `Bearer ${token}` }
+  };
+  if (body) {
+    opts.headers['Content-Type'] = 'application/json';
+    opts.body = JSON.stringify(body);
+  }
+  fetch(`${API_BASE}/cart/items/${id}`, opts).catch(e => console.error('Cart sync error:', e));
+}
+
 function _removeFromCart(id) {
   _cart = _cart.filter(i => i.id !== id);
   _saveCartToStorage();
   _updateCartUI();
+  _syncCartItemToServer('DELETE', id);
 }
 window._removeFromCart = _removeFromCart;
 
@@ -1133,6 +1148,7 @@ function _updateQty(id, delta) {
   if (item.quantity < 1) { _removeFromCart(id); return; }
   _saveCartToStorage();
   _updateCartUI();
+  _syncCartItemToServer('PUT', id, { quantity: item.quantity });
 }
 window._updateQty = _updateQty;
 
@@ -1185,6 +1201,11 @@ function _setupSharedEvents() {
       _cart = [];
       _saveCartToStorage();
       _updateCartUI();
+      const token = localStorage.getItem('btmusicdrive_token');
+      if (token) {
+        fetch(`${API_BASE}/cart`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } })
+          .catch(e => console.error('Clear cart sync error:', e));
+      }
     }
   });
 
