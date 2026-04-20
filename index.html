@@ -45,7 +45,7 @@ gtag('config', 'G-1QVJ5HDNZ5');
     <meta property="og:title" content="Bt music drive | แฟลชไดร์ฟเพลง MP3 รวมเพลงฮิต เสียบปุ๊บฟังปั๊บ เสียงชัด HD">
     <meta property="og:description"
         content="ร้านแฟลชไดร์ฟเพลง MP3 รวมเพลงฮิตทุกแนว ลูกทุ่ง หมอลำ สตริง เพื่อชีวิต สากล เสียงชัด HD เสียบปุ๊บฟังปั๊บ จัดส่งทั่วไทย">
-    <meta property="og:image" content="https://btmusicdrive.com/images/logo1.avif">
+    <meta property="og:image" content="https://btmusicdrive.com/images/logo1.webp">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:alt" content="Bt music drive แฟลชไดร์ฟเพลง MP3 เสียงชัด HD">
@@ -54,7 +54,7 @@ gtag('config', 'G-1QVJ5HDNZ5');
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Bt music drive | แฟลชไดร์ฟเพลง MP3 รวมเพลงฮิต เสียงชัด HD">
     <meta name="twitter:description" content="รวมเพลงฮิตทุกแนว เสียบปุ๊บฟังปั๊บ เสียงชัด HD จัดส่งทั่วไทย">
-    <meta name="twitter:image" content="https://btmusicdrive.com/images/logo1.avif">
+    <meta name="twitter:image" content="https://btmusicdrive.com/images/logo1.webp">
     <!-- Tailwind CSS -->
     <link rel="stylesheet" href="tailwind.min.css?v=693249bd">
     <!-- Phosphor Icons -->
@@ -64,8 +64,8 @@ gtag('config', 'G-1QVJ5HDNZ5');
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     <!-- Custom CSS -->
-    <link rel="preload" as="image" type="image/avif" href="images/hero-mobile.avif" media="(max-width: 767px)" fetchpriority="high">
-    <link rel="preload" as="image" type="image/avif" href="images/hero-desktop.avif" media="(min-width: 768px)" fetchpriority="high">
+    <link rel="preload" as="image" href="images/hero-mobile.webp" media="(max-width: 767px)" fetchpriority="high">
+    <link rel="preload" as="image" href="images/hero-desktop.webp" media="(min-width: 768px)" fetchpriority="high">
     <link rel="stylesheet" href="style.min.css?v=b223d081">
 
     <style>
@@ -200,10 +200,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <!-- Floating USB image with dark overlay gradient for depth -->
                 <div class="relative z-10 animate-float">
                     <picture>
-                        <source media="(max-width: 767px)" type="image/avif" srcset="images/hero-mobile.avif">
-                        <source media="(max-width: 767px)" type="image/webp" srcset="images/hero-mobile.webp">
-                        <source media="(min-width: 768px)" type="image/avif" srcset="images/hero-desktop.avif">
-                        <source media="(min-width: 768px)" type="image/webp" srcset="images/hero-desktop.webp">
+                        <source media="(max-width: 767px)" srcset="images/hero-mobile.webp">
+                        <source media="(min-width: 768px)" srcset="images/hero-desktop.webp">
                         <img src="images/hero-desktop.webp" alt="แฟลชไดร์ฟเพลง MP3 เสียบฟังในรถยนต์"
                             class="rounded-3xl shadow-2xl object-cover w-full aspect-[3/4] md:aspect-auto md:h-[450px] lg:h-[500px]"
                             fetchpriority="high" width="1920" height="1080">
