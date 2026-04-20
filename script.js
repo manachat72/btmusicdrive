@@ -271,7 +271,7 @@ function renderProducts() {
                     ${origHtml}
                 </div>
                 <button class="add-to-cart-btn w-full bg-primary hover:bg-amber-700 active:scale-95 text-white font-bold py-2 sm:py-2.5 rounded-xl flex items-center justify-center gap-1.5 text-xs sm:text-sm transition-all" data-id="${escapeHtml(product.id)}" onclick="event.preventDefault();event.stopPropagation();">
-                    <i class="ph ph-shopping-cart text-sm sm:text-base"></i> เพิ่มลงตะกร้า
+                    <i class="ph ph-shopping-cart text-sm sm:text-base"></i> +
                 </button>
                 ${lowStockHtml}
             </div>

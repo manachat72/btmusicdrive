@@ -65,10 +65,6 @@ function _navbarHTML() {
             <i class="ph ph-user text-2xl"></i>
             <span id="user-greeting" class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs font-medium text-white hidden whitespace-nowrap bg-gray-800 px-2 py-1 rounded shadow-sm"></span>
           </button>
-          <button class="hidden md:block text-gray-300 hover:text-primary transition-colors relative" id="cart-btn" aria-label="ตะกร้าสินค้า">
-            <i class="ph ph-plus-circle text-2xl"></i>
-            <span id="cart-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">0</span>
-          </button>
           <button class="md:hidden text-gray-300 hover:text-primary transition-colors" id="mobile-menu-btn">
             <i class="ph ph-list text-2xl"></i>
           </button>
@@ -330,11 +326,9 @@ function _mobileBottomNavHTML() {
           <div id="bnav-ship-strip-fill" style="height:100%;width:0%;background:linear-gradient(90deg,#f59e0b,#ef4444);transition:width 0.6s ease;border-radius:inherit;"></div>
         </div>
         <div class="relative flex-shrink-0" style="width:28px;height:24px;display:flex;align-items:center;justify-content:center;">
-          <i class="ph ph-plus-circle" style="font-size:21px;line-height:1;"></i>
+          <i class="ph ph-shopping-cart" style="font-size:21px;line-height:1;"></i>
           <span id="bnav-cart-count" class="absolute flex items-center justify-center" style="top:-2px;right:-4px;min-width:14px;height:14px;padding:0 3px;font-size:7.5px;font-weight:700;color:#fff;background:#8B7355;border-radius:99px;transition:background 0.3s;">0</span>
         </div>
-        <span id="bnav-cart-label" style="display:none;"></span>
-        <span id="bnav-cart-amount" style="display:none;"></span>
       </a>
       <button id="bnav-account-btn" class="flex flex-col items-center justify-center flex-1 gap-[3px]" style="background:none;border:none;cursor:pointer;color:#64748b;">
         <span style="width:30px;height:30px;border-radius:50%;background:rgba(139,115,85,0.12);border:1.5px solid rgba(139,115,85,0.28);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
