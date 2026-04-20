@@ -29,7 +29,7 @@ gtag('config', 'G-1QVJ5HDNZ5');
   <base href="/">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="app.min.css?v=6cb32dbd">
+    <link rel="stylesheet" href="app.min.css?v=16c807be">
     <meta name="theme-color" content="#8B7355">
     <link rel="icon" type="image/webp" href="images/logo.webp">
     <title>ร้านค้าแฟลชไดร์ฟเพลง MP3 ทุกแนว — Bt music drive</title>
@@ -521,9 +521,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                                 <span class="text-base sm:text-xl font-extrabold text-primary">${fmtP(product.price)}</span>
                                 ${origHtml}
                             </div>
-                            <button class="shop-add-cart bg-primary hover:bg-amber-700 active:scale-95 text-white font-bold py-2 px-4 rounded-xl text-xs sm:text-sm transition-all flex items-center gap-1.5 flex-shrink-0" data-id="${product.id}" onclick="event.preventDefault();event.stopPropagation();">
-                                <i class="ph ph-shopping-cart text-sm"></i> +
-                            </button>
+                            <button class="shop-add-cart bg-primary hover:bg-amber-700 active:scale-95 text-white font-bold rounded-full w-8 h-8 flex items-center justify-center text-lg leading-none transition-all flex-shrink-0" data-id="${product.id}" onclick="event.preventDefault();event.stopPropagation();" aria-label="เพิ่มลงตะกร้า">+</button>
                         </div>
                     </div>
                 </div>`;
@@ -546,13 +544,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         <div class="flex mr-1">${starsHtml}</div>
                         <span class="text-[10px] sm:text-xs text-gray-400">(${reviews})</span>
                     </div>
-                    <div class="flex items-baseline gap-1.5 flex-wrap mb-2">
-                        <span class="text-sm sm:text-base font-extrabold text-primary">${fmtP(product.price)}</span>
-                        ${origHtml}
+                    <div class="flex items-center justify-between gap-2 mb-2">
+                        <div class="flex items-baseline gap-1.5 flex-wrap">
+                            <span class="text-sm sm:text-base font-extrabold text-primary">${fmtP(product.price)}</span>
+                            ${origHtml}
+                        </div>
+                        <button class="shop-add-cart bg-primary hover:bg-amber-700 active:scale-95 text-white font-bold rounded-full w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-base sm:text-lg leading-none transition-all flex-shrink-0" data-id="${product.id}" onclick="event.preventDefault();event.stopPropagation();" aria-label="เพิ่มลงตะกร้า">+</button>
                     </div>
-                    <button class="shop-add-cart w-full bg-primary hover:bg-amber-700 active:scale-95 text-white font-bold py-2 sm:py-2.5 rounded-xl flex items-center justify-center gap-1.5 text-xs sm:text-sm transition-all" data-id="${product.id}" onclick="event.preventDefault();event.stopPropagation();">
-                        <i class="ph ph-shopping-cart text-sm"></i> +
-                    </button>
                 </div>
             </div>`;
         }).join('');

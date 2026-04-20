@@ -266,13 +266,13 @@ function renderProducts() {
                     <div class="flex mr-1">${starsHtml}</div>
                     <span class="text-xs text-gray-400">(${reviews})</span>
                 </div>
-                <div class="flex items-baseline gap-1.5 flex-wrap mb-2">
-                    <span class="text-sm sm:text-base font-extrabold text-primary">${fmtP(product.price)}</span>
-                    ${origHtml}
+                <div class="flex items-center justify-between gap-2 mb-2">
+                    <div class="flex items-baseline gap-1.5 flex-wrap">
+                        <span class="text-sm sm:text-base font-extrabold text-primary">${fmtP(product.price)}</span>
+                        ${origHtml}
+                    </div>
+                    <button class="add-to-cart-btn bg-primary hover:bg-amber-700 active:scale-95 text-white font-bold rounded-full w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-base sm:text-lg leading-none transition-all flex-shrink-0" data-id="${escapeHtml(product.id)}" onclick="event.preventDefault();event.stopPropagation();" aria-label="เพิ่มลงตะกร้า">+</button>
                 </div>
-                <button class="add-to-cart-btn w-full bg-primary hover:bg-amber-700 active:scale-95 text-white font-bold py-2 sm:py-2.5 rounded-xl flex items-center justify-center gap-1.5 text-xs sm:text-sm transition-all" data-id="${escapeHtml(product.id)}" onclick="event.preventDefault();event.stopPropagation();">
-                    <i class="ph ph-shopping-cart text-sm sm:text-base"></i> +
-                </button>
                 ${lowStockHtml}
             </div>
         `;
