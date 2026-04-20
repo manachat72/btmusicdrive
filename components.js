@@ -107,7 +107,7 @@ function _navbarHTML() {
 
 function _cartSidebarHTML() {
   return `
-  <div id="cart-sidebar" class="fixed inset-y-0 right-0 max-w-sm w-full bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
+  <div id="cart-sidebar" class="fixed top-0 right-0 bottom-[60px] md:bottom-0 max-w-sm w-full bg-white shadow-2xl z-[55] transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
     <div class="flex items-center justify-between p-4 border-b border-gray-200">
       <h2 class="text-lg font-bold flex items-center"><i class="ph ph-shopping-cart mr-2"></i> ตะกร้าสินค้า</h2>
       <div class="flex items-center gap-3">
