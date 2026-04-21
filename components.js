@@ -69,9 +69,9 @@ function _navbarHTML() {
           <img src="images/logo.webp" alt="btmusicdrive" class="h-9 w-9 rounded-full mr-2">
           <span class="font-bold text-xl tracking-tight text-white">btmusicdrive</span>
         </a>
-        <div class="hidden md:flex items-center gap-1" id="desktop-nav"></div>
+        <div class="hidden md:flex flex-1 items-center justify-center gap-1 px-6" id="desktop-nav"></div>
         <div class="hidden md:flex items-center">
-          <a href="/admin" id="admin-nav-link" class="hidden text-gray-300 hover:text-primary transition-colors font-medium flex items-center gap-1 text-sm ml-4">
+          <a href="/admin" id="admin-nav-link" class="hidden text-gray-300 hover:text-primary transition-colors font-medium flex items-center gap-1 text-sm mr-4">
             <i class="ph ph-shield-check text-base"></i> Admin
           </a>
         </div>
@@ -546,7 +546,7 @@ async function _loadNavMenus() {
 function _renderNavMenus(menus) {
   const desktop = document.getElementById('desktop-nav');
   const mobile = document.getElementById('mobile-nav');
-  if (!desktop || !mobile) return;
+  if (!desktop) return;
 
   desktop.innerHTML = menus.map(m => {
     const icon = m.icon ? `<i class="${m.icon} text-base"></i> ` : '';
@@ -562,45 +562,47 @@ function _renderNavMenus(menus) {
     return `<a href="${m.url}" class="text-gray-300 hover:text-primary transition-colors font-medium flex items-center gap-1 px-3 py-2 rounded-lg hover:bg-white/10">${icon}${m.label}</a>`;
   }).join('');
 
-  mobile.innerHTML = menus.map((m, i) => {
-    const icon = m.icon ? `<i class="${m.icon}"></i>` : '';
-    if (m.children && m.children.length > 0) {
-      const subItems = m.children.map(c =>
-        `<a href="${c.url}" class="block pl-7 pr-3 py-[6px] text-xs text-gray-400 hover:text-primary hover:bg-white/10 rounded-md flex items-center gap-2">${c.icon ? `<i class="${c.icon}"></i>` : ''}${c.label}</a>`
-      ).join('');
-      return `<div class="mob-has-sub">
-        <button type="button" class="mob-sub-toggle w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-primary hover:bg-white/10" data-sub="${i}" aria-expanded="false">
-          ${icon}<span class="flex-1 text-left">${m.label}</span>
-          <i class="mob-caret" style="font-size:10px;transition:transform .2s;">▾</i>
-        </button>
-        <div class="mob-sub-panel" data-sub="${i}" style="display:none;">${subItems}</div>
-      </div>`;
-    }
-    return `<a href="${m.url}" class="block px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-primary hover:bg-white/10 flex items-center gap-2">${icon}${m.label}</a>`;
-  }).join('') + `<a href="/admin" id="admin-nav-link-mobile" class="hidden px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-primary hover:bg-white/10 flex items-center gap-2"><i class="ph ph-shield-check"></i> Admin Dashboard</a>`;
-
-  // Event delegation ผ่าน parent ที่ไม่ถูก re-render
-  if (!mobile._subMenuBound) {
-    mobile._subMenuBound = true;
-    mobile.addEventListener('click', function(e) {
-      const btn = e.target.closest('.mob-sub-toggle');
-      if (btn) {
-        const key = btn.dataset.sub;
-        const panel = mobile.querySelector(`.mob-sub-panel[data-sub="${key}"]`);
-        const caret = btn.querySelector('.mob-caret');
-        if (!panel) return;
-        const open = panel.style.display !== 'none';
-        panel.style.display = open ? 'none' : 'block';
-        btn.setAttribute('aria-expanded', String(!open));
-        if (caret) caret.style.transform = open ? '' : 'rotate(180deg)';
-        return;
+  if (mobile) {
+    mobile.innerHTML = menus.map((m, i) => {
+      const icon = m.icon ? `<i class="${m.icon}"></i>` : '';
+      if (m.children && m.children.length > 0) {
+        const subItems = m.children.map(c =>
+          `<a href="${c.url}" class="block pl-7 pr-3 py-[6px] text-xs text-gray-400 hover:text-primary hover:bg-white/10 rounded-md flex items-center gap-2">${c.icon ? `<i class="${c.icon}"></i>` : ''}${c.label}</a>`
+        ).join('');
+        return `<div class="mob-has-sub">
+          <button type="button" class="mob-sub-toggle w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-primary hover:bg-white/10" data-sub="${i}" aria-expanded="false">
+            ${icon}<span class="flex-1 text-left">${m.label}</span>
+            <i class="mob-caret" style="font-size:10px;transition:transform .2s;">▾</i>
+          </button>
+          <div class="mob-sub-panel" data-sub="${i}" style="display:none;">${subItems}</div>
+        </div>`;
       }
+      return `<a href="${m.url}" class="block px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-primary hover:bg-white/10 flex items-center gap-2">${icon}${m.label}</a>`;
+    }).join('') + `<a href="/admin" id="admin-nav-link-mobile" class="hidden px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-primary hover:bg-white/10 flex items-center gap-2"><i class="ph ph-shield-check"></i> Admin Dashboard</a>`;
 
-      const navLink = e.target.closest('a[href]');
-      if (!navLink || !mobile.contains(navLink)) return;
+    // Event delegation ผ่าน parent ที่ไม่ถูก re-render
+    if (!mobile._subMenuBound) {
+      mobile._subMenuBound = true;
+      mobile.addEventListener('click', function(e) {
+        const btn = e.target.closest('.mob-sub-toggle');
+        if (btn) {
+          const key = btn.dataset.sub;
+          const panel = mobile.querySelector(`.mob-sub-panel[data-sub="${key}"]`);
+          const caret = btn.querySelector('.mob-caret');
+          if (!panel) return;
+          const open = panel.style.display !== 'none';
+          panel.style.display = open ? 'none' : 'block';
+          btn.setAttribute('aria-expanded', String(!open));
+          if (caret) caret.style.transform = open ? '' : 'rotate(180deg)';
+          return;
+        }
 
-      closeMobileMenu(mobile);
-    });
+        const navLink = e.target.closest('a[href]');
+        if (!navLink || !mobile.contains(navLink)) return;
+
+        closeMobileMenu(mobile);
+      });
+    }
   }
 }
 
