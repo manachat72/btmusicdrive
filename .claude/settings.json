@@ -8,7 +8,9 @@
       "Read(//c/Users/manac/ProjectsPython/btmusicdrive/**)",
       "Bash(npx --yes terser script.js -c -m -o script.min.js)",
       "Bash(awk '{print $5, $6, $7, $8, $9}')",
-      "Bash(grep -v \":0$\")"
+      "Bash(grep -v \":0$\")",
+      "Bash(npx --yes terser --version)",
+      "Bash(npx --yes terser components.js -o components.min.js --compress --mangle)"
     ]
   }
 }

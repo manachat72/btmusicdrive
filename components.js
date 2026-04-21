@@ -409,11 +409,6 @@ function _mobileBottomNavHTML() {
         <span style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(139,115,85,0.1);flex-shrink:0;"><i class="ph ph-truck" style="font-size:17px;color:#8B7355;"></i></span>
         <span style="font-size:13.5px;font-weight:500;color:#cbd5e1;">ติดตามพัสดุ</span>
       </a>
-      <a href="/wishlist" class="_dlink" style="display:flex;align-items:center;gap:13px;padding:11px 20px;text-decoration:none;transition:background 0.15s;">
-        <span style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(139,115,85,0.1);flex-shrink:0;"><i class="ph ph-heart" style="font-size:17px;color:#8B7355;"></i></span>
-        <span style="font-size:13.5px;font-weight:500;color:#cbd5e1;">สินค้าที่ถูกใจ</span>
-      </a>
-
       <div style="height:1px;background:rgba(255,255,255,0.05);margin:6px 20px;"></div>
 
       <p style="margin:0;padding:10px 20px 6px;font-size:9px;font-weight:600;letter-spacing:0.13em;text-transform:uppercase;color:rgba(139,115,85,0.5);">บัญชี</p>

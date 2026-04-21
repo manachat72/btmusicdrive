@@ -64,9 +64,6 @@ function renderCard(product, index) {
     <img src="${escapeHtml(product.imageUrl)}" alt="${escapeHtml(product.name)}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="${loading}" decoding="async"${fetchPri} width="400" height="400">
     ${badgeHtml}
     <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-    <button class="absolute top-2 right-2 bg-white/90 backdrop-blur-sm p-1.5 rounded-full text-gray-400 hover:text-red-500 shadow-sm transition-colors z-10" data-wishlist="${escapeHtml(product.id)}" onclick="event.preventDefault();event.stopPropagation();" aria-label="Wishlist">
-      <i class="ph ph-heart text-base"></i>
-    </button>
   </a>
   <div class="p-2.5 sm:p-4">
     <div class="text-[10px] sm:text-xs text-gray-400 font-medium mb-0.5 uppercase tracking-wider">${escapeHtml(categoryName)}</div>
