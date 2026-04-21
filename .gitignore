@@ -21,3 +21,6 @@ Thumbs.db
 *.local
 
 .vercel
+
+# Image optimization backups
+images/original/
