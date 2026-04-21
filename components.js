@@ -85,14 +85,8 @@ function _navbarHTML() {
             <i class="ph ph-user text-2xl"></i>
             <span id="user-greeting" class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs font-medium text-white hidden whitespace-nowrap bg-gray-800 px-2 py-1 rounded shadow-sm"></span>
           </button>
-          <button class="md:hidden text-gray-300 hover:text-primary transition-colors" id="mobile-menu-btn">
-            <i class="ph ph-list text-2xl"></i>
-          </button>
         </div>
       </div>
-    </div>
-    <div class="md:hidden hidden bg-secondary border-t border-gray-700 absolute w-full" id="mobile-menu">
-      <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 shadow-lg" id="mobile-nav"></div>
     </div>
   </nav>
   <div id="search-overlay-backdrop" class="fixed inset-0 bg-black/60 z-[100] hidden"></div>
