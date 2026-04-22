@@ -77,7 +77,7 @@ function renderCard(product, index) {
         <span class="text-sm sm:text-base font-extrabold text-primary">${fmtP(product.price)}</span>
         ${origHtml}
       </div>
-      <button class="add-to-cart-btn bg-primary hover:bg-amber-700 active:scale-95 text-white font-bold rounded-full w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-base sm:text-lg leading-none transition-all flex-shrink-0" data-id="${escapeHtml(product.id)}" onclick="event.preventDefault();event.stopPropagation();" aria-label="เพิ่มลงตะกร้า">+</button>
+      <button class="add-to-cart-btn bg-white border border-red-500 hover:bg-red-50 active:scale-95 text-red-500 hover:text-red-600 font-bold rounded-lg w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-base sm:text-lg leading-none transition-all flex-shrink-0" data-id="${escapeHtml(product.id)}" onclick="event.preventDefault();event.stopPropagation();" aria-label="เพิ่มลงตะกร้า">+</button>
     </div>
     ${lowStockHtml}
   </div>

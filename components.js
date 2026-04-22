@@ -291,7 +291,7 @@ function _footerHTML() {
             </a>
             ${_ttUrl ? `<a href="${_ttUrl}" target="_blank" rel="noopener" title="TikTok"
                class="w-10 h-10 rounded-2xl flex items-center justify-center text-white shadow-lg transition-all duration-200 hover:scale-110"
-               style="background:linear-gradient(135deg,#010101,#69c9d0);">
+               style="background:#111111;">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.19 8.19 0 004.79 1.54V6.78a4.85 4.85 0 01-1.02-.09z"/>
               </svg>
@@ -1056,7 +1056,7 @@ async function _renderFreeShipRecs(total) {
       <div class="p-1.5">
         <p class="text-[10px] font-semibold text-gray-800 leading-tight mb-1.5" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.4em">${name}</p>
         <button onclick="_addRecToCart(this,'${id}','${name}',${price},'${img}')"
-          class="w-full text-[10px] bg-primary hover:bg-amber-700 text-white font-bold rounded-lg py-1 transition-colors flex items-center justify-center gap-0.5">
+          class="w-full text-[10px] bg-white border border-red-500 hover:bg-red-50 text-red-500 hover:text-red-600 font-bold rounded-lg py-1 transition-colors flex items-center justify-center gap-0.5">
           <i class="ph ph-plus text-[10px]"></i> เพิ่ม
         </button>
       </div>
