@@ -324,22 +324,15 @@ function _mobileBottomNavHTML() {
     #bnav-account-btn { color: #64748b; }
     #bnav-account-btn i { color: currentColor !important; }
     #bnav-account-btn .bnav-account-icon {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      background: transparent;
-      border: 1.5px solid rgba(148,163,184,0.28);
-      transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+      transition: color 0.2s ease;
     }
     #bnav-account-btn:hover,
     #bnav-account-btn:hover .bnav-account-icon {
       color: #8B7355;
-      border-color: rgba(139,115,85,0.28);
-      background: rgba(139,115,85,0.08);
     }
   </style>
 
