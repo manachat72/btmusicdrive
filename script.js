@@ -155,11 +155,6 @@ function renderProducts() {
         const lowStockHtml = (product.stock > 0 && product.stock <= 5) ?
             `<div class="text-xs font-bold text-red-500 flex items-center gap-1 mt-1.5"><i class="ph ph-warning"></i> เหลือ ${product.stock} ชิ้น!</div>` : '';
 
-        // Wishlist
-        const wishlist = JSON.parse(localStorage.getItem('btmusicdrive_wishlist') || '[]');
-        const isWishlisted = wishlist.some(w => w.id === product.id);
-        const heartClass = isWishlisted ? 'ph-fill ph-heart text-base text-red-500' : 'ph ph-heart text-base';
-
         // Price display
         const fmtP = p => `฿${Math.round(p).toLocaleString('th-TH')}`;
         const origHtml = hasDiscount
@@ -172,9 +167,6 @@ function renderProducts() {
                 <img src="${escapeHtml(product.imageUrl)}" alt="${escapeHtml(product.name)}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy">
                 ${badgeHtml}
                 <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <button class="absolute top-2 right-2 bg-white/90 backdrop-blur-sm p-1.5 rounded-full text-gray-400 hover:text-red-500 shadow-sm transition-colors z-10" data-wishlist="${escapeHtml(product.id)}" onclick="event.preventDefault();event.stopPropagation();">
-                    <i class="${heartClass}"></i>
-                </button>
             </a>
             <div class="p-2.5 sm:p-4">
                 <div class="text-[10px] sm:text-xs text-gray-400 font-medium mb-0.5 uppercase tracking-wider">${escapeHtml(product.category?.name || product.category || '')}</div>

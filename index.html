@@ -535,7 +535,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div id="site-footer"></div>
 
     <script src="components.min.js?v=fd723438"></script>
-    <script src="script.min.js?v=d1ef4a53"></script>
+    <script src="script.min.js?v=180b50a3"></script>
     <script>
         // ── Flash Sale Countdown ──────────────────────────────────────
         (function () {
@@ -556,34 +556,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             setInterval(updateCountdown, 1000);
         })();
 
-        // ── Wishlist Heart Button on Product Cards ────────────────────
-        document.addEventListener('click', function (e) {
-            const heartBtn = e.target.closest('.wishlist-heart-btn') || e.target.closest('[data-wishlist]');
-            if (!heartBtn) return;
-            e.preventDefault();
-            e.stopPropagation();
-            const pid = heartBtn.getAttribute('data-id') || heartBtn.getAttribute('data-wishlist');
-            if (!pid) return;
-            let wishlist = JSON.parse(localStorage.getItem('btmusicdrive_wishlist') || '[]');
-            const idx = wishlist.findIndex(w => w.id === pid);
-            const icon = heartBtn.querySelector('i');
-            if (idx >= 0) {
-                wishlist.splice(idx, 1);
-                if (icon) { icon.className = 'ph ph-heart text-xl'; }
-                if (typeof _showToast === 'function') _showToast('ลบออกจากรายการที่ถูกใจ');
-                else if (typeof showToast === 'function') showToast('ลบออกจากรายการที่ถูกใจ');
-            } else {
-                const product = (typeof products !== 'undefined') ? products.find(p => p.id === pid) : null;
-                if (product) {
-                    wishlist.push({ id: product.id, name: product.name, price: product.price, image: product.imageUrl || product.image });
-                    if (typeof fbq === 'function') fbq('track', 'AddToWishlist', { content_ids: [product.id], content_name: product.name, value: product.price, currency: 'THB' });
-                }
-                if (icon) { icon.className = 'ph-fill ph-heart text-xl text-red-500'; }
-                if (typeof _showToast === 'function') _showToast('เพิ่มในรายการที่ถูกใจแล้ว ❤');
-                else if (typeof showToast === 'function') showToast('เพิ่มในรายการที่ถูกใจแล้ว ❤');
-            }
-            localStorage.setItem('btmusicdrive_wishlist', JSON.stringify(wishlist));
-        });
     </script>
 </body>
 

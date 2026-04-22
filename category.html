@@ -368,10 +368,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 else starsHtml += `<i class="ph ph-star text-gray-300 text-xs"></i>`;
             }
 
-            const wishlist = JSON.parse(localStorage.getItem('btmusicdrive_wishlist') || '[]');
-            const isWishlisted = wishlist.some(w => w.id === product.id);
-            const heartClass = isWishlisted ? 'ph-fill ph-heart text-lg text-red-500' : 'ph ph-heart text-lg';
-
             const discountHtml = product.originalPrice ? `<span class="text-xs text-gray-400 line-through">฿${product.originalPrice.toLocaleString()}</span>` : '';
             const discountBadge = product.originalPrice ? `<span class="absolute top-2 left-2 bg-red-500 text-white px-2 py-0.5 rounded-full text-[10px] font-bold">-${Math.round((1 - product.price / product.originalPrice) * 100)}%</span>` : '';
             const productUrl = product.slug ? `/product/${product.slug}` : `/product?id=${product.id}`;
@@ -473,26 +469,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             if (product && typeof addToCart === 'function') addToCart(product);
         });
 
-        // Wishlist
-        document.getElementById('cat-products').addEventListener('click', e => {
-            const btn = e.target.closest('[data-wishlist]');
-            if (!btn) return;
-            const productId = btn.dataset.wishlist;
-            const product = allProducts.find(p => p.id === productId);
-            if (!product) return;
-            let wl = JSON.parse(localStorage.getItem('btmusicdrive_wishlist') || '[]');
-            const idx = wl.findIndex(w => w.id === productId);
-            if (idx >= 0) {
-                wl.splice(idx, 1);
-                if (typeof _showToast === 'function') _showToast('ลบออกจากรายการที่ถูกใจ');
-            } else {
-                wl.push({ id: product.id, name: product.name, price: product.price, image: product.imageUrl });
-                if (typeof fbq === 'function') fbq('track', 'AddToWishlist', { content_ids: [product.id], content_name: product.name, value: product.price, currency: 'THB' });
-                if (typeof _showToast === 'function') _showToast('เพิ่มในรายการที่ถูกใจแล้ว ❤');
-            }
-            localStorage.setItem('btmusicdrive_wishlist', JSON.stringify(wl));
-            renderCatProducts();
-        });
     }
     </script>
 </body>
