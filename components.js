@@ -322,18 +322,9 @@ function _mobileBottomNavHTML() {
     #bnav-home.active-tab, #bnav-home.active-tab i,
     .bnav-tab.active-tab, .bnav-tab.active-tab i { color: #8B7355 !important; }
     #bnav-account-btn { color: #64748b; }
-    #bnav-account-btn i { color: currentColor !important; }
-    #bnav-account-btn .bnav-account-icon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      transition: color 0.2s ease;
-    }
-    #bnav-account-btn:hover,
-    #bnav-account-btn:hover .bnav-account-icon {
-      color: #8B7355;
-    }
+    #bnav-account-btn i { color: currentColor !important; font-size: 21px !important; line-height: 1; }
+    #bnav-account-btn span.bnav-account-label { font-size: 9px; letter-spacing: 0.04em; font-weight: 500; }
+    #bnav-account-btn:hover { color: #8B7355; }
   </style>
 
   <!-- ── Mobile Bottom Bar ── -->
@@ -358,10 +349,8 @@ function _mobileBottomNavHTML() {
         </div>
       </a>
       <button id="bnav-account-btn" class="flex flex-col items-center justify-center flex-1 gap-[3px]" style="background:none;border:none;cursor:pointer;">
-        <span class="bnav-account-icon">
-          <i class="ph ph-user" style="font-size:16px;line-height:1;"></i>
-        </span>
-        <span style="font-size:9px;letter-spacing:0.04em;font-weight:500;">บัญชี</span>
+        <i class="ph ph-user"></i>
+        <span class="bnav-account-label">บัญชี</span>
       </button>
     </div>
   </nav>
