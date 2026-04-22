@@ -11,7 +11,7 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
 <base href="/">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="app.min.css?v=1b438fbf">
+    <link rel="stylesheet" href="app.min.css?v=c5de401b">
   <meta name="theme-color" content="#8B7355">
   <link rel="icon" type="image/webp" href="images/logo.webp">
   <title>ติดต่อเรา — Bt music drive</title>
@@ -39,15 +39,61 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700&display=swap" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700&display=swap"></noscript>
   <style>
+    html, body { overflow-x: clip; }
     body { font-family: 'Kanit', 'Kanit Fallback', 'Inter', 'Inter Fallback', sans-serif; }
-    .contact-card { transition: transform .2s, box-shadow .2s; }
+    .contact-shell {
+      background:
+        radial-gradient(circle at top left, rgba(139,115,85,.08), transparent 28%),
+        linear-gradient(180deg, rgba(255,255,255,.94), rgba(249,250,251,.98));
+      overflow-x: clip;
+    }
+    .contact-card { transition: transform .2s, box-shadow .2s, border-color .2s; }
     .contact-card:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,.10); }
+    .contact-card:focus-visible { outline: 2px solid rgba(139,115,85,.35); outline-offset: 3px; }
+    .contact-hero {
+      background:
+        radial-gradient(circle at top right, rgba(255,255,255,.18), transparent 28%),
+        linear-gradient(135deg, #0F172A 0%, #172033 58%, #8B7355 140%);
+    }
+    .contact-info-card {
+      background: linear-gradient(180deg, #ffffff 0%, #faf8f5 100%);
+    }
+    .contact-mini-card {
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.08);
+      backdrop-filter: blur(6px);
+    }
+    .contact-form-card {
+      background: linear-gradient(180deg, rgba(255,255,255,1), rgba(250,248,245,1));
+    }
+    .contact-mobile-menu,
+    .contact-hero,
+    .contact-info-card,
+    .contact-form-card,
+    .contact-card {
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
     .line-btn { background: #06C755; }
     .line-btn:hover { background: #05b34c; }
     .fb-btn { background: #1877F2; }
     .fb-btn:hover { background: #1464d8; }
     .tiktok-btn { background: #010101; }
     .tiktok-btn:hover { background: #2a2a2a; }
+    @media (max-width: 1023px) {
+      .contact-mobile-menu {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+    @media (max-width: 640px) {
+      .contact-mobile-menu { grid-template-columns: 1fr; }
+      .contact-card:hover { transform: none; }
+      .contact-hero {
+        border-radius: 24px;
+      }
+    }
   </style>
   <script type="application/ld+json">
   {
@@ -89,9 +135,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <header id="site-header"></header>
 
-  <main class="pt-20 pb-16">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div class="flex flex-col lg:flex-row gap-8">
+  <main class="pt-20 pb-16 contact-shell">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <div class="flex flex-col lg:flex-row gap-6 lg:gap-8">
 
         <!-- ══ Sidebar ══ -->
         <aside class="hidden lg:block lg:w-64 flex-shrink-0">
@@ -116,27 +162,66 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </aside>
 
         <!-- ══ Main Content ══ -->
-        <div class="flex-1 min-w-0 space-y-6">
+        <div class="flex-1 min-w-0 space-y-5 sm:space-y-6">
+
+          <nav class="contact-mobile-menu lg:hidden gap-3">
+            <a href="/contact" class="flex items-center gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-primary shadow-sm">
+              <i class="ph ph-headset text-lg"></i>
+              <span>ติดต่อเรา</span>
+            </a>
+            <a href="/about" class="flex items-center gap-3 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-sm">
+              <i class="ph ph-info text-lg"></i>
+              <span>เกี่ยวกับเรา</span>
+            </a>
+            <a href="/terms" class="flex items-center gap-3 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-sm">
+              <i class="ph ph-file-text text-lg"></i>
+              <span>ข้อกำหนด</span>
+            </a>
+            <a href="/privacy" class="flex items-center gap-3 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-sm">
+              <i class="ph ph-shield-check text-lg"></i>
+              <span>ความเป็นส่วนตัว</span>
+            </a>
+          </nav>
 
           <!-- Header -->
-          <div class="bg-secondary rounded-2xl p-8 text-white">
-            <div class="flex items-center gap-3 mb-2">
-              <div class="bg-white/10 w-11 h-11 rounded-full flex items-center justify-center">
-                <i class="ph ph-headset text-2xl text-white"></i>
+          <div class="contact-hero rounded-[28px] p-5 sm:p-8 text-white shadow-[0_20px_60px_rgba(15,23,42,0.18)]">
+            <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+              <div class="max-w-2xl">
+                <div class="flex items-center gap-3 mb-3">
+                  <div class="bg-white/10 w-11 h-11 rounded-full flex items-center justify-center ring-1 ring-white/15">
+                    <i class="ph ph-headset text-2xl text-white"></i>
+                  </div>
+                  <div>
+                    <p class="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.24em] text-white/60">Customer Support</p>
+                    <h1 class="text-2xl sm:text-3xl font-bold leading-tight">ติดต่อเรา</h1>
+                  </div>
+                </div>
+                <p class="text-sm sm:text-base text-gray-200 leading-relaxed">มีคำถาม สอบถามสินค้า หรือต้องการความช่วยเหลือ? ทีมงาน Bt music drive พร้อมตอบทุกวัน และช่วยดูแลตั้งแต่ก่อนสั่งซื้อจนถึงหลังการจัดส่ง</p>
               </div>
-              <h1 class="text-2xl font-bold">ติดต่อเรา</h1>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 lg:w-[360px]">
+                <div class="contact-mini-card rounded-2xl px-4 py-3">
+                  <p class="text-[11px] uppercase tracking-[0.2em] text-white/60">เวลาทำการ</p>
+                  <p class="mt-1 text-sm sm:text-base font-semibold text-white">ทุกวัน 9:00 - 21:00 น.</p>
+                </div>
+                <div class="contact-mini-card rounded-2xl px-4 py-3">
+                  <p class="text-[11px] uppercase tracking-[0.2em] text-white/60">ช่องทางหลัก</p>
+                  <p class="mt-1 text-sm sm:text-base font-semibold text-white">LINE, โทรศัพท์, Facebook</p>
+                </div>
+              </div>
             </div>
-            <p class="text-gray-300 text-sm mt-2 leading-relaxed">มีคำถาม สอบถามสินค้า หรือต้องการความช่วยเหลือ?<br>ทีมงาน Bt music drive พร้อมตอบทุกวัน ตั้งแต่ <span class="text-white font-semibold">9:00 – 21:00 น.</span></p>
           </div>
 
           <!-- ช่องทางหลัก -->
           <div>
-            <h2 class="text-base font-bold text-gray-700 mb-4">ช่องทางติดต่อด่วน</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="flex flex-col gap-1 mb-4">
+              <h2 class="text-base sm:text-lg font-bold text-gray-800">ช่องทางติดต่อด่วน</h2>
+              <p class="text-sm text-gray-500">เลือกช่องทางที่สะดวกที่สุดสำหรับการสอบถามหรือสั่งซื้อ</p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
 
               <!-- LINE -->
               <a href="https://line.me/R/ti/p/@bt1992?from=page&openQrModal=true&searchId=bt1992" target="_blank" rel="noopener"
-                 class="contact-card bg-white rounded-2xl border border-gray-100 p-5 flex flex-col items-center text-center gap-3 shadow-sm">
+                 class="contact-card bg-white rounded-3xl border border-gray-100 p-5 sm:p-6 flex flex-col items-center text-center gap-3 sm:gap-4 shadow-sm min-h-[220px] sm:min-h-[236px]">
                 <div class="w-14 h-14 rounded-full flex items-center justify-center line-btn shadow">
                   <svg viewBox="0 0 24 24" class="w-8 h-8 fill-white"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
                 </div>
@@ -149,7 +234,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
               <!-- โทรศัพท์ -->
               <a href="tel:0972957663"
-                 class="contact-card bg-white rounded-2xl border border-gray-100 p-5 flex flex-col items-center text-center gap-3 shadow-sm">
+                 class="contact-card bg-white rounded-3xl border border-gray-100 p-5 sm:p-6 flex flex-col items-center text-center gap-3 sm:gap-4 shadow-sm min-h-[220px] sm:min-h-[236px]">
                 <div class="w-14 h-14 rounded-full flex items-center justify-center bg-primary shadow">
                   <i class="ph ph-phone text-3xl text-white"></i>
                 </div>
@@ -162,7 +247,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
               <!-- Facebook -->
               <a href="https://www.facebook.com/btmusicdrive" target="_blank" rel="noopener"
-                 class="contact-card bg-white rounded-2xl border border-gray-100 p-5 flex flex-col items-center text-center gap-3 shadow-sm">
+                 class="contact-card bg-white rounded-3xl border border-gray-100 p-5 sm:p-6 flex flex-col items-center text-center gap-3 sm:gap-4 shadow-sm min-h-[220px] sm:min-h-[236px]">
                 <div class="w-14 h-14 rounded-full flex items-center justify-center fb-btn shadow">
                   <i class="ph ph-facebook-logo text-3xl text-white"></i>
                 </div>
@@ -177,11 +262,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           </div>
 
           <!-- ข้อมูลร้าน + โซเชียล -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 xl:grid-cols-[1.15fr_.85fr] gap-4">
 
             <!-- ข้อมูลร้าน -->
-            <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-              <div class="flex items-center gap-2 mb-4">
+            <div class="contact-info-card rounded-3xl border border-gray-100 p-5 sm:p-6 shadow-sm">
+              <div class="flex items-center gap-2 mb-5">
                 <i class="ph ph-storefront text-xl text-primary"></i>
                 <h2 class="font-bold text-gray-900">ข้อมูลร้าน</h2>
               </div>
@@ -205,13 +290,34 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               </ul>
             </div>
 
+            <div class="bg-white rounded-3xl border border-gray-100 p-5 sm:p-6 shadow-sm">
+              <div class="flex items-center gap-2 mb-5">
+                <i class="ph ph-chat-centered-dots text-xl text-primary"></i>
+                <h2 class="font-bold text-gray-900">แนะนำก่อนส่งข้อความ</h2>
+              </div>
+              <div class="space-y-3 text-sm text-gray-600">
+                <div class="rounded-2xl bg-amber-50 px-4 py-3 border border-amber-100">
+                  ระบุชื่อสินค้า หรือเลขคำสั่งซื้อ ถ้ามี เพื่อให้ทีมงานช่วยตรวจสอบได้เร็วขึ้น
+                </div>
+                <div class="rounded-2xl bg-gray-50 px-4 py-3 border border-gray-100">
+                  หากต้องการคำตอบไวที่สุด แนะนำติดต่อผ่าน LINE หรือโทรศัพท์ในเวลาทำการ
+                </div>
+                <div class="rounded-2xl bg-gray-50 px-4 py-3 border border-gray-100">
+                  ข้อความผ่านฟอร์มนี้จะถูกส่งให้ทีมงานเพื่อติดต่อกลับภายใน 1 วันทำการ
+                </div>
+              </div>
+            </div>
+
           </div>
 
           <!-- ══ Contact Form ══ -->
-          <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm" id="contact-form-section">
-            <div class="flex items-center gap-2 mb-5">
-              <i class="ph ph-paper-plane-tilt text-xl text-primary"></i>
-              <h2 class="font-bold text-gray-900">ส่งข้อความหาเรา</h2>
+          <div class="contact-form-card rounded-3xl border border-gray-100 p-5 sm:p-6 md:p-7 shadow-sm" id="contact-form-section">
+            <div class="flex flex-col gap-2 mb-5 sm:mb-6">
+              <div class="flex items-center gap-2">
+                <i class="ph ph-paper-plane-tilt text-xl text-primary"></i>
+                <h2 class="font-bold text-gray-900">ส่งข้อความหาเรา</h2>
+              </div>
+              <p class="text-sm text-gray-500">กรอกข้อมูลให้ครบเพื่อให้ทีมงานติดต่อกลับได้สะดวกและรวดเร็ว</p>
             </div>
 
             <!-- Success state -->
@@ -225,7 +331,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 class="mt-5 text-sm text-primary font-semibold hover:underline">ส่งข้อความอีกครั้ง</button>
             </div>
 
-            <form id="contact-form" class="space-y-4" novalidate>
+            <form id="contact-form" class="space-y-4 sm:space-y-5" novalidate>
               <!-- Honeypot -->
               <div style="position:absolute;left:-9999px;opacity:0;pointer-events:none;" aria-hidden="true">
                 <input type="text" name="_hp" id="contact-hp" tabindex="-1" autocomplete="off">
@@ -276,7 +382,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               </div>
 
               <button type="submit" id="cf-submit"
-                class="w-full bg-secondary hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl transition-colors flex items-center justify-center gap-2 text-base">
+                class="w-full sm:w-auto sm:min-w-[220px] bg-secondary hover:bg-slate-800 text-white font-bold py-3.5 px-6 rounded-xl transition-colors flex items-center justify-center gap-2 text-base">
                 <i class="ph ph-paper-plane-tilt text-lg" id="cf-btn-icon"></i>
                 <span id="cf-btn-text">ส่งข้อความ</span>
                 <i class="ph ph-spinner animate-spin hidden" id="cf-spinner"></i>
