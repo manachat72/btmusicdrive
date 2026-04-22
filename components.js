@@ -321,9 +321,22 @@ function _mobileBottomNavHTML() {
     @media (hover: hover) { ._dlink:hover { background: rgba(255,255,255,0.04) !important; } }
     #bnav-home.active-tab, #bnav-home.active-tab i,
     .bnav-tab.active-tab, .bnav-tab.active-tab i { color: #8B7355 !important; }
-    #bnav-account-btn { color: #64748b; }
+    #bnav-account-btn {
+      color: #64748b;
+      outline: none !important;
+      box-shadow: none !important;
+      -webkit-tap-highlight-color: transparent;
+      appearance: none;
+    }
     #bnav-account-btn i { color: currentColor !important; font-size: 21px !important; line-height: 1; }
     #bnav-account-btn span.bnav-account-label { font-size: 9px; letter-spacing: 0.04em; font-weight: 500; }
+    #bnav-account-btn:focus,
+    #bnav-account-btn:focus-visible,
+    #bnav-account-btn:active {
+      outline: none !important;
+      box-shadow: none !important;
+      border: 0 !important;
+    }
     #bnav-account-btn:hover { color: #8B7355; }
   </style>
 
