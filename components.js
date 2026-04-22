@@ -321,6 +321,26 @@ function _mobileBottomNavHTML() {
     @media (hover: hover) { ._dlink:hover { background: rgba(255,255,255,0.04) !important; } }
     #bnav-home.active-tab, #bnav-home.active-tab i,
     .bnav-tab.active-tab, .bnav-tab.active-tab i { color: #8B7355 !important; }
+    #bnav-account-btn { color: #64748b; }
+    #bnav-account-btn i { color: currentColor !important; }
+    #bnav-account-btn .bnav-account-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      background: transparent;
+      border: 1.5px solid rgba(148,163,184,0.28);
+      transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+    }
+    #bnav-account-btn:hover,
+    #bnav-account-btn:hover .bnav-account-icon {
+      color: #8B7355;
+      border-color: rgba(139,115,85,0.28);
+      background: rgba(139,115,85,0.08);
+    }
   </style>
 
   <!-- ── Mobile Bottom Bar ── -->
@@ -344,9 +364,9 @@ function _mobileBottomNavHTML() {
           <span id="bnav-cart-count" class="absolute flex items-center justify-center" style="top:-2px;right:-4px;min-width:14px;height:14px;padding:0 3px;font-size:7.5px;font-weight:700;color:#fff;background:#8B7355;border-radius:99px;display:none;">0</span>
         </div>
       </a>
-      <button id="bnav-account-btn" class="flex flex-col items-center justify-center flex-1 gap-[3px]" style="background:none;border:none;cursor:pointer;color:#64748b;">
-        <span style="width:30px;height:30px;border-radius:50%;background:rgba(139,115,85,0.12);border:1.5px solid rgba(139,115,85,0.28);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-          <i class="ph ph-user" style="font-size:16px;color:#8B7355;line-height:1;"></i>
+      <button id="bnav-account-btn" class="flex flex-col items-center justify-center flex-1 gap-[3px]" style="background:none;border:none;cursor:pointer;">
+        <span class="bnav-account-icon">
+          <i class="ph ph-user" style="font-size:16px;line-height:1;"></i>
         </span>
         <span style="font-size:9px;letter-spacing:0.04em;font-weight:500;">บัญชี</span>
       </button>
