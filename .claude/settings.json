@@ -10,7 +10,8 @@
       "Bash(awk '{print $5, $6, $7, $8, $9}')",
       "Bash(grep -v \":0$\")",
       "Bash(npx --yes terser --version)",
-      "Bash(npx --yes terser components.js -o components.min.js --compress --mangle)"
+      "Bash(npx --yes terser components.js -o components.min.js --compress --mangle)",
+      "Bash(awk '{printf \"%7.1f KB  %s\\\\n\", $1/1024, $2}')"
     ]
   }
 }
