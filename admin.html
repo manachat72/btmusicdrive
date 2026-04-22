@@ -752,11 +752,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <strong>ข้อผิดพลาด:</strong> <span id="products-error-text"></span>
       </div>
 
+      <div id="products-bulk-bar" style="display:none;background:#fff7ed;border:1px solid #fdba74;border-radius:6px;padding:10px 14px;margin-bottom:10px;align-items:center;justify-content:space-between;gap:12px;">
+        <span style="font-size:13px;color:#9a3412;"><i class="fa-solid fa-check-double"></i> เลือก <strong id="products-bulk-count">0</strong> รายการ</span>
+        <div style="display:flex;gap:8px;">
+          <button onclick="clearProductSelection()" class="wp-btn" style="font-size:12px;">ยกเลิก</button>
+          <button onclick="askBulkDeleteProducts()" class="wp-btn" style="background:#d63638;color:#fff;border-color:#d63638;font-size:12px;"><i class="fa-solid fa-trash"></i> ลบที่เลือก</button>
+        </div>
+      </div>
       <div id="products-table-wrapper" class="wp-card" style="display:none;">
         <div class="card-body nopad" style="overflow-x:auto;">
           <table class="wp-tbl">
             <thead>
               <tr>
+                <th style="width:36px;text-align:center;"><input type="checkbox" id="products-select-all" onchange="toggleSelectAllProducts(this.checked)" title="เลือกทั้งหมด"></th>
                 <th style="width:52px;"></th>
                 <th>สินค้า</th>
                 <th>หมวดหมู่</th>
@@ -1901,7 +1909,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         : `<div class="prod-thumb-placeholder"><i class="fa-solid fa-image"></i></div>`;
       const isActive = p.isActive !== false;
       return `
-      <tr style="opacity:${isActive ? 1 : 0.5};">
+      <tr style="opacity:${isActive ? 1 : 0.5};" data-product-id="${escHtml(p.id)}">
+        <td style="text-align:center;"><input type="checkbox" class="prod-select" value="${escHtml(p.id)}" onchange="updateBulkActionsBar()"></td>
         <td style="padding:8px 10px;">${imgHtml}</td>
         <td>
           <div style="font-weight:600;">${escHtml(p.name)}</div>
@@ -1932,6 +1941,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </td>
       </tr>`;
     }).join('');
+
+    // Reset bulk selection bar after re-render
+    const bar = document.getElementById('products-bulk-bar');
+    if (bar) bar.style.display = 'none';
+    const selAll = document.getElementById('products-select-all');
+    if (selAll) selAll.checked = false;
 
     // Use event delegation — safe for any product data (no JSON in onclick)
     const tbody = document.getElementById('products-tbody');
@@ -2175,6 +2190,49 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     _deleteProductId = id;
     document.getElementById('confirm-text').textContent = `"จะลบ "${name}" อย่างถาวร`;
     document.getElementById('confirm-modal').style.display = 'flex';
+  }
+
+  // ── Bulk select + delete ──────────────────────────────────────────
+  function getSelectedProductIds() {
+    return Array.from(document.querySelectorAll('.prod-select:checked')).map(cb => cb.value);
+  }
+  function updateBulkActionsBar() {
+    const ids = getSelectedProductIds();
+    const bar = document.getElementById('products-bulk-bar');
+    document.getElementById('products-bulk-count').textContent = ids.length;
+    bar.style.display = ids.length ? 'flex' : 'none';
+    // sync "select all" state
+    const all = document.querySelectorAll('.prod-select');
+    const selAll = document.getElementById('products-select-all');
+    if (selAll) selAll.checked = all.length > 0 && ids.length === all.length;
+  }
+  function toggleSelectAllProducts(checked) {
+    document.querySelectorAll('.prod-select').forEach(cb => { cb.checked = checked; });
+    updateBulkActionsBar();
+  }
+  function clearProductSelection() {
+    document.querySelectorAll('.prod-select').forEach(cb => { cb.checked = false; });
+    const selAll = document.getElementById('products-select-all');
+    if (selAll) selAll.checked = false;
+    updateBulkActionsBar();
+  }
+  function askBulkDeleteProducts() {
+    const ids = getSelectedProductIds();
+    if (!ids.length) return;
+    if (!confirm(`ยืนยันลบสินค้า ${ids.length} รายการแบบถาวร?`)) return;
+    bulkDeleteProducts(ids);
+  }
+  async function bulkDeleteProducts(ids) {
+    let ok = 0, fail = 0;
+    for (const id of ids) {
+      try {
+        const res = await fetch(`${API_BASE}/products/${id}`, { method: 'DELETE', headers: adminHeaders(false) });
+        if (res.ok) ok++; else fail++;
+      } catch { fail++; }
+    }
+    showToast(`ลบสำเร็จ ${ok} รายการ${fail ? `, ล้มเหลว ${fail}` : ''}`, fail > 0);
+    clearProductSelection();
+    loadProducts();
   }
 
   function closeConfirm() {
