@@ -341,7 +341,7 @@ function _mobileBottomNavHTML() {
   </style>
 
   <!-- ── Mobile Bottom Bar ── -->
-  <nav id="mobile-bottom-nav" class="fixed bottom-0 left-0 right-0 z-50 md:hidden" style="background:#0F172A;border-top:1px solid rgba(139,115,85,0.18);height:60px;">
+  <nav id="mobile-bottom-nav" aria-label="เมนูหลัก" class="fixed bottom-0 left-0 right-0 z-50 md:hidden" style="background:#0F172A;border-top:1px solid rgba(139,115,85,0.18);height:60px;">
     <div class="flex h-full">
       <a href="/" id="bnav-home" class="flex flex-col items-center justify-center flex-1 gap-[3px] no-underline" style="color:#64748b;">
         <i class="ph ph-house" style="font-size:21px;line-height:1;"></i>
@@ -1051,12 +1051,12 @@ async function _renderFreeShipRecs(total) {
     <div class="flex-shrink-0 w-[108px] bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm hover:shadow-md hover:border-amber-300 transition-all duration-200">
       <div class="relative">
         <img src="${img}" alt="${name}" class="w-full h-[72px] object-cover" loading="lazy" onerror="this.src='images/logo.webp'">
-        <div class="absolute bottom-1 right-1 bg-primary text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow">฿${price}</div>
+        <div class="absolute bottom-1 right-1 bg-red-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow">฿${price}</div>
       </div>
       <div class="p-1.5">
         <p class="text-[10px] font-semibold text-gray-800 leading-tight mb-1.5" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.4em">${name}</p>
         <button onclick="_addRecToCart(this,'${id}','${name}',${price},'${img}')"
-          class="w-full text-[10px] bg-white border border-red-500 hover:bg-red-50 text-red-500 hover:text-red-600 font-bold rounded-lg py-1 transition-colors flex items-center justify-center gap-0.5">
+          class="w-full text-[10px] bg-white border border-red-600 hover:bg-red-50 text-red-600 hover:text-red-700 font-bold rounded-lg py-1 transition-colors flex items-center justify-center gap-0.5" aria-label="เพิ่ม ${name} ลงตะกร้า">
           <i class="ph ph-plus text-[10px]"></i> เพิ่ม
         </button>
       </div>
