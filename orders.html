@@ -106,6 +106,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <script>
     const API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') ? 'http://localhost:5000/api' : '/api';
 
+    let ordersState = [];
+    let activeFilter = 'all';
+    let ordersRefreshTimer = null;
+
     document.addEventListener('DOMContentLoaded', async () => {
       const token = localStorage.getItem('btmusicdrive_token');
       if (!token) { location.href = '/'; return; }
@@ -116,41 +120,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           const data = await res.json();
           document.getElementById('sidebar-user-name').textContent = data.user.name || 'ผู้ใช้';
           document.getElementById('sidebar-user-email').textContent = data.user.email || '';
-          
-          // Fetch orders from API
-          let orders = [];
-          try {
-            const ordersRes = await fetch(`${API_BASE}/orders/my`, { headers: { Authorization: `Bearer ${token}` } });
-            if (ordersRes.ok) {
-              const rawOrders = await ordersRes.json();
-              orders = rawOrders.map(o => ({
-                id: o.id ? o.id.slice(-8).toUpperCase() : '—',
-                status: (o.status || 'pending').toLowerCase(),
-                date: o.createdAt ? new Date(o.createdAt).toLocaleDateString('th-TH', { year:'numeric', month:'short', day:'numeric' }) : '',
-                total: Number(o.totalAmount) || 0,
-                trackingNumber: o.trackingNumber || '',
-                carrier: o.carrier || '',
-                items: (o.items || []).map(i => ({
-                  name: i.product?.name || 'สินค้า',
-                  qty: i.quantity || 1,
-                  price: Number(i.priceAtTime) || 0
-                }))
-              }));
-            }
-          } catch(e) { console.warn('Could not fetch orders from API, falling back to localStorage:', e); }
-
-          // Fallback to localStorage if API returned empty
-          if (!orders.length) {
-            orders = JSON.parse(localStorage.getItem('btmusicdrive_orders') || '[]');
-          }
-          
-          renderOrders(orders, 'all');
+          await loadOrders(token);
+          ordersRefreshTimer = window.setInterval(() => loadOrders(token, { silent: true }), 30000);
+          document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') loadOrders(token, { silent: true });
+          });
 
           document.querySelectorAll('.order-tab').forEach(btn => {
             btn.addEventListener('click', function(){
               document.querySelectorAll('.order-tab').forEach(b => { b.classList.remove('bg-primary','text-white','active'); b.classList.add('bg-gray-100','text-gray-600'); });
               this.classList.remove('bg-gray-100','text-gray-600'); this.classList.add('bg-primary','text-white','active');
-              renderOrders(orders, this.dataset.filter);
+              activeFilter = this.dataset.filter;
+              renderOrders(ordersState, activeFilter);
             });
           });
         } else {
@@ -158,6 +139,46 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         }
       } catch(e) { console.error(e); }
     });
+
+    async function loadOrders(token, { silent = false } = {}) {
+      let orders = [];
+      try {
+        const ordersRes = await fetch(`${API_BASE}/orders/my`, { headers: { Authorization: `Bearer ${token}` } });
+        if (ordersRes.ok) {
+          const rawOrders = await ordersRes.json();
+          orders = rawOrders.map(o => ({
+            id: o.id ? o.id.slice(-8).toUpperCase() : '—',
+            status: (o.status || 'pending').toLowerCase(),
+            date: o.createdAt ? new Date(o.createdAt).toLocaleDateString('th-TH', { year:'numeric', month:'short', day:'numeric' }) : '',
+            updatedAt: o.updatedAt ? new Date(o.updatedAt).toLocaleString('th-TH', { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }) : '',
+            total: Number(o.totalAmount) || 0,
+            trackingNumber: o.trackingNumber || '',
+            carrier: o.carrier || '',
+            items: (o.items || []).map(i => ({
+              name: i.product?.name || 'สินค้า',
+              qty: i.quantity || 1,
+              price: Number(i.priceAtTime) || 0
+            }))
+          }));
+        }
+      } catch(e) {
+        console.warn('Could not fetch orders from API, falling back to localStorage:', e);
+      }
+
+      if (!orders.length) {
+        orders = JSON.parse(localStorage.getItem('btmusicdrive_orders') || '[]');
+      }
+
+      ordersState = orders;
+      renderOrders(ordersState, activeFilter);
+
+      if (!silent) {
+        const empty = document.getElementById('orders-empty');
+        if (empty && ordersState.length) {
+          empty.classList.add('hidden');
+        }
+      }
+    }
 
     function renderOrders(orders, filter){
       const list = document.getElementById('orders-list');
@@ -174,7 +195,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if(!filtered.length){ list.innerHTML=''; empty.classList.remove('hidden'); return; }
       empty.classList.add('hidden');
 
-      const statusMap = { pending: {label:'รอชำระเงิน', color:'yellow'}, processing: {label:'กำลังจัดส่ง', color:'blue'}, paid: {label:'ชำระเงินแล้ว', color:'green'}, shipped: {label:'จัดส่งแล้ว', color:'orange'}, delivered: {label:'สำเร็จ', color:'green'}, cancelled: {label:'ยกเลิก', color:'red'} };
+      const statusMap = { pending: {label:'รอชำระเงิน', color:'yellow'}, processing: {label:'กำลังดำเนินการ', color:'blue'}, paid: {label:'ชำระเงินแล้ว รอจัดส่ง', color:'emerald'}, shipped: {label:'จัดส่งแล้ว', color:'orange'}, delivered: {label:'สำเร็จ', color:'green'}, cancelled: {label:'ยกเลิก', color:'red'} };
       const CARRIER_URLS = { Flash: 'https://www.flashexpress.co.th/fle/tracking?se=', Kerry: 'https://th.kerryexpress.com/en/track/?track=', JT: 'https://www.jtexpress.co.th/index/query/gzquery.html?bills=' };
 
       list.innerHTML = filtered.map(o => {
@@ -203,6 +224,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <span class="text-sm text-gray-500">ยอดรวม</span>
               <span class="font-bold text-lg">฿${(o.total||0).toLocaleString()}</span>
             </div>
+            ${o.updatedAt ? `
+            <div class="mt-3 text-xs text-gray-400">
+              อัปเดตล่าสุด ${o.updatedAt}
+            </div>` : ''}
             ${o.trackingNumber ? `
             <div class="mt-3 pt-3 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center gap-2">
               <div class="flex items-center gap-2 flex-1 min-w-0">

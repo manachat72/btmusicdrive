@@ -1731,6 +1731,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   // ── Orders ────────────────────────────────────────────────────────────────
   let _orders = [];
+  const ORDER_STATUS_OPTIONS = [
+    ['PENDING', 'รอชำระ'],
+    ['PROCESSING', 'กำลังดำเนินการ'],
+    ['PAID', 'ชำระแล้ว'],
+    ['SHIPPED', 'จัดส่งแล้ว'],
+    ['DELIVERED', 'ส่งสำเร็จ'],
+    ['CANCELLED', 'ยกเลิก'],
+  ];
 
   function vis(id, show) {
     const el = document.getElementById(id);
@@ -1774,6 +1782,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   }
 
   function renderOrdersTable(orders) {
+    const buildStatusOptions = (currentStatus) => ORDER_STATUS_OPTIONS.map(([value, label]) => `
+      <option value="${value}" ${value === currentStatus ? 'selected' : ''}>${label}</option>
+    `).join('');
+
     document.getElementById('orders-tbody').innerHTML = orders.map((order, idx) => {
       const date = new Date(order.createdAt).toLocaleDateString('th-TH', { day: '2-digit', month: 'short', year: 'numeric' });
       const shortId = '#' + order.id.slice(-8).toUpperCase();
@@ -1793,6 +1805,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <td>
             <span class="s-badge s-${order.status}">${order.status}</span>
             ${order.trackingNumber ? `<div class="track-meta">${escHtml(order.carrier||'')} &middot; ${escHtml(order.trackingNumber)}</div>` : ''}
+            <form class="track-form" style="flex-direction:row;align-items:center;gap:5px;margin-top:8px;" onsubmit="submitOrderStatus(event,'${order.id}')">
+              <select name="status" style="flex:1;min-width:0;">
+                ${buildStatusOptions(order.status)}
+              </select>
+              <button type="submit" class="ship-btn" style="white-space:nowrap;background:#0f766e;">
+                <i class="fa-solid fa-pen-to-square"></i> สถานะ
+              </button>
+            </form>
           </td>
           <td class="r" style="font-weight:700;">฿${Number(order.totalAmount).toFixed(2)}</td>
           <td style="white-space:nowrap;color:var(--muted);font-size:12px;">${date}</td>
@@ -1813,7 +1833,36 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </button>
           </td>
         </tr>`;
-    }).join('');
+      }).join('');
+  }
+
+  async function submitOrderStatus(e, orderId) {
+    e.preventDefault();
+    const form = e.target;
+    const status = form.status.value;
+    const btn = form.querySelector('.ship-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>';
+    try {
+      const res = await fetch(`${API_BASE}/orders/${orderId}/status`, {
+        method: 'PATCH',
+        headers: adminHeaders(),
+        body: JSON.stringify({ status })
+      });
+      if (res.ok) {
+        showToast(`อัปเดตสถานะเป็น ${status} แล้ว`);
+        loadOrders();
+        if (document.getElementById('section-shipping')?.style.display !== 'none') loadShipping();
+      } else {
+        const data = await res.json().catch(() => ({}));
+        showToast(data.error || 'อัปเดตสถานะไม่สำเร็จ', true);
+      }
+    } catch {
+      showToast('เครือข่ายผิดพลาด', true);
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-pen-to-square"></i> สถานะ';
+    }
   }
 
   async function submitTracking(e, orderId) {
