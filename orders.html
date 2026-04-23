@@ -162,7 +162,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     function renderOrders(orders, filter){
       const list = document.getElementById('orders-list');
       const empty = document.getElementById('orders-empty');
-      const filtered = filter==='all' ? orders : orders.filter(o => o.status === filter);
+      const filterGroups = {
+        pending: ['pending'],
+        processing: ['processing', 'paid', 'shipped'],
+        delivered: ['delivered'],
+        cancelled: ['cancelled']
+      };
+      const filtered = filter==='all'
+        ? orders
+        : orders.filter(o => (filterGroups[filter] || [filter]).includes(o.status));
       if(!filtered.length){ list.innerHTML=''; empty.classList.remove('hidden'); return; }
       empty.classList.add('hidden');
 
