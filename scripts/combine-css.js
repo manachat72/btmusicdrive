@@ -3,7 +3,7 @@ const path = require('path');
 
 const root = path.resolve(__dirname, '..');
 
-const sources = ['tailwind.min.css', 'style.min.css'];
+const sources = ['tailwind.min.css', 'style.css'];
 const output = 'app.min.css';
 
 const combined = sources
