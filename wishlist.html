@@ -93,7 +93,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </main>
 
   <div id="site-footer"></div>
-  <script src="components.min.js?v=23db0501"></script>
+  <script src="components.min.js?v=7c5b081b"></script>
   <script>
     const API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') ? 'http://localhost:5000/api' : '/api';
 
@@ -130,23 +130,37 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if(!list.length){ grid.innerHTML=''; empty.classList.remove('hidden'); return; }
       empty.classList.add('hidden');
 
-      grid.innerHTML = list.map((item, idx) => `
+      grid.innerHTML = list.map((item, idx) => {
+        const hasDiscount = item.originalPrice && item.originalPrice > item.price;
+        const discPct = hasDiscount ? Math.round((1 - item.price / item.originalPrice) * 100) : 0;
+        const priceClass = hasDiscount ? 'price-current-sale' : 'price-current-neutral';
+        const origHtml = hasDiscount
+          ? `<span class="text-xs price-original-muted ml-1.5">฿${Number(item.originalPrice).toLocaleString()}</span>`
+          : '';
+        const badgeHtml = hasDiscount
+          ? `<span class="absolute top-2 left-2 bg-red-600 text-white px-2 py-0.5 rounded-full text-[10px] font-bold shadow-sm">-${discPct}%</span>`
+          : '';
+        return `
         <div class="border border-gray-100 rounded-xl overflow-hidden group">
           <div class="relative aspect-square bg-gray-100 flex items-center justify-center">
             ${item.image ? `<img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover">` : '<i class="ph ph-music-note text-4xl text-gray-300"></i>'}
-            <button onclick="removeWishlist(${idx})" class="absolute top-2 right-2 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow hover:bg-red-50 transition" title="ลบออก">
+            ${badgeHtml}
+            <button onclick="removeWishlist(${idx})" class="absolute top-2 right-2 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow hover:bg-red-50 transition" aria-label="ลบออกจากรายการโปรด" title="ลบออก">
               <i class="ph-fill ph-heart text-red-500"></i>
             </button>
           </div>
           <div class="p-3">
             <p class="text-sm font-semibold text-gray-900 truncate">${item.name||'สินค้า'}</p>
-            <p class="text-primary font-bold mt-1">฿${(item.price||0).toLocaleString()}</p>
+            <div class="flex items-baseline gap-1 mt-1">
+              <span class="font-bold ${priceClass}">฿${(item.price||0).toLocaleString()}</span>
+              ${origHtml}
+            </div>
             <button onclick="addToCart(${idx})" class="mt-2 w-full bg-primary hover:bg-yellow-600 text-white text-sm font-semibold py-2 rounded-lg transition-colors">
               <i class="ph ph-shopping-cart mr-1"></i> ใส่ตะกร้า
             </button>
           </div>
         </div>
-      `).join('');
+      `;}).join('');
     }
 
     function removeWishlist(idx){

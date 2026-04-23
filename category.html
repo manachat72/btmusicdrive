@@ -157,7 +157,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- Shared Footer -->
     <div id="site-footer"></div>
 
-    <script src="components.min.js?v=23db0501"></script>
+    <script src="components.min.js?v=7c5b081b"></script>
     <script>
     // ── Category Page Logic ──────────────────────────────────────────
     const LS_CATEGORIES_KEY = 'btmusicdrive_categories';
@@ -370,7 +370,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
             const hasDiscount = product.originalPrice && product.originalPrice > product.price;
             const discountHtml = hasDiscount ? `<span class="text-xs price-original-muted">฿${product.originalPrice.toLocaleString()}</span>` : '';
-            const discountBadge = hasDiscount ? `<span class="absolute top-2 left-2 bg-red-500 text-white px-2 py-0.5 rounded-full text-[10px] font-bold">-${Math.round((1 - product.price / product.originalPrice) * 100)}%</span>` : '';
+            const discountBadge = hasDiscount ? `<span class="absolute top-2 left-2 bg-red-600 text-white px-2 py-0.5 rounded-full text-[10px] font-bold">-${Math.round((1 - product.price / product.originalPrice) * 100)}%</span>` : '';
             const currentPriceClass = hasDiscount ? 'price-current-sale' : 'price-current-neutral';
             const productUrl = product.slug ? `/product/${product.slug}` : `/product?id=${product.id}`;
 
@@ -384,7 +384,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <a href="${productUrl}" class="block">
                         <h3 class="text-sm font-semibold text-gray-900 mb-1 line-clamp-2 leading-tight hover:text-primary transition-colors">${product.name}</h3>
                     </a>
-                    <p class="text-[11px] text-gray-400 mb-1.5">${product.brand || ''} ${product.sku ? '| ' + product.sku : ''}</p>
+                    <p class="text-[11px] text-gray-500 mb-1.5">${product.brand || ''} ${product.sku ? '| ' + product.sku : ''}</p>
                     <div class="flex items-center gap-1 mb-2">
                         ${starsHtml}
                         <span class="text-[10px] text-gray-400 ml-0.5">(${reviews})</span>

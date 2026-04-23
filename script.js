@@ -148,7 +148,7 @@ function renderProducts() {
         const hasDiscount = product.originalPrice && product.originalPrice > product.price;
         const discPct = hasDiscount ? Math.round((1 - product.price / product.originalPrice) * 100) : 0;
         const badgeHtml = hasDiscount
-            ? `<span class="absolute top-2 left-2 bg-red-500 text-white px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold shadow-sm">-${discPct}%</span>`
+            ? `<span class="absolute top-2 left-2 bg-red-600 text-white px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold shadow-sm">-${discPct}%</span>`
             : (product.badge ? `<span class="absolute top-2 left-2 bg-white/90 backdrop-blur-sm px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold text-gray-900 shadow-sm">${product.badge}</span>` : '');
 
         // Low stock
@@ -170,11 +170,11 @@ function renderProducts() {
                 <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </a>
             <div class="p-2.5 sm:p-4">
-                <div class="text-[10px] sm:text-xs text-gray-400 font-medium mb-0.5 uppercase tracking-wider">${escapeHtml(product.category?.name || product.category || '')}</div>
+                <div class="text-[10px] sm:text-xs text-gray-500 font-medium mb-0.5 uppercase tracking-wider">${escapeHtml(product.category?.name || product.category || '')}</div>
                 <a href="${_pUrl}" class="block"><h3 class="text-xs sm:text-sm font-bold text-gray-900 mb-1 line-clamp-2 hover:text-primary transition-colors leading-snug">${escapeHtml(product.name)}</h3></a>
                 <div class="hidden sm:flex items-center mb-2">
                     <div class="flex mr-1">${starsHtml}</div>
-                    <span class="text-xs text-gray-400">(${reviews})</span>
+                    <span class="text-xs text-gray-500">(${reviews})</span>
                 </div>
                 <div class="flex items-center justify-between gap-2 mb-2">
                     <div class="flex items-baseline gap-1.5 flex-wrap">

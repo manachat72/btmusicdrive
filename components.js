@@ -76,7 +76,7 @@ function _navbarHTML() {
           </a>
         </div>
         <div class="flex items-center space-x-4">
-          <button id="navbar-search-btn" class="text-gray-300 hover:text-primary transition-colors"><i class="ph ph-magnifying-glass text-2xl"></i></button>
+          <button id="navbar-search-btn" class="text-gray-300 hover:text-primary transition-colors" aria-label="ค้นหาสินค้า"><i class="ph ph-magnifying-glass text-2xl"></i></button>
           <button id="cart-btn" class="hidden md:block text-gray-300 hover:text-primary transition-colors relative" aria-label="ตะกร้าสินค้า">
             <i class="ph ph-shopping-cart text-2xl"></i>
             <span id="cart-count" class="absolute -top-1 -right-1 bg-primary text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] px-1 items-center justify-center" style="display:none;">0</span>
@@ -94,7 +94,7 @@ function _navbarHTML() {
     <div class="max-w-3xl mx-auto px-4 py-5 flex items-center gap-3">
       <i class="ph ph-magnifying-glass text-2xl text-primary flex-shrink-0"></i>
       <input type="text" id="navbar-search-input" placeholder="ค้นหาสินค้า เช่น เพลงลูกทุ่ง, ป๊อปเกาหลี..." autocomplete="off" class="flex-1 bg-transparent text-white placeholder-gray-400 text-lg outline-none">
-      <button id="navbar-search-close" class="text-gray-400 hover:text-white transition-colors p-1 flex-shrink-0"><i class="ph ph-x text-xl"></i></button>
+      <button id="navbar-search-close" class="text-gray-400 hover:text-white transition-colors p-1 flex-shrink-0" aria-label="ปิดการค้นหา"><i class="ph ph-x text-xl"></i></button>
     </div>
   </div>`;
 }
@@ -106,7 +106,7 @@ function _cartSidebarHTML() {
       <h2 class="text-lg font-bold flex items-center"><i class="ph ph-shopping-cart mr-2"></i> ตะกร้าสินค้า</h2>
       <div class="flex items-center gap-3">
         <button id="clear-cart-btn" class="text-xs text-gray-400 hover:text-red-500 transition-colors hidden">ลบทั้งหมด</button>
-        <button id="close-cart-btn" class="text-gray-500 hover:text-red-500 transition-colors"><i class="ph ph-x text-2xl"></i></button>
+        <button id="close-cart-btn" class="text-gray-500 hover:text-red-500 transition-colors" aria-label="ปิดตะกร้าสินค้า"><i class="ph ph-x text-2xl"></i></button>
       </div>
     </div>
     <!-- Free Shipping Progress Bar -->
@@ -351,7 +351,7 @@ function _mobileBottomNavHTML() {
         <i class="ph ph-storefront" style="font-size:21px;line-height:1;"></i>
         <span style="font-size:9px;letter-spacing:0.04em;font-weight:500;">ร้านค้า</span>
       </a>
-      <a href="/cart" id="bnav-cart-btn" class="flex flex-col items-center justify-center flex-1 gap-[3px] relative no-underline" style="color:#64748b;">
+      <a href="/cart" id="bnav-cart-btn" class="flex flex-col items-center justify-center flex-1 gap-[3px] relative no-underline" style="color:#64748b;" aria-label="ตะกร้าสินค้า">
         <div class="relative flex-shrink-0" style="width:28px;height:24px;display:flex;align-items:center;justify-content:center;">
           <i class="ph ph-shopping-cart" style="font-size:21px;line-height:1;"></i>
           <span id="bnav-cart-count" class="absolute flex items-center justify-center" style="top:-2px;right:-4px;min-width:14px;height:14px;padding:0 3px;font-size:7.5px;font-weight:700;color:#fff;background:#8B7355;border-radius:99px;display:none;">0</span>
@@ -372,7 +372,7 @@ function _mobileBottomNavHTML() {
 
     <!-- Profile Header -->
     <div style="position:relative;padding:52px 22px 20px;background:linear-gradient(165deg,#13213a 0%,#0A1120 65%);border-bottom:1px solid rgba(139,115,85,0.12);">
-      <button id="bnav-drawer-close" style="position:absolute;top:12px;right:14px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.07);cursor:pointer;">
+      <button id="bnav-drawer-close" aria-label="ปิดเมนู" style="position:absolute;top:12px;right:14px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.07);cursor:pointer;">
         <i class="ph ph-x" style="font-size:15px;color:#94a3b8;"></i>
       </button>
 
