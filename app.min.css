@@ -219,8 +219,11 @@ html {
 }
 
 .price-original-muted {
-    color: #9ca3af !important;
+    color: #6b7280 !important;
+    font-weight: 500;
     text-decoration: line-through;
+    text-decoration-color: #9ca3af;
+    text-decoration-thickness: 1px;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -258,6 +261,54 @@ html {
     opacity: 0;
     transform: translateY(20px);
     transition: all 0.3s ease;
+}
+
+/* Mobile nav and account drawer contrast fixes for PSI */
+#mobile-bottom-nav a,
+#mobile-bottom-nav button {
+    color: #f8fafc;
+}
+
+#mobile-bottom-nav span,
+#mobile-bottom-nav .nbav-account-label {
+    color: #f8fafc !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.02em !important;
+    line-height: 1.25;
+}
+
+#nbav-account-menu,
+#nbav-account-menu p,
+#nbav-account-menu span,
+#nbav-account-menu button,
+#nbav-account-menu a {
+    color: #f8fafc;
+}
+
+#nbav-account-menu p {
+    font-size: 12px !important;
+    line-height: 1.5;
+}
+
+#nbav-account-menu #bnav-login-btn {
+    background: #f4efe8 !important;
+    color: #0f172a !important;
+    border: 1px solid rgba(139, 115, 85, 0.35);
+    border-radius: 0.875rem;
+    font-weight: 700;
+}
+
+#nbav-account-menu #bnav-login-btn *,
+#nbav-account-menu #bnav-login-btn i,
+#nbav-account-menu #bnav-login-btn span {
+    color: inherit !important;
+}
+
+#nbav-account-menu .text-primary,
+#nbav-account-menu a.text-primary,
+#nbav-account-menu a[href="/privacy"] {
+    color: #e8d8bf !important;
 }
 
 /* Brand utility overrides for the muted premium palette */
