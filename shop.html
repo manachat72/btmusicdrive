@@ -244,7 +244,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- Shared Footer -->
     <div id="site-footer"></div>
 
-    <script src="components.min.js?v=eefaf6ad"></script>
+    <script src="components.min.js?v=23db0501"></script>
     <script>
     // ── Shop Page Logic ──────────────────────────────────────────────
     // API_BASE is already defined in components.min.js
@@ -474,8 +474,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             const hasDiscount = product.originalPrice && product.originalPrice > product.price;
             const discPct = hasDiscount ? Math.round((1 - product.price / product.originalPrice) * 100) : 0;
             const fmtP = p => `฿${Math.round(p).toLocaleString('th-TH')}`;
-            const origHtml = hasDiscount ? `<span class="text-[10px] sm:text-xs text-gray-400 line-through">${fmtP(product.originalPrice)}</span>` : '';
+            const origHtml = hasDiscount ? `<span class="text-[10px] sm:text-xs price-original-muted">${fmtP(product.originalPrice)}</span>` : '';
             const discBadge = hasDiscount ? `<span class="absolute top-2 left-2 bg-red-500 text-white px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold shadow-sm">-${discPct}%</span>` : '';
+            const currentPriceClass = hasDiscount ? 'price-current-sale' : 'price-current-neutral';
 
             const pUrl = product.slug ? `/product/${product.slug}` : `product.html?id=${product.id}`;
             if (viewMode === 'list') {
@@ -493,7 +494,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         </div>
                         <div class="flex items-center justify-between mt-3 gap-2 flex-wrap">
                             <div class="flex items-baseline gap-1.5 flex-wrap">
-                                <span class="text-base sm:text-xl font-extrabold text-primary">${fmtP(product.price)}</span>
+                                <span class="text-base sm:text-xl font-extrabold ${currentPriceClass}">${fmtP(product.price)}</span>
                                 ${origHtml}
                             </div>
                             <button class="shop-add-cart bg-white border border-red-500 hover:bg-red-50 active:scale-95 text-red-500 hover:text-red-600 font-bold rounded-lg w-8 h-8 flex items-center justify-center text-lg leading-none transition-all flex-shrink-0" data-id="${product.id}" onclick="event.preventDefault();event.stopPropagation();" aria-label="เพิ่มลงตะกร้า">+</button>
@@ -518,7 +519,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     </div>
                     <div class="flex items-center justify-between gap-2 mb-2">
                         <div class="flex items-baseline gap-1.5 flex-wrap">
-                            <span class="text-sm sm:text-base font-extrabold text-primary">${fmtP(product.price)}</span>
+                            <span class="text-sm sm:text-base font-extrabold ${currentPriceClass}">${fmtP(product.price)}</span>
                             ${origHtml}
                         </div>
                         <button class="shop-add-cart bg-white border border-red-500 hover:bg-red-50 active:scale-95 text-red-500 hover:text-red-600 font-bold rounded-lg w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-base sm:text-lg leading-none transition-all flex-shrink-0" data-id="${product.id}" onclick="event.preventDefault();event.stopPropagation();" aria-label="เพิ่มลงตะกร้า">+</button>

@@ -157,7 +157,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- Shared Footer -->
     <div id="site-footer"></div>
 
-    <script src="components.min.js?v=eefaf6ad"></script>
+    <script src="components.min.js?v=23db0501"></script>
     <script>
     // ── Category Page Logic ──────────────────────────────────────────
     const LS_CATEGORIES_KEY = 'btmusicdrive_categories';
@@ -368,8 +368,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 else starsHtml += `<i class="ph ph-star text-gray-300 text-xs"></i>`;
             }
 
-            const discountHtml = product.originalPrice ? `<span class="text-xs text-gray-400 line-through">฿${product.originalPrice.toLocaleString()}</span>` : '';
-            const discountBadge = product.originalPrice ? `<span class="absolute top-2 left-2 bg-red-500 text-white px-2 py-0.5 rounded-full text-[10px] font-bold">-${Math.round((1 - product.price / product.originalPrice) * 100)}%</span>` : '';
+            const hasDiscount = product.originalPrice && product.originalPrice > product.price;
+            const discountHtml = hasDiscount ? `<span class="text-xs price-original-muted">฿${product.originalPrice.toLocaleString()}</span>` : '';
+            const discountBadge = hasDiscount ? `<span class="absolute top-2 left-2 bg-red-500 text-white px-2 py-0.5 rounded-full text-[10px] font-bold">-${Math.round((1 - product.price / product.originalPrice) * 100)}%</span>` : '';
+            const currentPriceClass = hasDiscount ? 'price-current-sale' : 'price-current-neutral';
             const productUrl = product.slug ? `/product/${product.slug}` : `/product?id=${product.id}`;
 
             return `
@@ -389,10 +391,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     </div>
                     <div class="flex items-center justify-between">
                         <div>
-                            <span class="text-base font-bold text-gray-900">฿${product.price.toLocaleString()}</span>
+                            <span class="text-base font-bold ${currentPriceClass}">฿${product.price.toLocaleString()}</span>
                             ${discountHtml ? `<br>${discountHtml}` : ''}
                         </div>
-                        <button class="cat-add-cart bg-primary hover:bg-amber-700 text-white p-2 rounded-lg transition-colors" data-id="${product.id}">
+                        <button class="cat-add-cart bg-white border border-red-500 hover:bg-red-50 text-red-500 hover:text-red-600 p-2 rounded-lg transition-colors" data-id="${product.id}">
                             <i class="ph ph-shopping-cart text-lg"></i>
                         </button>
                     </div>

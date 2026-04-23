@@ -335,6 +335,7 @@ PromoCode  — id, code(unique), type(PERCENT|FIXED), value, minOrder, maxUses, 
 - API routes ใหม่ต้องลงทะเบียนใน `server/src/index.ts`
 - ถ้าแก้ Prisma schema ต้องบอก user ให้ run `npx prisma migrate dev` เองด้วย
 - ตรวจสอบว่า `express.raw()` สำหรับ Stripe webhook ต้องอยู่ก่อน `express.json()` เสมอ
+- ถ้าแก้ไฟล์ frontend/build asset เช่น `*.html`, `style.css`, `tailwind.input.css`, `script.js`, `components.js`, `products.json`, `categories.json` หรือไฟล์ใน `scripts/` ที่เกี่ยวกับหน้าเว็บ ให้รัน `npm run build` ก่อนปิดงานเสมอ
 
 ### ⚠️ ระวังเป็นพิเศษ
 - `components.js` ถูก load ในทุกหน้า — แก้แล้วกระทบทั้งเว็บ ตรวจสอบให้ดีก่อน
@@ -357,7 +358,9 @@ npm run dev            # starts on :5000
 
 # Frontend
 # เปิด index.html ตรงๆ ใน browser หรือใช้ Live Server extension
-# ไม่มี build step สำหรับ frontend
+# หลังแก้ frontend/build asset ให้รัน:
+npm run build
+# คำสั่งนี้จะทำครบ: build:css, combine:css, inline:products, inline:categories, hash:assets
 ```
 
 ---
@@ -369,3 +372,20 @@ npm run dev            # starts on :5000
 - `vercel.json` กำหนด routing ให้ `/api/*` ไปที่ backend
 - Environment variables ต้องตั้งใน Vercel Dashboard ด้วย (ไม่ใช่แค่ `.env`)
 - หลัง deploy ต้องเพิ่ม Stripe webhook URL: `https://btmusicdrive.vercel.app/api/payment/webhook`
+
+---
+
+## 13. SEO + Performance Guardrails
+
+### ❌ ห้ามทำโดยเด็ดขาด
+- **ห้ามสลับหน้า production ไปใช้ไฟล์ source** เช่น `components.js` หรือ `script.js` ถ้ายังมี `components.min.js` / `script.min.js` ใช้งานอยู่ โดยไม่แจ้ง user ก่อน
+- **ห้ามเพิ่ม** third-party script, font, widget, tracker, animation library, หรือ dependency ใหม่ ที่ทำให้หน้าโหลดช้าลง โดยไม่แจ้ง user ก่อน
+- **ห้ามลบหรือทำเสีย** structured data, meta tags, canonical, title, description, Open Graph, favicon, sitemap, robots โดยไม่แจ้ง user ก่อน
+- **ห้ามทำให้ LCP/CLS แย่ลง** ด้วยการใส่ภาพใหญ่เกินจำเป็น, layout shift, หรือ script ที่ block render โดยไม่แจ้ง user ก่อน
+
+### ✅ ควรทำเสมอ
+- ถ้าแก้ `components.js` หรือ `script.js` ที่หน้าเว็บจริงใช้ผ่านไฟล์ minified ให้ **อัปเดตไฟล์ `.min.js` และ version query** แทนการชี้หน้าเว็บไปใช้ source ตรงๆ
+- สำหรับงาน frontend ปกติให้ใช้ `npm run build` เป็นทางหลัก เพื่อ regenerate asset, inline data, และ bump version query สำหรับ cache-busting โดยอัตโนมัติ
+- ใช้ภาพที่มีขนาดเหมาะสม, `loading="lazy"` สำหรับภาพที่ไม่อยู่ above the fold, และอย่าเพิ่ม asset ที่ไม่จำเป็น
+- รักษา heading structure, internal links, alt text, และข้อความสำคัญของหน้าไว้ เพื่อไม่ให้ SEO ตก
+- ถ้ามีความเสี่ยงต่อ SEO, Core Web Vitals, หรือความเร็วเว็บ ต้อง **แจ้ง user ก่อนลงมือ**

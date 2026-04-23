@@ -199,15 +199,43 @@ html {
     box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
 }
 
-.product-card .add-to-cart-btn {
-    opacity: 0;
-    transform: translateY(18px);
+.product-card .add-to-cart-btn,
+#shop-products > div .shop-add-cart,
+#cat-products > div .cat-add-cart {
+    opacity: 1;
+    transform: translateY(0);
     transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.product-card:hover .add-to-cart-btn {
-    opacity: 1;
-    transform: translateY(0);
+.price-current-neutral {
+    color: #111827 !important;
+}
+
+.price-current-sale {
+    color: #dc2626 !important;
+}
+
+.price-original-muted {
+    color: #9ca3af !important;
+    text-decoration: line-through;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .product-card .add-to-cart-btn,
+    #shop-products > div .shop-add-cart,
+    #cat-products > div .cat-add-cart {
+        opacity: 0;
+        transform: translateY(18px);
+        pointer-events: none;
+    }
+
+    .product-card:hover .add-to-cart-btn,
+    #shop-products > div:hover .shop-add-cart,
+    #cat-products > div:hover .cat-add-cart {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
 }
 
 /* Notification Toast */

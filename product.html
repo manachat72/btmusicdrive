@@ -218,12 +218,13 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
 
-    /* Price gold */
+    /* Product price */
     .price-current {
-      background: linear-gradient(135deg, #8B7355, #C9A84C);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: #111827;
+    }
+
+    .price-current.is-sale {
+      color: #dc2626;
     }
 
     /* Related product cards */
@@ -1152,11 +1153,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       document.getElementById('p-name').textContent = product.name;
 
       // Price
-      document.getElementById('p-price').textContent = `฿${Number(product.price).toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
+      const currentPriceEl = document.getElementById('p-price');
+      const originalPriceEl = document.getElementById('p-original-price');
+      currentPriceEl.textContent = `฿${Number(product.price).toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
+      currentPriceEl.classList.remove('is-sale');
+      originalPriceEl.classList.add('hidden');
       if (product.originalPrice && product.originalPrice > product.price) {
-        const el = document.getElementById('p-original-price');
-        el.textContent = `฿${Number(product.originalPrice).toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
-        el.classList.remove('hidden');
+        originalPriceEl.textContent = `฿${Number(product.originalPrice).toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
+        originalPriceEl.classList.remove('hidden');
+        currentPriceEl.classList.add('is-sale');
       }
 
       // Stock badge
@@ -1348,20 +1353,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const items = _relatedProducts.slice(start, start + RELATED_PER_PAGE);
 
       container.innerHTML = items.map(p => {
-        const disc = p.originalPrice && p.originalPrice > p.price
+        const hasDiscount = p.originalPrice && p.originalPrice > p.price;
+        const disc = hasDiscount
           ? `<span class="text-xs text-gray-400 line-through ml-1">฿${Number(p.originalPrice).toLocaleString('th-TH', { minimumFractionDigits: 2 })}</span>`
           : '';
         const relUrl = p.slug ? `/product/${p.slug}` : `product.html?id=${p.id}`;
         return `<a href="${relUrl}" class="related-card bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.06)] group block">
         <div class="aspect-square bg-gray-50 overflow-hidden relative">
           <img src="${escHtml(p.imageUrl)}" alt="${escHtml(p.name)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-400" loading="lazy" decoding="async">
-          ${p.originalPrice && p.originalPrice > p.price ? `<span class="absolute top-2 left-2 bg-red-500 text-white px-2 py-0.5 rounded-full text-xs font-bold">-${Math.round((1 - p.price / p.originalPrice) * 100)}%</span>` : ''}
+          ${hasDiscount ? `<span class="absolute top-2 left-2 bg-red-500 text-white px-2 py-0.5 rounded-full text-xs font-bold">-${Math.round((1 - p.price / p.originalPrice) * 100)}%</span>` : ''}
         </div>
         <div class="p-3">
           <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">${escHtml(p.category?.name || p.category || '')}</p>
           <p class="text-sm font-bold text-gray-900 line-clamp-2 mb-2 group-hover:text-primary transition-colors">${escHtml(p.name)}</p>
           <div class="flex items-baseline gap-1">
-            <span class="text-base font-extrabold price-current">฿${Number(p.price).toLocaleString('th-TH', { minimumFractionDigits: 2 })}</span>${disc}
+            <span class="text-base font-extrabold price-current${hasDiscount ? ' is-sale' : ''}">฿${Number(p.price).toLocaleString('th-TH', { minimumFractionDigits: 2 })}</span>${disc}
           </div>
         </div>
       </a>`;
@@ -1754,7 +1760,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <!-- Shared Footer -->
   <div id="site-footer"></div>
 
-  <script src="components.min.js?v=eefaf6ad"></script>
+  <script src="components.min.js?v=23db0501"></script>
 </body>
 
 </html>

@@ -45,8 +45,9 @@ function renderCard(product, index) {
 
   const fmtP = (p) => `฿${Math.round(p).toLocaleString('th-TH')}`;
   const origHtml = hasDiscount
-    ? `<span class="text-[10px] sm:text-xs text-gray-400 line-through">${fmtP(product.originalPrice)}</span>`
+    ? `<span class="text-[10px] sm:text-xs price-original-muted">${fmtP(product.originalPrice)}</span>`
     : '';
+  const currentPriceClass = hasDiscount ? 'price-current-sale' : 'price-current-neutral';
 
   const pUrl = product.slug
     ? `/product/${product.slug}`
@@ -74,7 +75,7 @@ function renderCard(product, index) {
     </div>
     <div class="flex items-center justify-between gap-2 mb-2">
       <div class="flex items-baseline gap-1.5 flex-wrap">
-        <span class="text-sm sm:text-base font-extrabold text-primary">${fmtP(product.price)}</span>
+        <span class="text-sm sm:text-base font-extrabold ${currentPriceClass}">${fmtP(product.price)}</span>
         ${origHtml}
       </div>
       <button class="add-to-cart-btn bg-white border border-red-500 hover:bg-red-50 active:scale-95 text-red-500 hover:text-red-600 font-bold rounded-lg w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-base sm:text-lg leading-none transition-all flex-shrink-0" data-id="${escapeHtml(product.id)}" onclick="event.preventDefault();event.stopPropagation();" aria-label="เพิ่มลงตะกร้า">+</button>
