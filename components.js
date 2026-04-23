@@ -853,6 +853,7 @@ function _updateBnavAccountState() {
     if (statsEl) statsEl.style.display = '';
     if (logoutBtn) logoutBtn.style.display = '';
     if (loginBtn) loginBtn.style.display = 'none';
+    _fetchBnavOrderCount();
   } else {
     nameEl.textContent = 'ยังไม่ได้เข้าสู่ระบบ';
     if (emailEl) emailEl.textContent = '';
@@ -860,6 +861,19 @@ function _updateBnavAccountState() {
     if (logoutBtn) logoutBtn.style.display = 'none';
     if (loginBtn) loginBtn.style.display = '';
   }
+}
+
+async function _fetchBnavOrderCount() {
+  const el = document.getElementById('bnav-order-count');
+  if (!el) return;
+  const token = localStorage.getItem('btmusicdrive_token');
+  if (!token) return;
+  try {
+    const res = await fetch(`${API_BASE}/orders/my`, { headers: { Authorization: `Bearer ${token}` } });
+    if (!res.ok) return;
+    const orders = await res.json();
+    el.textContent = Array.isArray(orders) ? orders.length : 0;
+  } catch {}
 }
 
 function _toggleAccountDrawer(forceOpen) {
