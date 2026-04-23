@@ -11,7 +11,7 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
 <base href="/">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="app.min.css?v=c71e81c3">
+    <link rel="stylesheet" href="app.min.css?v=4414233d">
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#8B7355">
   <link rel="icon" type="image/webp" href="images/logo.webp">
@@ -59,7 +59,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <ul class="space-y-1">
               <li><a href="/profile" class="flex items-center gap-2 px-3 py-2 rounded-lg text-primary font-semibold bg-amber-50 border-l-4 border-primary transition-colors"><i class="ph ph-user-circle text-lg"></i> ข้อมูลส่วนตัว</a></li>
               <li><a href="/address" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"><i class="ph ph-map-pin text-lg"></i> ที่อยู่สำหรับจัดส่ง</a></li>
-              <li><a href="/" onclick="localStorage.removeItem('token');localStorage.removeItem('user');location.href='/'; return false;" class="flex items-center gap-2 px-3 py-2 rounded-lg text-red-500 hover:bg-red-50 transition-colors"><i class="ph ph-sign-out text-lg"></i> ออกจากระบบ</a></li>
+              <li><a href="/" onclick="localStorage.removeItem('btmusicdrive_token');localStorage.removeItem('user');location.href='/'; return false;" class="flex items-center gap-2 px-3 py-2 rounded-lg text-red-500 hover:bg-red-50 transition-colors"><i class="ph ph-sign-out text-lg"></i> ออกจากระบบ</a></li>
             </ul>
           </div>
         </aside>
@@ -139,11 +139,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               </div>
             </div>
 
-            <div class="mb-8">
+            <section class="mb-8">
               <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
                 <div class="flex items-center gap-3">
-                  <div class="bg-red-50 w-10 h-10 rounded-full flex items-center justify-center"><i class="ph ph-bag text-xl text-red-500"></i></div>
-                  <h2 class="text-2xl font-bold text-gray-900">สถานะการสั่งซื้อ</h2>
+                  <div class="bg-red-50 w-10 h-10 rounded-full flex items-center justify-center">
+                    <i class="ph ph-package text-xl text-red-500"></i>
+                  </div>
+                  <div>
+                    <h2 class="text-2xl font-bold text-gray-900">สถานะการสั่งซื้อ</h2>
+                    <p class="text-sm text-gray-500">ดูสถานะล่าสุดและตรวจสอบเลขพัสดุได้จากที่นี่</p>
+                  </div>
                 </div>
                 <div class="flex items-center gap-3">
                   <label for="profile-order-sort" class="text-sm text-gray-500">เรียงตาม:</label>
@@ -155,7 +160,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 </div>
               </div>
 
-              <div class="overflow-x-auto rounded-2xl border border-gray-100">
+              <div class="overflow-x-auto rounded-2xl border border-gray-100 bg-white">
                 <table class="min-w-full text-sm">
                   <thead class="bg-gray-50 text-gray-500">
                     <tr>
@@ -172,76 +177,122 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                   </tbody>
                 </table>
               </div>
+            </section>
+
+            <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)] gap-6">
+              <section class="bg-white rounded-2xl border border-gray-100 p-6 sm:p-8">
+                <div class="flex items-center gap-3 mb-6">
+                  <div class="bg-amber-50 w-10 h-10 rounded-full flex items-center justify-center">
+                    <i class="ph ph-note-pencil text-xl text-primary"></i>
+                  </div>
+                  <div>
+                    <h2 class="text-xl font-bold text-gray-900">แก้ไขข้อมูลส่วนตัว</h2>
+                    <p class="text-sm text-gray-500">อัปเดตชื่อ เบอร์โทร วันเกิด และข้อมูลเบื้องต้นของบัญชี</p>
+                  </div>
+                </div>
+
+                <form id="profileForm" class="space-y-6" onsubmit="return saveProfile(event)">
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1" for="pf-fname">ชื่อ</label>
+                      <input id="pf-fname" type="text" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition" placeholder="ชื่อ">
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1" for="pf-lname">นามสกุล</label>
+                      <input id="pf-lname" type="text" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition" placeholder="นามสกุล">
+                    </div>
+                  </div>
+
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1" for="pf-email">อีเมล</label>
+                    <input id="pf-email" type="email" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 bg-gray-50 text-gray-500 cursor-not-allowed" readonly>
+                  </div>
+
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1" for="pf-phone">เบอร์โทรศัพท์</label>
+                      <input id="pf-phone" type="tel" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition" placeholder="08x-xxx-xxxx">
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1" for="pf-birthday">วันเกิด</label>
+                      <input id="pf-birthday" type="date" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition">
+                    </div>
+                  </div>
+
+                  <div>
+                    <span class="block text-sm font-medium text-gray-700 mb-2">เพศ</span>
+                    <div class="flex flex-wrap gap-3">
+                      <label class="inline-flex items-center gap-2 rounded-full border border-gray-200 px-4 py-2 text-sm text-gray-700">
+                        <input type="radio" name="gender" value="male" class="text-primary">
+                        <span>ชาย</span>
+                      </label>
+                      <label class="inline-flex items-center gap-2 rounded-full border border-gray-200 px-4 py-2 text-sm text-gray-700">
+                        <input type="radio" name="gender" value="female" class="text-primary">
+                        <span>หญิง</span>
+                      </label>
+                      <label class="inline-flex items-center gap-2 rounded-full border border-gray-200 px-4 py-2 text-sm text-gray-700">
+                        <input type="radio" name="gender" value="other" class="text-primary">
+                        <span>ไม่ระบุ</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div class="pt-2">
+                    <button type="submit" class="bg-primary hover:bg-[#7c674d] text-white font-semibold px-8 py-3 rounded-xl transition-colors">
+                      บันทึกข้อมูล
+                    </button>
+                  </div>
+                </form>
+              </section>
+
+              <section class="space-y-6">
+                <div class="bg-white rounded-2xl border border-gray-100 p-6 sm:p-8">
+                  <div class="flex items-center gap-3 mb-4">
+                    <div class="bg-slate-100 w-10 h-10 rounded-full flex items-center justify-center">
+                      <i class="ph ph-shield-check text-xl text-secondary"></i>
+                    </div>
+                    <div>
+                      <h2 class="text-xl font-bold text-gray-900">เปลี่ยนรหัสผ่าน</h2>
+                      <p class="text-sm text-gray-500">เตรียมข้อมูลไว้ล่วงหน้าได้ แต่การบันทึกจะเปิดใช้งานเมื่อระบบรองรับเต็มรูปแบบ</p>
+                    </div>
+                  </div>
+
+                  <form id="passwordForm" class="space-y-4" onsubmit="return changePassword(event)">
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1" for="pw-current">รหัสผ่านปัจจุบัน</label>
+                      <input id="pw-current" type="password" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition" required>
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1" for="pw-new">รหัสผ่านใหม่</label>
+                      <input id="pw-new" type="password" minlength="6" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition" required>
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1" for="pw-confirm">ยืนยันรหัสผ่านใหม่</label>
+                      <input id="pw-confirm" type="password" minlength="6" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition" required>
+                    </div>
+                    <button type="submit" class="bg-secondary hover:bg-slate-800 text-white font-semibold px-6 py-3 rounded-xl transition-colors">
+                      เปลี่ยนรหัสผ่าน
+                    </button>
+                  </form>
+                </div>
+
+                <div class="bg-gradient-to-br from-amber-50 via-white to-red-50 rounded-2xl border border-amber-100 p-6">
+                  <div class="flex items-start gap-3">
+                    <div class="w-11 h-11 rounded-full bg-white text-primary flex items-center justify-center shadow-sm shrink-0">
+                      <i class="ph ph-info text-xl"></i>
+                    </div>
+                    <div>
+                      <h3 class="text-lg font-semibold text-gray-900 mb-2">คำแนะนำสำหรับโปรไฟล์</h3>
+                      <ul class="space-y-2 text-sm text-gray-600">
+                        <li>กรอกชื่อและเบอร์โทรให้ครบเพื่อให้ทีมงานติดต่อเรื่องการจัดส่งได้ง่ายขึ้น</li>
+                        <li>ตรวจสอบอีเมลให้ถูกต้องเพื่อรับข้อมูลคำสั่งซื้อและการแจ้งเตือนต่าง ๆ</li>
+                        <li>หากมีเลขพัสดุแล้ว คุณสามารถกดที่เลขพัสดุในตารางด้านบนเพื่อติดตามสถานะได้ทันที</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </section>
             </div>
-
-            <!-- Profile Form -->
-            <form id="profileForm" class="space-y-6 border-t border-gray-100 pt-8" onsubmit="return saveProfile(event)">
-              <div class="flex flex-col items-center gap-4 mb-6">
-                <div class="w-24 h-24 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
-                  <i class="ph ph-user text-4xl text-gray-400"></i>
-                </div>
-                <button type="button" class="text-sm text-primary hover:underline">เปลี่ยนรูปโปรไฟล์</button>
-              </div>
-
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">ชื่อ</label>
-                  <input id="pf-fname" type="text" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition" placeholder="ชื่อ">
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">นามสกุล</label>
-                  <input id="pf-lname" type="text" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition" placeholder="นามสกุล">
-                </div>
-              </div>
-
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">อีเมล</label>
-                <input id="pf-email" type="email" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 bg-gray-50 text-gray-500 cursor-not-allowed" readonly>
-              </div>
-
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">เบอร์โทรศัพท์</label>
-                <input id="pf-phone" type="tel" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition" placeholder="08x-xxx-xxxx">
-              </div>
-
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">วันเกิด</label>
-                <input id="pf-birthday" type="date" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition">
-              </div>
-
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">เพศ</label>
-                <div class="flex gap-4">
-                  <label class="flex items-center gap-2"><input type="radio" name="gender" value="male" class="text-primary"> ชาย</label>
-                  <label class="flex items-center gap-2"><input type="radio" name="gender" value="female" class="text-primary"> หญิง</label>
-                  <label class="flex items-center gap-2"><input type="radio" name="gender" value="other" class="text-primary"> ไม่ระบุ</label>
-                </div>
-              </div>
-
-              <div class="pt-4 border-t">
-                <button type="submit" class="bg-primary hover:bg-yellow-600 text-white font-semibold px-8 py-3 rounded-lg transition-colors">บันทึกข้อมูล</button>
-              </div>
-            </form>
-          </div>
-
-          <!-- Change Password -->
-          <div class="bg-white rounded-2xl border border-gray-100 p-6 sm:p-10 mt-6">
-            <h2 class="text-lg font-bold text-gray-900 mb-4">เปลี่ยนรหัสผ่าน</h2>
-            <form id="passwordForm" class="space-y-4" onsubmit="return changePassword(event)">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">รหัสผ่านปัจจุบัน</label>
-                <input id="pw-current" type="password" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition" required>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">รหัสผ่านใหม่</label>
-                <input id="pw-new" type="password" minlength="6" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition" required>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">ยืนยันรหัสผ่านใหม่</label>
-                <input id="pw-confirm" type="password" minlength="6" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition" required>
-              </div>
-              <button type="submit" class="bg-secondary hover:bg-gray-700 text-white font-semibold px-8 py-3 rounded-lg transition-colors">เปลี่ยนรหัสผ่าน</button>
-            </form>
           </div>
         </div>
       </div>
@@ -285,6 +336,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         }
         const data = await res.json();
         const user = data.user;
+        localStorage.setItem('user', JSON.stringify(user));
 
         const fullName = user.name || '';
         const parts = fullName.trim().split(' ');
@@ -354,6 +406,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     function renderProfileOrders(inputOrders = profileOrders) {
       const tbody = document.getElementById('profile-orders-table');
+      if (!tbody) return;
       const sortBy = document.getElementById('profile-order-sort')?.value || 'status';
       const orders = [...inputOrders];
       const statusRank = { pending: 1, processing: 2, paid: 3, shipped: 4, delivered: 5, cancelled: 6 };
@@ -441,6 +494,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           body: JSON.stringify({ name: newName, phone, birthday, gender })
         });
         if (res.ok) {
+          const updatedUser = await res.json();
+          localStorage.setItem('user', JSON.stringify(updatedUser));
           document.getElementById('sidebar-user-name').textContent = newName || 'ผู้ใช้';
           document.getElementById('profile-display-name').textContent = newName || 'ผู้ใช้';
           document.getElementById('profile-meta-name').textContent = newName || '-';
@@ -463,8 +518,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const pw = document.getElementById('pw-new').value;
       const confirm = document.getElementById('pw-confirm').value;
       if(pw !== confirm){ alert('รหัสผ่านไม่ตรงกัน'); return false; }
-      alert('เปลี่ยนรหัสผ่านเรียบร้อย');
-      document.getElementById('passwordForm').reset();
+      alert('ระบบเปลี่ยนรหัสผ่านยังไม่เปิดใช้งานในขณะนี้ กรุณาติดต่อแอดมินหากต้องการความช่วยเหลือ');
       return false;
     }
   </script>

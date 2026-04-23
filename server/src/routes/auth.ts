@@ -33,7 +33,7 @@ router.post('/google', authLimiter, async (req: Request, res: Response) => {
       return;
     }
 
-    const { email: rawGoogleEmail, sub: googleId, name } = payload;
+    const { email: rawGoogleEmail, sub: googleId, name, picture } = payload;
     const email = rawGoogleEmail!.trim().toLowerCase();
 
     // Find or create user
@@ -71,7 +71,10 @@ router.post('/google', authLimiter, async (req: Request, res: Response) => {
 
     res.json({
       message: 'Google login successful',
-      user: userWithoutPassword,
+      user: {
+        ...userWithoutPassword,
+        avatar: picture || null,
+      },
       token: jwtToken
     });
   } catch (error) {
@@ -229,6 +232,10 @@ router.get('/me', authenticateToken, async (req: AuthRequest, res: Response) => 
         id: true,
         email: true,
         name: true,
+        phone: true,
+        birthday: true,
+        gender: true,
+        googleId: true,
         role: true,
         createdAt: true
       }
