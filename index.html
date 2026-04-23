@@ -12,7 +12,7 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
 <base href="/">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="app.min.css?v=56e2121e">
+    <link rel="stylesheet" href="app.min.css?v=1281c7fb">
     <meta name="theme-color" content="#8B7355">
     <link rel="icon" type="image/webp" href="images/logo.webp">
     <title>แฟลชไดร์ฟเพลง MP3 รวมเพลงฮิต เสียบปุ๊บฟังปั๊บ เสียงชัด HD | Bt music drive</title>
@@ -535,8 +535,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div id="site-footer"></div>
 
     <script src="components.min.js?v=2d5fbf68"></script>
-    <script src="script.min.js?v=4ceab7ef"></script>
     <script>
+        (function () {
+            const scriptSrc = 'script.min.js?v=4ceab7ef';
+            let loaded = false;
+
+            function loadHomeBundle() {
+                if (loaded) return;
+                loaded = true;
+                const script = document.createElement('script');
+                script.src = scriptSrc;
+                script.async = true;
+                document.body.appendChild(script);
+            }
+
+            if ('requestIdleCallback' in window) {
+                requestIdleCallback(loadHomeBundle, { timeout: 1500 });
+            } else {
+                window.addEventListener('load', () => setTimeout(loadHomeBundle, 200), { once: true });
+            }
+        })();
+
         // ── Flash Sale Countdown ──────────────────────────────────────
         (function () {
             function updateCountdown() {

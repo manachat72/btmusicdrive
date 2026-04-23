@@ -308,6 +308,45 @@ html {
     color: #e8d8bf !important;
 }
 
+/* Cart + checkout contrast fixes for PSI */
+#cart-shipping-display {
+    color: #047857 !important;
+    font-weight: 700;
+}
+
+button[onclick*="/checkout"] {
+    background: var(--brand-primary-strong) !important;
+    color: #ffffff !important;
+}
+
+button[onclick*="/checkout"]:hover {
+    background: #5f4d38 !important;
+}
+
+/* Cookie banner readability */
+#cookie-consent-banner {
+    color: #1f2937;
+}
+
+#cookie-consent-banner p,
+#cookie-consent-banner span,
+#cookie-consent-banner a {
+    color: #374151 !important;
+    font-size: 12px !important;
+    line-height: 1.5;
+}
+
+#cookie-consent-banner .text-primary,
+#cookie-consent-banner a.text-primary {
+    color: #735e43 !important;
+    font-weight: 700;
+}
+
+#cookie-consent-banner button {
+    min-height: 36px;
+    font-weight: 600;
+}
+
 /* Brand utility overrides for the muted premium palette */
 .bg-amber-50 {
     background-color: var(--brand-surface) !important;
