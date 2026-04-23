@@ -11,7 +11,7 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
 <base href="/">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="app.min.css?v=1281c7fb">
+    <link rel="stylesheet" href="app.min.css?v=c71e81c3">
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#8B7355">
   <link rel="icon" type="image/webp" href="images/logo.webp">
@@ -66,16 +66,118 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         <!-- Main Content -->
         <div class="flex-1 min-w-0">
-          <div class="bg-white rounded-2xl border border-gray-100 p-6 sm:p-10">
-            <div class="flex items-center gap-3 mb-8 pb-6 border-b border-gray-100">
-              <div class="bg-amber-50 w-10 h-10 rounded-full flex items-center justify-center"><i class="ph ph-user-circle text-xl text-primary"></i></div>
-              <h1 class="text-2xl font-bold text-gray-900">ข้อมูลส่วนตัว</h1>
+          <div class="bg-white rounded-2xl border border-gray-100 p-6 sm:p-8">
+            <div class="flex flex-col gap-4 mb-8">
+              <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div class="flex items-center gap-3">
+                  <div class="bg-amber-50 w-10 h-10 rounded-full flex items-center justify-center"><i class="ph ph-user-circle text-xl text-primary"></i></div>
+                  <h1 class="text-2xl font-bold text-gray-900">ข้อมูลส่วนตัว</h1>
+                </div>
+                <button type="button" onclick="scrollToProfileForm()" class="bg-red-50 hover:bg-red-100 text-red-500 font-semibold px-5 py-3 rounded-xl transition-colors">
+                  แก้ไขข้อมูลส่วนตัว
+                </button>
+              </div>
+
+              <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] gap-4">
+                <div class="bg-gray-50 rounded-2xl border border-gray-100 p-5 flex items-center gap-4">
+                  <div class="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden shrink-0" id="profile-avatar">
+                    <i class="ph ph-user text-4xl text-gray-400"></i>
+                  </div>
+                  <div class="min-w-0">
+                    <p class="text-xl font-semibold text-gray-900 truncate" id="profile-display-name">ผู้ใช้</p>
+                    <p class="text-sm text-gray-500 truncate" id="profile-display-email">-</p>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-4 gap-4">
+                  <div class="bg-white rounded-2xl border border-gray-100 p-4 text-center">
+                    <div class="text-3xl font-bold text-red-500" id="stat-delivered">0</div>
+                    <div class="text-xs text-gray-500 mt-2">เสร็จสิ้น</div>
+                  </div>
+                  <div class="bg-white rounded-2xl border border-gray-100 p-4 text-center">
+                    <div class="text-3xl font-bold text-red-500" id="stat-shipped">0</div>
+                    <div class="text-xs text-gray-500 mt-2">จัดส่งแล้ว</div>
+                  </div>
+                  <div class="bg-white rounded-2xl border border-gray-100 p-4 text-center">
+                    <div class="text-3xl font-bold text-red-500" id="stat-processing">0</div>
+                    <div class="text-xs text-gray-500 mt-2">รอดำเนินการ</div>
+                  </div>
+                  <div class="bg-white rounded-2xl border border-gray-100 p-4 text-center">
+                    <div class="text-3xl font-bold text-red-500" id="stat-pending">0</div>
+                    <div class="text-xs text-gray-500 mt-2">รอชำระเงิน</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bg-white rounded-2xl border border-gray-100 p-5">
+                <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-5 text-sm">
+                  <div>
+                    <p class="text-gray-400 mb-1">ชื่อ - นามสกุล</p>
+                    <p class="font-medium text-gray-900 break-words" id="profile-meta-name">-</p>
+                  </div>
+                  <div>
+                    <p class="text-gray-400 mb-1">อีเมล</p>
+                    <p class="font-medium text-gray-900 break-all" id="profile-meta-email">-</p>
+                  </div>
+                  <div>
+                    <p class="text-gray-400 mb-1">หมายเลขโทรศัพท์</p>
+                    <p class="font-medium text-gray-900 break-words" id="profile-meta-phone">-</p>
+                  </div>
+                  <div>
+                    <p class="text-gray-400 mb-1">วัน / เดือน / ปีเกิด</p>
+                    <p class="font-medium text-gray-900 break-words" id="profile-meta-birthday">-</p>
+                  </div>
+                  <div>
+                    <p class="text-gray-400 mb-1">ไลน์ไอดี</p>
+                    <p class="font-medium text-gray-900 break-words">-</p>
+                  </div>
+                  <div>
+                    <p class="text-gray-400 mb-1">เฟซบุ๊ค</p>
+                    <p class="font-medium text-gray-900 break-words">-</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-8">
+              <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+                <div class="flex items-center gap-3">
+                  <div class="bg-red-50 w-10 h-10 rounded-full flex items-center justify-center"><i class="ph ph-bag text-xl text-red-500"></i></div>
+                  <h2 class="text-2xl font-bold text-gray-900">สถานะการสั่งซื้อ</h2>
+                </div>
+                <div class="flex items-center gap-3">
+                  <label for="profile-order-sort" class="text-sm text-gray-500">เรียงตาม:</label>
+                  <select id="profile-order-sort" class="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-primary" onchange="renderProfileOrders()">
+                    <option value="status">สถานะการสั่งซื้อ</option>
+                    <option value="latest">ล่าสุด</option>
+                    <option value="total">ยอดทั้งหมด</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="overflow-x-auto rounded-2xl border border-gray-100">
+                <table class="min-w-full text-sm">
+                  <thead class="bg-gray-50 text-gray-500">
+                    <tr>
+                      <th class="text-left font-semibold px-4 py-4">หมายเลขคำสั่งซื้อ</th>
+                      <th class="text-left font-semibold px-4 py-4">สถานะการสั่งซื้อ</th>
+                      <th class="text-left font-semibold px-4 py-4">เลขพัสดุ</th>
+                      <th class="text-right font-semibold px-4 py-4">ยอดทั้งหมด</th>
+                    </tr>
+                  </thead>
+                  <tbody id="profile-orders-table">
+                    <tr>
+                      <td colspan="4" class="px-4 py-10 text-center text-gray-400">กำลังโหลดข้อมูลคำสั่งซื้อ...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
 
             <!-- Profile Form -->
-            <form id="profileForm" class="space-y-6" onsubmit="return saveProfile(event)">
+            <form id="profileForm" class="space-y-6 border-t border-gray-100 pt-8" onsubmit="return saveProfile(event)">
               <div class="flex flex-col items-center gap-4 mb-6">
-                <div class="w-24 h-24 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden" id="profile-avatar">
+                <div class="w-24 h-24 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
                   <i class="ph ph-user text-4xl text-gray-400"></i>
                 </div>
                 <button type="button" class="text-sm text-primary hover:underline">เปลี่ยนรูปโปรไฟล์</button>
@@ -152,6 +254,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
       ? 'http://localhost:5000/api'
       : '/api';
+    const PROFILE_STATUS_META = {
+      pending: { label: 'รอชำระเงิน', className: 'bg-yellow-100 text-yellow-700' },
+      processing: { label: 'รอดำเนินการ', className: 'bg-blue-100 text-blue-700' },
+      paid: { label: 'ชำระแล้ว รอจัดส่ง', className: 'bg-emerald-100 text-emerald-700' },
+      shipped: { label: 'จัดส่งแล้ว', className: 'bg-orange-100 text-orange-700' },
+      delivered: { label: 'เสร็จสิ้น', className: 'bg-green-100 text-green-700' },
+      cancelled: { label: 'ยกเลิก', className: 'bg-red-100 text-red-700' },
+    };
+    const PROFILE_CARRIER_URLS = {
+      Flash: 'https://www.flashexpress.co.th/fle/tracking?se=',
+      Kerry: 'https://th.kerryexpress.com/en/track/?track=',
+      JT: 'https://www.jtexpress.co.th/index/query/gzquery.html?bills='
+    };
+
+    let profileOrders = [];
 
     document.addEventListener('DOMContentLoaded', async () => {
       const token = localStorage.getItem('btmusicdrive_token');
@@ -174,6 +291,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         document.getElementById('sidebar-user-name').textContent = fullName || 'ผู้ใช้';
         document.getElementById('sidebar-user-email').textContent = user.email || '';
+        document.getElementById('profile-display-name').textContent = fullName || 'ผู้ใช้';
+        document.getElementById('profile-display-email').textContent = user.email || '-';
+        document.getElementById('profile-meta-name').textContent = fullName || '-';
+        document.getElementById('profile-meta-email').textContent = user.email || '-';
+        document.getElementById('profile-meta-phone').textContent = user.phone || '-';
+        document.getElementById('profile-meta-birthday').textContent = formatBirthday(user.birthday);
         document.getElementById('pf-fname').value = parts[0] || '';
         document.getElementById('pf-lname').value = parts.slice(1).join(' ') || '';
         document.getElementById('pf-email').value = user.email || '';
@@ -183,11 +306,119 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           const gInfo = document.querySelector(`input[name="gender"][value="${user.gender}"]`);
           if (gInfo) gInfo.checked = true;
         }
+        await loadProfileOrders(token);
       } catch (e) {
         console.error(e);
         location.href = '/';
       }
     });
+
+    async function loadProfileOrders(token) {
+      try {
+        const res = await fetch(`${API_BASE}/orders/my`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (!res.ok) {
+          renderProfileOrders([]);
+          updateOrderStats([]);
+          return;
+        }
+
+        const rawOrders = await res.json();
+        profileOrders = rawOrders.map((order) => ({
+          id: order.id || '',
+          shortId: order.id ? order.id.slice(-8).toUpperCase() : '—',
+          status: String(order.status || 'PENDING').toLowerCase(),
+          trackingNumber: order.trackingNumber || '',
+          carrier: order.carrier || '',
+          totalAmount: Number(order.totalAmount) || 0,
+          createdAt: order.createdAt || '',
+        }));
+
+        updateOrderStats(profileOrders);
+        renderProfileOrders();
+      } catch (error) {
+        console.error('Profile orders error:', error);
+        updateOrderStats([]);
+        renderProfileOrders([]);
+      }
+    }
+
+    function updateOrderStats(orders = profileOrders) {
+      const countBy = (statuses) => orders.filter((order) => statuses.includes(order.status)).length;
+      document.getElementById('stat-delivered').textContent = String(countBy(['delivered']));
+      document.getElementById('stat-shipped').textContent = String(countBy(['shipped']));
+      document.getElementById('stat-processing').textContent = String(countBy(['processing', 'paid']));
+      document.getElementById('stat-pending').textContent = String(countBy(['pending']));
+    }
+
+    function renderProfileOrders(inputOrders = profileOrders) {
+      const tbody = document.getElementById('profile-orders-table');
+      const sortBy = document.getElementById('profile-order-sort')?.value || 'status';
+      const orders = [...inputOrders];
+      const statusRank = { pending: 1, processing: 2, paid: 3, shipped: 4, delivered: 5, cancelled: 6 };
+
+      if (sortBy === 'latest') {
+        orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      } else if (sortBy === 'total') {
+        orders.sort((a, b) => b.totalAmount - a.totalAmount);
+      } else {
+        orders.sort((a, b) => {
+          const rankDiff = (statusRank[a.status] || 99) - (statusRank[b.status] || 99);
+          if (rankDiff !== 0) return rankDiff;
+          return new Date(b.createdAt) - new Date(a.createdAt);
+        });
+      }
+
+      if (!orders.length) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="4" class="px-4 py-10 text-center text-gray-400">ไม่มีคำสั่งซื้อ</td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = orders.map((order) => {
+        const meta = PROFILE_STATUS_META[order.status] || { label: order.status, className: 'bg-gray-100 text-gray-600' };
+        const trackingCell = order.trackingNumber
+          ? `<a href="${getTrackingUrl(order.carrier, order.trackingNumber)}" target="_blank" rel="noopener" class="text-primary hover:underline font-medium">${escapeHtml(order.trackingNumber)}</a>`
+          : '<span class="text-gray-400">-</span>';
+        return `
+          <tr class="border-t border-gray-100">
+            <td class="px-4 py-4 font-semibold text-gray-900">#${order.shortId}</td>
+            <td class="px-4 py-4">
+              <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${meta.className}">
+                ${meta.label}
+              </span>
+            </td>
+            <td class="px-4 py-4">${trackingCell}</td>
+            <td class="px-4 py-4 text-right font-semibold text-gray-900">฿${order.totalAmount.toLocaleString()}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function formatBirthday(value) {
+      if (!value) return '-';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return value;
+      return date.toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' });
+    }
+
+    function getTrackingUrl(carrier, trackingNumber) {
+      return (PROFILE_CARRIER_URLS[carrier] || PROFILE_CARRIER_URLS.Flash) + encodeURIComponent(trackingNumber);
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.appendChild(document.createTextNode(String(str)));
+      return div.innerHTML;
+    }
+
+    function scrollToProfileForm() {
+      document.getElementById('profileForm')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
 
     async function saveProfile(e) {
       e.preventDefault();
@@ -211,6 +442,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         });
         if (res.ok) {
           document.getElementById('sidebar-user-name').textContent = newName || 'ผู้ใช้';
+          document.getElementById('profile-display-name').textContent = newName || 'ผู้ใช้';
+          document.getElementById('profile-meta-name').textContent = newName || '-';
+          document.getElementById('profile-meta-phone').textContent = phone || '-';
+          document.getElementById('profile-meta-birthday').textContent = formatBirthday(birthday);
           alert('บันทึกข้อมูลเรียบร้อย');
         } else {
           const data = await res.json();

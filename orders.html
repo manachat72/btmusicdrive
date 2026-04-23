@@ -11,7 +11,7 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
 <base href="/">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="app.min.css?v=1281c7fb">
+    <link rel="stylesheet" href="app.min.css?v=c71e81c3">
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#8B7355">
   <link rel="icon" type="image/webp" href="images/logo.webp">
@@ -65,27 +65,72 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         <!-- Main Content -->
         <div class="flex-1 min-w-0">
-          <div class="bg-white rounded-2xl border border-gray-100 p-6 sm:p-10">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-gray-100">
-              <div class="flex items-center gap-3">
-                <div class="bg-amber-100 w-10 h-10 rounded-full flex items-center justify-center"><i class="ph ph-package text-xl text-primary"></i></div>
-                <h1 class="text-2xl font-bold text-gray-900">คำสั่งซื้อ</h1>
+          <div class="bg-white rounded-2xl border border-gray-100 p-6 sm:p-8">
+            <div class="flex flex-col gap-6">
+              <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div class="flex items-center gap-3">
+                  <div class="bg-red-50 w-10 h-10 rounded-full flex items-center justify-center"><i class="ph ph-bag text-xl text-red-500"></i></div>
+                  <h1 class="text-2xl font-bold text-gray-900">สถานะการสั่งซื้อ</h1>
+                </div>
+                <div class="flex items-center gap-3 self-start sm:self-auto">
+                  <label for="orders-sort" class="text-sm text-gray-500">เรียงตาม:</label>
+                  <select id="orders-sort" class="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-primary" onchange="renderOrders(ordersState, activeFilter)">
+                    <option value="status">สถานะการสั่งซื้อ</option>
+                    <option value="latest">ล่าสุด</option>
+                    <option value="total">ยอดทั้งหมด</option>
+                  </select>
+                </div>
               </div>
-              <a href="/track-order" class="text-sm text-primary hover:underline flex items-center gap-1"><i class="ph ph-magnifying-glass"></i> ติดตามพัสดุ</a>
-            </div>
 
-            <!-- Filter Tabs -->
-            <div class="flex gap-2 overflow-x-auto pb-4 mb-6 border-b border-gray-100" id="order-tabs">
-              <button class="order-tab active px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap bg-primary text-white" data-filter="all">ทั้งหมด</button>
-              <button class="order-tab px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap bg-gray-100 text-gray-600 hover:bg-gray-200" data-filter="pending">รอชำระเงิน</button>
-              <button class="order-tab px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap bg-gray-100 text-gray-600 hover:bg-gray-200" data-filter="processing">กำลังจัดส่ง</button>
-              <button class="order-tab px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap bg-gray-100 text-gray-600 hover:bg-gray-200" data-filter="delivered">สำเร็จ</button>
-              <button class="order-tab px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap bg-gray-100 text-gray-600 hover:bg-gray-200" data-filter="cancelled">ยกเลิก</button>
-            </div>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div class="bg-white rounded-2xl border border-gray-100 p-4 text-center">
+                  <div class="text-3xl font-bold text-red-500" id="orders-stat-pending">0</div>
+                  <div class="text-xs text-gray-500 mt-2">รอชำระเงิน</div>
+                </div>
+                <div class="bg-white rounded-2xl border border-gray-100 p-4 text-center">
+                  <div class="text-3xl font-bold text-red-500" id="orders-stat-processing">0</div>
+                  <div class="text-xs text-gray-500 mt-2">รอดำเนินการ</div>
+                </div>
+                <div class="bg-white rounded-2xl border border-gray-100 p-4 text-center">
+                  <div class="text-3xl font-bold text-red-500" id="orders-stat-shipped">0</div>
+                  <div class="text-xs text-gray-500 mt-2">จัดส่งแล้ว</div>
+                </div>
+                <div class="bg-white rounded-2xl border border-gray-100 p-4 text-center">
+                  <div class="text-3xl font-bold text-red-500" id="orders-stat-delivered">0</div>
+                  <div class="text-xs text-gray-500 mt-2">เสร็จสิ้น</div>
+                </div>
+              </div>
 
-            <!-- Order List -->
-            <div id="orders-list">
-              <!-- Will be populated by JS -->
+              <div class="flex gap-2 overflow-x-auto pb-2" id="order-tabs">
+                <button class="order-tab active px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap bg-primary text-white" data-filter="all">ทั้งหมด</button>
+                <button class="order-tab px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap bg-gray-100 text-gray-600 hover:bg-gray-200" data-filter="pending">รอชำระเงิน</button>
+                <button class="order-tab px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap bg-gray-100 text-gray-600 hover:bg-gray-200" data-filter="processing">กำลังดำเนินการ</button>
+                <button class="order-tab px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap bg-gray-100 text-gray-600 hover:bg-gray-200" data-filter="delivered">สำเร็จ</button>
+                <button class="order-tab px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap bg-gray-100 text-gray-600 hover:bg-gray-200" data-filter="cancelled">ยกเลิก</button>
+              </div>
+
+              <div class="overflow-x-auto rounded-2xl border border-gray-100">
+                <table class="min-w-full text-sm">
+                  <thead class="bg-gray-50 text-gray-500">
+                    <tr>
+                      <th class="text-left font-semibold px-4 py-4">หมายเลขคำสั่งซื้อ</th>
+                      <th class="text-left font-semibold px-4 py-4">สถานะการสั่งซื้อ</th>
+                      <th class="text-left font-semibold px-4 py-4">เลขพัสดุ</th>
+                      <th class="text-right font-semibold px-4 py-4">ยอดทั้งหมด</th>
+                      <th class="text-right font-semibold px-4 py-4">จัดการ</th>
+                    </tr>
+                  </thead>
+                  <tbody id="orders-list">
+                    <tr>
+                      <td colspan="5" class="px-4 py-10 text-center text-gray-400">กำลังโหลดข้อมูลคำสั่งซื้อ...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="flex justify-end">
+                <a href="/track-order" class="text-sm text-primary hover:underline flex items-center gap-1"><i class="ph ph-magnifying-glass"></i> ติดตามพัสดุ</a>
+              </div>
             </div>
 
             <!-- Empty State -->
@@ -105,6 +150,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <script src="script.min.js?v=4ceab7ef"></script>
   <script>
     const API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') ? 'http://localhost:5000/api' : '/api';
+    const ORDERS_STATUS_META = {
+      pending: { label:'รอชำระเงิน', className:'bg-yellow-100 text-yellow-700' },
+      processing: { label:'กำลังดำเนินการ', className:'bg-blue-100 text-blue-700' },
+      paid: { label:'ชำระเงินแล้ว รอจัดส่ง', className:'bg-emerald-100 text-emerald-700' },
+      shipped: { label:'จัดส่งแล้ว', className:'bg-orange-100 text-orange-700' },
+      delivered: { label:'สำเร็จ', className:'bg-green-100 text-green-700' },
+      cancelled: { label:'ยกเลิก', className:'bg-red-100 text-red-700' }
+    };
+    const CARRIER_URLS = {
+      Flash: 'https://www.flashexpress.co.th/fle/tracking?se=',
+      Kerry: 'https://th.kerryexpress.com/en/track/?track=',
+      JT: 'https://www.jtexpress.co.th/index/query/gzquery.html?bills='
+    };
 
     let ordersState = [];
     let activeFilter = 'all';
@@ -148,9 +206,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           const rawOrders = await ordersRes.json();
           orders = rawOrders.map(o => ({
             id: o.id ? o.id.slice(-8).toUpperCase() : '—',
+            rawId: o.id || '',
             status: (o.status || 'pending').toLowerCase(),
             date: o.createdAt ? new Date(o.createdAt).toLocaleDateString('th-TH', { year:'numeric', month:'short', day:'numeric' }) : '',
             updatedAt: o.updatedAt ? new Date(o.updatedAt).toLocaleString('th-TH', { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }) : '',
+            createdAt: o.createdAt || '',
             total: Number(o.totalAmount) || 0,
             trackingNumber: o.trackingNumber || '',
             carrier: o.carrier || '',
@@ -170,6 +230,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
 
       ordersState = orders;
+      updateOrderStats(ordersState);
       renderOrders(ordersState, activeFilter);
 
       if (!silent) {
@@ -183,6 +244,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     function renderOrders(orders, filter){
       const list = document.getElementById('orders-list');
       const empty = document.getElementById('orders-empty');
+      const sortBy = document.getElementById('orders-sort')?.value || 'status';
       const filterGroups = {
         pending: ['pending'],
         processing: ['processing', 'paid', 'shipped'],
@@ -192,59 +254,86 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const filtered = filter==='all'
         ? orders
         : orders.filter(o => (filterGroups[filter] || [filter]).includes(o.status));
-      if(!filtered.length){ list.innerHTML=''; empty.classList.remove('hidden'); return; }
+      if (!filtered.length) {
+        list.innerHTML = '';
+        empty.classList.remove('hidden');
+        return;
+      }
       empty.classList.add('hidden');
 
-      const statusMap = { pending: {label:'รอชำระเงิน', color:'yellow'}, processing: {label:'กำลังดำเนินการ', color:'blue'}, paid: {label:'ชำระเงินแล้ว รอจัดส่ง', color:'emerald'}, shipped: {label:'จัดส่งแล้ว', color:'orange'}, delivered: {label:'สำเร็จ', color:'green'}, cancelled: {label:'ยกเลิก', color:'red'} };
-      const CARRIER_URLS = { Flash: 'https://www.flashexpress.co.th/fle/tracking?se=', Kerry: 'https://th.kerryexpress.com/en/track/?track=', JT: 'https://www.jtexpress.co.th/index/query/gzquery.html?bills=' };
+      const rows = [...filtered];
+      const statusRank = { pending: 1, processing: 2, paid: 3, shipped: 4, delivered: 5, cancelled: 6 };
+      if (sortBy === 'latest') {
+        rows.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      } else if (sortBy === 'total') {
+        rows.sort((a, b) => b.total - a.total);
+      } else {
+        rows.sort((a, b) => {
+          const rankDiff = (statusRank[a.status] || 99) - (statusRank[b.status] || 99);
+          if (rankDiff !== 0) return rankDiff;
+          return new Date(b.createdAt) - new Date(a.createdAt);
+        });
+      }
 
-      list.innerHTML = filtered.map(o => {
-        const s = statusMap[o.status] || {label:o.status, color:'gray'};
-        const items = (o.items||[]).map(i => `
-          <div class="flex items-center gap-3">
-            <div class="w-14 h-14 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0"><i class="ph ph-music-note text-xl text-gray-400"></i></div>
-            <div class="flex-1 min-w-0">
-              <p class="text-sm font-medium text-gray-900 truncate">${i.name||'สินค้า'}</p>
-              <p class="text-xs text-gray-500">x${i.qty||1}</p>
-            </div>
-            <p class="text-sm font-bold">฿${(i.price||0).toLocaleString()}</p>
-          </div>
-        `).join('');
+      list.innerHTML = rows.map(o => {
+        const meta = ORDERS_STATUS_META[o.status] || { label: o.status, className: 'bg-gray-100 text-gray-600' };
+        const trackingCell = o.trackingNumber
+          ? `<a href="${getTrackingUrl(o.carrier, o.trackingNumber)}" target="_blank" rel="noopener" class="text-primary hover:underline font-medium">${escapeHtml(o.trackingNumber)}</a>`
+          : '<span class="text-gray-400">-</span>';
+        const itemSummary = (o.items || []).slice(0, 2).map(i => `${escapeHtml(i.name || 'สินค้า')} x${i.qty || 1}`).join('<br>');
+        const moreCount = Math.max((o.items || []).length - 2, 0);
         return `
-          <div class="border border-gray-100 rounded-xl p-4 mb-4">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 pb-3 border-b border-gray-100">
-              <div>
-                <span class="text-sm font-semibold text-gray-900">คำสั่งซื้อ #${o.id||'—'}</span>
-                <span class="text-xs text-gray-400 ml-2">${o.date||''}</span>
-              </div>
-              <span class="inline-block px-3 py-1 rounded-full text-xs font-bold bg-${s.color}-100 text-${s.color}-700">${s.label}</span>
-            </div>
-            <div class="space-y-3">${items}</div>
-            <div class="flex justify-between items-center mt-4 pt-3 border-t border-gray-100">
-              <span class="text-sm text-gray-500">ยอดรวม</span>
-              <span class="font-bold text-lg">฿${(o.total||0).toLocaleString()}</span>
-            </div>
-            ${o.updatedAt ? `
-            <div class="mt-3 text-xs text-gray-400">
-              อัปเดตล่าสุด ${o.updatedAt}
-            </div>` : ''}
-            ${o.trackingNumber ? `
-            <div class="mt-3 pt-3 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center gap-2">
-              <div class="flex items-center gap-2 flex-1 min-w-0">
-                <i class="ph ph-truck text-orange-500 text-base flex-shrink-0"></i>
-                <span class="text-xs text-gray-500">${o.carrier || 'ขนส่ง'}</span>
-                <span class="text-xs font-mono font-bold text-gray-700 truncate">${o.trackingNumber}</span>
-              </div>
-              <a href="${(CARRIER_URLS[o.carrier] || 'https://www.flashexpress.co.th/fle/tracking?se=') + encodeURIComponent(o.trackingNumber)}"
-                target="_blank" rel="noopener"
-                class="flex-shrink-0 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white transition-all hover:opacity-90 active:scale-95"
-                style="background:#ff6600;">
-                <i class="ph ph-map-pin-line"></i> ติดตามพัสดุ
-              </a>
-            </div>` : ''}
-          </div>
+          <tr class="border-t border-gray-100 align-top">
+            <td class="px-4 py-4">
+              <div class="font-semibold text-gray-900">#${o.id || '—'}</div>
+              <div class="text-xs text-gray-400 mt-1">${o.date || ''}</div>
+            </td>
+            <td class="px-4 py-4">
+              <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${meta.className}">
+                ${meta.label}
+              </span>
+              ${o.updatedAt ? `<div class="text-xs text-gray-400 mt-2">อัปเดตล่าสุด ${o.updatedAt}</div>` : ''}
+            </td>
+            <td class="px-4 py-4">
+              ${trackingCell}
+              ${o.carrier ? `<div class="text-xs text-gray-400 mt-1">${escapeHtml(o.carrier)}</div>` : ''}
+            </td>
+            <td class="px-4 py-4 text-right font-semibold text-gray-900">฿${(o.total || 0).toLocaleString()}</td>
+            <td class="px-4 py-4 text-right">
+              <details class="inline-block text-left max-w-xs">
+                <summary class="list-none inline-flex items-center gap-1.5 cursor-pointer text-primary font-semibold">
+                  <i class="ph ph-caret-down text-sm"></i> ดูรายละเอียด
+                </summary>
+                <div class="mt-3 w-72 max-w-[80vw] rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
+                  <div class="text-xs text-gray-500 leading-6">
+                    ${itemSummary || 'ไม่มีรายการสินค้า'}
+                    ${moreCount ? `<div class="mt-1 text-primary">และอีก ${moreCount} รายการ</div>` : ''}
+                  </div>
+                  ${o.trackingNumber ? `<a href="${getTrackingUrl(o.carrier, o.trackingNumber)}" target="_blank" rel="noopener" class="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline"><i class="ph ph-map-pin-line"></i> ติดตามพัสดุ</a>` : ''}
+                </div>
+              </details>
+            </td>
+          </tr>
         `;
       }).join('');
+    }
+
+    function updateOrderStats(orders) {
+      const countBy = (statuses) => orders.filter(order => statuses.includes(order.status)).length;
+      document.getElementById('orders-stat-pending').textContent = String(countBy(['pending']));
+      document.getElementById('orders-stat-processing').textContent = String(countBy(['processing', 'paid']));
+      document.getElementById('orders-stat-shipped').textContent = String(countBy(['shipped']));
+      document.getElementById('orders-stat-delivered').textContent = String(countBy(['delivered']));
+    }
+
+    function getTrackingUrl(carrier, trackingNumber) {
+      return (CARRIER_URLS[carrier] || CARRIER_URLS.Flash) + encodeURIComponent(trackingNumber);
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.appendChild(document.createTextNode(String(str)));
+      return div.innerHTML;
     }
   </script>
 </body>
