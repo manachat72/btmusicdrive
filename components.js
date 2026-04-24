@@ -66,7 +66,7 @@ function _navbarHTML() {
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between h-16 items-center">
         <a href="/" class="flex-shrink-0 flex items-center cursor-pointer no-underline">
-          <img src="images/logo.webp" alt="btmusicdrive" class="h-9 w-9 rounded-full mr-2">
+          <img src="images/logo.webp" alt="" class="h-9 w-9 rounded-full mr-2">
           <span class="font-bold text-xl tracking-tight text-white">btmusicdrive</span>
         </a>
         <div class="hidden md:flex flex-1 items-center justify-center gap-1 px-6" id="desktop-nav"></div>
@@ -238,7 +238,7 @@ function _footerHTML() {
         <!-- Logo + Description + Shop Links -->
 <div>
   <div class="flex items-center mb-4 cursor-pointer" onclick="window.location='/'">
-    <img src="images/logo.webp" alt="btmusicdrive" class="h-10 w-10 rounded-full mr-3">
+    <img src="images/logo.webp" alt="" class="h-10 w-10 rounded-full mr-3">
     <span class="font-bold text-2xl tracking-tight text-white">btmusicdrive</span>
   </div>
   <p class="text-gray-400 mb-5 text-sm leading-relaxed">ร้านขายแฟลชไดร์ฟเพลง MP3 คุณภาพเสียง HD รวมเพลงฮิตทุกแนว เสียบปุ๊บฟังปั๊บ</p>
@@ -406,7 +406,7 @@ function _mobileBottomNavHTML() {
     <!-- Menu Body -->
     <div style="flex:1;overflow-y:auto;padding:4px 0;">
 
-      <p style="margin:0;padding:14px 20px 6px;font-size:9px;font-weight:600;letter-spacing:0.13em;text-transform:uppercase;color:rgba(139,115,85,0.5);">เมนูหลัก</p>
+      <p style="margin:0;padding:14px 20px 6px;font-size:11px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;color:#C9A876;">เมนูหลัก</p>
 
       <a href="/" class="_dlink" style="display:flex;align-items:center;gap:13px;padding:11px 20px;text-decoration:none;transition:background 0.15s;">
         <span style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(139,115,85,0.1);flex-shrink:0;"><i class="ph ph-house" style="font-size:17px;color:#8B7355;"></i></span>
@@ -422,7 +422,7 @@ function _mobileBottomNavHTML() {
       </a>
       <div style="height:1px;background:rgba(255,255,255,0.05);margin:6px 20px;"></div>
 
-      <p style="margin:0;padding:10px 20px 6px;font-size:9px;font-weight:600;letter-spacing:0.13em;text-transform:uppercase;color:rgba(139,115,85,0.5);">บัญชี</p>
+      <p style="margin:0;padding:10px 20px 6px;font-size:11px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;color:#C9A876;">บัญชี</p>
 
       <a href="/orders" class="_dlink" style="display:flex;align-items:center;gap:13px;padding:11px 20px;text-decoration:none;transition:background 0.15s;">
         <span style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(139,115,85,0.1);flex-shrink:0;"><i class="ph ph-package" style="font-size:17px;color:#8B7355;"></i></span>
@@ -439,7 +439,7 @@ function _mobileBottomNavHTML() {
 
       <div style="height:1px;background:rgba(255,255,255,0.05);margin:6px 20px;"></div>
 
-      <p style="margin:0;padding:10px 20px 6px;font-size:9px;font-weight:600;letter-spacing:0.13em;text-transform:uppercase;color:rgba(139,115,85,0.5);">ช่วยเหลือ</p>
+      <p style="margin:0;padding:10px 20px 6px;font-size:11px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;color:#C9A876;">ช่วยเหลือ</p>
 
       <a href="/contact" class="_dlink" style="display:flex;align-items:center;gap:13px;padding:11px 20px;text-decoration:none;transition:background 0.15s;">
         <span style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(139,115,85,0.1);flex-shrink:0;"><i class="ph ph-chat-circle-dots" style="font-size:17px;color:#8B7355;"></i></span>
