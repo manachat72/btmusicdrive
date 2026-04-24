@@ -11,7 +11,7 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
 <base href="/">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="app.min.css?v=4414233d">
+    <link rel="stylesheet" href="app.min.css?v=d7918df2">
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#8B7355">
   <link rel="icon" type="image/webp" href="images/logo.webp">
@@ -35,289 +35,88 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <main class="pt-20 pb-20 md:pb-16">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div class="flex flex-col lg:flex-row gap-8">
+      <section class="space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center">
+              <i class="ph-fill ph-user text-xl text-red-600"></i>
+            </div>
+            <h1 class="text-2xl font-bold text-gray-900">ข้อมูลส่วนตัว</h1>
+          </div>
+          <button type="button" class="self-start sm:self-auto bg-red-50 text-red-500 font-semibold px-5 py-3 rounded-xl">
+            แก้ไขข้อมูลส่วนตัว
+          </button>
+        </div>
 
-        <!-- Account Sidebar (desktop only, mobile uses bottom nav drawer) -->
-        <aside class="hidden lg:block lg:w-64 flex-shrink-0">
-          <div class="bg-white rounded-2xl border border-gray-100 p-4 mb-4">
-            <div class="flex items-center gap-3 mb-4" id="profile-sidebar-user">
-              <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center"><i class="ph ph-user text-2xl text-primary"></i></div>
-              <div>
-                <p class="font-semibold text-gray-900" id="sidebar-user-name">ผู้ใช้</p>
-                <p class="text-xs text-gray-500" id="sidebar-user-email">กรุณาเข้าสู่ระบบ</p>
-              </div>
+        <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1.7fr)_minmax(0,1.8fr)] gap-4">
+          <div class="bg-white rounded-2xl border border-gray-100 p-6 min-h-[120px] flex items-center gap-4">
+            <div class="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden shrink-0" id="profile-avatar">
+              <i class="ph ph-user text-4xl text-gray-400"></i>
+            </div>
+            <div class="min-w-0">
+              <p class="text-2xl font-medium text-gray-900 truncate" id="profile-display-name">ผู้ใช้</p>
+              <p class="text-sm text-gray-500 truncate" id="profile-display-email">-</p>
             </div>
           </div>
-          <div class="mb-6">
-            <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">รายการ</h3>
-            <ul class="space-y-1">
-              <li><a href="/orders" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"><i class="ph ph-package text-lg"></i> คำสั่งซื้อ</a></li>
-            </ul>
-          </div>
-          <div>
-            <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">บัญชี</h3>
-            <ul class="space-y-1">
-              <li><a href="/profile" class="flex items-center gap-2 px-3 py-2 rounded-lg text-primary font-semibold bg-amber-50 border-l-4 border-primary transition-colors"><i class="ph ph-user-circle text-lg"></i> ข้อมูลส่วนตัว</a></li>
-              <li><a href="/address" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"><i class="ph ph-map-pin text-lg"></i> ที่อยู่สำหรับจัดส่ง</a></li>
-              <li><a href="/" onclick="localStorage.removeItem('btmusicdrive_token');localStorage.removeItem('user');location.href='/'; return false;" class="flex items-center gap-2 px-3 py-2 rounded-lg text-red-500 hover:bg-red-50 transition-colors"><i class="ph ph-sign-out text-lg"></i> ออกจากระบบ</a></li>
-            </ul>
-          </div>
-        </aside>
 
-        <!-- Main Content -->
-        <div class="flex-1 min-w-0">
-          <div class="bg-white rounded-2xl border border-gray-100 p-6 sm:p-8">
-            <div class="flex flex-col gap-4 mb-8">
-              <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div class="flex items-center gap-3">
-                  <div class="bg-amber-50 w-10 h-10 rounded-full flex items-center justify-center"><i class="ph ph-user-circle text-xl text-primary"></i></div>
-                  <h1 class="text-2xl font-bold text-gray-900">ข้อมูลส่วนตัว</h1>
-                </div>
-                <button type="button" onclick="scrollToProfileForm()" class="bg-red-50 hover:bg-red-100 text-red-500 font-semibold px-5 py-3 rounded-xl transition-colors">
-                  แก้ไขข้อมูลส่วนตัว
-                </button>
-              </div>
-
-              <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] gap-4">
-                <div class="bg-gray-50 rounded-2xl border border-gray-100 p-5 flex items-center gap-4">
-                  <div class="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden shrink-0" id="profile-avatar">
-                    <i class="ph ph-user text-4xl text-gray-400"></i>
-                  </div>
-                  <div class="min-w-0">
-                    <p class="text-xl font-semibold text-gray-900 truncate" id="profile-display-name">ผู้ใช้</p>
-                    <p class="text-sm text-gray-500 truncate" id="profile-display-email">-</p>
-                  </div>
-                </div>
-
-                <div class="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-4 gap-4">
-                  <div class="bg-white rounded-2xl border border-gray-100 p-4 text-center">
-                    <div class="text-3xl font-bold text-red-500" id="stat-delivered">0</div>
-                    <div class="text-xs text-gray-500 mt-2">เสร็จสิ้น</div>
-                  </div>
-                  <div class="bg-white rounded-2xl border border-gray-100 p-4 text-center">
-                    <div class="text-3xl font-bold text-red-500" id="stat-shipped">0</div>
-                    <div class="text-xs text-gray-500 mt-2">จัดส่งแล้ว</div>
-                  </div>
-                  <div class="bg-white rounded-2xl border border-gray-100 p-4 text-center">
-                    <div class="text-3xl font-bold text-red-500" id="stat-processing">0</div>
-                    <div class="text-xs text-gray-500 mt-2">รอดำเนินการ</div>
-                  </div>
-                  <div class="bg-white rounded-2xl border border-gray-100 p-4 text-center">
-                    <div class="text-3xl font-bold text-red-500" id="stat-pending">0</div>
-                    <div class="text-xs text-gray-500 mt-2">รอชำระเงิน</div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="bg-white rounded-2xl border border-gray-100 p-5">
-                <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-5 text-sm">
-                  <div>
-                    <p class="text-gray-400 mb-1">ชื่อ - นามสกุล</p>
-                    <p class="font-medium text-gray-900 break-words" id="profile-meta-name">-</p>
-                  </div>
-                  <div>
-                    <p class="text-gray-400 mb-1">อีเมล</p>
-                    <p class="font-medium text-gray-900 break-all" id="profile-meta-email">-</p>
-                  </div>
-                  <div>
-                    <p class="text-gray-400 mb-1">หมายเลขโทรศัพท์</p>
-                    <p class="font-medium text-gray-900 break-words" id="profile-meta-phone">-</p>
-                  </div>
-                  <div>
-                    <p class="text-gray-400 mb-1">วัน / เดือน / ปีเกิด</p>
-                    <p class="font-medium text-gray-900 break-words" id="profile-meta-birthday">-</p>
-                  </div>
-                  <div>
-                    <p class="text-gray-400 mb-1">ไลน์ไอดี</p>
-                    <p class="font-medium text-gray-900 break-words">-</p>
-                  </div>
-                  <div>
-                    <p class="text-gray-400 mb-1">เฟซบุ๊ค</p>
-                    <p class="font-medium text-gray-900 break-words">-</p>
-                  </div>
-                </div>
-              </div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div class="bg-white rounded-2xl border border-gray-100 p-5 text-center flex flex-col justify-center min-h-[120px]">
+              <div class="text-3xl font-bold text-red-500" id="stat-delivered">0</div>
+              <div class="text-sm text-gray-500 mt-2">เสร็จสิ้น</div>
             </div>
-
-            <section class="mb-8">
-              <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
-                <div class="flex items-center gap-3">
-                  <div class="bg-red-50 w-10 h-10 rounded-full flex items-center justify-center">
-                    <i class="ph ph-package text-xl text-red-500"></i>
-                  </div>
-                  <div>
-                    <h2 class="text-2xl font-bold text-gray-900">สถานะการสั่งซื้อ</h2>
-                    <p class="text-sm text-gray-500">ดูสถานะล่าสุดและตรวจสอบเลขพัสดุได้จากที่นี่</p>
-                  </div>
-                </div>
-                <div class="flex items-center gap-3">
-                  <label for="profile-order-sort" class="text-sm text-gray-500">เรียงตาม:</label>
-                  <select id="profile-order-sort" class="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-primary" onchange="renderProfileOrders()">
-                    <option value="status">สถานะการสั่งซื้อ</option>
-                    <option value="latest">ล่าสุด</option>
-                    <option value="total">ยอดทั้งหมด</option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="overflow-x-auto rounded-2xl border border-gray-100 bg-white">
-                <table class="min-w-full text-sm">
-                  <thead class="bg-gray-50 text-gray-500">
-                    <tr>
-                      <th class="text-left font-semibold px-4 py-4">หมายเลขคำสั่งซื้อ</th>
-                      <th class="text-left font-semibold px-4 py-4">สถานะการสั่งซื้อ</th>
-                      <th class="text-left font-semibold px-4 py-4">เลขพัสดุ</th>
-                      <th class="text-right font-semibold px-4 py-4">ยอดทั้งหมด</th>
-                    </tr>
-                  </thead>
-                  <tbody id="profile-orders-table">
-                    <tr>
-                      <td colspan="4" class="px-4 py-10 text-center text-gray-400">กำลังโหลดข้อมูลคำสั่งซื้อ...</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </section>
-
-            <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)] gap-6">
-              <section class="bg-white rounded-2xl border border-gray-100 p-6 sm:p-8">
-                <div class="flex items-center gap-3 mb-6">
-                  <div class="bg-amber-50 w-10 h-10 rounded-full flex items-center justify-center">
-                    <i class="ph ph-note-pencil text-xl text-primary"></i>
-                  </div>
-                  <div>
-                    <h2 class="text-xl font-bold text-gray-900">แก้ไขข้อมูลส่วนตัว</h2>
-                    <p class="text-sm text-gray-500">อัปเดตชื่อ เบอร์โทร วันเกิด และข้อมูลเบื้องต้นของบัญชี</p>
-                  </div>
-                </div>
-
-                <form id="profileForm" class="space-y-6" onsubmit="return saveProfile(event)">
-                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 mb-1" for="pf-fname">ชื่อ</label>
-                      <input id="pf-fname" type="text" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition" placeholder="ชื่อ">
-                    </div>
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 mb-1" for="pf-lname">นามสกุล</label>
-                      <input id="pf-lname" type="text" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition" placeholder="นามสกุล">
-                    </div>
-                  </div>
-
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1" for="pf-email">อีเมล</label>
-                    <input id="pf-email" type="email" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 bg-gray-50 text-gray-500 cursor-not-allowed" readonly>
-                  </div>
-
-                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 mb-1" for="pf-phone">เบอร์โทรศัพท์</label>
-                      <input id="pf-phone" type="tel" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition" placeholder="08x-xxx-xxxx">
-                    </div>
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 mb-1" for="pf-birthday">วันเกิด</label>
-                      <input id="pf-birthday" type="date" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition">
-                    </div>
-                  </div>
-
-                  <div>
-                    <span class="block text-sm font-medium text-gray-700 mb-2">เพศ</span>
-                    <div class="flex flex-wrap gap-3">
-                      <label class="inline-flex items-center gap-2 rounded-full border border-gray-200 px-4 py-2 text-sm text-gray-700">
-                        <input type="radio" name="gender" value="male" class="text-primary">
-                        <span>ชาย</span>
-                      </label>
-                      <label class="inline-flex items-center gap-2 rounded-full border border-gray-200 px-4 py-2 text-sm text-gray-700">
-                        <input type="radio" name="gender" value="female" class="text-primary">
-                        <span>หญิง</span>
-                      </label>
-                      <label class="inline-flex items-center gap-2 rounded-full border border-gray-200 px-4 py-2 text-sm text-gray-700">
-                        <input type="radio" name="gender" value="other" class="text-primary">
-                        <span>ไม่ระบุ</span>
-                      </label>
-                    </div>
-                  </div>
-
-                  <div class="pt-2">
-                    <button type="submit" class="bg-primary hover:bg-[#7c674d] text-white font-semibold px-8 py-3 rounded-xl transition-colors">
-                      บันทึกข้อมูล
-                    </button>
-                  </div>
-                </form>
-              </section>
-
-              <section class="space-y-6">
-                <div class="bg-white rounded-2xl border border-gray-100 p-6 sm:p-8">
-                  <div class="flex items-center gap-3 mb-4">
-                    <div class="bg-slate-100 w-10 h-10 rounded-full flex items-center justify-center">
-                      <i class="ph ph-shield-check text-xl text-secondary"></i>
-                    </div>
-                    <div>
-                      <h2 class="text-xl font-bold text-gray-900">เปลี่ยนรหัสผ่าน</h2>
-                      <p class="text-sm text-gray-500">เตรียมข้อมูลไว้ล่วงหน้าได้ แต่การบันทึกจะเปิดใช้งานเมื่อระบบรองรับเต็มรูปแบบ</p>
-                    </div>
-                  </div>
-
-                  <form id="passwordForm" class="space-y-4" onsubmit="return changePassword(event)">
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 mb-1" for="pw-current">รหัสผ่านปัจจุบัน</label>
-                      <input id="pw-current" type="password" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition" required>
-                    </div>
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 mb-1" for="pw-new">รหัสผ่านใหม่</label>
-                      <input id="pw-new" type="password" minlength="6" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition" required>
-                    </div>
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 mb-1" for="pw-confirm">ยืนยันรหัสผ่านใหม่</label>
-                      <input id="pw-confirm" type="password" minlength="6" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition" required>
-                    </div>
-                    <button type="submit" class="bg-secondary hover:bg-slate-800 text-white font-semibold px-6 py-3 rounded-xl transition-colors">
-                      เปลี่ยนรหัสผ่าน
-                    </button>
-                  </form>
-                </div>
-
-                <div class="bg-gradient-to-br from-amber-50 via-white to-red-50 rounded-2xl border border-amber-100 p-6">
-                  <div class="flex items-start gap-3">
-                    <div class="w-11 h-11 rounded-full bg-white text-primary flex items-center justify-center shadow-sm shrink-0">
-                      <i class="ph ph-info text-xl"></i>
-                    </div>
-                    <div>
-                      <h3 class="text-lg font-semibold text-gray-900 mb-2">คำแนะนำสำหรับโปรไฟล์</h3>
-                      <ul class="space-y-2 text-sm text-gray-600">
-                        <li>กรอกชื่อและเบอร์โทรให้ครบเพื่อให้ทีมงานติดต่อเรื่องการจัดส่งได้ง่ายขึ้น</li>
-                        <li>ตรวจสอบอีเมลให้ถูกต้องเพื่อรับข้อมูลคำสั่งซื้อและการแจ้งเตือนต่าง ๆ</li>
-                        <li>หากมีเลขพัสดุแล้ว คุณสามารถกดที่เลขพัสดุในตารางด้านบนเพื่อติดตามสถานะได้ทันที</li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </section>
+            <div class="bg-white rounded-2xl border border-gray-100 p-5 text-center flex flex-col justify-center min-h-[120px]">
+              <div class="text-3xl font-bold text-red-500" id="stat-shipped">0</div>
+              <div class="text-sm text-gray-500 mt-2">จัดส่งแล้ว</div>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 p-5 text-center flex flex-col justify-center min-h-[120px]">
+              <div class="text-3xl font-bold text-red-500" id="stat-processing">0</div>
+              <div class="text-sm text-gray-500 mt-2">รอดำเนินการ</div>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 p-5 text-center flex flex-col justify-center min-h-[120px]">
+              <div class="text-3xl font-bold text-red-500" id="stat-pending">0</div>
+              <div class="text-sm text-gray-500 mt-2">รอชำระเงิน</div>
             </div>
           </div>
         </div>
-      </div>
+
+        <div class="bg-white rounded-2xl border border-gray-100 p-6">
+          <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-6 text-sm">
+            <div>
+              <p class="text-gray-400 mb-2">ชื่อ - นามสกุล</p>
+              <p class="font-medium text-gray-900 break-words" id="profile-meta-name">-</p>
+            </div>
+            <div>
+              <p class="text-gray-400 mb-2">อีเมล</p>
+              <p class="font-medium text-gray-900 break-all" id="profile-meta-email">-</p>
+            </div>
+            <div>
+              <p class="text-gray-400 mb-2">หมายเลขโทรศัพท์</p>
+              <p class="font-medium text-gray-900 break-words" id="profile-meta-phone">-</p>
+            </div>
+            <div>
+              <p class="text-gray-400 mb-2">วัน / เดือน / ปีเกิด</p>
+              <p class="font-medium text-gray-900 break-words" id="profile-meta-birthday">-</p>
+            </div>
+            <div>
+              <p class="text-gray-400 mb-2">ไลน์ไอดี</p>
+              <p class="font-medium text-gray-900 break-words" id="profile-meta-line">-</p>
+            </div>
+            <div>
+              <p class="text-gray-400 mb-2">เฟซบุ๊ค</p>
+              <p class="font-medium text-gray-900 break-words" id="profile-meta-facebook">-</p>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   </main>
 
   <div id="site-footer"></div>
-  <script src="components.min.js?v=2d5fbf68"></script>
+  <script src="components.min.js?v=99ff56a5"></script>
   <script>
     const API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
       ? 'http://localhost:5000/api'
       : '/api';
-    const PROFILE_STATUS_META = {
-      pending: { label: 'รอชำระเงิน', className: 'bg-yellow-100 text-yellow-700' },
-      processing: { label: 'รอดำเนินการ', className: 'bg-blue-100 text-blue-700' },
-      paid: { label: 'ชำระแล้ว รอจัดส่ง', className: 'bg-emerald-100 text-emerald-700' },
-      shipped: { label: 'จัดส่งแล้ว', className: 'bg-orange-100 text-orange-700' },
-      delivered: { label: 'เสร็จสิ้น', className: 'bg-green-100 text-green-700' },
-      cancelled: { label: 'ยกเลิก', className: 'bg-red-100 text-red-700' },
-    };
-    const PROFILE_CARRIER_URLS = {
-      Flash: 'https://www.flashexpress.co.th/fle/tracking?se=',
-      Kerry: 'https://th.kerryexpress.com/en/track/?track=',
-      JT: 'https://www.jtexpress.co.th/index/query/gzquery.html?bills='
-    };
 
     let profileOrders = [];
 
@@ -326,38 +125,30 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if (!token) { location.href = '/'; return; }
 
       try {
+        const cachedUser = JSON.parse(localStorage.getItem('user') || 'null');
         const res = await fetch(`${API_BASE}/auth/me`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (!res.ok) {
           localStorage.removeItem('btmusicdrive_token');
+          localStorage.removeItem('user');
           location.href = '/';
           return;
         }
         const data = await res.json();
-        const user = data.user;
+        const user = { ...(cachedUser || {}), ...(data.user || {}) };
         localStorage.setItem('user', JSON.stringify(user));
 
         const fullName = user.name || '';
-        const parts = fullName.trim().split(' ');
-
-        document.getElementById('sidebar-user-name').textContent = fullName || 'ผู้ใช้';
-        document.getElementById('sidebar-user-email').textContent = user.email || '';
         document.getElementById('profile-display-name').textContent = fullName || 'ผู้ใช้';
         document.getElementById('profile-display-email').textContent = user.email || '-';
         document.getElementById('profile-meta-name').textContent = fullName || '-';
         document.getElementById('profile-meta-email').textContent = user.email || '-';
         document.getElementById('profile-meta-phone').textContent = user.phone || '-';
         document.getElementById('profile-meta-birthday').textContent = formatBirthday(user.birthday);
-        document.getElementById('pf-fname').value = parts[0] || '';
-        document.getElementById('pf-lname').value = parts.slice(1).join(' ') || '';
-        document.getElementById('pf-email').value = user.email || '';
-        if (user.phone) document.getElementById('pf-phone').value = user.phone;
-        if (user.birthday) document.getElementById('pf-birthday').value = user.birthday;
-        if (user.gender) {
-          const gInfo = document.querySelector(`input[name="gender"][value="${user.gender}"]`);
-          if (gInfo) gInfo.checked = true;
-        }
+        document.getElementById('profile-meta-line').textContent = user.lineId || '-';
+        document.getElementById('profile-meta-facebook').textContent = user.facebook || '-';
+        renderProfileAvatar(user);
         await loadProfileOrders(token);
       } catch (e) {
         console.error(e);
@@ -371,7 +162,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           headers: { Authorization: `Bearer ${token}` }
         });
         if (!res.ok) {
-          renderProfileOrders([]);
           updateOrderStats([]);
           return;
         }
@@ -379,20 +169,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         const rawOrders = await res.json();
         profileOrders = rawOrders.map((order) => ({
           id: order.id || '',
-          shortId: order.id ? order.id.slice(-8).toUpperCase() : '—',
           status: String(order.status || 'PENDING').toLowerCase(),
-          trackingNumber: order.trackingNumber || '',
-          carrier: order.carrier || '',
-          totalAmount: Number(order.totalAmount) || 0,
-          createdAt: order.createdAt || '',
         }));
 
         updateOrderStats(profileOrders);
-        renderProfileOrders();
       } catch (error) {
         console.error('Profile orders error:', error);
         updateOrderStats([]);
-        renderProfileOrders([]);
       }
     }
 
@@ -404,54 +187,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       document.getElementById('stat-pending').textContent = String(countBy(['pending']));
     }
 
-    function renderProfileOrders(inputOrders = profileOrders) {
-      const tbody = document.getElementById('profile-orders-table');
-      if (!tbody) return;
-      const sortBy = document.getElementById('profile-order-sort')?.value || 'status';
-      const orders = [...inputOrders];
-      const statusRank = { pending: 1, processing: 2, paid: 3, shipped: 4, delivered: 5, cancelled: 6 };
-
-      if (sortBy === 'latest') {
-        orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-      } else if (sortBy === 'total') {
-        orders.sort((a, b) => b.totalAmount - a.totalAmount);
-      } else {
-        orders.sort((a, b) => {
-          const rankDiff = (statusRank[a.status] || 99) - (statusRank[b.status] || 99);
-          if (rankDiff !== 0) return rankDiff;
-          return new Date(b.createdAt) - new Date(a.createdAt);
-        });
-      }
-
-      if (!orders.length) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="4" class="px-4 py-10 text-center text-gray-400">ไม่มีคำสั่งซื้อ</td>
-          </tr>
-        `;
-        return;
-      }
-
-      tbody.innerHTML = orders.map((order) => {
-        const meta = PROFILE_STATUS_META[order.status] || { label: order.status, className: 'bg-gray-100 text-gray-600' };
-        const trackingCell = order.trackingNumber
-          ? `<a href="${getTrackingUrl(order.carrier, order.trackingNumber)}" target="_blank" rel="noopener" class="text-primary hover:underline font-medium">${escapeHtml(order.trackingNumber)}</a>`
-          : '<span class="text-gray-400">-</span>';
-        return `
-          <tr class="border-t border-gray-100">
-            <td class="px-4 py-4 font-semibold text-gray-900">#${order.shortId}</td>
-            <td class="px-4 py-4">
-              <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${meta.className}">
-                ${meta.label}
-              </span>
-            </td>
-            <td class="px-4 py-4">${trackingCell}</td>
-            <td class="px-4 py-4 text-right font-semibold text-gray-900">฿${order.totalAmount.toLocaleString()}</td>
-          </tr>
-        `;
-      }).join('');
-    }
-
     function formatBirthday(value) {
       if (!value) return '-';
       const date = new Date(value);
@@ -459,67 +194,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       return date.toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' });
     }
 
-    function getTrackingUrl(carrier, trackingNumber) {
-      return (PROFILE_CARRIER_URLS[carrier] || PROFILE_CARRIER_URLS.Flash) + encodeURIComponent(trackingNumber);
+    function renderProfileAvatar(user) {
+      const avatarEl = document.getElementById('profile-avatar');
+      if (!avatarEl) return;
+
+      if (user?.avatar) {
+        avatarEl.innerHTML = `<img src="${escapeHtml(user.avatar)}" alt="${escapeHtml(user.name || 'ผู้ใช้')}" class="w-full h-full object-cover rounded-full">`;
+        return;
+      }
+
+      const initial = (user?.name || user?.email || 'U').trim().charAt(0).toUpperCase();
+      avatarEl.innerHTML = `<span class="text-3xl font-semibold text-gray-500">${escapeHtml(initial)}</span>`;
     }
 
     function escapeHtml(str) {
       const div = document.createElement('div');
-      div.appendChild(document.createTextNode(String(str)));
+      div.appendChild(document.createTextNode(String(str ?? '')));
       return div.innerHTML;
-    }
-
-    function scrollToProfileForm() {
-      document.getElementById('profileForm')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-
-    async function saveProfile(e) {
-      e.preventDefault();
-      const token = localStorage.getItem('btmusicdrive_token');
-      if (!token) { alert('กรุณาเข้าสู่ระบบก่อน'); return false; }
-
-      const fname = document.getElementById('pf-fname').value;
-      const lname = document.getElementById('pf-lname').value;
-      const phone = document.getElementById('pf-phone').value;
-      const birthday = document.getElementById('pf-birthday').value;
-      const genderEl = document.querySelector('input[name="gender"]:checked');
-      const gender = genderEl ? genderEl.value : '';
-
-      const newName = `${fname} ${lname}`.trim();
-
-      try {
-        const res = await fetch(`${API_BASE}/users/me`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-          body: JSON.stringify({ name: newName, phone, birthday, gender })
-        });
-        if (res.ok) {
-          const updatedUser = await res.json();
-          localStorage.setItem('user', JSON.stringify(updatedUser));
-          document.getElementById('sidebar-user-name').textContent = newName || 'ผู้ใช้';
-          document.getElementById('profile-display-name').textContent = newName || 'ผู้ใช้';
-          document.getElementById('profile-meta-name').textContent = newName || '-';
-          document.getElementById('profile-meta-phone').textContent = phone || '-';
-          document.getElementById('profile-meta-birthday').textContent = formatBirthday(birthday);
-          alert('บันทึกข้อมูลเรียบร้อย');
-        } else {
-          const data = await res.json();
-          alert(data.error || 'ไม่สามารถบันทึกข้อมูลได้');
-        }
-      } catch (err) {
-        console.error('Save profile error:', err);
-        alert('เกิดข้อผิดพลาด กรุณาลองอีกครั้ง');
-      }
-      return false;
-    }
-
-    function changePassword(e){
-      e.preventDefault();
-      const pw = document.getElementById('pw-new').value;
-      const confirm = document.getElementById('pw-confirm').value;
-      if(pw !== confirm){ alert('รหัสผ่านไม่ตรงกัน'); return false; }
-      alert('ระบบเปลี่ยนรหัสผ่านยังไม่เปิดใช้งานในขณะนี้ กรุณาติดต่อแอดมินหากต้องการความช่วยเหลือ');
-      return false;
     }
   </script>
 </body>

@@ -312,6 +312,7 @@ async function handleGoogleCredentialResponse(response) {
         // Success
         localStorage.setItem('btmusicdrive_token', data.token);
         currentUser = data.user;
+        localStorage.setItem('user', JSON.stringify(currentUser));
         
         updateUserUI();
         toggleAuthModal();
@@ -364,6 +365,7 @@ async function handleAuthSubmit(e) {
         // Success
         localStorage.setItem('btmusicdrive_token', data.token);
         currentUser = data.user;
+        localStorage.setItem('user', JSON.stringify(currentUser));
         
         updateUserUI();
         toggleAuthModal();
@@ -398,7 +400,9 @@ async function checkAuthState() {
         
         if (response.ok) {
             const data = await response.json();
-            currentUser = data.user;
+            const cachedUser = JSON.parse(localStorage.getItem('user') || 'null');
+            currentUser = { ...(cachedUser || {}), ...(data.user || {}) };
+            localStorage.setItem('user', JSON.stringify(currentUser));
             updateUserUI();
             
             // Fetch saved cart from database
@@ -406,6 +410,7 @@ async function checkAuthState() {
         } else {
             // Token invalid or expired
             localStorage.removeItem('btmusicdrive_token');
+            localStorage.removeItem('user');
         }
     } catch (error) {
         console.error('Auth check failed:', error);
@@ -415,6 +420,7 @@ async function checkAuthState() {
 function handleLogout() {
     if (confirm('Are you sure you want to log out?')) {
         localStorage.removeItem('btmusicdrive_token');
+        localStorage.removeItem('user');
         currentUser = null;
         updateUserUI();
         if (typeof _showToast === 'function') _showToast('Logged out successfully');

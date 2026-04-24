@@ -693,6 +693,7 @@ async function _handleAuthSubmit(e) {
     if (!res.ok) throw new Error(data.error || 'Authentication failed');
     localStorage.setItem('btmusicdrive_token', data.token);
     _currentUser = data.user;
+    localStorage.setItem('user', JSON.stringify(_currentUser));
     _updateUserUI();
     _toggleAuthModal();
     _showToast(_isLoginMode ? '\u0E40\u0E02\u0E49\u0E32\u0E2A\u0E39\u0E48\u0E23\u0E30\u0E1A\u0E1A\u0E2A\u0E33\u0E40\u0E23\u0E47\u0E08!' : '\u0E2A\u0E21\u0E31\u0E04\u0E23\u0E2A\u0E21\u0E32\u0E0A\u0E34\u0E01\u0E2A\u0E33\u0E40\u0E23\u0E47\u0E08!');
@@ -709,6 +710,7 @@ async function _handleGoogleCredential(response) {
     if (!res.ok) throw new Error(data.error || 'Google login failed');
     localStorage.setItem('btmusicdrive_token', data.token);
     _currentUser = data.user;
+    localStorage.setItem('user', JSON.stringify(_currentUser));
     _updateUserUI(); _toggleAuthModal();
     _showToast('\u0E40\u0E02\u0E49\u0E32\u0E2A\u0E39\u0E48\u0E23\u0E30\u0E1A\u0E1A\u0E14\u0E49\u0E27\u0E22 Google \u0E2A\u0E33\u0E40\u0E23\u0E47\u0E08!');
   } catch (err) { _showAuthError(err.message); }
@@ -796,7 +798,13 @@ async function _checkAuthState() {
   if (!token) return;
   try {
     const res = await fetch(`${API_BASE}/auth/me`, { headers: { 'Authorization': `Bearer ${token}` } });
-    if (res.ok) { const data = await res.json(); _currentUser = data.user; _updateUserUI(); }
+    if (res.ok) {
+      const data = await res.json();
+      const cachedUser = JSON.parse(localStorage.getItem('user') || 'null');
+      _currentUser = { ...(cachedUser || {}), ...(data.user || {}) };
+      localStorage.setItem('user', JSON.stringify(_currentUser));
+      _updateUserUI();
+    }
     else localStorage.removeItem('btmusicdrive_token');
   } catch {}
 }
@@ -804,6 +812,7 @@ async function _checkAuthState() {
 function _handleLogout() {
   if (confirm('\u0E15\u0E49\u0E2D\u0E07\u0E01\u0E32\u0E23\u0E2D\u0E2D\u0E01\u0E08\u0E32\u0E01\u0E23\u0E30\u0E1A\u0E1A\u0E2B\u0E23\u0E37\u0E2D?')) {
     localStorage.removeItem('btmusicdrive_token');
+    localStorage.removeItem('user');
     _currentUser = null;
     _updateUserUI();
     _showToast('\u0E2D\u0E2D\u0E01\u0E08\u0E32\u0E01\u0E23\u0E30\u0E1A\u0E1A\u0E2A\u0E33\u0E40\u0E23\u0E47\u0E08');
