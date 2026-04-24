@@ -21,7 +21,7 @@ router.patch('/me', authenticateToken, async (req: AuthRequest, res: Response) =
     const user = await prisma.user.update({
       where: { id: userId },
       data,
-      select: { id: true, email: true, name: true, phone: true, role: true },
+      select: { id: true, email: true, name: true, phone: true, birthday: true, gender: true, role: true },
     });
 
     return res.json(user);

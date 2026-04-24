@@ -170,7 +170,7 @@
       "dest": "/category.html"
     },
     {
-      "src": "/(shop|cart|checkout|orders|profile|wishlist|address|track-order|shipping|about|contact|faq|terms|privacy|refund|returns|exchange|warranty|admin|category)",
+      "src": "/(shop|cart|checkout|orders|profile|wishlist|address|track-order|shipping|about|contact|faq|terms|privacy|refund|returns|exchange|warranty|admin|category|product)",
       "dest": "/$1.html"
     },
     {
