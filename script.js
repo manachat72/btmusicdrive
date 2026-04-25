@@ -39,8 +39,9 @@ const userGreeting = document.getElementById('user-greeting');
 let isLoginMode = true;
 let currentUser = null;
 
-// Initialize App
-document.addEventListener('DOMContentLoaded', () => {
+// Initialize App — run immediately if DOM is already ready (script may be loaded
+// lazily via requestIdleCallback after DOMContentLoaded has already fired).
+function _initApp() {
     // Nav menus are loaded by components.js (_loadNavMenus) — no duplicate fetch.
     // Don't await fetchProducts; let it run async alongside other init.
     fetchProducts();
@@ -66,7 +67,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (menu) menu.classList.toggle('hidden');
         }
     });
-});
+}
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', _initApp);
+} else {
+    _initApp();
+}
 
 // ── Password Toggle ────────────────────────────────────────────────────────
 function togglePasswordVisibility() {

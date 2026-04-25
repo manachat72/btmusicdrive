@@ -250,19 +250,23 @@ router.post('/confirm-order', authenticateToken, async (req: AuthRequest, res: R
       paymentIntentId
     )) as any;
 
-    // Send confirmation email (non-blocking)
+    // Send confirmation email (await on serverless to avoid termination before SMTP completes)
     if (order.user) {
-      sendOrderConfirmationEmail({
-        orderId: order.id,
-        customerEmail: order.user.email,
-        customerName: order.user.name || '',
-        items: order.items.map((i: any) => ({
-          name: i.product.name,
-          quantity: i.quantity,
-          priceAtTime: Number(i.priceAtTime),
-        })),
-        totalAmount,
-      }).catch((err: any) => console.error('[Email] Confirmation skip:', err));
+      try {
+        await sendOrderConfirmationEmail({
+          orderId: order.id,
+          customerEmail: order.user.email,
+          customerName: order.user.name || '',
+          items: order.items.map((i: any) => ({
+            name: i.product.name,
+            quantity: i.quantity,
+            priceAtTime: Number(i.priceAtTime),
+          })),
+          totalAmount,
+        });
+      } catch (err: any) {
+        console.error('[Email] Confirmation failed:', err);
+      }
     }
 
     // Meta CAPI Purchase event (non-blocking)
@@ -381,19 +385,23 @@ router.post('/cod-order', authenticateToken, async (req: AuthRequest, res: Respo
       `cod_${invoiceNo}`
     )) as any;
 
-    // Send confirmation email (non-blocking)
+    // Send confirmation email (await on serverless to avoid termination before SMTP completes)
     if (order.user) {
-      sendOrderConfirmationEmail({
-        orderId: order.id,
-        customerEmail: order.user.email,
-        customerName: order.user.name || '',
-        items: order.items.map((i: any) => ({
-          name: i.product.name,
-          quantity: i.quantity,
-          priceAtTime: Number(i.priceAtTime),
-        })),
-        totalAmount,
-      }).catch((err: any) => console.error('[Email] Confirmation skip:', err));
+      try {
+        await sendOrderConfirmationEmail({
+          orderId: order.id,
+          customerEmail: order.user.email,
+          customerName: order.user.name || '',
+          items: order.items.map((i: any) => ({
+            name: i.product.name,
+            quantity: i.quantity,
+            priceAtTime: Number(i.priceAtTime),
+          })),
+          totalAmount,
+        });
+      } catch (err: any) {
+        console.error('[Email] Confirmation failed:', err);
+      }
     }
 
     // Meta CAPI + TikTok Events API Purchase event (non-blocking)

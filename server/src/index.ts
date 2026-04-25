@@ -14,6 +14,7 @@ import userRoutes from './routes/user';
 import menuRoutes from './routes/menu';
 import imageRoutes from './routes/images';
 import contactRoutes from './routes/contact';
+import { sendOrderConfirmationEmail } from './services/emailService';
 
 dotenv.config();
 
@@ -83,6 +84,66 @@ app.use('/api/contact', contactRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// Admin-only SMTP test endpoint — sends a sample order confirmation
+app.post('/api/health/email', async (req, res) => {
+  const adminPassword = req.headers['x-admin-password'] as string | undefined;
+  if (!adminPassword || adminPassword !== process.env.ADMIN_PASSWORD) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+
+  const to = (req.body?.to as string) || process.env.SMTP_USER;
+  if (!to) {
+    return res.status(400).json({ error: 'No recipient (set "to" in body or SMTP_USER in env)' });
+  }
+
+  const smtpConfigured = !!(process.env.SMTP_USER && process.env.SMTP_PASS);
+  if (!smtpConfigured) {
+    return res.status(500).json({
+      ok: false,
+      smtpConfigured: false,
+      error: 'SMTP_USER or SMTP_PASS missing in environment',
+      env: {
+        SMTP_HOST: process.env.SMTP_HOST || null,
+        SMTP_PORT: process.env.SMTP_PORT || null,
+        SMTP_USER: process.env.SMTP_USER ? 'set' : 'missing',
+        SMTP_PASS: process.env.SMTP_PASS ? 'set' : 'missing',
+      },
+    });
+  }
+
+  const startedAt = Date.now();
+  try {
+    await sendOrderConfirmationEmail({
+      orderId: `TEST${Date.now()}`,
+      customerEmail: to,
+      customerName: 'SMTP Test',
+      items: [{ name: 'แฟลชไดร์ฟทดสอบ SMTP', quantity: 1, priceAtTime: 1 }],
+      totalAmount: 1,
+    });
+    return res.json({
+      ok: true,
+      smtpConfigured: true,
+      to,
+      durationMs: Date.now() - startedAt,
+      env: {
+        SMTP_HOST: process.env.SMTP_HOST || 'smtp.gmail.com',
+        SMTP_PORT: process.env.SMTP_PORT || '587',
+        SMTP_USER: process.env.SMTP_USER,
+      },
+    });
+  } catch (err: any) {
+    return res.status(500).json({
+      ok: false,
+      smtpConfigured: true,
+      to,
+      durationMs: Date.now() - startedAt,
+      error: err?.message || String(err),
+      code: err?.code,
+      command: err?.command,
+    });
+  }
 });
 
 app.get('/api/config/stripe', (req, res) => {

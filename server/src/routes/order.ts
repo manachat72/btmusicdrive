@@ -284,20 +284,24 @@ router.patch('/:id/tracking', authenticateToken, async (req: AuthRequest, res: R
     const trackingUrl =
       (CARRIER_TRACKING_URLS[carrier] || '') + trackingNumber;
 
-    // Fire-and-forget email — don't block the response
-    sendOrderConfirmationEmail({
-      orderId: order.id,
-      customerEmail: order.user.email,
-      customerName: order.user.name || '',
-      items: order.items.map((i: any) => ({
-        name: i.product.name,
-        quantity: i.quantity,
-        priceAtTime: Number(i.priceAtTime),
-      })),
-      totalAmount: Number(order.totalAmount),
-      trackingNumber,
-      carrier,
-    }).catch((err) => console.error('[Email] Failed to send shipping email:', err));
+    // Await on serverless to avoid function termination before SMTP completes
+    try {
+      await sendOrderConfirmationEmail({
+        orderId: order.id,
+        customerEmail: order.user.email,
+        customerName: order.user.name || '',
+        items: order.items.map((i: any) => ({
+          name: i.product.name,
+          quantity: i.quantity,
+          priceAtTime: Number(i.priceAtTime),
+        })),
+        totalAmount: Number(order.totalAmount),
+        trackingNumber,
+        carrier,
+      });
+    } catch (err) {
+      console.error('[Email] Failed to send shipping email:', err);
+    }
 
     return res.json({ ...order, trackingUrl });
   } catch (error: any) {
