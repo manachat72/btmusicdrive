@@ -4,6 +4,24 @@ import { authenticateToken, AuthRequest } from '../middleware/auth';
 
 const router = Router();
 
+// Append ?v=<updatedAt timestamp> to image URLs so browsers refetch when admin
+// updates a product, but still cache aggressively when nothing changed.
+function bustUrl(url: string | null | undefined, v: number): string | null | undefined {
+  if (!url) return url;
+  if (/^(data:|blob:)/i.test(url)) return url;
+  const sep = url.includes('?') ? '&' : '?';
+  return `${url}${sep}v=${v}`;
+}
+function withImageVersion<T extends { imageUrl?: string | null; images?: any; updatedAt?: Date | string | null }>(p: T): T {
+  if (!p || !p.updatedAt) return p;
+  const v = new Date(p.updatedAt as any).getTime();
+  if (!v) return p;
+  const out: any = { ...p };
+  if (p.imageUrl) out.imageUrl = bustUrl(p.imageUrl, v);
+  if (Array.isArray(p.images)) out.images = p.images.map((u: any) => typeof u === 'string' ? bustUrl(u, v) : u);
+  return out;
+}
+
 // ── GET /api/products ────────────────────────────────────────────────────────
 // Public — list all products (used by storefront + admin)
 router.get('/', async (req: Request, res: Response) => {
@@ -26,10 +44,11 @@ router.get('/', async (req: Request, res: Response) => {
       prisma.product.count({ where }),
     ]);
 
+    const data = isAdmin ? products : products.map(withImageVersion);
     if (!isAdmin) {
       res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=86400');
     }
-    return res.json({ data: products, total, page, limit, totalPages: Math.ceil(total / limit) });
+    return res.json({ data, total, page, limit, totalPages: Math.ceil(total / limit) });
   } catch (error) {
     console.error('Error fetching products:', error);
     return res.status(500).json({ error: 'Failed to fetch products' });
@@ -46,7 +65,7 @@ router.get('/slug/:slug', async (req: Request, res: Response) => {
     });
     if (!product) return res.status(404).json({ error: 'Product not found' });
     res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
-    return res.json(product);
+    return res.json(withImageVersion(product));
   } catch (error) {
     console.error('Error fetching product by slug:', error);
     return res.status(500).json({ error: 'Failed to fetch product' });
@@ -62,7 +81,7 @@ router.get('/:id', async (req: Request, res: Response) => {
     });
     if (!product) return res.status(404).json({ error: 'Product not found' });
     res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
-    return res.json(product);
+    return res.json(withImageVersion(product));
   } catch (error) {
     console.error('Error fetching product:', error);
     return res.status(500).json({ error: 'Failed to fetch product' });
