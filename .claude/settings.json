@@ -14,7 +14,8 @@
       "Bash(awk '{printf \"%7.1f KB  %s\\\\n\", $1/1024, $2}')",
       "Bash(awk -F= '{ if\\($2==\"\"||$2==\"\\\\\"\\\\\"\"\\) print $1\": EMPTY\"; else print $1\": set \\(\"length\\($2\\)\" chars\\)\" }')",
       "Bash(npx --yes terser script.js -o script.min.js -c -m)",
-      "Bash(npx --yes terser components.js -o components.min.js -c -m)"
+      "Bash(npx --yes terser components.js -o components.min.js -c -m)",
+      "Bash(python -c \"import sys, json; d=json.load\\(sys.stdin\\); items=d.get\\('data',d\\) if isinstance\\(d,dict\\) else d; cats=set\\(\\); [cats.add\\(\\(p.get\\('category'\\) or {}\\).get\\('name'\\) if isinstance\\(p.get\\('category'\\),dict\\) else p.get\\('category'\\)\\) for p in items]; print\\('Categories:', cats\\); print\\('Total:', len\\(items\\)\\)\")"
     ]
   }
 }
