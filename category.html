@@ -11,7 +11,7 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
 <base href="/">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="app.min.css?v=71f83026">
+    <link rel="stylesheet" href="app.min.css?v=4b876706">
     <meta name="theme-color" content="#8B7355">
     <link rel="icon" type="image/webp" href="images/logo.webp">
     <title>หมวดหมู่ — Bt music drive</title>
@@ -126,10 +126,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
                 <p class="text-gray-500" id="cat-product-count">กำลังโหลด...</p>
                 <div class="flex items-center gap-3">
-                    <div class="relative">
-                        <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                        <input type="text" id="cat-search" placeholder="ค้นหาในหมวดนี้..." class="pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary focus:border-primary w-48 md:w-64 transition-colors">
-                    </div>
+                    <input type="hidden" id="cat-search">
                     <select id="cat-sort" class="border border-gray-200 rounded-xl py-2.5 pl-4 pr-10 text-sm text-gray-700 focus:ring-2 focus:ring-primary focus:border-primary" style="appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%236b7280' viewBox='0 0 256 256'%3E%3Cpath d='M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z'%3E%3C/path%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 12px center;padding-right:36px;">
                         <option value="default">เรียงตาม: แนะนำ</option>
                         <option value="price-asc">ราคา: ต่ำ → สูง</option>
@@ -243,10 +240,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             }
         }
 
-        // Extract categories from products
+        // Extract categories from products (skip "Uncategorized" placeholder)
         const catMap = new Map();
         allProducts.forEach(p => {
             const catName = p.category?.name || p.category || 'อื่นๆ';
+            if (catName === 'Uncategorized') return;
             if (!catMap.has(catName)) catMap.set(catName, []);
             catMap.get(catName).push(p);
         });
