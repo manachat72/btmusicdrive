@@ -58,15 +58,7 @@ function _url(path) {
   const hash = path.includes('#') ? '#' + path.split('#')[1] : '';
   if (seg === 'product' || seg === 'category') {
     const rest = clean.replace(/^\//, '').split('/').slice(1).join('/');
-<<<<<<< C:/Users/manac/ProjectsPython/btmusicdrive/components.js
-<<<<<<< C:/Users/manac/ProjectsPython/btmusicdrive/components.js
     return rest ? `${seg}.html?id=${encodeURIComponent(rest)}${qs ? '&' + qs.slice(1) : ''}${hash}` : `${seg}.html${qs}${hash}`;
-=======
-    return rest ? `${seg}.html?slug=${encodeURIComponent(rest)}${qs ? '&' + qs.slice(1) : ''}${hash}` : `${seg}.html${qs}${hash}`;
->>>>>>> C:/Users/manac/.windsurf/worktrees/btmusicdrive/btmusicdrive-0cd42f8a/components.js
-=======
-    return rest ? `${seg}.html?slug=${encodeURIComponent(rest)}${qs ? '&' + qs.slice(1) : ''}${hash}` : `${seg}.html${qs}${hash}`;
->>>>>>> C:/Users/manac/.windsurf/worktrees/btmusicdrive/btmusicdrive-0cd42f8a/components.js
   }
   return `${seg}.html${qs}${hash}`;
 }
