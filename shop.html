@@ -245,7 +245,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- Shared Footer -->
     <div id="site-footer"></div>
 
-    <script src="components.min.js?v=b6b8df4e"></script>
+    <script src="components.min.js?v=e0cbfe74"></script>
     <script>
     // ── Shop Page Logic ──────────────────────────────────────────────
     // API_BASE is already defined in components.min.js
@@ -281,7 +281,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         // Redirect ?category=X → /category/:slug using loaded categoryData
         if (urlCategory) {
             const match = categoryData.find(c => c.name === urlCategory);
-            if (match?.slug) { window.location.replace(`/category/${match.slug}`); return; }
+            if (match?.slug) { window.location.replace((typeof _url==='function')?_url(`/category/${match.slug}`):`/category/${match.slug}`); return; }
         }
         await loadShopProducts();
         setupShopEvents();
@@ -479,7 +479,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             const discBadge = hasDiscount ? `<span class="absolute top-2 left-2 bg-red-500 text-white px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold shadow-sm">-${discPct}%</span>` : '';
             const currentPriceClass = hasDiscount ? 'price-current-sale' : 'price-current-neutral';
 
-            const pUrl = product.slug ? `/product/${product.slug}` : `product.html?id=${product.id}`;
+            const _rawPUrl = product.slug ? `/product/${product.slug}` : `/product?id=${product.id}`;
+            const pUrl = (typeof _url === 'function') ? _url(_rawPUrl) : _rawPUrl;
             if (viewMode === 'list') {
                 return `
                 <div class="bg-white rounded-2xl border border-gray-100 flex overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_12px_36px_rgba(139,115,85,0.16)] transition-all duration-300 animate-fade-in-up" style="animation-delay:${index * 0.05}s">
@@ -605,7 +606,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             const catName = chip.dataset.cat;
             if (catName !== 'all') {
                 const cat = categoryData.find(c => c.name === catName);
-                if (cat?.slug) { window.location.href = `/category/${cat.slug}`; return; }
+                if (cat?.slug) { window.location.href = (typeof _url==='function')?_url(`/category/${cat.slug}`):`/category/${cat.slug}`; return; }
             }
             activeCategory = catName;
             document.getElementById('page-title').textContent = activeCategory === 'all' ? 'สินค้าทั้งหมด' : activeCategory;
@@ -625,7 +626,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 const catName = e.target.value;
                 if (catName !== 'all') {
                     const cat = categoryData.find(c => c.name === catName);
-                    if (cat?.slug) { window.location.href = `/category/${cat.slug}`; return; }
+                    if (cat?.slug) { window.location.href = (typeof _url==='function')?_url(`/category/${cat.slug}`):`/category/${cat.slug}`; return; }
                 }
                 activeCategory = catName;
                 document.getElementById('page-title').textContent = activeCategory === 'all' ? 'สินค้าทั้งหมด' : activeCategory;

@@ -335,8 +335,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 const spanClass = featured ? 'col-span-2 row-span-2' : 'col-span-1 row-span-1';
                 const titleSize = featured ? 'text-3xl md:text-4xl' : 'text-xl';
                 const badge = featured ? '<span class="inline-block mb-2 text-xs font-bold bg-amber-400 text-gray-900 px-2.5 py-0.5 rounded-full uppercase tracking-wide">ขายดีที่สุด</span><br>' : '';
+<<<<<<< C:/Users/manac/ProjectsPython/btmusicdrive/index.html
+<<<<<<< C:/Users/manac/ProjectsPython/btmusicdrive/index.html
+                const catHref = slug ? `/category/${slug}` : `category.html?cat=${encodeURIComponent(c.name)}`;
                 return `
-                <a href="${slug ? `/category/${slug}` : `category.html?cat=${encodeURIComponent(c.name)}`}" class="group relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 ${spanClass}">
+                <a href="${(typeof _url==='function')?_url(catHref):catHref}" class="group relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 ${spanClass}">
+=======
+                const _liveS = window.location.port==='5500'||window.location.port==='5501';
+                const catHref = slug
+                  ? (_liveS ? `category.html?slug=${encodeURIComponent(slug)}` : `/category/${slug}`)
+                  : `category.html?cat=${encodeURIComponent(c.name)}`;
+                return `
+                <a href="${catHref}" class="group relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 ${spanClass}">
+>>>>>>> C:/Users/manac/.windsurf/worktrees/btmusicdrive/btmusicdrive-0cd42f8a/index.html
+=======
+                const _liveS = window.location.port==='5500'||window.location.port==='5501';
+                const catHref = slug
+                  ? (_liveS ? `category.html?slug=${encodeURIComponent(slug)}` : `/category/${slug}`)
+                  : `category.html?cat=${encodeURIComponent(c.name)}`;
+                return `
+                <a href="${catHref}" class="group relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 ${spanClass}">
+>>>>>>> C:/Users/manac/.windsurf/worktrees/btmusicdrive/btmusicdrive-0cd42f8a/index.html
                     <img src="${banner}" alt="${c.name}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" decoding="async">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent group-hover:from-black/80 transition-all duration-300"></div>
                     <div class="absolute bottom-5 left-5 right-5">
@@ -558,7 +577,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- Shared Footer -->
     <div id="site-footer"></div>
 
-    <script src="components.min.js?v=b6b8df4e"></script>
+    <script src="components.min.js?v=e0cbfe74"></script>
     <script>
         (function () {
             const scriptSrc = 'script.min.js?v=e06a7e61';

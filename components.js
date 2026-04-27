@@ -44,6 +44,42 @@ if (localStorage.getItem('btmusicdrive_cookie_consent') === 'all') {
 
 const API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
   ? 'http://localhost:5000/api' : '/api';
+
+const _IS_LIVE_SERVER = window.location.port === '5500' || window.location.port === '5501';
+function _url(path) {
+  if (!_IS_LIVE_SERVER) return path;
+  if (path === '/' || path === '') return 'index.html';
+  if (path.includes('.') || path.startsWith('#') || path.startsWith('http')) return path;
+  const clean = path.split('?')[0].split('#')[0];
+  const pages = ['shop','cart','checkout','orders','profile','wishlist','address','track-order','shipping','about','contact','faq','terms','privacy','refund','returns','exchange','warranty','admin','category','product'];
+  const seg = clean.replace(/^\//, '').split('/')[0];
+  if (!pages.includes(seg)) return path;
+  const qs = path.includes('?') ? '?' + path.split('?')[1] : '';
+  const hash = path.includes('#') ? '#' + path.split('#')[1] : '';
+  if (seg === 'product' || seg === 'category') {
+    const rest = clean.replace(/^\//, '').split('/').slice(1).join('/');
+<<<<<<< C:/Users/manac/ProjectsPython/btmusicdrive/components.js
+<<<<<<< C:/Users/manac/ProjectsPython/btmusicdrive/components.js
+    return rest ? `${seg}.html?id=${encodeURIComponent(rest)}${qs ? '&' + qs.slice(1) : ''}${hash}` : `${seg}.html${qs}${hash}`;
+=======
+    return rest ? `${seg}.html?slug=${encodeURIComponent(rest)}${qs ? '&' + qs.slice(1) : ''}${hash}` : `${seg}.html${qs}${hash}`;
+>>>>>>> C:/Users/manac/.windsurf/worktrees/btmusicdrive/btmusicdrive-0cd42f8a/components.js
+=======
+    return rest ? `${seg}.html?slug=${encodeURIComponent(rest)}${qs ? '&' + qs.slice(1) : ''}${hash}` : `${seg}.html${qs}${hash}`;
+>>>>>>> C:/Users/manac/.windsurf/worktrees/btmusicdrive/btmusicdrive-0cd42f8a/components.js
+  }
+  return `${seg}.html${qs}${hash}`;
+}
+function _patchLinks(root) {
+  if (!_IS_LIVE_SERVER) return;
+  (root || document).querySelectorAll('a[href]').forEach(a => {
+    const h = a.getAttribute('href');
+    if (!h || h.startsWith('http') || h.startsWith('#') || h.includes('.html') || h.includes('.js') || h.includes('.css')) return;
+    a.setAttribute('href', _url(h));
+  });
+}
+window._url = _url;
+window._patchLinks = _patchLinks;
 const GOOGLE_CLIENT_ID = '46644504211-02mjffk321u1h5hbh1r5e5j5in30od93.apps.googleusercontent.com';
 
 let _currentUser = null;
@@ -573,6 +609,8 @@ function _renderNavMenus(menus) {
     return `<a href="${m.url}" class="text-gray-300 hover:text-primary transition-colors font-medium flex items-center gap-1 px-3 py-2 rounded-lg hover:bg-white/10">${icon}${m.label}</a>`;
   }).join('');
 
+  if (_IS_LIVE_SERVER && desktop) _patchLinks(desktop);
+
   if (mobile) {
     mobile.innerHTML = menus.map((m, i) => {
       const icon = m.icon ? `<i class="${m.icon}"></i>` : '';
@@ -590,6 +628,7 @@ function _renderNavMenus(menus) {
       }
       return `<a href="${m.url}" class="block px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-primary hover:bg-white/10 flex items-center gap-2">${icon}${m.label}</a>`;
     }).join('') + `<a href="/admin" id="admin-nav-link-mobile" class="hidden px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-primary hover:bg-white/10 flex items-center gap-2"><i class="ph ph-shield-check"></i> Admin Dashboard</a>`;
+    if (_IS_LIVE_SERVER) _patchLinks(mobile);
 
     // Event delegation ผ่าน parent ที่ไม่ถูก re-render
     if (!mobile._subMenuBound) {
@@ -1268,7 +1307,7 @@ function _setupSharedEvents() {
     _currentUser = null;
     _checkAuthState();
     _toggleAccountDrawer(false);
-    location.href = '/';
+    location.href = _url('/');
   });
   bnavLoginBtn?.addEventListener('click', (e) => {
     e.preventDefault();
@@ -1303,7 +1342,7 @@ function _setupSharedEvents() {
       if (!q) return;
       if (typeof fbq === 'function') fbq('track', 'Search', { search_string: q });
       _closeSearch();
-      window.location.href = `/shop?search=${encodeURIComponent(q)}`;
+      window.location.href = _url(`/shop?search=${encodeURIComponent(q)}`);
     }
   });
 
@@ -1321,6 +1360,7 @@ function _setupSharedEvents() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  if (_IS_LIVE_SERVER) _patchLinks(document);
   // Don't block on nav menus — let them resolve async alongside other init.
   _loadNavMenus();
   _setupSharedEvents();

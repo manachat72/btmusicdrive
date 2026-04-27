@@ -158,7 +158,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- Shared Footer -->
     <div id="site-footer"></div>
 
-    <script src="components.min.js?v=b6b8df4e"></script>
+    <script src="components.min.js?v=e0cbfe74"></script>
     <script>
     // ── Category Page Logic ──────────────────────────────────────────
     const LS_CATEGORIES_KEY = 'btmusicdrive_categories';
@@ -201,9 +201,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     // Get category from URL — support both clean slug URL (/category/lukthung) and query param (?cat=ลูกทุ่ง)
     const urlParams = new URLSearchParams(window.location.search);
     const urlCat = urlParams.get('cat') || urlParams.get('category') || '';
-    // Extract slug from pathname like /category/lukthung
+    // Extract slug from pathname like /category/lukthung OR from ?slug= (Live Server fallback)
     const _pathParts = window.location.pathname.split('/').filter(Boolean);
-    const urlSlug = (_pathParts[0] === 'category' && _pathParts[1]) ? decodeURIComponent(_pathParts[1]) : null;
+    const urlSlug = urlParams.get('slug') || ((_pathParts[0] === 'category' && _pathParts[1]) ? decodeURIComponent(_pathParts[1]) : null);
 
     function getCategoriesFromStorage() {
         try { return JSON.parse(localStorage.getItem(LS_CATEGORIES_KEY)) || []; }
@@ -373,7 +373,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             const discountHtml = hasDiscount ? `<span class="text-xs price-original-muted">฿${product.originalPrice.toLocaleString()}</span>` : '';
             const discountBadge = hasDiscount ? `<span class="absolute top-2 left-2 bg-red-600 text-white px-2 py-0.5 rounded-full text-[10px] font-bold">-${Math.round((1 - product.price / product.originalPrice) * 100)}%</span>` : '';
             const currentPriceClass = hasDiscount ? 'price-current-sale' : 'price-current-neutral';
-            const productUrl = product.slug ? `/product/${product.slug}` : `/product?id=${product.id}`;
+            const _rawPUrl = product.slug ? `/product/${product.slug}` : `/product?id=${product.id}`;
+            const productUrl = (typeof _url === 'function') ? _url(_rawPUrl) : _rawPUrl;
 
             return `
             <div class="bg-white rounded-xl overflow-hidden border border-gray-100 hover:shadow-md transition-shadow animate-fade-in-up" style="animation-delay:${index * 0.05}s">
