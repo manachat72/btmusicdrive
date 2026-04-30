@@ -11,7 +11,7 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
 <base href="/">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="app.min.css?v=e504a8e6">
+    <link rel="stylesheet" href="app.min.css?v=f09a4c82">
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#8B7355">
   <link rel="icon" type="image/webp" href="images/logo.webp">
@@ -2058,12 +2058,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   // Product Modal
   let _deleteProductId = null;
 
-  function openProductModal(product) {
+  async function openProductModal(product) {
     document.getElementById('pm-error').style.display = 'none';
 
     // Populate category dropdown
     const catSelect = document.getElementById('pm-category');
-    const cats = _lsGetCategories();
+    const cats = await loadCategoryData();
     catSelect.innerHTML = '<option value="">\u2014 \u0E40\u0E25\u0E37\u0E2D\u0E01\u0E2B\u0E21\u0E27\u0E14\u0E2B\u0E21\u0E39\u0E48 \u2014</option>' +
       cats.filter(c => c.isActive !== false).map(c => `<option value="${escHtml(c.name)}">${escHtml(c.name)}</option>`).join('');
 
@@ -3509,6 +3509,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   const LS_DELETED_CATS_KEY = 'btmusicdrive_deleted_categories';
   let _categories = [];
   let _deleteCategoryId = null;
+  let _staticCategoriesCache = null;
+  let _categoryDataSource = 'db';
 
   function _lsGetDeletedCatNames() {
     try { return new Set(JSON.parse(localStorage.getItem(LS_DELETED_CATS_KEY)) || []); } catch { return new Set(); }
@@ -3526,43 +3528,90 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     localStorage.setItem(LS_CATEGORIES_KEY, JSON.stringify(cats));
   }
 
-  async function loadCategories() {
-    // Source of truth = DB via /api/categories. localStorage holds only
-    // UI-only metadata (description, bannerUrl, icon, sortOrder, isActive)
-    // that the DB schema does not store.
+  function _productCountForCategory(name) {
+    if (!Array.isArray(_products)) return 0;
+    return _products.filter(p => (p.category?.name || p.categoryName || p.category || '') === name).length;
+  }
+
+  async function _getStaticCategories() {
+    if (Array.isArray(_staticCategoriesCache)) return _staticCategoriesCache;
+    if (Array.isArray(window.__CATEGORIES__)) {
+      _staticCategoriesCache = window.__CATEGORIES__;
+      return _staticCategoriesCache;
+    }
+    try {
+      const res = await fetch('categories.json', { cache: 'no-cache' });
+      _staticCategoriesCache = res.ok ? await res.json() : [];
+    } catch {
+      _staticCategoriesCache = [];
+    }
+    return _staticCategoriesCache;
+  }
+
+  function _normalizeCategory(cat, i, meta = {}, source = 'db') {
+    const name = String(cat.name || meta.name || '').trim();
+    const slug = cat.slug || meta.slug || '';
+    return {
+      id: String(cat.id || meta.id || `fallback-${slug || i}`),
+      _source: source,
+      name,
+      slug,
+      description: cat.description || meta.description || cat.h1Description || meta.h1Description || '',
+      bannerUrl: cat.bannerUrl || meta.bannerUrl || cat.imageUrl || meta.imageUrl || '',
+      icon: cat.icon || meta.icon || '',
+      sortOrder: typeof meta.sortOrder === 'number' ? meta.sortOrder : i,
+      isActive: meta.isActive !== false,
+      productCount: Number(cat.productCount || cat._count?.products || meta.productCount || _productCountForCategory(name) || 0),
+      titleTag: cat.titleTag || meta.titleTag || '',
+      metaDescription: cat.metaDescription || meta.metaDescription || '',
+    };
+  }
+
+  async function loadCategoryData() {
+    // Source of truth = DB via /api/categories. localStorage stores UI-only
+    // metadata; categories.json is a storefront fallback when DB is empty.
     const lsCats = _lsGetCategories();
     const lsByName = new Map(lsCats.map(c => [c.name, c]));
+    const deletedNames = _lsGetDeletedCatNames();
+    const staticCats = await _getStaticCategories();
+    const staticByName = new Map(staticCats.map(c => [c.name, c]));
 
     let dbCats = [];
+    let dbOk = false;
     try {
       const res = await fetch(`${API_BASE}/categories`);
-      if (res.ok) dbCats = await res.json();
+      if (res.ok) {
+        dbOk = true;
+        dbCats = await res.json();
+      }
     } catch { /* fall back to localStorage-only below */ }
 
     if (dbCats.length) {
       // Merge DB rows with local UI metadata
       _categories = dbCats.map((c, i) => {
-        const meta = lsByName.get(c.name) || {};
-        return {
-          id: c.id,                        // real DB id (cuid/uuid)
-          name: c.name,
-          slug: c.slug || meta.slug || '',
-          description: meta.description || '',
-          bannerUrl: meta.bannerUrl || '',
-          icon: meta.icon || '',
-          sortOrder: typeof meta.sortOrder === 'number' ? meta.sortOrder : i,
-          isActive: meta.isActive !== false,
-          productCount: c.productCount || 0,
-        };
+        const meta = { ...(staticByName.get(c.name) || {}), ...(lsByName.get(c.name) || {}) };
+        return _normalizeCategory(c, i, meta, 'db');
       });
+      _categoryDataSource = 'db';
     } else {
-      // API unreachable — keep whatever we had locally
-      _categories = lsCats;
+      const fallbackCats = (lsCats.length ? lsCats : staticCats)
+        .filter(c => c?.name && !deletedNames.has(c.name));
+      _categories = fallbackCats.map((c, i) => {
+        const meta = { ...(staticByName.get(c.name) || {}), ...(lsByName.get(c.name) || {}) };
+        return _normalizeCategory(c, i, meta, dbOk ? 'static' : 'local');
+      });
+      _categoryDataSource = dbOk ? 'static' : 'local';
     }
 
     _lsSaveCategories(_categories);
+    return _categories;
+  }
 
-    document.getElementById('categories-count-label').textContent = `${_categories.length} หมวดหมู่`;
+  async function loadCategories() {
+    await loadCategoryData();
+
+    const sourceNote = _categoryDataSource === 'static' ? ' (จากไฟล์สำรอง)' : '';
+    document.getElementById('categories-count-label').textContent = `${_categories.length} หมวดหมู่${sourceNote}`;
 
     if (!_categories.length) {
       vis('categories-table-wrapper', false);
@@ -3631,6 +3680,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const id = document.getElementById('cm-id').value;
     const name = document.getElementById('cm-name').value.trim();
     const errEl = document.getElementById('cm-error');
+    const existingCat = _categories.find(c => c.id === id);
+    const isPersistedCategory = existingCat?._source === 'db';
 
     if (!name) { errEl.textContent = 'กรุณากรอกชื่อหมวดหมู่'; errEl.style.display = 'block'; return; }
 
@@ -3639,7 +3690,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       errEl.textContent = 'ชื่อหมวดหมู่ซ้ำ กรุณาใช้ชื่ออื่น'; errEl.style.display = 'block'; return;
     }
 
-    const slug = (document.getElementById('cm-slug')?.value || '').trim();
+    const slugInput = document.getElementById('cm-slug');
+    const slug = (slugInput ? slugInput.value : (existingCat?.slug || '')).trim();
     const uiMeta = {
       description: document.getElementById('cm-desc').value.trim(),
       bannerUrl: document.getElementById('cm-banner-url').value.trim(),
@@ -3652,7 +3704,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     try {
       let savedId = id;
-      if (id) {
+      if (id && isPersistedCategory) {
         // Update on DB (name + slug only — DB doesn't store UI metadata)
         const res = await fetch(`${API_BASE}/categories/${id}`, {
           method: 'PATCH',
@@ -3666,7 +3718,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           return;
         }
       } else {
-        // Create on DB
+        // Create on DB. Static fallback rows are promoted to real DB rows here.
         const res = await fetch(`${API_BASE}/categories`, {
           method: 'POST',
           headers: adminHeaders(),
@@ -3682,8 +3734,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
 
       // Persist UI-only metadata in localStorage keyed by name
-      const cat = _categories.find(c => c.id === savedId) || { id: savedId, name };
-      Object.assign(cat, { id: savedId, name, slug, ...uiMeta });
+      const cat = _categories.find(c => c.id === savedId) || existingCat || { id: savedId, name };
+      Object.assign(cat, { id: savedId, _source: 'db', name, slug, ...uiMeta });
       if (!_categories.find(c => c.id === savedId)) _categories.push(cat);
       _lsSaveCategories(_categories);
 
@@ -3710,19 +3762,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   async function confirmDeleteCategory() {
     if (!_deleteCategoryId) return;
     const cat = _categories.find(c => c.id === _deleteCategoryId);
-    try {
-      const res = await fetch(`${API_BASE}/categories/${_deleteCategoryId}`, {
-        method: 'DELETE',
-        headers: adminHeaders(),
-      });
-      if (!res.ok) {
-        const j = await res.json().catch(() => ({}));
-        showToast('ลบไม่ได้: ' + (j.error || 'ผิดพลาด'));
+    if (cat?._source === 'db') {
+      try {
+        const res = await fetch(`${API_BASE}/categories/${_deleteCategoryId}`, {
+          method: 'DELETE',
+          headers: adminHeaders(),
+        });
+        if (!res.ok) {
+          const j = await res.json().catch(() => ({}));
+          showToast('ลบไม่ได้: ' + (j.error || 'ผิดพลาด'));
+          return;
+        }
+      } catch (err) {
+        showToast('เชื่อมต่อ server ไม่ได้: ' + err.message);
         return;
       }
-    } catch (err) {
-      showToast('เชื่อมต่อ server ไม่ได้: ' + err.message);
-      return;
     }
     if (cat) _lsAddDeletedCatName(cat.name);
     _categories = _categories.filter(c => c.id !== _deleteCategoryId);
