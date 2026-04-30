@@ -3527,48 +3527,38 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   }
 
   async function loadCategories() {
-    _categories = _lsGetCategories();
+    // Source of truth = DB via /api/categories. localStorage holds only
+    // UI-only metadata (description, bannerUrl, icon, sortOrder, isActive)
+    // that the DB schema does not store.
+    const lsCats = _lsGetCategories();
+    const lsByName = new Map(lsCats.map(c => [c.name, c]));
 
-    // Also fetch product counts from API/products.json
-    let products = [];
+    let dbCats = [];
     try {
-      let res;
-      try { res = await fetch(`${API_BASE}/products`); if (!res.ok) throw new Error(); } catch { res = await fetch('products.json'); }
-      const pJson = await res.json();
-      products = Array.isArray(pJson) ? pJson : (pJson.data || []);
-    } catch { products = []; }
+      const res = await fetch(`${API_BASE}/categories`);
+      if (res.ok) dbCats = await res.json();
+    } catch { /* fall back to localStorage-only below */ }
 
-    // Merge categories from products with saved categories
-    const prodCatMap = new Map();
-    products.forEach(p => {
-      const catName = p.category?.name || p.categoryName || p.category || '';
-      if (catName) {
-        prodCatMap.set(catName, (prodCatMap.get(catName) || 0) + 1);
-      }
-    });
-
-    // Add product-sourced categories that aren't in saved list (skip deleted ones)
-    const deletedNames = _lsGetDeletedCatNames();
-    prodCatMap.forEach((count, name) => {
-      if (deletedNames.has(name)) return;  // skip if manually deleted
-      if (!_categories.find(c => c.name === name)) {
-        _categories.push({
-          id: 'cat-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6),
-          name,
-          description: '',
-          bannerUrl: '',
-          icon: '',
-          sortOrder: _categories.length,
-          isActive: true,
-          productCount: count
-        });
-      }
-    });
-
-    // Update product counts
-    _categories.forEach(c => {
-      c.productCount = prodCatMap.get(c.name) || 0;
-    });
+    if (dbCats.length) {
+      // Merge DB rows with local UI metadata
+      _categories = dbCats.map((c, i) => {
+        const meta = lsByName.get(c.name) || {};
+        return {
+          id: c.id,                        // real DB id (cuid/uuid)
+          name: c.name,
+          slug: c.slug || meta.slug || '',
+          description: meta.description || '',
+          bannerUrl: meta.bannerUrl || '',
+          icon: meta.icon || '',
+          sortOrder: typeof meta.sortOrder === 'number' ? meta.sortOrder : i,
+          isActive: meta.isActive !== false,
+          productCount: c.productCount || 0,
+        };
+      });
+    } else {
+      // API unreachable — keep whatever we had locally
+      _categories = lsCats;
+    }
 
     _lsSaveCategories(_categories);
 
@@ -3637,7 +3627,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 
 
-  function saveCategory() {
+  async function saveCategory() {
     const id = document.getElementById('cm-id').value;
     const name = document.getElementById('cm-name').value.trim();
     const errEl = document.getElementById('cm-error');
@@ -3649,32 +3639,61 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       errEl.textContent = 'ชื่อหมวดหมู่ซ้ำ กรุณาใช้ชื่ออื่น'; errEl.style.display = 'block'; return;
     }
 
-    const data = {
-      name,
+    const slug = (document.getElementById('cm-slug')?.value || '').trim();
+    const uiMeta = {
       description: document.getElementById('cm-desc').value.trim(),
       bannerUrl: document.getElementById('cm-banner-url').value.trim(),
       icon: document.getElementById('cm-icon').value.trim(),
       sortOrder: parseInt(document.getElementById('cm-sort').value) || 0,
       isActive: document.getElementById('cm-active').checked,
       titleTag: document.getElementById('cm-title-tag').value.trim(),
-      metaDescription: document.getElementById('cm-meta-desc').value.trim()
+      metaDescription: document.getElementById('cm-meta-desc').value.trim(),
     };
 
-    if (id) {
-      // Edit existing
-      const cat = _categories.find(c => c.id === id);
-      if (cat) Object.assign(cat, data);
-    } else {
-      // Add new
-      data.id = 'cat-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6);
-      data.productCount = 0;
-      _categories.push(data);
-    }
+    try {
+      let savedId = id;
+      if (id) {
+        // Update on DB (name + slug only — DB doesn't store UI metadata)
+        const res = await fetch(`${API_BASE}/categories/${id}`, {
+          method: 'PATCH',
+          headers: adminHeaders(),
+          body: JSON.stringify({ name, slug: slug || null }),
+        });
+        if (!res.ok) {
+          const j = await res.json().catch(() => ({}));
+          errEl.textContent = j.error || 'อัปเดตล้มเหลว';
+          errEl.style.display = 'block';
+          return;
+        }
+      } else {
+        // Create on DB
+        const res = await fetch(`${API_BASE}/categories`, {
+          method: 'POST',
+          headers: adminHeaders(),
+          body: JSON.stringify({ name, slug: slug || null }),
+        });
+        const j = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          errEl.textContent = j.error || 'สร้างล้มเหลว';
+          errEl.style.display = 'block';
+          return;
+        }
+        savedId = j.id;
+      }
 
-    _lsSaveCategories(_categories);
-    closeCategoryModal();
-    showToast(id ? 'อัปเดตหมวดหมู่แล้ว!' : 'เพิ่มหมวดหมู่แล้ว!');
-    loadCategories();
+      // Persist UI-only metadata in localStorage keyed by name
+      const cat = _categories.find(c => c.id === savedId) || { id: savedId, name };
+      Object.assign(cat, { id: savedId, name, slug, ...uiMeta });
+      if (!_categories.find(c => c.id === savedId)) _categories.push(cat);
+      _lsSaveCategories(_categories);
+
+      closeCategoryModal();
+      showToast(id ? 'อัปเดตหมวดหมู่แล้ว!' : 'เพิ่มหมวดหมู่แล้ว!');
+      loadCategories();
+    } catch (err) {
+      errEl.textContent = 'เชื่อมต่อ server ไม่ได้: ' + err.message;
+      errEl.style.display = 'block';
+    }
   }
 
   function askDeleteCategory(id, name) {
@@ -3688,10 +3707,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     document.getElementById('cat-confirm-modal').style.display = 'none';
   }
 
-  function confirmDeleteCategory() {
+  async function confirmDeleteCategory() {
     if (!_deleteCategoryId) return;
     const cat = _categories.find(c => c.id === _deleteCategoryId);
-    if (cat) _lsAddDeletedCatName(cat.name);  // remember this name as deleted
+    try {
+      const res = await fetch(`${API_BASE}/categories/${_deleteCategoryId}`, {
+        method: 'DELETE',
+        headers: adminHeaders(),
+      });
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}));
+        showToast('ลบไม่ได้: ' + (j.error || 'ผิดพลาด'));
+        return;
+      }
+    } catch (err) {
+      showToast('เชื่อมต่อ server ไม่ได้: ' + err.message);
+      return;
+    }
+    if (cat) _lsAddDeletedCatName(cat.name);
     _categories = _categories.filter(c => c.id !== _deleteCategoryId);
     _lsSaveCategories(_categories);
     closeCatConfirm();
