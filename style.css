@@ -469,5 +469,12 @@ body {
     }
 }
 
-/* Hide cart label + amount on mobile bottom nav — icon-only design */
-#bnav-cart-label, #bnav-cart-amount { display: none !important; }
+/* Mobile cart tab label */
+#bnav-cart-label {
+    display: inline-block !important;
+    color: #f8fafc !important;
+}
+
+#bnav-cart-amount {
+    color: #e8d8bf !important;
+}

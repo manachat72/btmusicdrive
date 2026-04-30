@@ -24,6 +24,60 @@ let currentStripeMethod = null;  // 'card' or 'promptpay'
 
 // ── Init ─────────────────────────────────────────────────────────────────────
 
+function resetStripePaymentState() {
+    try { stripePaymentElement?.destroy?.(); } catch { }
+    try { stripePromptPayElement?.destroy?.(); } catch { }
+
+    stripeElements = null;
+    stripePaymentElement = null;
+    stripePromptPayElements = null;
+    stripePromptPayElement = null;
+    stripeClientSecret = null;
+    stripePaymentIntentId = null;
+    stripeInvoiceNo = null;
+    currentStripeMethod = null;
+
+    const cardEl = document.getElementById('stripe-card-element');
+    const promptPayEl = document.getElementById('stripe-promptpay-element');
+    if (cardEl) cardEl.innerHTML = '';
+    if (promptPayEl) promptPayEl.innerHTML = '';
+}
+
+function refreshActiveStripePayment() {
+    const method = document.querySelector('input[name="payment_method"]:checked')?.value;
+    if (method === 'card' || method === 'promptpay') onPaymentMethodChange();
+}
+
+function syncCheckoutCartUI() {
+    localStorage.setItem('btmusicdrive_cart', JSON.stringify(cart));
+    if (typeof _loadCartFromStorage === 'function') _loadCartFromStorage();
+    if (typeof _updateCartUI === 'function') _updateCartUI();
+}
+
+async function syncCheckoutCartToServer() {
+    const token = localStorage.getItem('btmusicdrive_token');
+    if (!token) return true;
+
+    const items = cart.map(item => ({
+        productId: item.id,
+        quantity: item.quantity
+    }));
+
+    try {
+        const res = await fetch(`${API_BASE}/cart/sync`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({ items })
+        });
+        return res.ok;
+    } catch {
+        return false;
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     enforceLogin();
     loadUserInfo();
@@ -32,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initStripe();
     if (typeof fbq === 'function') {
         const savedCart = JSON.parse(localStorage.getItem('btmusicdrive_cart') || '[]');
-        const subtotal = savedCart.reduce((s, i) => s + i.price * i.quantity, 0);
+        const subtotal = savedCart.reduce((s, i) => s + Number(i.price || 0) * Number(i.quantity || 0), 0);
         fbq('track', 'InitiateCheckout', {
             content_ids: savedCart.map(i => i.id),
             num_items: savedCart.reduce((s, i) => s + i.quantity, 0),
@@ -284,13 +338,12 @@ async function loadCart() {
                     id: item.productId,
                     name: item.product?.name || 'Product',
                     price: parseFloat(item.product?.price || 0),
+                    originalPrice: parseFloat(item.product?.originalPrice || item.product?.price || 0),
                     quantity: item.quantity,
                     image: item.product?.imageUrl || null
                 }));
                 // Ensure UI is updated with the server's truth
-                localStorage.setItem('btmusicdrive_cart', JSON.stringify(cart));
-                if (typeof _loadCartFromStorage === 'function') _loadCartFromStorage();
-                if (typeof _updateCartUI === 'function') _updateCartUI();
+                syncCheckoutCartUI();
 
                 renderOrderSummary();
                 return;
@@ -349,20 +402,22 @@ function updateTotals() {
     const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
     const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
     const discount = calcDiscount(subtotal);
-    const discountedSubtotal = subtotal - discount;
-    const tax = discountedSubtotal * TAX_RATE;
-    const shippingCost = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
-    const total = discountedSubtotal + shippingCost + tax;
+    const tax = (subtotal - discount) * TAX_RATE;
+    const shippingBase = cart.length > 0 ? SHIPPING_COST : 0;
+    const shippingDiscount = subtotal >= FREE_SHIPPING_THRESHOLD ? shippingBase : 0;
+    const shippingPayable = shippingBase - shippingDiscount;
+    const total = subtotal + shippingPayable + tax - discount;
+    const fmt = (value) => `฿${Number(value || 0).toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
     document.getElementById('item-count').textContent = itemCount;
-    document.getElementById('subtotal-price').textContent = `฿${subtotal.toFixed(2)}`;
-    document.getElementById('total-price').textContent = `฿${total.toFixed(2)}`;
+    document.getElementById('subtotal-price').textContent = fmt(subtotal);
+    document.getElementById('total-price').textContent = fmt(total);
 
     const discountRow = document.getElementById('discount-row');
     if (discountRow) {
         if (discount > 0) {
             discountRow.classList.remove('hidden');
-            discountRow.querySelector('span:last-child').textContent = `-฿${discount.toFixed(2)}`;
+            discountRow.querySelector('span:last-child').textContent = `-${fmt(discount)}`;
         } else {
             discountRow.classList.add('hidden');
         }
@@ -370,14 +425,20 @@ function updateTotals() {
 
     const shippingRow = document.getElementById('shipping-row');
     if (shippingRow) {
-        if (shippingCost === 0) {
-            shippingRow.querySelector('span:last-child').textContent = 'ฟรี';
-            shippingRow.querySelector('span:last-child').className = 'text-green-600 font-semibold';
+        shippingRow.querySelector('span:last-child').textContent = fmt(shippingBase);
+        shippingRow.querySelector('span:last-child').className = 'text-gray-900 font-medium';
+    }
+
+    const shippingDiscountRow = document.getElementById('shipping-discount-row');
+    if (shippingDiscountRow) {
+        if (shippingDiscount > 0) {
+            shippingDiscountRow.classList.remove('hidden');
+            shippingDiscountRow.querySelector('span:last-child').textContent = `-${fmt(shippingDiscount)}`;
         } else {
-            shippingRow.querySelector('span:last-child').textContent = `฿${shippingCost.toFixed(2)}`;
-            shippingRow.querySelector('span:last-child').className = 'text-gray-900 font-medium';
+            shippingDiscountRow.classList.add('hidden');
         }
     }
+
 }
 
 
@@ -422,8 +483,10 @@ async function applyPromo() {
         }
 
         appliedPromo = { code: data.code || code, type: data.type, value: data.value, description: data.description };
+        resetStripePaymentState();
         renderPromoApplied();
         updateTotals();
+        refreshActiveStripePayment();
 
     } catch {
         showPromoError('ไม่สามารถตรวจสอบโค้ดส่วนลดได้ กรุณาลองใหม่อีกครั้ง');
@@ -443,7 +506,9 @@ function removePromo() {
     const btn = document.querySelector('[onclick="applyPromo()"]');
     btn.disabled = false;
     btn.textContent = 'ใช้โค้ด';
+    resetStripePaymentState();
     updateTotals();
+    refreshActiveStripePayment();
 }
 
 function renderPromoApplied() {
@@ -543,6 +608,14 @@ async function placeOrder() {
 
     setLoading(btn, true);
     setLoading(btnMobile, true);
+
+    const synced = await syncCheckoutCartToServer();
+    if (!synced) {
+        showError('ไม่สามารถอัปเดตตะกร้าบนระบบได้ กรุณาลองใหม่อีกครั้ง');
+        setLoading(btn, false);
+        setLoading(btnMobile, false);
+        return;
+    }
 
     if (paymentMethod === 'card' || paymentMethod === 'promptpay') {
         await processStripeOrder(paymentMethod, shippingAddress, normalizedPhone, btn, btnMobile);

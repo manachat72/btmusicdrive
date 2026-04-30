@@ -11,9 +11,9 @@ type StripeClient = InstanceType<typeof Stripe>;
 
 const router = Router();
 
-const SHIPPING_COST_THB = 50;
+const SHIPPING_COST_THB = 35;
 const FREE_SHIPPING_THRESHOLD = 200;
-const TAX_RATE = 0.08;
+const TAX_RATE = 0;
 
 // ── Stripe setup ────────────────────────────────────────────────────────────
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
