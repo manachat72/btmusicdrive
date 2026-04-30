@@ -61,5 +61,32 @@
     "h1Description": "รวมอุปกรณ์เสริมสำหรับแฟลชไดร์ฟเพลง หัวแปลง OTG Type-C, Micro USB, Lightning สำหรับมือถือทุกรุ่น เสียบฟังเพลงได้ทันที",
     "titleTag": "อุปกรณ์เสริม หัวแปลง OTG Type-C Micro USB Lightning — Bt music drive",
     "metaDescription": "เลือกซื้ออุปกรณ์เสริมแฟลชไดร์ฟเพลง หัวแปลง OTG Type-C, Micro USB, Lightning สำหรับมือถือ Android iPhone เสียงชัด ใช้งานง่าย จัดส่งด่วนทั่วไทย — Bt music drive"
+  },
+  {
+    "id": "10",
+    "name": "แดนซ์",
+    "slug": "dance",
+    "imageUrl": "images/category/category-dance.webp",
+    "h1Description": "รวมเพลงแดนซ์มันส์ๆ EDM, Remix, แดนซ์เพื่อชีวิต ฟังเร้าใจ MP3 คุณภาพ HD พร้อมเสียบฟังในรถ ปาร์ตี้สนุกได้ทันที",
+    "titleTag": "แฟลชไดร์ฟเพลงแดนซ์ MP3 EDM Remix มันส์ๆ — Bt music drive",
+    "metaDescription": "เลือกซื้อแฟลชไดร์ฟเพลงแดนซ์ MP3 EDM Remix แดนซ์เพื่อชีวิต เสียงชัด HD เสียบปุ๊บฟังปั๊บ จัดส่งทั่วไทย — Bt music drive"
+  },
+  {
+    "id": "11",
+    "name": "วิทยุ",
+    "slug": "radio",
+    "imageUrl": "images/category/category-radio.webp",
+    "h1Description": "รวมรายการวิทยุคลาสสิก ละครวิทยุ เพลงวิทยุยุคเก่าในตำนาน เสียงชัด MP3 คุณภาพ HD พร้อมเสียบฟังในรถ",
+    "titleTag": "แฟลชไดร์ฟวิทยุ MP3 ละครวิทยุ เพลงวิทยุยุคเก่า — Bt music drive",
+    "metaDescription": "เลือกซื้อแฟลชไดร์ฟวิทยุ MP3 ละครวิทยุ เพลงวิทยุคลาสสิกยุคเก่า เสียงชัด HD เสียบปุ๊บฟังปั๊บ จัดส่งทั่วไทย — Bt music drive"
+  },
+  {
+    "id": "12",
+    "name": "ธรรมะ",
+    "slug": "dhamma",
+    "imageUrl": "images/category/category-dhamma.webp",
+    "h1Description": "รวมเสียงธรรมะ บทสวดมนต์ คำเทศนาจากพระอาจารย์ดัง MP3 คุณภาพ HD เสียงชัด พร้อมเสียบฟังเพื่อความสงบใจ",
+    "titleTag": "แฟลชไดร์ฟธรรมะ MP3 บทสวดมนต์ คำเทศนา — Bt music drive",
+    "metaDescription": "เลือกซื้อแฟลชไดร์ฟธรรมะ MP3 บทสวดมนต์ คำเทศนาพระอาจารย์ดัง เสียงชัด HD เสียบปุ๊บฟังปั๊บ จัดส่งทั่วไทย — Bt music drive"
   }
 ]

@@ -311,7 +311,7 @@ PromoCode  — id, code(unique), type(PERCENT|FIXED), value, minOrder, maxUses, 
 | ที่ | ปัญหา |
 |----|-------|
 | `server/.env` | `GOOGLE_CLIENT_ID` และ `GOOGLE_CLIENT_SECRET` ยังว่างอยู่ — ปุ่ม Login ด้วย Google ใช้ไม่ได้ |
-| `products.json` | 5 สินค้า (ลูกทุ่ง, หมอลำ, สากล, สตริง 90s, ลูกกรุง) ยังใช้รูป Unsplash placeholder |
+| `products.json` | 5 สินค้า (ลูกทุ่ง, สากล, สตริง 90s, ลูกกรุง) ยังใช้รูป Unsplash placeholder |
 
 ---
 
