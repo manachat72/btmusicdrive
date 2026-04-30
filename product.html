@@ -12,7 +12,7 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
 <base href="/">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="app.min.css?v=f09a4c82">
+    <link rel="stylesheet" href="app.min.css?v=0954967e">
   <meta name="theme-color" content="#8B7355">
   <link rel="icon" type="image/webp" href="images/logo.webp">
 
@@ -975,6 +975,141 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     let allImages = [];
     let reviewRating = 0;
     let allProducts = [];
+    const PRODUCT_DESCRIPTION_PLACEHOLDERS = new Set(['ไดร์ฟเพลงคุณภาพสูง']);
+
+    function compactText(value) {
+      return String(value || '').replace(/\s+/g, ' ').trim();
+    }
+
+    function isPlaceholderProductDescription(value) {
+      const text = compactText(value);
+      return !text || PRODUCT_DESCRIPTION_PLACEHOLDERS.has(text);
+    }
+
+    function hasHtmlTags(value) {
+      return /<\/?[a-z][\s\S]*>/i.test(String(value || ''));
+    }
+
+    function htmlToPlainText(html) {
+      const doc = new DOMParser().parseFromString(String(html || ''), 'text/html');
+      return compactText(doc.body.textContent || '');
+    }
+
+    function productSpecValue(keys) {
+      const specs = product?.specs && typeof product.specs === 'object' && !Array.isArray(product.specs)
+        ? product.specs
+        : {};
+      for (const key of keys) {
+        if (specs[key]) return String(specs[key]).trim();
+      }
+      return '';
+    }
+
+    function buildProductDescription() {
+      const name = product?.name || 'แฟลชไดร์ฟเพลง MP3';
+      const category = product?.category?.name || (typeof product?.category === 'string' ? product.category : '') || '';
+      const isAccessory = category === 'อุปกรณ์เสริม' || /หัวแปลง|OTG|Type-C|Micro/i.test(name);
+
+      if (isAccessory) {
+        return `${name} อุปกรณ์เสริมสำหรับเชื่อมต่อแฟลชไดร์ฟกับมือถือหรืออุปกรณ์ที่รองรับ ใช้งานง่าย พกพาสะดวก เหมาะสำหรับย้ายไฟล์เพลง รูปภาพ และเอกสารในชีวิตประจำวัน`;
+      }
+
+      const capacity = productSpecValue(['ความจุ', 'capacity']);
+      const quality = productSpecValue(['ไฟล์เพลง', 'quality']) || 'MP3 128-320kbps';
+      const trackCount = Array.isArray(product?.tracklist) && product.tracklist.length > 0
+        ? `${product.tracklist.length} เพลง`
+        : productSpecValue(['จำนวนเพลง', 'trackCount', 'songs']);
+      const details = [];
+      if (capacity && capacity !== '—') details.push(`ความจุ ${capacity}`);
+      if (trackCount && trackCount !== '—') details.push(`รวม ${trackCount}`);
+      if (quality) details.push(`เสียงชัด ${quality}`);
+
+      return `${name} แฟลชไดร์ฟเพลง MP3 หมวด${category || 'เพลงฮิต'}${details.length ? ' ' + details.join(' ') : ''} เสียบใช้งานกับรถยนต์ ลำโพง คอมพิวเตอร์ หรือเครื่องเล่นที่รองรับ USB ได้ทันที พร้อมรับประกันสินค้า 100%`;
+    }
+
+    function getProductDescription() {
+      const raw = String(product?.description || '').trim();
+      return isPlaceholderProductDescription(product?.description)
+        ? buildProductDescription()
+        : (hasHtmlTags(raw) ? htmlToPlainText(raw) : raw);
+    }
+
+    function getProductMetaDescription(maxLength = 155) {
+      const text = compactText(getProductDescription());
+      return text.length > maxLength ? `${text.slice(0, maxLength).trim()}…` : text;
+    }
+
+    function sanitizeDescriptionHtml(html) {
+      const doc = new DOMParser().parseFromString(String(html || '').replace(/<\/?h1\b/gi, m => m.replace(/h1/i, 'h3')), 'text/html');
+      const blocked = new Set(['SCRIPT', 'STYLE', 'IFRAME', 'OBJECT', 'EMBED', 'FORM', 'INPUT', 'BUTTON', 'SVG']);
+      const allowed = new Set(['P', 'BR', 'STRONG', 'B', 'EM', 'I', 'UL', 'OL', 'LI', 'H2', 'H3', 'H4', 'A', 'IMG']);
+
+      const walk = (node) => {
+        [...node.children].forEach((child) => {
+          walk(child);
+          const tag = child.tagName;
+
+          if (blocked.has(tag)) {
+            child.remove();
+            return;
+          }
+
+          if (!allowed.has(tag)) {
+            child.replaceWith(...child.childNodes);
+            return;
+          }
+
+          const originalHref = child.getAttribute('href') || '';
+          const originalSrc = child.getAttribute('src') || '';
+          const originalAlt = child.getAttribute('alt') || '';
+          [...child.attributes].forEach(attr => child.removeAttribute(attr.name));
+
+          if (tag === 'A') {
+            if (/^(https?:|mailto:|tel:|\/)/i.test(originalHref)) {
+              child.setAttribute('href', originalHref);
+              child.setAttribute('target', '_blank');
+              child.setAttribute('rel', 'noopener noreferrer');
+            }
+            child.className = 'text-primary font-semibold hover:underline';
+          } else if (tag === 'IMG') {
+            if (/^(https?:|\/|images\/)/i.test(originalSrc)) {
+              child.setAttribute('src', originalSrc);
+              child.setAttribute('alt', originalAlt || product?.name || '');
+              child.setAttribute('loading', 'lazy');
+              child.setAttribute('decoding', 'async');
+              child.className = 'my-4 max-w-full h-auto rounded-xl border border-gray-100';
+            } else {
+              child.remove();
+            }
+          } else if (tag === 'H2' || tag === 'H3' || tag === 'H4') {
+            child.className = 'mt-5 mb-2 text-base font-bold text-gray-900';
+          } else if (tag === 'P') {
+            child.className = 'mb-3';
+          } else if (tag === 'UL' || tag === 'OL') {
+            child.className = 'my-3 pl-5 space-y-1';
+          } else if (tag === 'LI') {
+            child.className = tag === 'LI' ? 'list-disc' : '';
+          }
+        });
+      };
+
+      walk(doc.body);
+      return doc.body.innerHTML.trim();
+    }
+
+    function renderProductDescription(el, plainDescription, rawDescription) {
+      if (!el) return;
+      const raw = String(rawDescription || '').trim();
+      if (!isPlaceholderProductDescription(raw) && hasHtmlTags(raw)) {
+        el.classList.remove('whitespace-pre-line');
+        const safeHtml = sanitizeDescriptionHtml(raw);
+        if (safeHtml) el.innerHTML = safeHtml;
+        else el.textContent = plainDescription || 'ไม่มีรายละเอียดสินค้า';
+      } else {
+        el.classList.add('whitespace-pre-line');
+        el.textContent = plainDescription || 'ไม่มีรายละเอียดสินค้า';
+      }
+    }
 
     // ── Load Product ─────────────────────────────────────────────────────────────
     async function loadProduct() {
@@ -1059,9 +1194,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     function renderProduct() {
       // ── Dynamic SEO & OG update ──────────────────────────────────────────────
       const seoTitle = `${product.name} | แฟลชไดร์ฟเพลง MP3 — Bt music drive`;
-      const seoDesc = product.description
-        ? product.description.substring(0, 155).replace(/\s+/g, ' ').trim() + '…'
-        : `${product.name} แฟลชไดร์ฟเพลง MP3 คุณภาพเสียง HD เสียบปุ๊บฟังปั๊บ ฟังในรถยนต์ได้ทันที — Bt music drive`;
+      const seoDesc = getProductMetaDescription();
       const ogImage = product.imageUrl || 'https://btmusicdrive.com/images/logo1.webp';
       const cleanPath = product.slug ? `/product/${product.slug}` : `/product.html?id=${product.id}`;
       const pageUrl = `https://btmusicdrive.com${cleanPath}`;
@@ -1198,9 +1331,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       renderGallery();
 
       // Description
-      const desc = product.description || 'ไม่มีรายละเอียดสินค้า';
-      document.getElementById('p-description').textContent = desc;
-      document.getElementById('p-description-2').textContent = desc;
+      const desc = getProductDescription();
+      renderProductDescription(document.getElementById('p-description'), desc, product.description);
+      renderProductDescription(document.getElementById('p-description-2'), desc, product.description);
 
       // Specs
       renderSpecs();

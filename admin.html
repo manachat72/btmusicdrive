@@ -11,7 +11,7 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
 <base href="/">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="app.min.css?v=f09a4c82">
+    <link rel="stylesheet" href="app.min.css?v=0954967e">
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#8B7355">
   <link rel="icon" type="image/webp" href="images/logo.webp">
@@ -1920,6 +1920,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   // PRODUCTS
   // ══════════════════════════════════════════════════════════════════════════
   let _products = [];
+  const PRODUCT_DESCRIPTION_PLACEHOLDERS = new Set(['ไดร์ฟเพลงคุณภาพสูง']);
+
+  function cleanProductDescription(value) {
+    const text = String(value || '').trim();
+    return PRODUCT_DESCRIPTION_PLACEHOLDERS.has(text) ? '' : text;
+  }
 
   async function loadProducts() {
     vis('products-loading', true);
@@ -1963,7 +1969,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <td style="padding:8px 10px;">${imgHtml}</td>
         <td>
           <div style="font-weight:600;">${escHtml(p.name)}</div>
-          <div style="font-size:11px;color:var(--muted);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(p.sku ? 'SKU: '+p.sku : p.description || '')}</div>
+          <div style="font-size:11px;color:var(--muted);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(p.sku ? 'SKU: '+p.sku : cleanProductDescription(p.description) || '')}</div>
         </td>
         <td style="color:var(--muted);">${escHtml(p.category?.name || p.categoryName || '—')}</td>
         <td class="r">
@@ -2077,7 +2083,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     document.getElementById('pm-category').value= product?.category?.name || product?.categoryName || '';
     document.getElementById('pm-stock').value   = product?.stock ?? '';
     document.getElementById('pm-tags').value    = Array.isArray(product?.tags) ? product.tags.join(', ') : '';
-    document.getElementById('pm-description').value = product?.description || '';
+    document.getElementById('pm-description').value = cleanProductDescription(product?.description);
     // Specs: convert object/array to key=value lines
     let specsText = '';
     if (product?.specs) {
@@ -2200,7 +2206,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       stock: parseInt(document.getElementById('pm-stock').value) || 0,
       imageUrl: mainImgUrl,
       images, tags, specs,
-      description: document.getElementById('pm-description').value.trim(),
+      description: cleanProductDescription(document.getElementById('pm-description').value),
       tracklist: document.getElementById('pm-tracklist').value.trim()
         ? document.getElementById('pm-tracklist').value.trim().split('\n').map(s => s.trim()).filter(Boolean)
         : [],
@@ -3982,7 +3988,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       'https://example.com/img5.webp',
       'https://example.com/img6.webp',
       'ลูกทุ่ง, ใหม่',
-      'ไดร์ฟเพลงคุณภาพสูง', 'เมดอินไทยแลนด์\nทะเลใจ\nบัวลอย',
+      'USB แฟลชไดร์ฟ MP3 รวมเพลงลูกทุ่งฮิต เสียงชัด พร้อมเสียบฟังในรถยนต์และลำโพงได้ทันที', 'เมดอินไทยแลนด์\nทะเลใจ\nบัวลอย',
       'ความจุ=16GB\nระบบ=MP3/WAV',
     ];
     const ws = XLSX.utils.aoa_to_sheet([headers, example]);
@@ -4041,6 +4047,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           // Combine image2..image6 into images[] array for backend
           mapped.images = ['image2','image3','image4','image5','image6']
             .map(k => mapped[k]).filter(Boolean);
+          mapped.description = cleanProductDescription(mapped.description);
           return mapped;
         });
 

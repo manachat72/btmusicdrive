@@ -3,6 +3,13 @@ import prisma from '../lib/prisma';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
 
 const router = Router();
+const PRODUCT_DESCRIPTION_PLACEHOLDERS = new Set(['ไดร์ฟเพลงคุณภาพสูง']);
+
+function normalizeDescription(value: unknown): string | null {
+  const text = typeof value === 'string' ? value.trim() : '';
+  if (!text || PRODUCT_DESCRIPTION_PLACEHOLDERS.has(text)) return null;
+  return text;
+}
 
 // Append ?v=<updatedAt timestamp> to image URLs so browsers refetch when admin
 // updates a product, but still cache aggressively when nothing changed.
@@ -131,7 +138,7 @@ router.post('/', authenticateToken, async (req: AuthRequest, res: Response) => {
         tags: Array.isArray(tags) ? tags : [],
         tracklist: Array.isArray(tracklist) ? tracklist : [],
         specs: specs || null,
-        description: description || null,
+        description: normalizeDescription(description),
         categoryId: category.id,
       },
       include: { category: { select: { name: true, slug: true } } },
@@ -170,7 +177,7 @@ router.patch('/:id', authenticateToken, async (req: AuthRequest, res: Response) 
     if (tags !== undefined) data.tags = Array.isArray(tags) ? tags : [];
     if (tracklist !== undefined) data.tracklist = Array.isArray(tracklist) ? tracklist : [];
     if (specs !== undefined) data.specs = specs || null;
-    if (description !== undefined) data.description = description || null;
+    if (description !== undefined) data.description = normalizeDescription(description);
     if (isActive !== undefined) data.isActive = Boolean(isActive);
 
     if (categoryName !== undefined) {
@@ -273,7 +280,7 @@ router.post('/bulk-import', authenticateToken, async (req: AuthRequest, res: Res
             tags,
             tracklist,
             specs,
-            description: p.description || null,
+            description: normalizeDescription(p.description),
             categoryId: category.id,
           },
         });
