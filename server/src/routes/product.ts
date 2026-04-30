@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import prisma from '../lib/prisma';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
 import { categoryNameKey, normalizeCategoryName } from '../lib/categoryName';
+import { resolveProductSlug, shouldRefreshProductSlug } from '../lib/productSlug';
 
 const router = Router();
 const PRODUCT_DESCRIPTION_PLACEHOLDERS = new Set(['ไดร์ฟเพลงคุณภาพสูง']);
@@ -153,6 +154,7 @@ router.post('/', authenticateToken, async (req: AuthRequest, res: Response) => {
 
     // Find or create category, collapsing visually duplicate Thai spellings.
     const category = await findOrCreateCategory(categoryName);
+    const productSlug = await resolveProductSlug(slug, name, sku);
 
     const product = await prisma.product.create({
       data: {
@@ -164,7 +166,7 @@ router.post('/', authenticateToken, async (req: AuthRequest, res: Response) => {
         images: Array.isArray(images) ? images : [],
         brand: brand || null,
         sku: sku || null,
-        slug: slug || null,
+        slug: productSlug,
         tags: Array.isArray(tags) ? tags : [],
         tracklist: Array.isArray(tracklist) ? tracklist : [],
         specs: specs || null,
@@ -194,6 +196,14 @@ router.patch('/:id', authenticateToken, async (req: AuthRequest, res: Response) 
 
     const { name, price, originalPrice, categoryName, stock, imageUrl, images, brand, sku, slug, tags, tracklist, specs, description, isActive } = req.body;
 
+    const existingProduct = await prisma.product.findUnique({
+      where: { id: req.params.id as string },
+      select: { id: true, name: true, sku: true, slug: true },
+    });
+    if (!existingProduct) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+
     const data: any = {};
     if (name !== undefined) data.name = name;
     if (price !== undefined) data.price = parseFloat(price);
@@ -203,7 +213,21 @@ router.patch('/:id', authenticateToken, async (req: AuthRequest, res: Response) 
     if (images !== undefined) data.images = Array.isArray(images) ? images : [];
     if (brand !== undefined) data.brand = brand || null;
     if (sku !== undefined) data.sku = sku || null;
-    if (slug !== undefined) data.slug = slug || null;
+    if (slug !== undefined) {
+      data.slug = await resolveProductSlug(
+        slug,
+        name !== undefined ? name : existingProduct.name,
+        sku !== undefined ? sku : existingProduct.sku,
+        existingProduct.id,
+      );
+    } else if (shouldRefreshProductSlug(existingProduct.slug)) {
+      data.slug = await resolveProductSlug(
+        existingProduct.slug,
+        name !== undefined ? name : existingProduct.name,
+        sku !== undefined ? sku : existingProduct.sku,
+        existingProduct.id,
+      );
+    }
     if (tags !== undefined) data.tags = Array.isArray(tags) ? tags : [];
     if (tracklist !== undefined) data.tracklist = Array.isArray(tracklist) ? tracklist : [];
     if (specs !== undefined) data.specs = specs || null;
@@ -270,6 +294,7 @@ router.post('/bulk-import', authenticateToken, async (req: AuthRequest, res: Res
         const catName = p.categoryName || p.category || 'Uncategorized';
 
         const category = await findOrCreateCategory(catName);
+        const productSlug = await resolveProductSlug(p.slug, p.name, p.sku);
 
         const tags = typeof p.tags === 'string'
           ? p.tags.split(',').map((t: string) => t.trim()).filter(Boolean)
@@ -300,7 +325,7 @@ router.post('/bulk-import', authenticateToken, async (req: AuthRequest, res: Res
             images: Array.isArray(p.images) ? p.images : [],
             brand: p.brand || null,
             sku: p.sku || null,
-            slug: p.slug || null,
+            slug: productSlug,
             tags,
             tracklist,
             specs,

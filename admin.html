@@ -1328,9 +1328,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <label class="settings-label">URL Slug <span style="color:var(--muted);font-weight:400;">(สำหรับลิงก์สินค้า)</span></label>
           <div style="display:flex;gap:8px;align-items:center;">
             <span style="color:var(--muted);font-size:12px;white-space:nowrap;">/product/</span>
-            <input type="text" id="pm-slug" class="settings-input" placeholder="e.g. sku-022" style="font-family:monospace;font-size:13px;" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'')">
+            <input type="text" id="pm-slug" class="settings-input" placeholder="e.g. usb-flash-drive-mp3" style="font-family:monospace;font-size:13px;" oninput="handleProductSlugInput(this)">
           </div>
-          <p class="settings-hint">ใช้ตัวอักษรเล็ก a-z, ตัวเลข 0-9 และ - เท่านั้น · ถ้าไม่กรอกจะใช้ SKU อัตโนมัติ</p>
+          <p class="settings-hint">ระบบจะแปลงชื่อสินค้าเป็นอังกฤษให้อัตโนมัติ เช่น /product/usb-flash-drive-mp3</p>
         </div>
         <div style="display:flex;gap:10px;">
           <div class="settings-row" style="flex:1;">
