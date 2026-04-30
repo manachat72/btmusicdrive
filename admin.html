@@ -3534,9 +3534,37 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     localStorage.setItem(LS_CATEGORIES_KEY, JSON.stringify(cats));
   }
 
+  const THAI_COMBINING_MARKS_RE = /[\u0e31\u0e34-\u0e3a\u0e47-\u0e4e]/;
+
+  function normalizeCategoryName(value) {
+    const input = String(value || '')
+      .normalize('NFC')
+      .replace(/[\u200b-\u200d\ufeff]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+    let out = '';
+    let marks = new Set();
+    for (const ch of input) {
+      if (!THAI_COMBINING_MARKS_RE.test(ch)) {
+        marks = new Set();
+        out += ch;
+        continue;
+      }
+      if (marks.has(ch)) continue;
+      marks.add(ch);
+      out += ch;
+    }
+    return out.normalize('NFC');
+  }
+
+  function categoryKey(value) {
+    return normalizeCategoryName(value).toLocaleLowerCase('th-TH');
+  }
+
   function _productCountForCategory(name) {
     if (!Array.isArray(_products)) return 0;
-    return _products.filter(p => (p.category?.name || p.categoryName || p.category || '') === name).length;
+    const key = categoryKey(name);
+    return _products.filter(p => categoryKey(p.category?.name || p.categoryName || p.category || '') === key).length;
   }
 
   async function _getStaticCategories() {
@@ -3555,7 +3583,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   }
 
   function _normalizeCategory(cat, i, meta = {}, source = 'db') {
-    const name = String(cat.name || meta.name || '').trim();
+    const name = normalizeCategoryName(cat.name || meta.name || '');
     const slug = cat.slug || meta.slug || '';
     return {
       id: String(cat.id || meta.id || `fallback-${slug || i}`),
@@ -3573,14 +3601,43 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     };
   }
 
+  function _dedupeCategories(cats) {
+    const byKey = new Map();
+    cats.forEach((cat, i) => {
+      const key = categoryKey(cat.name);
+      if (!key) return;
+      const existing = byKey.get(key);
+      if (!existing) {
+        byKey.set(key, cat);
+        return;
+      }
+
+      existing.productCount = Number(existing.productCount || 0) + Number(cat.productCount || 0);
+      if (!existing.slug && cat.slug) {
+        existing.id = cat.id;
+        existing.slug = cat.slug;
+        existing._source = cat._source;
+      }
+      if (!existing.bannerUrl && cat.bannerUrl) existing.bannerUrl = cat.bannerUrl;
+      if (!existing.description && cat.description) existing.description = cat.description;
+      if (!existing.icon && cat.icon) existing.icon = cat.icon;
+      existing.sortOrder = Math.min(existing.sortOrder ?? i, cat.sortOrder ?? i);
+      existing.isActive = existing.isActive !== false || cat.isActive !== false;
+      if (existing._source !== 'db' && cat._source === 'db') {
+        byKey.set(key, { ...existing, ...cat, productCount: existing.productCount });
+      }
+    });
+    return Array.from(byKey.values());
+  }
+
   async function loadCategoryData() {
     // Source of truth = DB via /api/categories. localStorage stores UI-only
     // metadata; categories.json is a storefront fallback when DB is empty.
     const lsCats = _lsGetCategories();
-    const lsByName = new Map(lsCats.map(c => [c.name, c]));
-    const deletedNames = _lsGetDeletedCatNames();
+    const lsByName = new Map(lsCats.map(c => [categoryKey(c.name), c]));
+    const deletedNames = new Set([..._lsGetDeletedCatNames()].map(categoryKey));
     const staticCats = await _getStaticCategories();
-    const staticByName = new Map(staticCats.map(c => [c.name, c]));
+    const staticByName = new Map(staticCats.map(c => [categoryKey(c.name), c]));
 
     let dbCats = [];
     let dbOk = false;
@@ -3594,18 +3651,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     if (dbCats.length) {
       // Merge DB rows with local UI metadata
-      _categories = dbCats.map((c, i) => {
-        const meta = { ...(staticByName.get(c.name) || {}), ...(lsByName.get(c.name) || {}) };
+      _categories = _dedupeCategories(dbCats.map((c, i) => {
+        const key = categoryKey(c.name);
+        const meta = { ...(staticByName.get(key) || {}), ...(lsByName.get(key) || {}) };
         return _normalizeCategory(c, i, meta, 'db');
-      });
+      }));
       _categoryDataSource = 'db';
     } else {
       const fallbackCats = (lsCats.length ? lsCats : staticCats)
-        .filter(c => c?.name && !deletedNames.has(c.name));
-      _categories = fallbackCats.map((c, i) => {
-        const meta = { ...(staticByName.get(c.name) || {}), ...(lsByName.get(c.name) || {}) };
+        .filter(c => c?.name && !deletedNames.has(categoryKey(c.name)));
+      _categories = _dedupeCategories(fallbackCats.map((c, i) => {
+        const key = categoryKey(c.name);
+        const meta = { ...(staticByName.get(key) || {}), ...(lsByName.get(key) || {}) };
         return _normalizeCategory(c, i, meta, dbOk ? 'static' : 'local');
-      });
+      }));
       _categoryDataSource = dbOk ? 'static' : 'local';
     }
 
@@ -3684,7 +3743,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   async function saveCategory() {
     const id = document.getElementById('cm-id').value;
-    const name = document.getElementById('cm-name').value.trim();
+    const name = normalizeCategoryName(document.getElementById('cm-name').value);
     const errEl = document.getElementById('cm-error');
     const existingCat = _categories.find(c => c.id === id);
     const isPersistedCategory = existingCat?._source === 'db';
@@ -3692,7 +3751,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     if (!name) { errEl.textContent = 'กรุณากรอกชื่อหมวดหมู่'; errEl.style.display = 'block'; return; }
 
     // Check duplicate name (excluding self)
-    if (_categories.find(c => c.name === name && c.id !== id)) {
+    if (_categories.find(c => categoryKey(c.name) === categoryKey(name) && c.id !== id)) {
       errEl.textContent = 'ชื่อหมวดหมู่ซ้ำ กรุณาใช้ชื่ออื่น'; errEl.style.display = 'block'; return;
     }
 

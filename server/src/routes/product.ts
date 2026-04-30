@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import prisma from '../lib/prisma';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
+import { categoryNameKey, normalizeCategoryName } from '../lib/categoryName';
 
 const router = Router();
 const PRODUCT_DESCRIPTION_PLACEHOLDERS = new Set(['ไดร์ฟเพลงคุณภาพสูง']);
@@ -9,6 +10,37 @@ function normalizeDescription(value: unknown): string | null {
   const text = typeof value === 'string' ? value.trim() : '';
   if (!text || PRODUCT_DESCRIPTION_PLACEHOLDERS.has(text)) return null;
   return text;
+}
+
+function withNormalizedCategory<T extends { category?: any }>(p: T): T {
+  if (!p?.category?.name) return p;
+  return {
+    ...p,
+    category: {
+      ...p.category,
+      name: normalizeCategoryName(p.category.name),
+    },
+  };
+}
+
+async function findOrCreateCategory(categoryName: unknown) {
+  const name = normalizeCategoryName(
+    typeof categoryName === 'string' && categoryName.trim() ? categoryName : 'Uncategorized',
+  );
+  const key = categoryNameKey(name);
+  const categories = await prisma.category.findMany({
+    select: { id: true, name: true, slug: true },
+  });
+  const existing =
+    categories.find(c => c.name === name) ||
+    categories.find(c => categoryNameKey(c.name) === key && c.slug) ||
+    categories.find(c => categoryNameKey(c.name) === key);
+
+  if (existing) return existing;
+  return prisma.category.create({
+    data: { name },
+    select: { id: true, name: true, slug: true },
+  });
 }
 
 // Append ?v=<updatedAt timestamp> to image URLs so browsers refetch when admin
@@ -51,7 +83,8 @@ router.get('/', async (req: Request, res: Response) => {
       prisma.product.count({ where }),
     ]);
 
-    const data = isAdmin ? products : products.map(withImageVersion);
+    const normalizedProducts = products.map(withNormalizedCategory);
+    const data = isAdmin ? normalizedProducts : normalizedProducts.map(withImageVersion);
     if (!isAdmin) {
       res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=86400');
     }
@@ -72,7 +105,7 @@ router.get('/slug/:slug', async (req: Request, res: Response) => {
     });
     if (!product) return res.status(404).json({ error: 'Product not found' });
     res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
-    return res.json(withImageVersion(product));
+    return res.json(withImageVersion(withNormalizedCategory(product)));
   } catch (error) {
     console.error('Error fetching product by slug:', error);
     return res.status(500).json({ error: 'Failed to fetch product' });
@@ -88,7 +121,7 @@ router.get('/:id', async (req: Request, res: Response) => {
     });
     if (!product) return res.status(404).json({ error: 'Product not found' });
     res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
-    return res.json(withImageVersion(product));
+    return res.json(withImageVersion(withNormalizedCategory(product)));
   } catch (error) {
     console.error('Error fetching product:', error);
     return res.status(500).json({ error: 'Failed to fetch product' });
@@ -118,11 +151,8 @@ router.post('/', authenticateToken, async (req: AuthRequest, res: Response) => {
       return res.status(400).json({ error: 'stock cannot be negative' });
     }
 
-    // Find or create category
-    let category = await prisma.category.findUnique({ where: { name: categoryName || 'Uncategorized' } });
-    if (!category) {
-      category = await prisma.category.create({ data: { name: categoryName || 'Uncategorized' } });
-    }
+    // Find or create category, collapsing visually duplicate Thai spellings.
+    const category = await findOrCreateCategory(categoryName);
 
     const product = await prisma.product.create({
       data: {
@@ -181,10 +211,7 @@ router.patch('/:id', authenticateToken, async (req: AuthRequest, res: Response) 
     if (isActive !== undefined) data.isActive = Boolean(isActive);
 
     if (categoryName !== undefined) {
-      let category = await prisma.category.findUnique({ where: { name: categoryName || 'Uncategorized' } });
-      if (!category) {
-        category = await prisma.category.create({ data: { name: categoryName || 'Uncategorized' } });
-      }
+      const category = await findOrCreateCategory(categoryName);
       data.categoryId = category.id;
     }
 
@@ -242,10 +269,7 @@ router.post('/bulk-import', authenticateToken, async (req: AuthRequest, res: Res
         const parsedStock = parseInt(p.stock) || 0;
         const catName = p.categoryName || p.category || 'Uncategorized';
 
-        let category = await prisma.category.findUnique({ where: { name: catName } });
-        if (!category) {
-          category = await prisma.category.create({ data: { name: catName } });
-        }
+        const category = await findOrCreateCategory(catName);
 
         const tags = typeof p.tags === 'string'
           ? p.tags.split(',').map((t: string) => t.trim()).filter(Boolean)

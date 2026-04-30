@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import prisma from '../lib/prisma';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
+import { categoryNameKey, normalizeCategoryName } from '../lib/categoryName';
 
 const router = Router();
 
@@ -12,14 +13,42 @@ router.get('/', async (req: Request, res: Response) => {
       orderBy: { name: 'asc' },
       include: { _count: { select: { products: true } } },
     });
-    const result = categories.map(c => ({
-      id: c.id,
-      name: c.name,
-      slug: c.slug,
-      productCount: c._count.products,
-      createdAt: c.createdAt,
-      updatedAt: c.updatedAt,
-    }));
+    const byName = new Map<string, {
+      id: string;
+      name: string;
+      slug: string | null;
+      productCount: number;
+      createdAt: Date;
+      updatedAt: Date;
+    }>();
+
+    for (const c of categories) {
+      const key = categoryNameKey(c.name);
+      const existing = byName.get(key);
+      const normalizedName = normalizeCategoryName(c.name);
+      if (!existing) {
+        byName.set(key, {
+          id: c.id,
+          name: normalizedName,
+          slug: c.slug,
+          productCount: c._count.products,
+          createdAt: c.createdAt,
+          updatedAt: c.updatedAt,
+        });
+        continue;
+      }
+
+      existing.productCount += c._count.products;
+      if (!existing.slug && c.slug) {
+        existing.id = c.id;
+        existing.name = normalizedName;
+        existing.slug = c.slug;
+        existing.createdAt = c.createdAt;
+      }
+      if (c.updatedAt > existing.updatedAt) existing.updatedAt = c.updatedAt;
+    }
+
+    const result = Array.from(byName.values()).sort((a, b) => a.name.localeCompare(b.name, 'th'));
     res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=3600');
     return res.json(result);
   } catch (error) {
@@ -39,7 +68,17 @@ router.post('/', authenticateToken, async (req: AuthRequest, res: Response) => {
     if (!name || typeof name !== 'string' || !name.trim()) {
       return res.status(400).json({ error: 'name is required' });
     }
-    const trimmedName = name.trim();
+    const trimmedName = normalizeCategoryName(name);
+    const duplicate = await prisma.category.findFirst({
+      where: { name: { in: [trimmedName] } },
+    });
+    const visualDuplicate = duplicate || (await prisma.category.findMany({
+      select: { id: true, name: true },
+    })).find(c => categoryNameKey(c.name) === categoryNameKey(trimmedName));
+
+    if (visualDuplicate) {
+      return res.status(409).json({ error: 'Category with this name already exists' });
+    }
     const existing = await prisma.category.findUnique({ where: { name: trimmedName } });
     if (existing) {
       return res.status(409).json({ error: 'Category with this name already exists' });
@@ -70,7 +109,15 @@ router.patch('/:id', authenticateToken, async (req: AuthRequest, res: Response) 
     const id = String(req.params.id);
     const { name, slug } = req.body;
     const data: { name?: string; slug?: string | null } = {};
-    if (typeof name === 'string' && name.trim()) data.name = name.trim();
+    if (typeof name === 'string' && name.trim()) {
+      const normalizedName = normalizeCategoryName(name);
+      const visualDuplicate = (await prisma.category.findMany({
+        where: { NOT: { id } },
+        select: { id: true, name: true },
+      })).find(c => categoryNameKey(c.name) === categoryNameKey(normalizedName));
+      if (visualDuplicate) return res.status(409).json({ error: 'Name or slug already in use' });
+      data.name = normalizedName;
+    }
     if (slug !== undefined) data.slug = slug ? String(slug).trim() : null;
     if (Object.keys(data).length === 0) {
       return res.status(400).json({ error: 'No fields to update' });
