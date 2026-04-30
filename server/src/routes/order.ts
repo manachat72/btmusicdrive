@@ -135,6 +135,7 @@ router.get('/my', authenticateToken, async (req: AuthRequest, res: Response) => 
       },
     });
 
+    res.setHeader('Cache-Control', 'no-store');
     return res.json(orders);
   } catch (error) {
     console.error('Error fetching user orders:', error);

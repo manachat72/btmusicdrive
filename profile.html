@@ -176,9 +176,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div id="site-footer"></div>
   <script src="components.min.js?v=5e43ad88"></script>
   <script>
-    const API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
-      ? 'http://localhost:5000/api'
-      : '/api';
+    const PROFILE_API_BASE = (typeof API_BASE !== 'undefined')
+      ? API_BASE
+      : ((window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
+        ? 'http://localhost:5000/api'
+        : '/api');
 
     let profileOrders = [];
     let currentUser = null;
@@ -191,8 +193,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       try {
         const cachedUser = JSON.parse(localStorage.getItem('user') || 'null');
-        const res = await fetch(`${API_BASE}/auth/me`, {
-          headers: { Authorization: `Bearer ${token}` }
+        const res = await fetch(`${PROFILE_API_BASE}/auth/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+          cache: 'no-store'
         });
         if (!res.ok) {
           localStorage.removeItem('btmusicdrive_token');
@@ -266,7 +269,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         saveBtn.disabled = true;
         errEl.classList.add('hidden');
         try {
-          const res = await fetch(`${API_BASE}/users/me`, {
+          const res = await fetch(`${PROFILE_API_BASE}/users/me`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
             body: JSON.stringify(payload),
@@ -301,8 +304,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     async function loadProfileOrders(token) {
       try {
-        const res = await fetch(`${API_BASE}/orders/my`, {
-          headers: { Authorization: `Bearer ${token}` }
+        const res = await fetch(`${PROFILE_API_BASE}/orders/my`, {
+          headers: { Authorization: `Bearer ${token}` },
+          cache: 'no-store'
         });
         if (!res.ok) {
           updateOrderStats([]);

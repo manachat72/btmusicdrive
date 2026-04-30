@@ -158,14 +158,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div id="site-footer"></div>
   <script src="components.min.js?v=5e43ad88"></script>
   <script>
-    const API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') ? 'http://localhost:5000/api' : '/api';
+    const ADDRESS_API_BASE = (typeof API_BASE !== 'undefined')
+      ? API_BASE
+      : ((window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') ? 'http://localhost:5000/api' : '/api');
 
     document.addEventListener('DOMContentLoaded', async () => {
       const token = localStorage.getItem('btmusicdrive_token');
       if (!token) { location.href = '/'; return; }
       
       try {
-        const res = await fetch(`${API_BASE}/auth/me`, { headers: { Authorization: `Bearer ${token}` } });
+        const res = await fetch(`${ADDRESS_API_BASE}/auth/me`, { headers: { Authorization: `Bearer ${token}` }, cache: 'no-store' });
         if (res.ok) {
           const data = await res.json();
           document.getElementById('sidebar-user-name').textContent = data.user.name || 'ผู้ใช้';
