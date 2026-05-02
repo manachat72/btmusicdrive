@@ -502,6 +502,606 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
     .msi-chev { color:var(--muted); font-size:11px; transition:transform .2s; flex-shrink:0; }
     .msi-edit { padding:14px; border-top:1px solid var(--card-border); background:#fbfaf8; border-radius:0 0 12px 12px; }
     .msi-drag-over { box-shadow:0 0 0 3px rgba(139,115,85,.18); background:#fffbf5; }
+
+    /* ── Figma Sales Dashboard Theme ──────────────────────────────────────── */
+    :root {
+      --sidebar-bg: #171821;
+      --sidebar-hover: #21222d;
+      --topbar-bg: #171821;
+      --accent: #a9dfd8;
+      --accent-h: #8fcfc7;
+      --accent-soft: rgba(169,223,216,.14);
+      --success: #a9dfd8;
+      --warning: #feb95a;
+      --info: #20aef3;
+      --danger: #ff6b7a;
+      --sidebar-txt: #87888c;
+      --sidebar-muted: #5f6068;
+      --sep: #2b2b36;
+      --content-bg: #171821;
+      --card-bg: #21222d;
+      --card-border: #2b2b36;
+      --text: #ffffff;
+      --muted: #a0a0a0;
+      --sidebar-w: 180px;
+      --topbar-h: 72px;
+      --radius: 10px;
+      --shadow-card: none;
+      --shadow-soft: none;
+    }
+    html { background:#30313a; }
+    body {
+      background:#30313a;
+      color:var(--text);
+      font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    }
+    #dashboard {
+      min-height:100vh;
+      background:#30313a;
+      padding:36px 36px 36px 54px;
+      position:relative;
+    }
+    #dashboard::before,
+    #dashboard::after {
+      content:'';
+      position:fixed;
+      pointer-events:none;
+    }
+    #dashboard::before {
+      left:54px;
+      top:36px;
+      bottom:36px;
+      width:76px;
+      border-radius:12px;
+      background:#171821;
+      box-shadow:0 30px 60px rgba(0,0,0,.2);
+      z-index:1;
+    }
+    .admin-rail {
+      position:fixed;
+      left:54px;
+      top:36px;
+      bottom:36px;
+      width:76px;
+      z-index:4;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:20px;
+      padding:22px 0;
+      border-radius:12px;
+      background:#171821;
+    }
+    .rail-dots {
+      width:8px;
+      height:8px;
+      border-radius:999px;
+      background:#ff5f57;
+      box-shadow:13px 0 #febc2e,26px 0 #28c840;
+      align-self:flex-start;
+      margin-left:22px;
+      margin-bottom:14px;
+    }
+    .rail-btn {
+      width:34px;
+      height:34px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border:0;
+      border-radius:10px;
+      background:transparent;
+      color:#87888c;
+      cursor:pointer;
+      transition:background .15s,color .15s,transform .15s;
+    }
+    .rail-btn:hover {
+      background:#21222d;
+      color:#d2d2d2;
+    }
+    .rail-btn.active {
+      background:var(--accent);
+      color:#171821;
+    }
+    .rail-btn i { font-size:13px; }
+    #dashboard::after {
+      left:144px;
+      right:36px;
+      top:36px;
+      bottom:36px;
+      border-radius:24px;
+      background:#171821;
+      box-shadow:0 30px 60px rgba(0,0,0,.2);
+      z-index:0;
+    }
+    #wp-sidebar {
+      top:36px;
+      bottom:36px;
+      left:144px;
+      width:var(--sidebar-w);
+      background:#171821;
+      border-right:1px solid var(--sep);
+      border-radius:24px 0 0 24px;
+      box-shadow:none;
+      z-index:3;
+      padding-top:0;
+    }
+    #wp-sidebar::before {
+      content:'';
+      position:absolute;
+      top:22px;
+      left:22px;
+      width:8px;
+      height:8px;
+      border-radius:999px;
+      background:#ff5f57;
+      box-shadow:13px 0 #febc2e,26px 0 #28c840;
+    }
+    .sb-brand {
+      min-height:78px;
+      padding:42px 18px 14px;
+      border-bottom:0;
+    }
+    .sb-brand-icon {
+      width:28px;
+      height:28px;
+      border-radius:8px;
+      background:var(--accent);
+      color:#171821;
+      box-shadow:none;
+      font-size:12px;
+    }
+    .sb-brand-name { color:#fff; font-size:13px; font-weight:700; }
+    .sb-brand-sub { color:var(--sidebar-txt); font-size:10px; }
+    .sb-nav { padding:0 14px 16px; }
+    .sb-section-lbl { display:none; }
+    .sb-sep { background:transparent; height:8px; margin:4px 0; }
+    .sb-item {
+      min-height:36px;
+      margin:7px 0;
+      padding:0 13px;
+      border-radius:6px;
+      color:var(--sidebar-txt);
+      font-size:12px;
+      font-weight:500;
+      gap:10px;
+      box-shadow:none;
+      transform:none;
+    }
+    .sb-item:hover {
+      background:#21222d;
+      color:#d2d2d2;
+      transform:none;
+    }
+    .sb-item.active {
+      background:var(--accent);
+      color:#171821;
+      box-shadow:none;
+    }
+    .sb-item i { width:14px; font-size:12px; }
+    .sb-badge {
+      background:#ff5f57;
+      color:#fff;
+      border-radius:999px;
+      font-size:9px;
+    }
+    .sb-footer {
+      border-top:1px solid var(--sep);
+      color:var(--sidebar-muted);
+      padding:13px 18px;
+    }
+    #wp-topbar {
+      top:36px;
+      left:324px;
+      right:36px;
+      height:var(--topbar-h);
+      background:#171821;
+      border:0;
+      border-radius:0 24px 0 0;
+      box-shadow:none;
+      padding:16px 24px 12px;
+      z-index:2;
+      backdrop-filter:none;
+    }
+    .topbar-hamburger {
+      background:#21222d;
+      border:1px solid var(--card-border);
+      color:#fff;
+    }
+    .topbar-crumb {
+      flex:1;
+      gap:14px;
+      min-width:0;
+    }
+    .topbar-search {
+      width:min(504px,56vw);
+      height:38px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      border-radius:8px;
+      background:#21222d;
+      color:#d2d2d2;
+      padding:0 14px;
+      flex-shrink:1;
+    }
+    .topbar-search i { color:#d2d2d2; font-size:12px; }
+    .topbar-search input {
+      width:100%;
+      min-width:0;
+      border:0;
+      outline:0;
+      background:transparent;
+      color:#fff;
+      font:500 12px/1 'Inter',sans-serif;
+    }
+    .topbar-search input::placeholder { color:#d2d2d2; opacity:1; }
+    .topbar-section {
+      color:#fff;
+      font-size:13px;
+      font-weight:700;
+      white-space:nowrap;
+    }
+    .topbar-right { gap:8px; }
+    .tb-btn {
+      color:#87888c;
+      border:0;
+      background:transparent;
+      border-radius:8px;
+      font-size:12px;
+      padding:7px 9px;
+    }
+    .tb-btn:hover {
+      background:#21222d;
+      border-color:transparent;
+      color:#fff;
+    }
+    .tb-divider { background:#2b2b36; }
+    #wp-main {
+      position:relative;
+      z-index:2;
+      margin-left:270px;
+      margin-top:72px;
+      min-height:calc(100vh - 144px);
+      padding:0 0 24px 24px;
+      background:transparent;
+    }
+    .wp-page-hdr {
+      margin-bottom:12px;
+      gap:12px;
+    }
+    .wp-page-title {
+      color:#fff;
+      font-size:18px;
+      font-weight:700;
+    }
+    .wp-page-desc {
+      color:var(--muted);
+      font-size:11px;
+    }
+    .stats-grid {
+      background:#21222d;
+      border-radius:10px;
+      padding:16px 14px;
+      gap:14px;
+      margin-bottom:14px;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+    }
+    .stat-card {
+      min-height:107px;
+      background:#171821;
+      border:0;
+      border-radius:10px;
+      box-shadow:none;
+      padding:12px;
+      flex-direction:column;
+      gap:10px;
+      overflow:hidden;
+    }
+    .stat-card:hover {
+      transform:none;
+      box-shadow:none;
+    }
+    .stat-card::before { display:none; }
+    .stat-icon {
+      width:28px;
+      height:28px;
+      border-radius:8px;
+      font-size:13px;
+      background:transparent !important;
+    }
+    .stat-icon.c-blue { color:#feb95a; }
+    .stat-icon.c-green { color:#a9dfd8; }
+    .stat-icon.c-orange { color:#f2c8ed; }
+    .stat-icon.c-purple { color:#20aef3; }
+    .stat-val {
+      color:#fff;
+      font-size:17px;
+      font-weight:700;
+    }
+    .stat-lbl {
+      color:#e8e8e8;
+      font-size:10px;
+      margin-bottom:5px;
+    }
+    .stat-trend {
+      color:#a9dfd8;
+      font-size:9px;
+      font-weight:700;
+    }
+    .stat-card.c-blue .stat-trend { color:#feb95a; }
+    .stat-card.c-green .stat-trend { color:#a9dfd8; }
+    .stat-card.c-orange .stat-trend { color:#f2c8ed; }
+    .stat-card.c-purple .stat-trend { color:#20aef3; }
+    .wp-card {
+      background:#21222d;
+      border:0;
+      border-radius:10px;
+      box-shadow:none;
+      color:#fff;
+    }
+    .card-hdr {
+      background:#21222d;
+      border-bottom:1px solid var(--sep);
+      padding:14px;
+    }
+    .card-hdr h2 {
+      color:#fff;
+      font-size:15px;
+      font-weight:700;
+    }
+    .card-hdr h2 i { color:var(--accent); }
+    .card-tag {
+      background:#171821;
+      border:1px solid #30313a;
+      color:#d2d2d2;
+      border-radius:6px;
+      padding:4px 8px;
+    }
+    .card-body { padding:14px; }
+    .wp-tbl,
+    .wp-table { color:#fff; }
+    .wp-tbl thead,
+    .wp-table thead { background:#21222d; }
+    .wp-tbl th,
+    .wp-table th {
+      color:#87888c;
+      border-bottom:1px solid var(--sep);
+      font-size:11px;
+      font-weight:600;
+    }
+    .wp-tbl td,
+    .wp-table td {
+      color:#e8e8e8;
+      border-bottom:1px solid var(--sep);
+      font-size:12px;
+    }
+    .wp-tbl tbody tr:hover td,
+    .wp-table tbody tr:hover td { background:#252631; }
+    .wp-tbl tfoot td,
+    .wp-table tfoot td {
+      background:#171821;
+      border-top:1px solid var(--sep);
+      color:#fff;
+    }
+    .mini-bar-track,
+    .dist-track { background:#2b2b36; }
+    .wp-btn,
+    .action-btn {
+      background:#21222d;
+      border:1px solid #30313a;
+      color:#d2d2d2;
+      border-radius:8px;
+      box-shadow:none;
+    }
+    .wp-btn:hover,
+    .action-btn:hover {
+      color:var(--accent);
+      border-color:var(--accent);
+      box-shadow:none;
+      transform:none;
+    }
+    .settings-save-btn,
+    .ship-btn,
+    .gate-btn {
+      background:var(--accent);
+      color:#171821;
+      border:0;
+      border-radius:8px;
+      box-shadow:none;
+      font-weight:700;
+    }
+    .settings-save-btn:hover,
+    .ship-btn:hover,
+    .gate-btn:hover {
+      background:var(--accent-h);
+      color:#171821;
+      transform:none;
+    }
+    .settings-label { color:#fff; }
+    .settings-input,
+    .gate-input,
+    .track-form select,
+    .track-form input[type=text] {
+      background:#171821;
+      border:1px solid #30313a;
+      color:#fff;
+      border-radius:8px;
+    }
+    .settings-input::placeholder,
+    .gate-input::placeholder,
+    .track-form input::placeholder { color:#87888c; }
+    .settings-input:focus,
+    .gate-input:focus,
+    .track-form select:focus,
+    .track-form input:focus {
+      border-color:var(--accent);
+      box-shadow:0 0 0 3px rgba(169,223,216,.12);
+    }
+    .settings-hint,
+    .wp-empty-box,
+    .track-meta { color:var(--muted); }
+    .wp-loading-box { color:var(--muted); }
+    .wp-spinner {
+      border-color:#2b2b36;
+      border-top-color:var(--accent);
+    }
+    .wp-notice.err {
+      background:rgba(255,107,122,.12);
+      color:#ff9aa5;
+      border-left-color:var(--danger);
+    }
+    .ph-box {
+      background:#21222d;
+      border:0;
+      color:var(--muted);
+    }
+    .ph-box h3 { color:#fff; }
+    .role-ADMIN,
+    .role-USER,
+    .s-badge {
+      background:#171821;
+      border-color:#30313a;
+      color:#d2d2d2;
+    }
+    .s-PAID,
+    .s-DELIVERED { color:#a9dfd8; }
+    .s-PENDING,
+    .s-PROCESSING { color:#feb95a; }
+    .s-CANCELLED { color:#ff9aa5; }
+    .toggle-track,
+    .prod-toggle-track { background:#30313a; }
+    .toggle-switch input:checked + .toggle-track,
+    .prod-toggle input:checked + .prod-toggle-track { background:var(--accent); }
+    .prod-thumb,
+    .prod-thumb-placeholder {
+      background:#171821;
+      border-color:#30313a;
+    }
+    .menu-tab { color:#87888c; }
+    .menu-tab.active {
+      color:var(--accent);
+      border-bottom-color:var(--accent);
+    }
+    .menu-acc-hdr:hover,
+    .msi-head:hover { background:#252631; }
+    .page-check-row {
+      border-bottom-color:#2b2b36;
+      color:#e8e8e8;
+    }
+    .page-check-row code { color:#87888c; }
+    .msi {
+      background:#171821;
+      border-color:#30313a;
+      box-shadow:none;
+    }
+    .msi-edit {
+      background:#1d1e28;
+      border-top-color:#30313a;
+    }
+    .msi-name { color:#fff; }
+    .msi-badge {
+      background:#30313a;
+      color:#d2d2d2;
+    }
+    #toast {
+      background:#21222d;
+      border:1px solid #30313a;
+      box-shadow:0 18px 42px rgba(0,0,0,.32);
+    }
+    #password-gate {
+      background:#30313a;
+    }
+    .gate-box {
+      background:#171821;
+      border:1px solid #2b2b36;
+      color:#fff;
+      border-radius:18px;
+      box-shadow:0 30px 60px rgba(0,0,0,.28);
+    }
+    .gate-logo { color:#fff; }
+    .gate-logo-icon {
+      background:var(--accent);
+      color:#171821;
+      box-shadow:none;
+    }
+    .gate-sub { color:var(--muted); }
+    .gate-label { color:#fff; }
+    #product-modal > div,
+    #confirm-modal > div,
+    #bulk-import-modal > div,
+    #menu-confirm-modal > div,
+    #category-modal > div,
+    #cat-confirm-modal > div {
+      background:#21222d !important;
+      border:1px solid #30313a;
+      color:#fff;
+    }
+    #pm-error,
+    #cm-error {
+      background:rgba(255,107,122,.12) !important;
+      color:#ff9aa5 !important;
+      border-left-color:var(--danger) !important;
+    }
+    @media (max-width:1180px) {
+      #dashboard { padding:20px; }
+      #dashboard::before,
+      .admin-rail { display:none; }
+      #dashboard::after {
+        left:20px;
+        right:20px;
+        top:20px;
+        bottom:20px;
+      }
+      #wp-sidebar {
+        left:20px;
+        top:20px;
+        bottom:20px;
+      }
+      #wp-topbar {
+        left:200px;
+        right:20px;
+        top:20px;
+      }
+      #wp-main {
+        margin-left:180px;
+        margin-top:72px;
+        min-height:calc(100vh - 112px);
+      }
+      .stats-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    }
+    @media (max-width:782px) {
+      #dashboard {
+        padding:0;
+        background:#171821;
+      }
+      #dashboard::after,
+      .admin-rail { display:none; }
+      #wp-sidebar {
+        top:0;
+        bottom:0;
+        left:0;
+        border-radius:0 18px 18px 0;
+        transform:translateX(-100%);
+      }
+      #wp-sidebar.open { transform:translateX(0); }
+      #wp-topbar {
+        top:0;
+        left:0;
+        right:0;
+        height:64px;
+        border-radius:0;
+        padding:12px 14px;
+      }
+      #wp-main {
+        margin-left:0;
+        margin-top:64px;
+        padding:14px;
+      }
+      .topbar-search { width:100%; }
+      .topbar-section { display:none; }
+      .topbar-right .tb-btn span { display:none; }
+    }
   </style>
   </head>
 <body>
@@ -528,6 +1128,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <!-- ── DASHBOARD ──────────────────────────────────────────────────────────── -->
 <div id="dashboard" style="display:none;">
+
+  <nav class="admin-rail" aria-label="เมนูลัดแอดมิน">
+    <div class="rail-dots" aria-hidden="true"></div>
+    <button class="rail-btn active" data-section="dashboard" onclick="showSection('dashboard')" title="แดชบอร์ด"><i class="fa-solid fa-house"></i></button>
+    <button class="rail-btn" data-section="orders" onclick="showSection('orders')" title="คำสั่งซื้อ"><i class="fa-solid fa-cart-shopping"></i></button>
+    <button class="rail-btn" data-section="products" onclick="showSection('products')" title="สินค้า"><i class="fa-solid fa-bag-shopping"></i></button>
+    <button class="rail-btn" data-section="customers" onclick="showSection('customers')" title="ลูกค้า"><i class="fa-solid fa-user"></i></button>
+    <button class="rail-btn" data-section="categories" onclick="showSection('categories')" title="หมวดหมู่"><i class="fa-solid fa-layer-group"></i></button>
+    <button class="rail-btn" data-section="menus" onclick="showSection('menus')" title="เมนู"><i class="fa-solid fa-bars"></i></button>
+    <button class="rail-btn" data-section="shipping" onclick="showSection('shipping')" title="จัดส่ง"><i class="fa-solid fa-truck"></i></button>
+    <button class="rail-btn" data-section="marketing" onclick="showSection('marketing')" title="การตลาด"><i class="fa-solid fa-chart-line"></i></button>
+    <button class="rail-btn" data-section="settings" onclick="showSection('settings')" title="ตั้งค่า"><i class="fa-solid fa-gear"></i></button>
+  </nav>
 
   <!-- SIDEBAR -->
   <aside id="wp-sidebar">
@@ -590,9 +1203,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <i class="fa-solid fa-bars"></i>
     </button>
     <div class="topbar-crumb">
-      <span class="site-name">btmusicdrive</span>
-      <span class="sep-arrow">›</span>
-      <span id="topbar-title">แดชบอร์ด</span>
+      <label class="topbar-search" for="admin-search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input id="admin-search" type="search" placeholder="Search here..." autocomplete="off">
+      </label>
+      <span class="topbar-section" id="topbar-title">แดชบอร์ด</span>
     </div>
     <div class="topbar-right">
       <a href="/" class="tb-btn">
@@ -1665,11 +2280,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if (el) el.style.display = 'none';
       const nav = document.getElementById('nav-' + s);
       if (nav) nav.classList.remove('active');
+      document.querySelectorAll(`.rail-btn[data-section="${s}"]`).forEach(btn => btn.classList.remove('active'));
     });
     const target = document.getElementById('section-' + id);
     if (target) target.style.display = 'block';
     const navEl = document.getElementById('nav-' + id);
     if (navEl) navEl.classList.add('active');
+    document.querySelectorAll(`.rail-btn[data-section="${id}"]`).forEach(btn => btn.classList.add('active'));
     document.getElementById('topbar-title').textContent = SECTION_TITLES[id] || id;
     closeSidebar();
     if (id === 'dashboard') initDashboard();
