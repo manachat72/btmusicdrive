@@ -264,6 +264,10 @@ function toggleAuthModal() {
             authModalContent.classList.remove('scale-95');
             authModalContent.classList.add('scale-100');
         }, 10);
+        // Shared components load Google Identity only when the auth modal opens.
+        if (typeof _initGoogleSignIn === 'function') {
+            setTimeout(() => { _initGoogleSignIn(); }, 120);
+        }
         document.body.style.overflow = 'hidden';
     } else {
         authModal.classList.add('opacity-0');
