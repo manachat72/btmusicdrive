@@ -2754,17 +2754,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </svg>`;
   }
 
-  function renderVisitorChart(monthly) {
+  function renderVisitorChart(monthly, metricLabel) {
     const target = document.getElementById('dash-visitor-chart');
     const axis = document.getElementById('dash-visitor-axis');
     const label = document.getElementById('dash-visitor-label');
     if (!target) return;
     const series = monthly || [];
     let values = series.map(m => Number(m.customers || 0));
-    let labelText = 'New Customers';
+    let labelText = metricLabel || 'New Customers';
     if (!values.some(Boolean)) {
       values = series.map(m => Number(m.orders || 0));
-      labelText = 'Orders';
+      labelText = metricLabel || 'Orders';
     }
     const width = 506;
     const height = 175;
@@ -2815,6 +2815,34 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     updateEarningsGauge(revenueNow, revenuePrev, d.revenue?.change || 0);
   }
 
+  async function loadGoogleAnalyticsStats() {
+    try {
+      const res = await fetch(`${API_BASE}/analytics/stats`, { headers: adminHeaders(false) });
+      if (!res.ok) return;
+      const ga = await res.json();
+      if (!ga.configured || !Array.isArray(ga.monthly)) return;
+
+      const monthly = ga.monthly.map(m => ({
+        label: m.label,
+        customers: Number(m.activeUsers || 0),
+        orders: Number(m.sessions || 0),
+      }));
+      renderVisitorChart(monthly, 'Active Users');
+
+      const last = ga.monthly[ga.monthly.length - 1] || {};
+      const prev = ga.monthly[ga.monthly.length - 2] || {};
+      const currentUsers = Number(last.activeUsers || 0);
+      const previousUsers = Number(prev.activeUsers || 0);
+      const change = previousUsers > 0 ? ((currentUsers - previousUsers) / previousUsers) * 100 : 0;
+      const visitorLabel = document.getElementById('dash-visitor-label');
+      if (visitorLabel) {
+        visitorLabel.textContent = `Active Users ${currentUsers.toLocaleString()} (${change >= 0 ? '+' : ''}${change.toFixed(1)}%)`;
+      }
+    } catch (e) {
+      console.warn('Google Analytics stats unavailable:', e);
+    }
+  }
+
   async function loadDashboardStats() {
     try {
       const res = await fetch(`${API_BASE}/orders/stats`, { headers: adminHeaders(false) });
@@ -2846,6 +2874,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       document.getElementById('dash-last-month').textContent = '฿' + Math.max(0, Math.round(revenuePrev)).toLocaleString();
       document.getElementById('dash-earning-value').textContent = '฿' + Math.round(revenueNow).toLocaleString();
       renderDashboardCharts(d, revenueNow, revenuePrev);
+      loadGoogleAnalyticsStats();
 
       // Pending badge
       if (d.orders.pending > 0) {
