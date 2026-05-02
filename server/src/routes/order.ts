@@ -21,17 +21,21 @@ router.get('/stats', authenticateToken, async (req: AuthRequest, res: Response) 
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
     const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59);
+    const startOfSeries = new Date(now.getFullYear(), now.getMonth() - 11, 1);
 
     const PAID_STATUSES: import('@prisma/client').OrderStatus[] = ['PAID', 'PROCESSING', 'SHIPPED', 'DELIVERED'];
 
     const [
       revenueThis, revenueLast,
       ordersThis, ordersLast,
+      productSoldThis, productSoldLast,
       pendingCount,
       topProducts,
       recentOrders,
       lowStock,
       newCustomersThis, newCustomersLast,
+      chartOrders,
+      chartCustomers,
     ] = await Promise.all([
       // รายได้เดือนนี้
       prisma.order.aggregate({
@@ -47,6 +51,16 @@ router.get('/stats', authenticateToken, async (req: AuthRequest, res: Response) 
       prisma.order.count({ where: { createdAt: { gte: startOfMonth } } }),
       // order เดือนที่แล้ว
       prisma.order.count({ where: { createdAt: { gte: startOfLastMonth, lte: endOfLastMonth } } }),
+      // จำนวนสินค้าที่ขายได้เดือนนี้
+      prisma.orderItem.aggregate({
+        where: { order: { status: { in: PAID_STATUSES }, createdAt: { gte: startOfMonth } } },
+        _sum: { quantity: true },
+      }),
+      // จำนวนสินค้าที่ขายได้เดือนที่แล้ว
+      prisma.orderItem.aggregate({
+        where: { order: { status: { in: PAID_STATUSES }, createdAt: { gte: startOfLastMonth, lte: endOfLastMonth } } },
+        _sum: { quantity: true },
+      }),
       // order รอดำเนินการ
       prisma.order.count({ where: { status: { in: ['PENDING', 'PROCESSING'] } } }),
       // สินค้าขายดี top 5
@@ -73,6 +87,15 @@ router.get('/stats', authenticateToken, async (req: AuthRequest, res: Response) 
       prisma.user.count({ where: { createdAt: { gte: startOfMonth }, role: 'CUSTOMER' } }),
       // ลูกค้าใหม่เดือนที่แล้ว
       prisma.user.count({ where: { createdAt: { gte: startOfLastMonth, lte: endOfLastMonth }, role: 'CUSTOMER' } }),
+      // series สำหรับกราฟ dashboard 12 เดือนย้อนหลัง
+      prisma.order.findMany({
+        where: { createdAt: { gte: startOfSeries } },
+        select: { createdAt: true, totalAmount: true, status: true },
+      }),
+      prisma.user.findMany({
+        where: { createdAt: { gte: startOfSeries }, role: 'CUSTOMER' },
+        select: { createdAt: true },
+      }),
     ]);
 
     // ดึงชื่อสินค้าขายดี
@@ -91,12 +114,49 @@ router.get('/stats', authenticateToken, async (req: AuthRequest, res: Response) 
     const avgOrderLast = ordersLast > 0 ? revenueLastVal / ordersLast : 0;
     const avgChange = avgOrderLast > 0 ? ((avgOrder - avgOrderLast) / avgOrderLast) * 100 : 0;
     const customersChange = newCustomersLast > 0 ? ((newCustomersThis - newCustomersLast) / newCustomersLast) * 100 : 0;
+    const productSoldThisVal = Number(productSoldThis._sum?.quantity || 0);
+    const productSoldLastVal = Number(productSoldLast._sum?.quantity || 0);
+    const productSoldChange = productSoldLastVal > 0 ? ((productSoldThisVal - productSoldLastVal) / productSoldLastVal) * 100 : 0;
+
+    const monthSlots = Array.from({ length: 12 }, (_, i) => {
+      const date = new Date(now.getFullYear(), now.getMonth() - 11 + i, 1);
+      const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+      return {
+        key,
+        label: date.toLocaleString('en-US', { month: 'short' }),
+        revenue: 0,
+        orders: 0,
+        fulfilled: 0,
+        customers: 0,
+      };
+    });
+    const monthMap = new Map(monthSlots.map(m => [m.key, m]));
+    const paidStatusSet = new Set(PAID_STATUSES);
+    chartOrders.forEach(order => {
+      const key = `${order.createdAt.getFullYear()}-${String(order.createdAt.getMonth() + 1).padStart(2, '0')}`;
+      const month = monthMap.get(key);
+      if (!month) return;
+      month.orders += 1;
+      if (paidStatusSet.has(order.status)) month.revenue += Number(order.totalAmount || 0);
+      if (order.status === 'SHIPPED' || order.status === 'DELIVERED') month.fulfilled += 1;
+    });
+    chartCustomers.forEach(user => {
+      const key = `${user.createdAt.getFullYear()}-${String(user.createdAt.getMonth() + 1).padStart(2, '0')}`;
+      const month = monthMap.get(key);
+      if (month) month.customers += 1;
+    });
+    const fulfilmentRate = ordersThis > 0
+      ? Math.round(((monthSlots[monthSlots.length - 1]?.fulfilled || 0) / ordersThis) * 100)
+      : 0;
 
     return res.json({
       revenue: { current: revenueThisVal, change: revenueChange },
       orders: { current: ordersThis, change: ordersChange, pending: pendingCount },
       avgOrder: { current: avgOrder, change: avgChange },
+      productSold: { current: productSoldThisVal, change: productSoldChange },
       customers: { current: newCustomersThis, change: customersChange },
+      fulfilment: { rate: fulfilmentRate },
+      monthly: monthSlots,
       topProducts: topProducts.map(p => ({
         ...topProductMap.get(p.productId),
         totalSold: p._sum.quantity,
