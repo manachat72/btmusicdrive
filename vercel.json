@@ -162,6 +162,16 @@
       "dest": "/server/src/index.ts"
     },
     {
+      "src": "/product/usb-flash-drive-mp3-sunarathip",
+      "headers": { "Location": "https://btmusicdrive.com/product/usb-mp3-luk-krung-suntharaporn" },
+      "status": 301
+    },
+    {
+      "src": "/product/sku-036",
+      "headers": { "Location": "https://btmusicdrive.com/product/usb-mp3-phuea-chiwit-carabao-4gb-325-songs" },
+      "status": 301
+    },
+    {
       "src": "/product/([^/]+)",
       "dest": "/product.html"
     },

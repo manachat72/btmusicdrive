@@ -17,7 +17,7 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
 <base href="/">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="app.min.css?v=0ea1f048">
+    <link rel="stylesheet" href="app.min.css?v=95dd83c1">
   <meta name="theme-color" content="#8B7355">
   <link rel="icon" type="image/webp" href="images/logo.webp">
 
@@ -981,6 +981,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     let reviewRating = 0;
     let allProducts = [];
     const PRODUCT_DESCRIPTION_PLACEHOLDERS = new Set(['ไดร์ฟเพลงคุณภาพสูง']);
+    const LEGACY_PRODUCT_SLUGS = {
+      'usb-flash-drive-mp3-sunarathip': 'usb-mp3-luk-krung-suntharaporn',
+      'sku-036': 'usb-mp3-phuea-chiwit-carabao-4gb-325-songs',
+    };
 
     function compactText(value) {
       return String(value || '').replace(/\s+/g, ' ').trim();
@@ -1124,7 +1128,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       // Support clean slug URL: /product/some-slug
       const _pathParts = window.location.pathname.split('/').filter(Boolean);
-      const urlSlug = qSlug || ((_pathParts[0] === 'product' && _pathParts[1]) ? decodeURIComponent(_pathParts[1]) : null);
+      const requestedSlug = qSlug || ((_pathParts[0] === 'product' && _pathParts[1]) ? decodeURIComponent(_pathParts[1]) : null);
+      const urlSlug = requestedSlug ? (LEGACY_PRODUCT_SLUGS[requestedSlug] || requestedSlug) : null;
+
+      if (requestedSlug && urlSlug !== requestedSlug) {
+        window.history.replaceState(null, '', `/product/${urlSlug}`);
+      }
 
       if (!id && !urlSlug) { showError(); return; }
 
@@ -1201,7 +1210,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const seoTitle = `${product.name} | แฟลชไดร์ฟเพลง MP3 — Bt music drive`;
       const seoDesc = getProductMetaDescription();
       const ogImage = product.imageUrl || 'https://btmusicdrive.com/images/logo1.webp';
-      const cleanPath = product.slug ? `/product/${product.slug}` : `/product.html?id=${product.id}`;
+      const cleanPath = product.slug ? `/product/${product.slug}` : `/product?id=${encodeURIComponent(product.id)}`;
       const pageUrl = `https://btmusicdrive.com${cleanPath}`;
 
       document.title = seoTitle;

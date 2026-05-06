@@ -163,7 +163,16 @@ _pages.forEach(p => {
 app.get('/category/:slug', (req, res) => {
   res.sendFile(path.join(__dirname, '../../category.html'));
 });
+
+const legacyProductSlugRedirects: Record<string, string> = {
+  'usb-flash-drive-mp3-sunarathip': 'usb-mp3-luk-krung-suntharaporn',
+  'sku-036': 'usb-mp3-phuea-chiwit-carabao-4gb-325-songs',
+};
+
 app.get('/product/:slug', (req, res) => {
+  const nextSlug = legacyProductSlugRedirects[req.params.slug];
+  if (nextSlug) return res.redirect(301, `/product/${nextSlug}`);
+
   res.sendFile(path.join(__dirname, '../../product.html'));
 });
 

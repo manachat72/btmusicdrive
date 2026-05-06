@@ -1140,7 +1140,7 @@
   {
     "id": "52cdb1a7-e5a1-46ee-ba73-16fa1a853286",
     "name": "USB แฟลชไดรฟ์ MP3 รวมเพลงลูกกรุงอมตะ สุนทราภรณ์",
-    "slug": "usb-flash-drive-mp3-sunarathip",
+    "slug": "usb-mp3-luk-krung-suntharaporn",
     "price": 199,
     "originalPrice": 279,
     "description": "USB แฟลชไดรฟ์ MP3 รวมเพลงลูกกรุงอมตะ สุนทราภรณ์ 2GB รวม 210 เพลง สุนทราภรณ์ ชรินทร์ นันทิดา สวลี รวมเพลงไพเราะคลาสสิกที่ไม่มีวันตาย ไฟล์ MP3 เสียงชัด 128kbps เสียบฟังในรถ ลำโพง คอมฯ รับประกัน 100%",
@@ -1744,7 +1744,7 @@
   {
     "id": "681e3e84-9875-48b4-92b1-f6e843ff8f8d",
     "name": "USB แฟลชไดรฟ์ MP3 เพลงเพื่อชีวิต คาราบาว 4GB รวม 325 เพลง ครบทุกอัลบั้ม",
-    "slug": "sku-036",
+    "slug": "usb-mp3-phuea-chiwit-carabao-4gb-325-songs",
     "price": 199,
     "originalPrice": 319,
     "description": "ไดร์ฟเพลงคุณภาพสูง",
@@ -1764,10 +1764,10 @@
       "ระบบ": "MP38",
       "ความจุ": "1GB"
     },
-    "categoryId": "569a4e42-63c5-44a5-8b42-1ddd0da27e0f",
+    "categoryId": "cd841ef3-c7f6-48d8-81f7-6069eaf2b63a",
     "category": {
-      "id": "569a4e42-63c5-44a5-8b42-1ddd0da27e0f",
-      "name": "ลูกทุ่ง"
+      "id": "cd841ef3-c7f6-48d8-81f7-6069eaf2b63a",
+      "name": "เพื่อชีวิต"
     }
   },
   {
@@ -1792,10 +1792,10 @@
       "ระบบ": "MP45",
       "ความจุ": "1GB"
     },
-    "categoryId": "569a4e42-63c5-44a5-8b42-1ddd0da27e0f",
+    "categoryId": "9",
     "category": {
-      "id": "569a4e42-63c5-44a5-8b42-1ddd0da27e0f",
-      "name": "ลูกทุ่ง"
+      "id": "9",
+      "name": "อุปกรณ์เสริม"
     }
   }
 ]
