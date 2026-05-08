@@ -8,7 +8,8 @@
       "config": {
         "includeFiles": [
           "server/prisma/**",
-          "server/node_modules/.prisma/**"
+          "server/node_modules/.prisma/**",
+          "images/**"
         ]
       }
     },
