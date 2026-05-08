@@ -188,6 +188,10 @@
       "handle": "filesystem"
     },
     {
+      "src": "/images/(.*)",
+      "dest": "/server/src/index.ts"
+    },
+    {
       "src": "/",
       "dest": "/index.html"
     }
