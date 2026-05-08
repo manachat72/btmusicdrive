@@ -13,6 +13,11 @@ const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 // Google Sign-In
 router.post('/google', authLimiter, async (req: Request, res: Response) => {
   try {
+    if (!process.env.GOOGLE_CLIENT_ID) {
+      res.status(503).json({ error: 'Google login is not configured on this server' });
+      return;
+    }
+
     const { token } = req.body;
 
     if (!token) {
@@ -20,7 +25,7 @@ router.post('/google', authLimiter, async (req: Request, res: Response) => {
       return;
     }
 
-    // Verify Google Token
+    // Verify Google Token — audience must match GOOGLE_CLIENT_ID to prevent foreign tokens
     const ticket = await googleClient.verifyIdToken({
       idToken: token,
       audience: process.env.GOOGLE_CLIENT_ID,

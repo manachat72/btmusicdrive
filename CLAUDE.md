@@ -310,7 +310,7 @@ PromoCode  — id, code(unique), type(PERCENT|FIXED), value, minOrder, maxUses, 
 
 | ที่ | ปัญหา |
 |----|-------|
-| `server/.env` | `GOOGLE_CLIENT_ID` และ `GOOGLE_CLIENT_SECRET` ยังว่างอยู่ — ปุ่ม Login ด้วย Google ใช้ไม่ได้ |
+| `server/.env` (Vercel) | `GOOGLE_CLIENT_ID` ต้องตั้งใน Vercel Dashboard: `46644504211-02mjffk321u1h5hbh1r5e5j5in30od93.apps.googleusercontent.com` (ค่าเดียวกับที่ hardcode ใน `components.js`) — `GOOGLE_CLIENT_SECRET` **ไม่จำเป็น** สำหรับ ID-token flow นี้ |
 | `products.json` | 5 สินค้า (ลูกทุ่ง, สากล, สตริง 90s, ลูกกรุง) ยังใช้รูป Unsplash placeholder |
 
 ---
