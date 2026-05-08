@@ -10,7 +10,8 @@ export interface AuthRequest extends Request {
   };
 }
 
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'nu3gtXBTlef6i4wmnqjjcw';
+// No hardcoded fallback — ADMIN_PASSWORD must be set via env (validated at server startup)
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '';
 
 // Track failed admin password attempts per IP
 const adminAttempts = new Map<string, { count: number; resetAt: number }>();

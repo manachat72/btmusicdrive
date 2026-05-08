@@ -21,7 +21,7 @@ import { sendOrderConfirmationEmail } from './services/emailService';
 dotenv.config();
 
 // ── Validate required environment variables ──────────────────────────────────
-const requiredEnvVars = ['DATABASE_URL', 'JWT_SECRET'];
+const requiredEnvVars = ['DATABASE_URL', 'JWT_SECRET', 'ADMIN_PASSWORD'];
 const missingVars = requiredEnvVars.filter((v) => !process.env[v]);
 if (missingVars.length > 0) {
   console.error(`❌ Missing required environment variables: ${missingVars.join(', ')}`);
