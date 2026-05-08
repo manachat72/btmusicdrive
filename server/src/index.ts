@@ -90,27 +90,6 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Temporary path-debug endpoint — remove after confirming image serving is fixed
-app.get('/api/debug/paths', (req, res) => {
-  const adminPw = req.headers['x-admin-password'] as string | undefined;
-  if (!adminPw || adminPw !== process.env.ADMIN_PASSWORD) {
-    return res.status(403).json({ error: 'Forbidden' });
-  }
-  const fs = require('fs') as typeof import('fs');
-  const imgDir = path.join(__dirname, '../../images');
-  const imgDirAlt = path.join(process.cwd(), 'images');
-  return res.json({
-    __dirname,
-    cwd: process.cwd(),
-    imgDir,
-    imgDirExists: fs.existsSync(imgDir),
-    imgDirContents: fs.existsSync(imgDir) ? fs.readdirSync(imgDir).slice(0, 5) : [],
-    imgDirAlt,
-    imgDirAltExists: fs.existsSync(imgDirAlt),
-    imgDirAltContents: fs.existsSync(imgDirAlt) ? fs.readdirSync(imgDirAlt).slice(0, 5) : [],
-  });
-});
-
 // Admin-only SMTP test endpoint — sends a sample order confirmation
 app.post('/api/health/email', async (req, res) => {
   const adminPassword = req.headers['x-admin-password'] as string | undefined;
