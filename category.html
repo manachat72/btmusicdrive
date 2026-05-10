@@ -272,7 +272,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         // Update banner — prefer LocalStorage bannerUrl, fallback categories.json, then default
         const bannerImg = document.getElementById('banner-img');
         const jcActive = getJsonCatForName(activeCat);
-        bannerImg.src = (savedCat?.bannerUrl) || (jcActive?.imageUrl) || DEFAULT_CAT_BANNER;
+        bannerImg.src = (jcActive?.imageUrl) || (savedCat?.bannerUrl) || DEFAULT_CAT_BANNER;
 
         document.getElementById('cat-desc').textContent =
             (savedCat?.description) || (jcActive?.h1Description) || `รวมสินค้าคุณภาพในหมวด ${activeCat}`;
@@ -427,7 +427,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             document.title = titleTag;
 
             const bannerImgEl = document.getElementById('banner-img');
-            bannerImgEl.src = (savedCat?.bannerUrl) || (jcClick?.imageUrl) || DEFAULT_CAT_BANNER;
+            bannerImgEl.src = (jcClick?.imageUrl) || (savedCat?.bannerUrl) || DEFAULT_CAT_BANNER;
             document.getElementById('cat-desc').textContent =
                 (savedCat?.description) || (jcClick?.h1Description) || `รวมสินค้าคุณภาพในหมวด ${activeCat}`;
 

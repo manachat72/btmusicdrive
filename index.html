@@ -371,7 +371,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         ...staticCat, ...cat, ...localCat,
                         name: normalizeCategoryName(cat.name || staticCat.name || localCat.name),
                         description: localCat.description || staticCat.description || staticCat.h1Description || cat.description || cat.h1Description || '',
-                        bannerUrl: localCat.bannerUrl || staticCat.bannerUrl || staticCat.imageUrl || cat.bannerUrl || cat.imageUrl || '',
+                        bannerUrl: staticCat.imageUrl || staticCat.bannerUrl || cat.imageUrl || cat.bannerUrl || localCat.bannerUrl || '',
                         slug: cat.slug || localCat.slug || staticCat.slug || '',
                         isActive: localCat.isActive !== false && cat.isActive !== false,
                         sortOrder: localCat.sortOrder ?? staticCat.sortOrder ?? index,
