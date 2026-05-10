@@ -106,7 +106,7 @@ function _navbarHTML() {
           </a>
         </div>
         <div class="flex items-center space-x-4">
-          <button id="navbar-search-btn" class="text-gray-300 hover:text-primary transition-colors" aria-label="ค้นหาสินค้า"><i class="ph ph-magnifying-glass text-2xl"></i></button>
+          <button id="navbar-search-btn" class="hidden md:inline-flex items-center text-gray-300 hover:text-primary transition-colors" aria-label="ค้นหาสินค้า"><i class="ph ph-magnifying-glass text-2xl"></i></button>
           <button id="cart-btn" class="hidden md:block text-gray-300 hover:text-primary transition-colors relative" aria-label="ตะกร้าสินค้า">
             <i class="ph ph-shopping-cart text-2xl"></i>
             <span id="cart-count" class="absolute -top-1 -right-1 bg-primary text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] px-1 items-center justify-center" style="display:none;">0</span>
@@ -381,8 +381,12 @@ function _mobileBottomNavHTML() {
         <i class="ph ph-storefront" style="font-size:21px;line-height:1;"></i>
         <span style="font-size:9px;letter-spacing:0.04em;font-weight:500;">ร้านค้า</span>
       </a>
+      <button id="bnav-search-btn" class="flex flex-col items-center justify-center flex-1 gap-[3px]" style="background:none;border:none;cursor:pointer;color:#64748b;" aria-label="ค้นหาสินค้า">
+        <i class="ph ph-magnifying-glass" style="font-size:21px;line-height:1;"></i>
+        <span style="font-size:9px;letter-spacing:0.04em;font-weight:500;">ค้นหา</span>
+      </button>
       <a href="/cart" id="bnav-cart-btn" class="flex flex-col items-center justify-center flex-1 gap-[3px] relative no-underline" style="color:#64748b;" aria-label="ตะกร้าสินค้า">
-        <div class="relative flex-shrink-0" style="width:28px;height:24px;display:flex;align-items:center;justify-content:center;">
+        <div class="relative flex-shrink-0" style="width:28px;height:21px;display:flex;align-items:center;justify-content:center;">
           <i class="ph ph-shopping-cart" style="font-size:21px;line-height:1;"></i>
           <span id="bnav-cart-count" class="absolute flex items-center justify-center" style="top:-2px;right:-4px;min-width:14px;height:14px;padding:0 3px;font-size:7.5px;font-weight:700;color:#fff;background:#8B7355;border-radius:99px;display:none;">0</span>
         </div>
@@ -1335,6 +1339,7 @@ function _setupSharedEvents() {
     if (_searchInput) _searchInput.value = '';
   }
   _searchBtn?.addEventListener('click', _openSearch);
+  document.getElementById('bnav-search-btn')?.addEventListener('click', _openSearch);
   _searchClose?.addEventListener('click', _closeSearch);
   _searchBackdrop?.addEventListener('click', _closeSearch);
   _searchInput?.addEventListener('keydown', e => {
