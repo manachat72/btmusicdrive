@@ -1,3 +1,7 @@
+const API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
+  ? 'http://localhost:5000/api'
+  : '/api';
+
 // Product Data State (Fetched from API)
 let products = [];
 // Cart State

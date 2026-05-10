@@ -416,9 +416,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             buildGrid(initialSource, jsonCats, storedCats);
 
             // Background fetch picks up server-side updates without blocking render
+            // Merge jsonCats as base so static categories always appear even if DB has no products for them
             fetch(`${CATEGORY_API_BASE}/categories`).then(r => r.ok ? r.json() : null).then(apiCats => {
                 if (!Array.isArray(apiCats) || !apiCats.length) return;
-                buildGrid(apiCats, jsonCats, storedCats);
+                buildGrid([...jsonCats, ...apiCats], jsonCats, storedCats);
             }).catch(() => {});
         })();
     </script>
