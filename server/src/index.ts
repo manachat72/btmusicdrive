@@ -31,7 +31,7 @@ if (missingVars.length > 0) {
 const app: Express = express();
 const PORT = process.env.PORT || 5000;
 
-const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:5500,http://127.0.0.1:5500,https://btmusicdrive.com,https://www.btmusicdrive.com')
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:5500,http://127.0.0.1:5500,https://btmusicdrive.com,https://www.btmusicdrive.com,https://btmusicdrive.vercel.app')
   .split(',')
   .map((o) => o.trim());
 
