@@ -68,7 +68,7 @@ def process_images(src_folder, slug):
         orig_kb = os.path.getsize(src) // 1024
         jpg_kb  = os.path.getsize(os.path.join(dst_folder, f"{base}.jpg")) // 1024
         print(f"    {fname} ({orig_kb}KB) -> {base}.jpg/webp/avif ({jpg_kb}KB)")
-        paths.append(f"/images/products/{slug}/{base}.jpg")
+        paths.append(f"/images/products/{slug}/{base}.webp")
 
     return paths
 

@@ -28,7 +28,7 @@ const NEW_PRODUCTS = [
     originalPrice: 399,
     description:   'USB แฟลชไดรฟ์ MP3 รวมทุกเพลง Bodyslam ครบทุกอัลบั้ม เสียงชัด 128kbps เสียบฟังได้ทันทีในรถยนต์ ลำโพง คอมพิวเตอร์ รับประกันสินค้า 100%',
     imageUrl:      '/images/products/usb-mp3-bodyslam/usb-mp3-bodyslam-1.jpg',
-    images:        [1,2,3,4].map(i => `/images/products/usb-mp3-bodyslam/usb-mp3-bodyslam-${i}.jpg`),
+    images:        [1,2,3,4].map(i => `/images/products/usb-mp3-bodyslam/usb-mp3-bodyslam-${i}.webp`),
     sku:           'SKU-055',
     categoryId:    '94703150-5b4b-4344-80cf-baadcdc0d0b2', // เพลงสตริง
     tags:          ['USB','MP3','Bodyslam','บอดี้สแลม','สตริง','ร็อค'],
