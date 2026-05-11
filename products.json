@@ -1797,5 +1797,275 @@
       "id": "9",
       "name": "อุปกรณ์เสริม"
     }
+  },
+  {
+    "id": "5247179e-e935-465c-9812-d23195d10542",
+    "name": "USB แฟลชไดรฟ์ MP3 รวมทุกเพลง Bodyslam ครบทุกอัลบั้ม",
+    "slug": "usb-mp3-bodyslam",
+    "price": 279,
+    "originalPrice": 399,
+    "description": "USB แฟลชไดรฟ์ MP3 รวมทุกเพลง Bodyslam ครบทุกอัลบั้ม เสียงชัด 128kbps เสียบฟังได้ทันทีในรถยนต์ ลำโพง คอมพิวเตอร์ รับประกันสินค้า 100%",
+    "imageUrl": "/images/products/usb-mp3-bodyslam/usb-mp3-bodyslam-1.jpg",
+    "images": [
+      "/images/products/usb-mp3-bodyslam/usb-mp3-bodyslam-1.jpg",
+      "/images/products/usb-mp3-bodyslam/usb-mp3-bodyslam-2.jpg",
+      "/images/products/usb-mp3-bodyslam/usb-mp3-bodyslam-3.jpg",
+      "/images/products/usb-mp3-bodyslam/usb-mp3-bodyslam-4.jpg"
+    ],
+    "brand": "btmusicdrive",
+    "sku": "SKU-055",
+    "stock": 100,
+    "tags": [
+      "USB",
+      "MP3",
+      "Bodyslam",
+      "บอดี้สแลม",
+      "สตริง",
+      "ร็อค"
+    ],
+    "tracklist": [],
+    "specs": {
+      "ความจุ": "1GB",
+      "รองรับ": "เครื่องเสียงรถยนต์ / คอมพิวเตอร์ / ลำโพง",
+      "รูปแบบ": "USB แฟลชไดรฟ์ 2.0",
+      "แบรนด์": "btmusicdrive",
+      "ไฟล์เพลง": "MP3 128kbps"
+    },
+    "categoryId": "3",
+    "category": {
+      "id": "3",
+      "name": "เพลงสตริง"
+    }
+  },
+  {
+    "id": "6db1d8d1-8744-455b-a792-98add4f02250",
+    "name": "USB แฟลชไดรฟ์ MP3 รวมเพลงฮิตสายสตริงมาแรง ครบทุกเพลงโปรด",
+    "slug": "usb-mp3-ruam-hit-sai-string",
+    "price": 279,
+    "originalPrice": 399,
+    "description": "USB แฟลชไดรฟ์ MP3 รวมเพลงฮิตสายสตริงมาแรง ครบทุกเพลงโปรด เสียงชัด 128kbps เสียบฟังได้ทันทีในรถยนต์ ลำโพง คอมพิวเตอร์ รับประกันสินค้า 100%",
+    "imageUrl": "/images/products/usb-mp3-ruam-hit-sai-string/usb-mp3-ruam-hit-sai-string-1.jpg",
+    "images": [
+      "/images/products/usb-mp3-ruam-hit-sai-string/usb-mp3-ruam-hit-sai-string-1.jpg",
+      "/images/products/usb-mp3-ruam-hit-sai-string/usb-mp3-ruam-hit-sai-string-2.jpg",
+      "/images/products/usb-mp3-ruam-hit-sai-string/usb-mp3-ruam-hit-sai-string-3.jpg",
+      "/images/products/usb-mp3-ruam-hit-sai-string/usb-mp3-ruam-hit-sai-string-4.jpg"
+    ],
+    "brand": "btmusicdrive",
+    "sku": "SKU-059",
+    "stock": 100,
+    "tags": [
+      "USB",
+      "MP3",
+      "สตริง",
+      "รวมเพลงฮิต",
+      "สายสตริง"
+    ],
+    "tracklist": [],
+    "specs": {
+      "ความจุ": "1GB",
+      "รองรับ": "เครื่องเสียงรถยนต์ / คอมพิวเตอร์ / ลำโพง",
+      "รูปแบบ": "USB แฟลชไดรฟ์ 2.0",
+      "แบรนด์": "btmusicdrive",
+      "ไฟล์เพลง": "MP3 128kbps"
+    },
+    "categoryId": "3",
+    "category": {
+      "id": "3",
+      "name": "เพลงสตริง"
+    }
+  },
+  {
+    "id": "e7ec7e58-e23c-4779-b666-7e29b91de749",
+    "name": "USB แฟลชไดรฟ์ MP3 รวมเพลงแดนซ์มันส์ EDM Remix สนุกตลอดเวลา",
+    "slug": "usb-mp3-dance",
+    "price": 279,
+    "originalPrice": 399,
+    "description": "USB แฟลชไดรฟ์ MP3 รวมเพลงแดนซ์มันส์ EDM Remix สนุกตลอดเวลา เสียงชัด 128kbps เสียบฟังได้ทันทีในรถยนต์ ลำโพง คอมพิวเตอร์ รับประกันสินค้า 100%",
+    "imageUrl": "/images/products/usb-mp3-dance/usb-mp3-dance-1.jpg",
+    "images": [
+      "/images/products/usb-mp3-dance/usb-mp3-dance-1.jpg",
+      "/images/products/usb-mp3-dance/usb-mp3-dance-2.jpg",
+      "/images/products/usb-mp3-dance/usb-mp3-dance-3.jpg",
+      "/images/products/usb-mp3-dance/usb-mp3-dance-4.jpg"
+    ],
+    "brand": "btmusicdrive",
+    "sku": "SKU-064",
+    "stock": 100,
+    "tags": [
+      "USB",
+      "MP3",
+      "แดนซ์",
+      "EDM",
+      "Remix",
+      "Dance"
+    ],
+    "tracklist": [],
+    "specs": {
+      "ความจุ": "1GB",
+      "รองรับ": "เครื่องเสียงรถยนต์ / คอมพิวเตอร์ / ลำโพง",
+      "รูปแบบ": "USB แฟลชไดรฟ์ 2.0",
+      "แบรนด์": "btmusicdrive",
+      "ไฟล์เพลง": "MP3 128kbps"
+    },
+    "categoryId": "10",
+    "category": {
+      "id": "10",
+      "name": "แดนซ์"
+    }
+  },
+  {
+    "id": "276aa4bd-702a-4188-8d3f-155d98ee7927",
+    "name": "USB แฟลชไดรฟ์ MP3 รวมเพลงสตริงยุค 90 เพลงเพราะตลอดกาล",
+    "slug": "usb-mp3-phleng-yuk-90",
+    "price": 279,
+    "originalPrice": 399,
+    "description": "USB แฟลชไดรฟ์ MP3 รวมเพลงสตริงยุค 90 เพลงเพราะตลอดกาล เสียงชัด 128kbps เสียบฟังได้ทันทีในรถยนต์ ลำโพง คอมพิวเตอร์ รับประกันสินค้า 100%",
+    "imageUrl": "/images/products/usb-mp3-phleng-yuk-90/usb-mp3-phleng-yuk-90-1.jpg",
+    "images": [
+      "/images/products/usb-mp3-phleng-yuk-90/usb-mp3-phleng-yuk-90-1.jpg",
+      "/images/products/usb-mp3-phleng-yuk-90/usb-mp3-phleng-yuk-90-2.jpg",
+      "/images/products/usb-mp3-phleng-yuk-90/usb-mp3-phleng-yuk-90-3.jpg",
+      "/images/products/usb-mp3-phleng-yuk-90/usb-mp3-phleng-yuk-90-4.jpg"
+    ],
+    "brand": "btmusicdrive",
+    "sku": "SKU-068",
+    "stock": 100,
+    "tags": [
+      "USB",
+      "MP3",
+      "สตริง",
+      "ยุค 90",
+      "90s"
+    ],
+    "tracklist": [],
+    "specs": {
+      "ความจุ": "1GB",
+      "รองรับ": "เครื่องเสียงรถยนต์ / คอมพิวเตอร์ / ลำโพง",
+      "รูปแบบ": "USB แฟลชไดรฟ์ 2.0",
+      "แบรนด์": "btmusicdrive",
+      "ไฟล์เพลง": "MP3 128kbps"
+    },
+    "categoryId": "3",
+    "category": {
+      "id": "3",
+      "name": "เพลงสตริง"
+    }
+  },
+  {
+    "id": "c3779b39-cf7e-4796-80b0-f799fddef17a",
+    "name": "USB แฟลชไดรฟ์ MP3 รวมเพลงสากลเพราะๆ ฟังสบาย Pop Rock R&B",
+    "slug": "usb-mp3-ruam-phleng-sakol",
+    "price": 279,
+    "originalPrice": 399,
+    "description": "USB แฟลชไดรฟ์ MP3 รวมเพลงสากลเพราะๆ ฟังสบาย Pop Rock R&B เสียงชัด 128kbps เสียบฟังได้ทันทีในรถยนต์ ลำโพง คอมพิวเตอร์ รับประกันสินค้า 100%",
+    "imageUrl": "/images/products/usb-mp3-ruam-phleng-sakol/usb-mp3-ruam-phleng-sakol-1.jpg",
+    "images": [
+      "/images/products/usb-mp3-ruam-phleng-sakol/usb-mp3-ruam-phleng-sakol-1.jpg",
+      "/images/products/usb-mp3-ruam-phleng-sakol/usb-mp3-ruam-phleng-sakol-2.jpg",
+      "/images/products/usb-mp3-ruam-phleng-sakol/usb-mp3-ruam-phleng-sakol-3.jpg",
+      "/images/products/usb-mp3-ruam-phleng-sakol/usb-mp3-ruam-phleng-sakol-4.jpg"
+    ],
+    "brand": "btmusicdrive",
+    "sku": "SKU-084",
+    "stock": 100,
+    "tags": [
+      "USB",
+      "MP3",
+      "สากล",
+      "Pop",
+      "Rock",
+      "R&B"
+    ],
+    "tracklist": [],
+    "specs": {
+      "ความจุ": "1GB",
+      "รองรับ": "เครื่องเสียงรถยนต์ / คอมพิวเตอร์ / ลำโพง",
+      "รูปแบบ": "USB แฟลชไดรฟ์ 2.0",
+      "แบรนด์": "btmusicdrive",
+      "ไฟล์เพลง": "MP3 128kbps"
+    },
+    "categoryId": "6",
+    "category": {
+      "id": "6",
+      "name": "เพลงสากล"
+    }
+  },
+  {
+    "id": "5c2f3c2a-2c6f-417f-890f-e28d206b15a0",
+    "name": "USB แฟลชไดรฟ์ MP3 อ๋อย ดำกาฬ ชุดแรก-ปัจจุบัน 2530-2566 ครบทุกอัลบั้ม",
+    "slug": "usb-mp3-aoi-damkan",
+    "price": 279,
+    "originalPrice": 399,
+    "description": "USB แฟลชไดรฟ์ MP3 รวมเพลง อ๋อย ดำกาฬ ครบทุกอัลบั้มตั้งแต่ชุดแรกจนถึงปัจจุบัน 2530-2566 เสียงชัด 128kbps เสียบฟังได้ทันทีในรถยนต์ ลำโพง คอมพิวเตอร์ รับประกันสินค้า 100%",
+    "imageUrl": "/images/products/usb-mp3-aoi-damkan/usb-mp3-aoi-damkan-1.jpg",
+    "images": [
+      "/images/products/usb-mp3-aoi-damkan/usb-mp3-aoi-damkan-1.jpg",
+      "/images/products/usb-mp3-aoi-damkan/usb-mp3-aoi-damkan-2.jpg",
+      "/images/products/usb-mp3-aoi-damkan/usb-mp3-aoi-damkan-3.jpg",
+      "/images/products/usb-mp3-aoi-damkan/usb-mp3-aoi-damkan-4.jpg"
+    ],
+    "brand": "btmusicdrive",
+    "sku": "SKU-093",
+    "stock": 100,
+    "tags": [
+      "USB",
+      "MP3",
+      "อ๋อย ดำกาฬ",
+      "เพื่อชีวิต",
+      "ลูกทุ่ง"
+    ],
+    "tracklist": [],
+    "specs": {
+      "ความจุ": "2GB",
+      "รองรับ": "เครื่องเสียงรถยนต์ / คอมพิวเตอร์ / ลำโพง",
+      "รูปแบบ": "USB แฟลชไดรฟ์ 2.0",
+      "แบรนด์": "btmusicdrive",
+      "ไฟล์เพลง": "MP3 128kbps"
+    },
+    "categoryId": "1",
+    "category": {
+      "id": "1",
+      "name": "เพื่อชีวิต"
+    }
+  },
+  {
+    "id": "39314419-279a-4715-8f41-d4e1bec12968",
+    "name": "USB แฟลชไดรฟ์ MP3 รวมฮิตยุค 90 คิด(ถึง)ถึง เพลงเพราะจากยุคทอง",
+    "slug": "usb-mp3-hit-yuk-90-khit-thueng",
+    "price": 319,
+    "originalPrice": 499,
+    "description": "USB แฟลชไดรฟ์ MP3 รวมฮิตยุค 90 คิด(ถึง)ถึง เพลงเพราะจากยุคทอง เสียงชัด 128kbps เสียบฟังได้ทันทีในรถยนต์ ลำโพง คอมพิวเตอร์ รับประกันสินค้า 100%",
+    "imageUrl": "/images/products/usb-mp3-hit-yuk-90-khit-thueng/usb-mp3-hit-yuk-90-khit-thueng-1.jpg",
+    "images": [
+      "/images/products/usb-mp3-hit-yuk-90-khit-thueng/usb-mp3-hit-yuk-90-khit-thueng-1.jpg",
+      "/images/products/usb-mp3-hit-yuk-90-khit-thueng/usb-mp3-hit-yuk-90-khit-thueng-2.jpg",
+      "/images/products/usb-mp3-hit-yuk-90-khit-thueng/usb-mp3-hit-yuk-90-khit-thueng-3.jpg",
+      "/images/products/usb-mp3-hit-yuk-90-khit-thueng/usb-mp3-hit-yuk-90-khit-thueng-4.jpg"
+    ],
+    "brand": "btmusicdrive",
+    "sku": "SKU-098",
+    "stock": 100,
+    "tags": [
+      "USB",
+      "MP3",
+      "สตริง",
+      "ยุค 90",
+      "90s",
+      "คิดถึง"
+    ],
+    "tracklist": [],
+    "specs": {
+      "ความจุ": "2GB",
+      "รองรับ": "เครื่องเสียงรถยนต์ / คอมพิวเตอร์ / ลำโพง",
+      "รูปแบบ": "USB แฟลชไดรฟ์ 2.0",
+      "แบรนด์": "btmusicdrive",
+      "ไฟล์เพลง": "MP3 128kbps"
+    },
+    "categoryId": "3",
+    "category": {
+      "id": "3",
+      "name": "เพลงสตริง"
+    }
   }
 ]
