@@ -52,6 +52,8 @@ def process_images(src_folder, slug):
         return []
 
     dst_folder = os.path.join(OUTPUT_DIR, slug)
+    if os.path.exists(dst_folder):
+        shutil.rmtree(dst_folder)
     os.makedirs(dst_folder, exist_ok=True)
 
     paths = []
@@ -189,6 +191,16 @@ def main():
 
         # ลบโฟลเดอร์ต้นทาง
         shutil.rmtree(src_folder)
+
+        # git commit + push
+        subprocess.run(["git", "add", f"images/products/{slug}"], cwd=BASE)
+        subprocess.run(["git", "commit", "-m", f"update images: {slug}"], cwd=BASE)
+        r_push = subprocess.run(["git", "push"], capture_output=True, text=True, encoding='utf-8', errors='replace', cwd=BASE)
+        if r_push.returncode == 0:
+            print(f"  push ขึ้น Vercel แล้ว")
+        else:
+            print(f"  [!] git push ล้มเหลว: {(r_push.stderr or '')[:200]}")
+
         print(f"  เสร็จ! รูปอยู่ที่ images/products/{slug}/")
 
     print()
