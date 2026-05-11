@@ -3337,6 +3337,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   function addExtraImageRow(url = '') {
     const list = document.getElementById('pm-images-list');
     const row = document.createElement('div');
+    row.dataset.imgRow = '1';
     row.style.cssText = 'display:flex;gap:6px;align-items:center;';
     const pickBtn = document.createElement('button');
     pickBtn.type = 'button';
@@ -3349,11 +3350,38 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="pm-extra-preview" style="width:36px;height:36px;border-radius:4px;border:1px solid var(--card-border);background:#f6f7f7;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#c3c4c7;font-size:14px;">
         ${url ? `<img src="${url}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<i class=\\'fa-solid fa-image-slash\\' alt="" loading="lazy" decoding="async"></i>'">` : '<i class="fa-solid fa-image"></i>'}
       </div>
-      <button type="button" onclick="this.closest('div').remove()" style="background:none;border:none;cursor:pointer;color:#d63638;font-size:14px;padding:4px;"><i class="fa-solid fa-xmark"></i></button>`;
+      <button type="button" onclick="moveImageRowUp(this)" title="เลื่อนขึ้น" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:14px;padding:4px;"><i class="fa-solid fa-chevron-up"></i></button>
+      <button type="button" onclick="moveImageRowDown(this)" title="เลื่อนลง" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:14px;padding:4px;"><i class="fa-solid fa-chevron-down"></i></button>
+      <button type="button" onclick="promoteToMainImage(this)" title="ตั้งเป็นรูปปก" style="background:none;border:none;cursor:pointer;color:#f59e0b;font-size:14px;padding:4px;"><i class="fa-solid fa-star"></i></button>
+      <button type="button" onclick="this.closest('[data-img-row]').remove()" style="background:none;border:none;cursor:pointer;color:#d63638;font-size:14px;padding:4px;"><i class="fa-solid fa-xmark"></i></button>`;
     const inp = row.querySelector('.pm-extra-img-input');
     pickBtn.addEventListener('click', () => openImagePicker(null, inp));
-    row.insertBefore(pickBtn, row.lastElementChild);
+    row.insertBefore(pickBtn, row.firstElementChild);
     list.appendChild(row);
+  }
+
+  function moveImageRowUp(btn) {
+    const row = btn.closest('[data-img-row]');
+    const prev = row.previousElementSibling;
+    if (prev) row.parentElement.insertBefore(row, prev);
+  }
+
+  function moveImageRowDown(btn) {
+    const row = btn.closest('[data-img-row]');
+    const next = row.nextElementSibling;
+    if (next) next.after(row);
+  }
+
+  function promoteToMainImage(btn) {
+    const row = btn.closest('[data-img-row]');
+    const extraInput = row.querySelector('.pm-extra-img-input');
+    const mainInput = document.getElementById('pm-image-url');
+    const extraUrl = extraInput.value.trim();
+    const mainUrl = mainInput.value.trim();
+    extraInput.value = mainUrl;
+    mainInput.value = extraUrl;
+    previewMainImage();
+    previewExtraImage(extraInput);
   }
 
   function previewExtraImage(input) {
