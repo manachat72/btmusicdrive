@@ -61,13 +61,11 @@ def process_images(src_folder, slug):
         img  = Image.open(src).convert("RGB")
         img.thumbnail(MAX_SIZE, Image.LANCZOS)
 
-        img.save(os.path.join(dst_folder, f"{base}.jpg"),  "JPEG", quality=85, optimize=True)
         img.save(os.path.join(dst_folder, f"{base}.webp"), "WEBP", quality=82, method=6)
-        img.save(os.path.join(dst_folder, f"{base}.avif"), "AVIF", quality=70)
 
         orig_kb = os.path.getsize(src) // 1024
-        jpg_kb  = os.path.getsize(os.path.join(dst_folder, f"{base}.jpg")) // 1024
-        print(f"    {fname} ({orig_kb}KB) -> {base}.jpg/webp/avif ({jpg_kb}KB)")
+        webp_kb = os.path.getsize(os.path.join(dst_folder, f"{base}.webp")) // 1024
+        print(f"    {fname} ({orig_kb}KB) -> {base}.webp ({webp_kb}KB)")
         paths.append(f"/images/products/{slug}/{base}.webp")
 
     return paths
@@ -122,7 +120,7 @@ def main():
             sku_match = re.search(r'sku[-_](\d+)', folder, re.IGNORECASE)
             if sku_match:
                 sku_num = f"SKU-{sku_match.group(1)}"
-                found = next((p for p in products if p.get("sku","").upper() == sku_num), None)
+                found = next((p for p in products if (p.get("sku") or "").upper() == sku_num), None)
                 if found:
                     slug = found["slug"]
                     print(f"  match SKU {sku_num} -> slug: {slug}")
