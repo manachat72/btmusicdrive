@@ -2067,5 +2067,43 @@
       "id": "3",
       "name": "เพลงสตริง"
     }
+  },
+  {
+    "id": "5a0faff4-9163-410c-ac79-d2ef69e9c090",
+    "name": "USB แฟลชไดรฟ์ MP3 รวมเพลงสากล ฟังเพลินทุกที่ทุกเวลา",
+    "slug": "usb-mp3-sakol-sku-077",
+    "price": 279,
+    "originalPrice": 399,
+    "description": "USB แฟลชไดรฟ์ MP3 รวมเพลงสากลเพราะๆ ฟังเพลินทุกที่ทุกเวลา เสียงชัด 128kbps เสียบฟังได้ทันทีในรถยนต์ ลำโพง คอมพิวเตอร์ รับประกัน 100%",
+    "imageUrl": "/images/products/usb-mp3-sakol-sku-077/usb-mp3-sakol-sku-077-1.jpg",
+    "images": [
+      "/images/products/usb-mp3-sakol-sku-077/usb-mp3-sakol-sku-077-1.jpg",
+      "/images/products/usb-mp3-sakol-sku-077/usb-mp3-sakol-sku-077-2.jpg",
+      "/images/products/usb-mp3-sakol-sku-077/usb-mp3-sakol-sku-077-3.jpg",
+      "/images/products/usb-mp3-sakol-sku-077/usb-mp3-sakol-sku-077-4.jpg"
+    ],
+    "brand": "btmusicdrive",
+    "sku": "SKU-077",
+    "stock": 100,
+    "tags": [
+      "USB",
+      "MP3",
+      "สากล",
+      "Pop",
+      "Rock"
+    ],
+    "tracklist": [],
+    "specs": {
+      "ความจุ": "1GB",
+      "รองรับ": "เครื่องเสียงรถยนต์ / คอมพิวเตอร์ / ลำโพง",
+      "รูปแบบ": "USB แฟลชไดรฟ์ 2.0",
+      "แบรนด์": "btmusicdrive",
+      "ไฟล์เพลง": "MP3 128kbps"
+    },
+    "categoryId": "6",
+    "category": {
+      "id": "6",
+      "name": "เพลงสากล"
+    }
   }
 ]
