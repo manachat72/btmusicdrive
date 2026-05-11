@@ -181,11 +181,11 @@ def main():
 
         # อัปเดตรูปเข้า DB อัตโนมัติ
         script = os.path.join(BASE, "scripts", "push-images-to-db.js")
-        result = subprocess.run(["node", script, slug], capture_output=True, text=True, cwd=BASE)
+        result = subprocess.run(["node", script, slug], capture_output=True, text=True, encoding='utf-8', errors='replace', cwd=BASE)
         if result.returncode == 0:
-            print(f"  {result.stdout.strip()}")
+            print(f"  {(result.stdout or '').strip()}")
         else:
-            print(f"  [!] push-images-to-db ล้มเหลว: {result.stderr.strip()[:200]}")
+            print(f"  [!] push-images-to-db ล้มเหลว: {(result.stderr or '')[:200]}")
 
         # ลบโฟลเดอร์ต้นทาง
         shutil.rmtree(src_folder)
