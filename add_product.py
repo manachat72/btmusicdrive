@@ -6,7 +6,7 @@ add_product.py - ลงสินค้าใหม่ / อัปเดตรู
   3. รัน: py add_product.py
 """
 
-import os, sys, json, uuid, shutil
+import os, sys, json, uuid, shutil, subprocess
 from PIL import Image
 
 BASE       = os.path.dirname(os.path.abspath(__file__))
@@ -178,6 +178,14 @@ def main():
         # บันทึก JSON
         with open(JSON_PATH, "w", encoding="utf-8") as f:
             json.dump(products, f, ensure_ascii=False, indent=2)
+
+        # อัปเดตรูปเข้า DB อัตโนมัติ
+        script = os.path.join(BASE, "scripts", "push-images-to-db.js")
+        result = subprocess.run(["node", script, slug], capture_output=True, text=True, cwd=BASE)
+        if result.returncode == 0:
+            print(f"  {result.stdout.strip()}")
+        else:
+            print(f"  [!] push-images-to-db ล้มเหลว: {result.stderr.strip()[:200]}")
 
         # ลบโฟลเดอร์ต้นทาง
         shutil.rmtree(src_folder)
