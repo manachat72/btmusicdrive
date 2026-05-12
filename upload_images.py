@@ -40,6 +40,7 @@ products = load_products()
 product_options = [f"{p['name']}  ({p['slug']})" for p in products]
 selected_files = []
 mode_var = tk.StringVar(value="update")
+white_bg_var = tk.BooleanVar(value=True)
 
 def slugify(text):
     s = (text or "").strip().lower()
@@ -125,6 +126,14 @@ def pick_files():
 
 tk.Button(files_frame, text="📁 เลือกไฟล์", command=pick_files, width=15).pack(side="right")
 
+image_options_frame = tk.Frame(root)
+image_options_frame.pack(padx=15, pady=(8, 0), fill="x")
+tk.Checkbutton(
+    image_options_frame,
+    text="ใส่พื้นหลังขาว + จัดรูปกึ่งกลาง 1000x1000",
+    variable=white_bg_var
+).pack(anchor="w")
+
 # ── log output ─────────────────────────────────
 tk.Label(root, text="ผลการทำงาน:", font=("Arial", 11, "bold")).pack(anchor="w", padx=15, pady=(15, 5))
 log = scrolledtext.ScrolledText(root, height=12, font=("Consolas", 9))
@@ -153,6 +162,7 @@ def do_upload():
     slug = slugify(new_slug_var.get() or new_name_var.get()) if is_new else sel.rsplit("(", 1)[-1].rstrip(")")
     log.delete("1.0", "end")
     append_log(f"=== {slug} ===")
+    append_log("โหมดรูป: พื้นหลังขาว + จัดกึ่งกลาง" if white_bg_var.get() else "โหมดรูป: แปลงตามไฟล์เดิม")
 
     # คัดลอกไฟล์ไป รูปสินค้า/{slug}/
     dst = os.path.join(INPUT_DIR, slug)
@@ -199,7 +209,12 @@ def do_upload():
         [sys.executable, os.path.join(BASE, "add_product.py"), slug],
         capture_output=True, text=True,
         encoding="utf-8", errors="replace", cwd=BASE,
-        env={**os.environ, "PYTHONIOENCODING": "utf-8", "PYTHONUTF8": "1"}
+        env={
+            **os.environ,
+            "PYTHONIOENCODING": "utf-8",
+            "PYTHONUTF8": "1",
+            "BTMD_WHITE_BG": "1" if white_bg_var.get() else "0",
+        }
     )
     append_log(proc.stdout or "")
     if proc.stderr:
