@@ -2399,6 +2399,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div id="pm-main-preview" style="width:48px;height:48px;border-radius:4px;border:1px solid var(--card-border);background:#f6f7f7;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#c3c4c7;font-size:18px;">
               <i class="fa-solid fa-image"></i>
             </div>
+            <button type="button" onclick="clearMainImage()" title="ลบรูปหลัก" style="background:none;border:none;cursor:pointer;color:#d63638;font-size:16px;padding:6px 4px;flex-shrink:0;"><i class="fa-solid fa-xmark"></i></button>
           </div>
           <p class="settings-hint">URL รูปภาพหลักของสินค้า (แสดงในการ์ดสินค้า)</p>
         </div>
@@ -3322,6 +3323,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   function closeProductModal() {
     document.getElementById('product-modal').style.display = 'none';
+  }
+
+  function clearMainImage() {
+    document.getElementById('pm-image-url').value = '';
+    previewMainImage();
   }
 
   function previewMainImage() {
