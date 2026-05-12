@@ -57,25 +57,35 @@ def process_images(src_folder, slug):
     os.makedirs(dst_folder, exist_ok=True)
 
     paths = []
+    errors = []
     for i, fname in enumerate(files, 1):
         src = os.path.join(src_folder, fname)
-        with open(src, "rb") as f:
-            digest = hashlib.sha1(f.read()).hexdigest()[:8]
-        ext = os.path.splitext(fname)[1].lower()
-        base = f"{slug}-{i}-{digest}"
-        out = os.path.join(dst_folder, f"{base}.webp")
-        if ext == ".webp":
-            shutil.copy2(src, out)
-        else:
-            img = Image.open(src)
-            if img.mode not in ("RGB", "RGBA"):
-                img = img.convert("RGBA" if "A" in img.getbands() else "RGB")
-            img.save(out, "WEBP", quality=WEBP_QUALITY, method=6)
+        try:
+            with open(src, "rb") as f:
+                digest = hashlib.sha1(f.read()).hexdigest()[:8]
+            ext = os.path.splitext(fname)[1].lower()
+            base = f"{slug}-{len(paths) + 1}-{digest}"
+            out = os.path.join(dst_folder, f"{base}.webp")
+            if ext == ".webp":
+                shutil.copy2(src, out)
+            else:
+                with Image.open(src) as img:
+                    if img.mode not in ("RGB", "RGBA"):
+                        img = img.convert("RGBA" if "A" in img.getbands() else "RGB")
+                    img.save(out, "WEBP", quality=WEBP_QUALITY, method=6)
 
-        orig_kb = os.path.getsize(src) // 1024
-        webp_kb = os.path.getsize(os.path.join(dst_folder, f"{base}.webp")) // 1024
-        print(f"    {fname} ({orig_kb}KB) -> {base}.webp ({webp_kb}KB)")
-        paths.append(f"/images/products/{slug}/{base}.webp")
+            orig_kb = os.path.getsize(src) // 1024
+            webp_kb = os.path.getsize(out) // 1024
+            print(f"    {fname} ({orig_kb}KB) -> {base}.webp ({webp_kb}KB)")
+            paths.append(f"/images/products/{slug}/{base}.webp")
+        except Exception as err:
+            errors.append((fname, str(err)))
+            print(f"    [ข้าม] {fname}: {err}")
+
+    if errors:
+        print("  [!] มีรูปที่แปลงไม่ได้:")
+        for fname, err in errors:
+            print(f"      - {fname}: {err}")
 
     return paths
 
