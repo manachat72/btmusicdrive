@@ -61,12 +61,16 @@ def process_images(src_folder, slug):
         src = os.path.join(src_folder, fname)
         with open(src, "rb") as f:
             digest = hashlib.sha1(f.read()).hexdigest()[:8]
+        ext = os.path.splitext(fname)[1].lower()
         base = f"{slug}-{i}-{digest}"
-        img = Image.open(src)
-        if img.mode not in ("RGB", "RGBA"):
-            img = img.convert("RGBA" if "A" in img.getbands() else "RGB")
-
-        img.save(os.path.join(dst_folder, f"{base}.webp"), "WEBP", quality=WEBP_QUALITY, method=6)
+        out = os.path.join(dst_folder, f"{base}.webp")
+        if ext == ".webp":
+            shutil.copy2(src, out)
+        else:
+            img = Image.open(src)
+            if img.mode not in ("RGB", "RGBA"):
+                img = img.convert("RGBA" if "A" in img.getbands() else "RGB")
+            img.save(out, "WEBP", quality=WEBP_QUALITY, method=6)
 
         orig_kb = os.path.getsize(src) // 1024
         webp_kb = os.path.getsize(os.path.join(dst_folder, f"{base}.webp")) // 1024
@@ -208,7 +212,8 @@ def main():
     if processed_slugs:
         print()
         print("  รัน build เพื่ออัปเดต products inline + cache-busting...")
-        r_build = subprocess.run(["npm", "run", "build"], capture_output=True, text=True, encoding='utf-8', errors='replace', cwd=BASE)
+        npm_cmd = "npm.cmd" if os.name == "nt" else "npm"
+        r_build = subprocess.run([npm_cmd, "run", "build"], capture_output=True, text=True, encoding='utf-8', errors='replace', cwd=BASE)
         if r_build.returncode == 0:
             print("  build สำเร็จ")
         else:
