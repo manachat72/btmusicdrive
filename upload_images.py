@@ -38,7 +38,19 @@ root.geometry("760x720")
 
 products = load_products()
 product_options = [f"{p['name']}  ({p['slug']})" for p in products]
-selected_files = []
+
+# รับไฟล์จาก argv (เช่นจาก SendTo shortcut หรือ drag-drop ไป shortcut)
+_IMG_EXTS = {".jpg", ".jpeg", ".png", ".webp", ".avif", ".bmp", ".gif"}
+def _argv_image_files():
+    out = []
+    for arg in sys.argv[1:]:
+        if not arg or arg.startswith("--"):
+            continue
+        if os.path.isfile(arg) and os.path.splitext(arg)[1].lower() in _IMG_EXTS:
+            out.append(arg)
+    return out
+
+selected_files = _argv_image_files()
 mode_var = tk.StringVar(value="update")
 white_bg_var = tk.BooleanVar(value=True)
 
@@ -62,7 +74,8 @@ tk.Label(root, text="1. เลือกงาน:", font=("Arial", 11, "bold")).
 
 mode_frame = tk.Frame(root)
 mode_frame.pack(padx=15, fill="x")
-tk.Radiobutton(mode_frame, text="อัปเดตรูปสินค้าเดิม", variable=mode_var, value="update").pack(side="left")
+tk.Radiobutton(mode_frame, text="แทนที่รูปทั้งหมด (ลบเก่า)", variable=mode_var, value="update").pack(side="left")
+tk.Radiobutton(mode_frame, text="เพิ่มรูปเข้าสินค้าเดิม", variable=mode_var, value="append").pack(side="left", padx=(18, 0))
 tk.Radiobutton(mode_frame, text="เพิ่มสินค้าใหม่", variable=mode_var, value="new").pack(side="left", padx=(18, 0))
 
 tk.Label(root, text="สินค้าเดิม:", font=("Arial", 10, "bold")).pack(anchor="w", padx=15, pady=(10, 4))
@@ -111,7 +124,9 @@ tk.Label(root, text="2. เลือกไฟล์รูปภาพ (เลื
 files_frame = tk.Frame(root)
 files_frame.pack(padx=15, fill="x")
 
-files_label = tk.Label(files_frame, text="ยังไม่ได้เลือกไฟล์", fg="gray", anchor="w")
+_init_label = f"เลือกแล้ว {len(selected_files)} ไฟล์ (จาก SendTo)" if selected_files else "ยังไม่ได้เลือกไฟล์"
+_init_fg = "black" if selected_files else "gray"
+files_label = tk.Label(files_frame, text=_init_label, fg=_init_fg, anchor="w")
 files_label.pack(side="left", fill="x", expand=True)
 
 def pick_files():
@@ -146,7 +161,9 @@ def append_log(text):
 
 # ── ปุ่มอัปโหลด ─────────────────────────────────
 def do_upload():
-    is_new = mode_var.get() == "new"
+    mode = mode_var.get()
+    is_new = mode == "new"
+    is_append = mode == "append"
     sel = combo.get()
     if not is_new and not sel:
         messagebox.showwarning("ผิดพลาด", "กรุณาเลือกสินค้า")
@@ -162,7 +179,9 @@ def do_upload():
     slug = slugify(new_slug_var.get() or new_name_var.get()) if is_new else sel.rsplit("(", 1)[-1].rstrip(")")
     log.delete("1.0", "end")
     append_log(f"=== {slug} ===")
-    append_log("โหมดรูป: พื้นหลังขาว + จัดกึ่งกลาง" if white_bg_var.get() else "โหมดรูป: แปลงตามไฟล์เดิม")
+    mode_label = "เพิ่มรูปเข้าสินค้าเดิม" if is_append else ("เพิ่มสินค้าใหม่" if is_new else "แทนที่รูปทั้งหมด")
+    append_log(f"โหมด: {mode_label}")
+    append_log("รูป: พื้นหลังขาว + จัดกึ่งกลาง" if white_bg_var.get() else "รูป: แปลงตามไฟล์เดิม")
 
     # คัดลอกไฟล์ไป รูปสินค้า/{slug}/
     dst = os.path.join(INPUT_DIR, slug)
@@ -214,6 +233,7 @@ def do_upload():
             "PYTHONIOENCODING": "utf-8",
             "PYTHONUTF8": "1",
             "BTMD_WHITE_BG": "1" if white_bg_var.get() else "0",
+            "BTMD_APPEND_MODE": "1" if is_append else "0",
         }
     )
     append_log(proc.stdout or "")

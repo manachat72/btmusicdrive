@@ -23,6 +23,11 @@ def should_use_white_background():
     value = os.environ.get("BTMD_WHITE_BG", "1").strip().lower()
     return value not in ("0", "false", "no", "off")
 
+def should_append_images():
+    """ถ้าเปิด BTMD_APPEND_MODE=1 จะเพิ่มรูปเข้าโฟลเดอร์เดิมแทนการลบทิ้ง"""
+    value = os.environ.get("BTMD_APPEND_MODE", "0").strip().lower()
+    return value in ("1", "true", "yes", "on")
+
 # ---- สร้าง info.example.json ให้เป็นตัวอย่าง ----
 EXAMPLE = {
     "name":          "USB แฟลชไดรฟ์ MP3 ชื่อสินค้า",
@@ -49,6 +54,7 @@ def write_example():
 
 def process_images(src_folder, slug):
     use_white_bg = should_use_white_background()
+    append_mode = should_append_images()
     exts = {".jpg", ".jpeg", ".png", ".webp", ".avif", ".bmp"}
     files = sorted([
         f for f in os.listdir(src_folder)
@@ -59,8 +65,17 @@ def process_images(src_folder, slug):
         return []
 
     dst_folder = os.path.join(OUTPUT_DIR, slug)
-    if os.path.exists(dst_folder):
-        shutil.rmtree(dst_folder)
+    if append_mode and os.path.exists(dst_folder):
+        # โหมดเพิ่มรูป: ไม่ลบของเดิม + นับว่ามีรูปอยู่แล้วกี่ใบเพื่อเริ่มหมายเลขถัดไป
+        existing_count = len([
+            f for f in os.listdir(dst_folder)
+            if f.lower().endswith(".webp")
+        ])
+        print(f"  [append] โหมดเพิ่มรูป: ของเดิม {existing_count} ใบ จะเพิ่มอีก {len(files)} ใบ")
+    else:
+        if os.path.exists(dst_folder):
+            shutil.rmtree(dst_folder)
+        existing_count = 0
     os.makedirs(dst_folder, exist_ok=True)
 
     paths = []
@@ -71,7 +86,7 @@ def process_images(src_folder, slug):
             with open(src, "rb") as f:
                 digest = hashlib.sha1(f.read()).hexdigest()[:8]
             ext = os.path.splitext(fname)[1].lower()
-            base = f"{slug}-{len(paths) + 1}-{digest}"
+            base = f"{slug}-{existing_count + len(paths) + 1}-{digest}"
             out = os.path.join(dst_folder, f"{base}.webp")
             with Image.open(src) as img:
                 img = ImageOps.exif_transpose(img)
@@ -183,9 +198,22 @@ def main():
 
         # อัปเดตหรือสร้างใหม่
         if slug in existing:
-            existing[slug]["imageUrl"] = image_paths[0]
-            existing[slug]["images"]   = image_paths
-            print(f"  [อัปเดต] รูปสินค้า '{slug}'")
+            if should_append_images():
+                prev_images = existing[slug].get("images") or []
+                # กรองรูปซ้ำ (กรณีอัปไฟล์เดิมเข้าไปอีก hash จะเหมือนกัน)
+                merged = list(prev_images)
+                for u in image_paths:
+                    if u not in merged:
+                        merged.append(u)
+                existing[slug]["images"] = merged
+                # ไม่เปลี่ยน imageUrl (รูปปกคงเดิม) — แต่ถ้าไม่มีเลย ให้ใช้รูปแรก
+                if not existing[slug].get("imageUrl"):
+                    existing[slug]["imageUrl"] = merged[0]
+                print(f"  [เพิ่มรูป] รวมเป็น {len(merged)} ใบ (เดิม {len(prev_images)} + ใหม่ {len(image_paths)})")
+            else:
+                existing[slug]["imageUrl"] = image_paths[0]
+                existing[slug]["images"]   = image_paths
+                print(f"  [อัปเดต] รูปสินค้า '{slug}'")
         elif info:
             cap = info.get("capacity", "1GB")
             new_product = {
