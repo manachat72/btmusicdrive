@@ -1053,6 +1053,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const blocked = new Set(['SCRIPT', 'STYLE', 'IFRAME', 'OBJECT', 'EMBED', 'FORM', 'INPUT', 'BUTTON', 'SVG']);
       const allowed = new Set(['P', 'BR', 'STRONG', 'B', 'EM', 'I', 'UL', 'OL', 'LI', 'H2', 'H3', 'H4', 'A', 'IMG']);
 
+      const getSafeDescriptionImageSrc = (src) => {
+        const isTemporaryMarketplaceImage = /\/\/p16-oec-[^/]+\.ibyteimg\.com\//i.test(src);
+
+        if (isTemporaryMarketplaceImage) {
+          return '';
+        }
+
+        if (/^(https?:|\/|images\/)/i.test(src)) return src;
+        return '';
+      };
+
       const walk = (node) => {
         [...node.children].forEach((child) => {
           walk(child);
@@ -1081,11 +1092,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             }
             child.className = 'text-primary font-semibold hover:underline';
           } else if (tag === 'IMG') {
-            if (/^(https?:|\/|images\/)/i.test(originalSrc)) {
-              child.setAttribute('src', originalSrc);
+            const safeSrc = getSafeDescriptionImageSrc(originalSrc);
+            if (safeSrc) {
+              child.setAttribute('src', safeSrc);
               child.setAttribute('alt', originalAlt || product?.name || '');
               child.setAttribute('loading', 'lazy');
               child.setAttribute('decoding', 'async');
+              child.setAttribute('onerror', "this.onerror=null;this.src='images/logo.webp';");
               child.className = 'my-4 max-w-full h-auto rounded-xl border border-gray-100';
             } else {
               child.remove();
