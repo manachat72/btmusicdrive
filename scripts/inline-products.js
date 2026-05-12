@@ -21,6 +21,7 @@ const escapeHtml = (s) =>
 function renderCard(product, index) {
   const rating = product.rating || 0;
   const reviews = product.reviews || 0;
+  const songCount = product.tracklist ? product.tracklist.length : 0;
   let starsHtml = '';
   for (let i = 1; i <= 5; i++) {
     if (i <= Math.floor(rating))
@@ -29,6 +30,9 @@ function renderCard(product, index) {
       starsHtml += `<i class="ph-fill ph-star-half text-yellow-400 text-sm"></i>`;
     else starsHtml += `<i class="ph ph-star text-gray-300 text-sm"></i>`;
   }
+  const ratingOrMeta = reviews > 0
+    ? `<div class="flex mr-1">${starsHtml}</div><span class="text-xs text-gray-500">(${reviews})</span>`
+    : songCount > 0 ? `<span class="text-xs text-gray-500">${songCount} เพลง</span>` : '';
 
   const hasDiscount = product.originalPrice && product.originalPrice > product.price;
   const discPct = hasDiscount ? Math.round((1 - product.price / product.originalPrice) * 100) : 0;
@@ -69,10 +73,7 @@ function renderCard(product, index) {
   <div class="p-2.5 sm:p-4">
     <div class="text-[10px] sm:text-xs text-gray-500 font-medium mb-0.5 uppercase tracking-wider">${escapeHtml(categoryName)}</div>
     <a href="${pUrl}" class="block"><h3 class="text-xs sm:text-sm font-bold text-gray-900 mb-1 line-clamp-2 hover:text-primary transition-colors leading-snug">${escapeHtml(product.name)}</h3></a>
-    <div class="hidden sm:flex items-center mb-2">
-      <div class="flex mr-1">${starsHtml}</div>
-      <span class="text-xs text-gray-500">(${reviews})</span>
-    </div>
+    <div class="hidden sm:flex items-center mb-2">${ratingOrMeta}</div>
     <div class="flex items-center justify-between gap-2 mb-2">
       <div class="flex items-baseline gap-1.5 flex-wrap">
         <span class="text-sm sm:text-base font-extrabold ${currentPriceClass}">${fmtP(product.price)}</span>

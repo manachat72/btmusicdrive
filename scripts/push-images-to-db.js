@@ -34,19 +34,79 @@ const targetSlug = process.argv[2] || null;
     }
 
     let updated = 0;
+    let created = 0;
+    let jsonChanged = false;
     for (const p of targets) {
-      if (!p.id) continue;
-      await prisma.product.update({
-        where: { id: p.id },
+      if (!p.id && !p.slug) {
+        console.log('  ข้ามสินค้า: ไม่มี id หรือ slug');
+        continue;
+      }
+      const existing = await prisma.product.findFirst({
+        where: {
+          OR: [
+            p.id ? { id: p.id } : undefined,
+            p.slug ? { slug: p.slug } : undefined,
+          ].filter(Boolean),
+        },
+        select: { id: true, slug: true },
+      });
+
+      if (existing) {
+        await prisma.product.update({
+          where: { id: existing.id },
+          data: {
+            imageUrl: p.imageUrl || null,
+            images: Array.isArray(p.images) ? p.images : [],
+          },
+        });
+        if (p.id !== existing.id) {
+          p.id = existing.id;
+          jsonChanged = true;
+        }
+        console.log(`  อัปเดตรูป: ${p.slug}`);
+        updated++;
+        continue;
+      }
+
+      const categoryName = p.category?.name || p.categoryName || 'Uncategorized';
+      const category = await prisma.category.upsert({
+        where: { name: categoryName },
+        update: {},
+        create: { name: categoryName },
+        select: { id: true, name: true },
+      });
+
+      const product = await prisma.product.create({
         data: {
+          name: p.name || p.slug || 'New product',
+          slug: p.slug || null,
+          price: Number(p.price) || 279,
+          originalPrice: p.originalPrice == null ? null : Number(p.originalPrice),
+          description: p.description || null,
           imageUrl: p.imageUrl || null,
           images: Array.isArray(p.images) ? p.images : [],
+          brand: p.brand || 'btmusicdrive',
+          sku: p.sku || null,
+          stock: Number.isFinite(Number(p.stock)) ? Number(p.stock) : 100,
+          tags: Array.isArray(p.tags) ? p.tags : [],
+          tracklist: Array.isArray(p.tracklist) ? p.tracklist : [],
+          specs: p.specs || {},
+          categoryId: category.id,
         },
+        select: { id: true },
       });
-      console.log(`  อัปเดตรูป: ${p.slug}`);
-      updated++;
+      p.id = product.id;
+      p.categoryId = category.id;
+      p.category = { id: category.id, name: category.name };
+      jsonChanged = true;
+      console.log(`  สร้างสินค้าใหม่ใน DB: ${p.slug}`);
+      created++;
     }
-    console.log(`เสร็จ! อัปเดต ${updated} สินค้า`);
+    if (jsonChanged) {
+      fs.writeFileSync(jsonPath, JSON.stringify(products, null, 2) + '\n', 'utf8');
+      console.log('  อัปเดต products.json ด้วย id/category จาก DB');
+    }
+    console.log(`เสร็จ! อัปเดต ${updated} สินค้า | สร้างใหม่ ${created} สินค้า`);
   } finally {
     await prisma.$disconnect();
   }

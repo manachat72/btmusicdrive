@@ -365,12 +365,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         container.innerHTML = filtered.map((product, index) => {
             const rating = product.rating || 0;
             const reviews = product.reviews || 0;
+            const songCount = product.tracklist ? product.tracklist.length : 0;
             let starsHtml = '';
             for (let i = 1; i <= 5; i++) {
                 if (i <= Math.floor(rating)) starsHtml += `<i class="ph-fill ph-star text-yellow-400 text-xs"></i>`;
                 else if (i === Math.ceil(rating) && !Number.isInteger(rating)) starsHtml += `<i class="ph-fill ph-star-half text-yellow-400 text-xs"></i>`;
                 else starsHtml += `<i class="ph ph-star text-gray-300 text-xs"></i>`;
             }
+            const ratingOrMeta = reviews > 0
+                ? `${starsHtml}<span class="text-[10px] text-gray-400 ml-0.5">(${reviews})</span>`
+                : songCount > 0 ? `<span class="text-[10px] text-gray-400">${songCount} เพลง</span>` : '';
 
             const hasDiscount = product.originalPrice && product.originalPrice > product.price;
             const discountHtml = hasDiscount ? `<span class="text-xs price-original-muted">฿${product.originalPrice.toLocaleString()}</span>` : '';
@@ -390,10 +394,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         <h3 class="text-sm font-semibold text-gray-900 mb-1 line-clamp-2 leading-tight hover:text-primary transition-colors">${product.name}</h3>
                     </a>
                     <p class="text-[11px] text-gray-500 mb-1.5">${product.brand || ''} ${product.sku ? '| ' + product.sku : ''}</p>
-                    <div class="flex items-center gap-1 mb-2">
-                        ${starsHtml}
-                        <span class="text-[10px] text-gray-400 ml-0.5">(${reviews})</span>
-                    </div>
+                    <div class="flex items-center gap-1 mb-2">${ratingOrMeta}</div>
                     <div class="flex items-center justify-between">
                         <div>
                             <span class="text-base font-bold ${currentPriceClass}">฿${product.price.toLocaleString()}</span>

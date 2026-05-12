@@ -3,7 +3,7 @@ upload_images.py - GUI สำหรับอัปโหลดรูปสิน
 รัน: py upload_images.py
 """
 
-import os, json, shutil, subprocess, sys
+import os, json, shutil, subprocess, sys, re
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox, scrolledtext
 
@@ -34,14 +34,37 @@ def load_products():
 # ─── GUI ──────────────────────────────────────────────────
 root = tk.Tk()
 root.title("อัปโหลดรูปสินค้า - btmusicdrive")
-root.geometry("700x550")
+root.geometry("760x720")
 
 products = load_products()
 product_options = [f"{p['name']}  ({p['slug']})" for p in products]
 selected_files = []
+mode_var = tk.StringVar(value="update")
+
+def slugify(text):
+    s = (text or "").strip().lower()
+    s = re.sub(r"[^a-z0-9ก-๙]+", "-", s)
+    s = re.sub(r"-+", "-", s).strip("-")
+    return s or "new-product"
+
+def category_names():
+    names = []
+    for p in products:
+        cat = p.get("category")
+        name = cat.get("name") if isinstance(cat, dict) else cat
+        if name and name not in names:
+            names.append(name)
+    return sorted(names) or ["เพลงสตริง"]
 
 # ── เลือกสินค้า ─────────────────────────────────
-tk.Label(root, text="1. เลือกสินค้า:", font=("Arial", 11, "bold")).pack(anchor="w", padx=15, pady=(15, 5))
+tk.Label(root, text="1. เลือกงาน:", font=("Arial", 11, "bold")).pack(anchor="w", padx=15, pady=(15, 5))
+
+mode_frame = tk.Frame(root)
+mode_frame.pack(padx=15, fill="x")
+tk.Radiobutton(mode_frame, text="อัปเดตรูปสินค้าเดิม", variable=mode_var, value="update").pack(side="left")
+tk.Radiobutton(mode_frame, text="เพิ่มสินค้าใหม่", variable=mode_var, value="new").pack(side="left", padx=(18, 0))
+
+tk.Label(root, text="สินค้าเดิม:", font=("Arial", 10, "bold")).pack(anchor="w", padx=15, pady=(10, 4))
 
 search_var = tk.StringVar()
 combo = ttk.Combobox(root, values=product_options, width=90, textvariable=search_var)
@@ -53,6 +76,33 @@ def filter_options(*_):
     combo["values"] = filtered if filtered else product_options
 
 combo.bind("<KeyRelease>", filter_options)
+
+new_frame = tk.LabelFrame(root, text="ข้อมูลสินค้าใหม่ (ใช้เมื่อเลือก เพิ่มสินค้าใหม่)", padx=10, pady=8)
+new_frame.pack(padx=15, pady=(10, 0), fill="x")
+
+new_name_var = tk.StringVar()
+new_slug_var = tk.StringVar()
+new_price_var = tk.StringVar(value="199")
+new_original_price_var = tk.StringVar(value="319")
+new_sku_var = tk.StringVar()
+new_category_var = tk.StringVar(value=category_names()[0])
+
+def add_row(row, label, var, widget="entry"):
+    tk.Label(new_frame, text=label).grid(row=row, column=0, sticky="w", pady=2)
+    if widget == "combo":
+        w = ttk.Combobox(new_frame, values=category_names(), textvariable=var)
+    else:
+        w = tk.Entry(new_frame, textvariable=var)
+    w.grid(row=row, column=1, sticky="ew", pady=2, padx=(8, 0))
+    return w
+
+new_frame.columnconfigure(1, weight=1)
+add_row(0, "ชื่อสินค้า", new_name_var)
+add_row(1, "slug (ว่างได้)", new_slug_var)
+add_row(2, "ราคา", new_price_var)
+add_row(3, "ราคาปกติ", new_original_price_var)
+add_row(4, "SKU", new_sku_var)
+add_row(5, "หมวดหมู่", new_category_var, "combo")
 
 # ── เลือกไฟล์ ─────────────────────────────────
 tk.Label(root, text="2. เลือกไฟล์รูปภาพ (เลือกหลายไฟล์ได้):", font=("Arial", 11, "bold")).pack(anchor="w", padx=15, pady=(15, 5))
@@ -87,16 +137,20 @@ def append_log(text):
 
 # ── ปุ่มอัปโหลด ─────────────────────────────────
 def do_upload():
+    is_new = mode_var.get() == "new"
     sel = combo.get()
-    if not sel:
+    if not is_new and not sel:
         messagebox.showwarning("ผิดพลาด", "กรุณาเลือกสินค้า")
+        return
+    if is_new and not new_name_var.get().strip():
+        messagebox.showwarning("ผิดพลาด", "กรุณากรอกชื่อสินค้าใหม่")
         return
     if not selected_files:
         messagebox.showwarning("ผิดพลาด", "กรุณาเลือกไฟล์รูป")
         return
 
-    # ดึง slug จาก option
-    slug = sel.rsplit("(", 1)[-1].rstrip(")")
+    # ดึง slug จาก option หรือข้อมูลสินค้าใหม่
+    slug = slugify(new_slug_var.get() or new_name_var.get()) if is_new else sel.rsplit("(", 1)[-1].rstrip(")")
     log.delete("1.0", "end")
     append_log(f"=== {slug} ===")
 
@@ -112,19 +166,47 @@ def do_upload():
         shutil.copy(f, os.path.join(dst, f"{i:02d}{ext}"))
     append_log(f"คัดลอก {len(selected_files)} ไฟล์ → รูปสินค้า/{slug}/")
 
+    if is_new:
+        try:
+            price = float(new_price_var.get() or 199)
+            original_price = float(new_original_price_var.get() or 0) or None
+        except ValueError:
+            messagebox.showwarning("ผิดพลาด", "ราคาต้องเป็นตัวเลข")
+            shutil.rmtree(dst)
+            return
+        info = {
+            "name": new_name_var.get().strip(),
+            "slug": slug,
+            "price": price,
+            "originalPrice": original_price,
+            "description": "ไดร์ฟเพลงคุณภาพสูง",
+            "sku": new_sku_var.get().strip(),
+            "capacity": "4GB",
+            "categoryName": new_category_var.get().strip() or "เพลงสตริง",
+            "tags": ["USB", "MP3"],
+            "tracklist": []
+        }
+        with open(os.path.join(dst, "info.json"), "w", encoding="utf-8") as f:
+            json.dump(info, f, ensure_ascii=False, indent=2)
+        append_log("สร้าง info.json สำหรับสินค้าใหม่แล้ว")
+
     # รัน add_product.py
     append_log("กำลังแปลงรูป + อัปเดต DB + push Vercel...")
     btn.config(state="disabled", text="กำลังทำงาน...")
     root.update()
 
     proc = subprocess.run(
-        [sys.executable, os.path.join(BASE, "add_product.py")],
+        [sys.executable, os.path.join(BASE, "add_product.py"), slug],
         capture_output=True, text=True,
         encoding="utf-8", errors="replace", cwd=BASE
     )
     append_log(proc.stdout or "")
     if proc.stderr:
         append_log("[stderr] " + proc.stderr[:500])
+    if proc.returncode != 0:
+        append_log("\nอัปโหลดไม่สำเร็จ: add_product.py รายงาน error ด้านบน")
+        btn.config(state="normal", text="อัปโหลดและส่งขึ้นเว็บ")
+        return
 
     # purge Cloudflare cache
     if CF_ZONE and CF_TOKEN:

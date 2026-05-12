@@ -6,7 +6,7 @@ add_product.py - ลงสินค้าใหม่ / อัปเดตรู
   3. รัน: py add_product.py
 """
 
-import os, sys, json, uuid, shutil, subprocess
+import os, sys, json, uuid, shutil, subprocess, hashlib, glob
 from PIL import Image
 
 BASE       = os.path.dirname(os.path.abspath(__file__))
@@ -15,7 +15,7 @@ OUTPUT_DIR = os.path.join(BASE, "images", "products")
 JSON_PATH  = os.path.join(BASE, "products.json")
 TMPL_PATH  = os.path.join(BASE, "info.example.json")
 
-MAX_SIZE = (800, 800)
+WEBP_QUALITY = 84
 
 # ---- สร้าง info.example.json ให้เป็นตัวอย่าง ----
 EXAMPLE = {
@@ -59,11 +59,14 @@ def process_images(src_folder, slug):
     paths = []
     for i, fname in enumerate(files, 1):
         src = os.path.join(src_folder, fname)
-        base = f"{slug}-{i}"
-        img  = Image.open(src).convert("RGB")
-        img.thumbnail(MAX_SIZE, Image.LANCZOS)
+        with open(src, "rb") as f:
+            digest = hashlib.sha1(f.read()).hexdigest()[:8]
+        base = f"{slug}-{i}-{digest}"
+        img = Image.open(src)
+        if img.mode not in ("RGB", "RGBA"):
+            img = img.convert("RGBA" if "A" in img.getbands() else "RGB")
 
-        img.save(os.path.join(dst_folder, f"{base}.webp"), "WEBP", quality=82, method=6)
+        img.save(os.path.join(dst_folder, f"{base}.webp"), "WEBP", quality=WEBP_QUALITY, method=6)
 
         orig_kb = os.path.getsize(src) // 1024
         webp_kb = os.path.getsize(os.path.join(dst_folder, f"{base}.webp")) // 1024
@@ -75,11 +78,16 @@ def process_images(src_folder, slug):
 def main():
     os.makedirs(INPUT_DIR, exist_ok=True)
     write_example()
+    had_error = False
+    processed_slugs = []
+    target_slug = sys.argv[1] if len(sys.argv) > 1 else None
 
     folders = [
         d for d in os.listdir(INPUT_DIR)
         if os.path.isdir(os.path.join(INPUT_DIR, d))
     ]
+    if target_slug:
+        folders = [d for d in folders if d == target_slug]
 
     if not folders:
         print("=" * 55)
@@ -188,25 +196,63 @@ def main():
             print(f"  {(result.stdout or '').strip()}")
         else:
             print(f"  [!] push-images-to-db ล้มเหลว: {(result.stderr or '')[:200]}")
+            had_error = True
+
+        processed_slugs.append(slug)
 
         # ลบโฟลเดอร์ต้นทาง
         shutil.rmtree(src_folder)
 
+        print(f"  เสร็จ! รูปอยู่ที่ images/products/{slug}/")
+
+    if processed_slugs:
+        print()
+        print("  รัน build เพื่ออัปเดต products inline + cache-busting...")
+        r_build = subprocess.run(["npm", "run", "build"], capture_output=True, text=True, encoding='utf-8', errors='replace', cwd=BASE)
+        if r_build.returncode == 0:
+            print("  build สำเร็จ")
+        else:
+            print(f"  [!] npm run build ล้มเหลว: {((r_build.stdout or '') + (r_build.stderr or ''))[:500]}")
+            had_error = True
+
         # git commit + push
-        subprocess.run(["git", "add", f"images/products/{slug}"], cwd=BASE)
-        subprocess.run(["git", "commit", "-m", f"update images: {slug}"], cwd=BASE)
+        paths_to_add = ["products.json"]
+        for slug in processed_slugs:
+            paths_to_add.append(f"images/products/{slug}")
+        paths_to_add.extend([os.path.basename(p) for p in glob.glob(os.path.join(BASE, "*.html"))])
+        for asset in ["app.min.css", "tailwind.min.css", "tailwind.css", "sitemap.xml"]:
+            if os.path.exists(os.path.join(BASE, asset)):
+                paths_to_add.append(asset)
+
+        r_add = subprocess.run(["git", "add", *paths_to_add], capture_output=True, text=True, encoding='utf-8', errors='replace', cwd=BASE)
+        if r_add.returncode != 0:
+            print(f"  [!] git add ล้มเหลว: {(r_add.stderr or r_add.stdout or '')[:200]}")
+            had_error = True
+
+        commit_slug = processed_slugs[0] if len(processed_slugs) == 1 else f"{len(processed_slugs)} products"
+        r_commit = subprocess.run(["git", "commit", "-m", f"update product images: {commit_slug}"], capture_output=True, text=True, encoding='utf-8', errors='replace', cwd=BASE)
+        commit_output = (r_commit.stdout or "") + (r_commit.stderr or "")
+        if r_commit.returncode == 0:
+            print("  commit รูปแล้ว")
+        elif "nothing to commit" in commit_output.lower():
+            print("  ไม่มีไฟล์รูปใหม่ให้ commit")
+        else:
+            print(f"  [!] git commit ล้มเหลว: {commit_output[:200]}")
+            had_error = True
+
         r_push = subprocess.run(["git", "push"], capture_output=True, text=True, encoding='utf-8', errors='replace', cwd=BASE)
         if r_push.returncode == 0:
             print(f"  push ขึ้น Vercel แล้ว")
         else:
             print(f"  [!] git push ล้มเหลว: {(r_push.stderr or '')[:200]}")
-
-        print(f"  เสร็จ! รูปอยู่ที่ images/products/{slug}/")
+            had_error = True
 
     print()
     print("=" * 55)
     print("  เสร็จสิ้นทุกโฟลเดอร์")
     print("=" * 55)
+    if had_error:
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
