@@ -47,6 +47,39 @@ if (localStorage.getItem('btmusicdrive_cookie_consent') === 'all') {
 const API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
   ? 'http://localhost:5000/api' : '/api';
 
+const BTMD_IMAGE_FALLBACK = 'images/logo.webp';
+function _isBlockedProductImageSrc(src) {
+  return /\/\/p16-oec-[^/]+\.ibyteimg\.com\//i.test(String(src || ''));
+}
+function _useImageFallback(img) {
+  if (!img || img.dataset.btmdFallbackApplied === '1') return;
+  img.dataset.btmdOriginalSrc = img.getAttribute('src') || '';
+  img.dataset.btmdFallbackApplied = '1';
+  img.src = BTMD_IMAGE_FALLBACK;
+}
+function _scanBlockedProductImages(root) {
+  (root || document).querySelectorAll?.('img').forEach(img => {
+    if (_isBlockedProductImageSrc(img.getAttribute('src'))) _useImageFallback(img);
+  });
+}
+document.addEventListener('error', (event) => {
+  if (event.target?.tagName === 'IMG') _useImageFallback(event.target);
+}, true);
+document.addEventListener('DOMContentLoaded', () => {
+  _scanBlockedProductImages(document);
+  new MutationObserver(mutations => {
+    mutations.forEach(mutation => {
+      mutation.addedNodes.forEach(node => {
+        if (node.nodeType !== 1) return;
+        if (node.tagName === 'IMG' && _isBlockedProductImageSrc(node.getAttribute('src'))) {
+          _useImageFallback(node);
+        }
+        _scanBlockedProductImages(node);
+      });
+    });
+  }).observe(document.documentElement, { childList: true, subtree: true });
+});
+
 const _IS_LIVE_SERVER = window.location.port === '5500' || window.location.port === '5501';
 function _url(path) {
   if (!_IS_LIVE_SERVER) return path;
