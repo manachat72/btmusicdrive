@@ -260,7 +260,7 @@ def main():
             print(f"  push ขึ้น Vercel แล้ว")
         else:
             print(f"  [!] git push ล้มเหลว: {(r_push.stderr or '')[:200]}")
-            had_error = True
+            print("  [!] ลงสินค้าและ build สำเร็จแล้ว แต่ยัง push ขึ้นเว็บไม่สำเร็จ")
 
     print()
     print("=" * 55)

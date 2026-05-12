@@ -198,7 +198,8 @@ def do_upload():
     proc = subprocess.run(
         [sys.executable, os.path.join(BASE, "add_product.py"), slug],
         capture_output=True, text=True,
-        encoding="utf-8", errors="replace", cwd=BASE
+        encoding="utf-8", errors="replace", cwd=BASE,
+        env={**os.environ, "PYTHONIOENCODING": "utf-8", "PYTHONUTF8": "1"}
     )
     append_log(proc.stdout or "")
     if proc.stderr:
