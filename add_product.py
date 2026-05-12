@@ -7,7 +7,7 @@ add_product.py - ลงสินค้าใหม่ / อัปเดตรู
 """
 
 import os, sys, json, uuid, shutil, subprocess, hashlib, glob
-from PIL import Image
+from PIL import Image, ImageOps
 
 BASE       = os.path.dirname(os.path.abspath(__file__))
 INPUT_DIR  = os.path.join(BASE, "รูปสินค้า")
@@ -16,6 +16,8 @@ JSON_PATH  = os.path.join(BASE, "products.json")
 TMPL_PATH  = os.path.join(BASE, "info.example.json")
 
 WEBP_QUALITY = 84
+PRODUCT_IMAGE_SIZE = 1000
+PRODUCT_IMAGE_PADDING = 40
 
 # ---- สร้าง info.example.json ให้เป็นตัวอย่าง ----
 EXAMPLE = {
@@ -66,13 +68,24 @@ def process_images(src_folder, slug):
             ext = os.path.splitext(fname)[1].lower()
             base = f"{slug}-{len(paths) + 1}-{digest}"
             out = os.path.join(dst_folder, f"{base}.webp")
-            if ext == ".webp":
-                shutil.copy2(src, out)
-            else:
-                with Image.open(src) as img:
-                    if img.mode not in ("RGB", "RGBA"):
-                        img = img.convert("RGBA" if "A" in img.getbands() else "RGB")
-                    img.save(out, "WEBP", quality=WEBP_QUALITY, method=6)
+            with Image.open(src) as img:
+                img = ImageOps.exif_transpose(img)
+                if img.mode not in ("RGB", "RGBA"):
+                    img = img.convert("RGBA" if "A" in img.getbands() else "RGB")
+                if img.mode == "RGBA":
+                    white_base = Image.new("RGBA", img.size, (255, 255, 255, 255))
+                    white_base.alpha_composite(img)
+                    img = white_base.convert("RGB")
+                else:
+                    img = img.convert("RGB")
+
+                fit_size = PRODUCT_IMAGE_SIZE - (PRODUCT_IMAGE_PADDING * 2)
+                img = ImageOps.contain(img, (fit_size, fit_size), Image.Resampling.LANCZOS)
+                canvas = Image.new("RGB", (PRODUCT_IMAGE_SIZE, PRODUCT_IMAGE_SIZE), "white")
+                x = (PRODUCT_IMAGE_SIZE - img.width) // 2
+                y = (PRODUCT_IMAGE_SIZE - img.height) // 2
+                canvas.paste(img, (x, y))
+                canvas.save(out, "WEBP", quality=WEBP_QUALITY, method=6)
 
             orig_kb = os.path.getsize(src) // 1024
             webp_kb = os.path.getsize(out) // 1024
