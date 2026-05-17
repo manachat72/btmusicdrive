@@ -50,7 +50,11 @@
       "Bash(npm i *)",
       "Bash(npx tailwindcss *)",
       "Bash(xargs -I{} basename {})",
-      "WebFetch(domain:pagespeed.web.dev)"
+      "WebFetch(domain:pagespeed.web.dev)",
+      "Bash(dir \"c:\\\\Users\\\\may\\\\programpython\\\\btmusicdrive\\\\flatsome-main\")",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\may\\\\programpython\\\\btmusicdrive\" -File)",
+      "Bash(Select-Object Name)",
+      "Bash(Sort-Object Name)"
     ]
   }
 }

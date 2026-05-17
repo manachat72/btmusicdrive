@@ -1,7 +1,7 @@
 # CLAUDE.md — BT Music Drive
 
 > คู่มือสำหรับ Claude Code อ่านไฟล์นี้ก่อนเริ่มงานทุกครั้ง
-> อัปเดตล่าสุด: 2026-04-17
+> อัปเดตล่าสุด: 2026-05-17
 
 ---
 
@@ -12,20 +12,31 @@ Frontend เป็น vanilla HTML/JS/Tailwind, Backend เป็น Express + T
 
 ```
 btmusicdrive/
-├── *.html              # หน้าต่างๆ ของร้าน (vanilla HTML)
-├── script.js           # Main frontend logic
-├── checkout.js         # Checkout + Stripe payment flow
-├── components.js       # Shared navbar, cart sidebar, auth modal, footer
-├── style.css           # Custom CSS variables + Tailwind supplements
-├── products.json       # Static product fallback data
-├── categories.json     # Static category fallback data
-├── images/             # Product/UI images (served statically)
+├── *.html              # หน้าต่างๆ ของร้าน (vanilla HTML, 23 หน้า)
+├── script.js / script.min.js        # Main frontend logic
+├── checkout.js / checkout.min.js    # Checkout + Stripe payment flow
+├── components.js / components.min.js # Shared navbar, cart sidebar, auth modal, footer
+├── style.css / style.min.css        # Custom CSS variables + Tailwind supplements
+├── tailwind.input.css / tailwind.min.css / app.min.css  # Compiled Tailwind
+├── products.json       # Static product data (1000+ รายการ — fallback + CDN cache)
+├── categories.json     # Static category data (9 หมวด)
+├── images/             # Product/UI images (AVIF format, served statically)
+├── scripts/            # Build/utility scripts (Node.js)
 ├── server/             # Express backend
 │   ├── src/
 │   │   ├── index.ts          # Express app entry, middleware, route registration
-│   │   ├── routes/           # API route handlers
-│   │   ├── middleware/auth.ts # JWT authentication middleware
-│   │   └── lib/prisma.ts     # Prisma client singleton
+│   │   ├── routes/           # API route handlers (12 files)
+│   │   ├── middleware/
+│   │   │   ├── auth.ts       # JWT authentication + admin password middleware
+│   │   │   └── rateLimiter.ts # express-rate-limit (500 req/15min)
+│   │   ├── lib/
+│   │   │   ├── prisma.ts     # Prisma client singleton
+│   │   │   ├── categoryName.ts
+│   │   │   ├── productSlug.ts
+│   │   │   ├── meta-capi.ts  # Meta (Facebook) Conversions API
+│   │   │   └── tiktok-events.ts # TikTok pixel/events
+│   │   └── services/
+│   │       └── emailService.ts # Nodemailer order confirmation
 │   ├── prisma/schema.prisma  # Database schema
 │   └── .env                  # Environment variables (DO NOT COMMIT)
 └── vercel.json         # Vercel deployment config
@@ -50,15 +61,17 @@ btmusicdrive/
 | Layer | Technology |
 |-------|-----------|
 | Runtime | Node.js (TypeScript, compiled by Vercel) |
-| Framework | **Express.js** |
-| ORM | **Prisma** with PostgreSQL |
+| Framework | **Express.js v5** |
+| ORM | **Prisma v6** with PostgreSQL |
 | Database | **Neon** (serverless PostgreSQL) |
-| Auth | JWT (`jsonwebtoken`) + bcrypt |
-| Payment | **Stripe** (PaymentIntent flow) |
+| Auth | JWT (`jsonwebtoken`) + bcrypt + `google-auth-library` |
+| Payment | **Stripe v22** (PaymentIntent flow) |
 | Shipping | Flash Express (manual tracking via admin panel) |
 | Email | Nodemailer via Gmail SMTP |
 | Image Upload | Multer (local disk) |
-| Deploy | **Vercel** (serverless functions) |
+| Security | Helmet + express-rate-limit |
+| Tracking | Meta (Facebook) CAPI + TikTok Events + Google Analytics 4 |
+| Deploy | **Vercel** (serverless functions, region: sin1) |
 
 ### Brand Colors (Tailwind config)
 ```js
@@ -70,7 +83,7 @@ secondary: '#0F172A' // Dark slate (navbar/footer bg)
 
 ## 3. ไฟล์ทั้งหมดและหน้าที่
 
-### Frontend Pages
+### Frontend Pages (23 หน้า)
 | File | หน้าที่ |
 |------|---------|
 | `index.html` | Home — hero, flash sale countdown, categories, trending products |
@@ -94,7 +107,8 @@ secondary: '#0F172A' // Dark slate (navbar/footer bg)
 | `returns.html` | Returns policy |
 | `exchange.html` | Exchange policy |
 | `warranty.html` | Warranty policy |
-| `admin.html` | Admin dashboard (password-gated) |
+| `admin.html` | Admin dashboard (password-gated, >2000 lines) |
+| `404.html` | Custom 404 page |
 
 ### Frontend JS
 | File | หน้าที่ |
@@ -103,18 +117,35 @@ secondary: '#0F172A' // Dark slate (navbar/footer bg)
 | `checkout.js` | Stripe init, payment method toggle, promo validation, place order |
 | `components.js` | Exports navbar HTML, cart sidebar HTML, auth modal HTML, footer HTML |
 
+> หน้า production ใช้ไฟล์ `.min.js` — ต้อง `npm run build` หลังแก้ source เสมอ
+
 ### Backend Routes (`server/src/routes/`)
 | File | Prefix | หน้าที่ |
 |------|--------|---------|
 | `auth.ts` | `/api/auth` | register, login, Google OAuth, `/me` |
-| `products.ts` | `/api/products` | CRUD สินค้า, list, detail |
+| `product.ts` | `/api/products` | CRUD สินค้า, list, detail, search, slug lookup |
+| `category.ts` | `/api/categories` | CRUD หมวดหมู่, list |
 | `cart.ts` | `/api/cart` | cart item CRUD, sync |
-| `orders.ts` | `/api/orders` | สร้าง/ดู orders, status update, stats |
+| `order.ts` | `/api/orders` | สร้าง/ดู orders, status update, stats |
 | `payment.ts` | `/api/payment` | Stripe create-payment-intent, confirm-order, cod-order, webhook |
 | `promo.ts` | `/api/promo` | validate, CRUD promo codes |
-| `users.ts` | `/api/users` | profile update, admin user list |
-| `menus.ts` | `/api/menus` | nav menu CRUD + reorder |
+| `user.ts` | `/api/users` | profile update, admin user list |
+| `menu.ts` | `/api/menus` | nav menu CRUD + reorder |
 | `images.ts` | `/api/images` | multer image upload/delete/list |
+| `contact.ts` | `/api/contact` | contact form submission → email |
+| `analytics.ts` | `/api/analytics` | GA4, Meta CAPI, TikTok event tracking |
+
+### Build Scripts (`scripts/`)
+| Script | หน้าที่ |
+|--------|---------|
+| `combine-css.js` | รวม Tailwind + style.css → app.min.css |
+| `hash-assets.js` | เพิ่ม version query string สำหรับ cache-busting |
+| `inline-products.js` | Inline products.json เข้าไปใน HTML |
+| `inline-categories.js` | Inline categories.json เข้าไปใน HTML |
+| `generate-sitemap.js` | สร้าง sitemap.xml |
+| `optimize-images.js` | แปลง/บีบอัด product images |
+| `sync-products-json.js` | Sync products จาก DB ลง products.json |
+| `push-images-to-db.js` | อัปโหลด image URLs เข้า DB |
 
 ---
 
@@ -132,9 +163,19 @@ GET  /api/auth/me             [JWT required]
 ```
 GET    /api/products           ?page=1&limit=50&category=&search=
 GET    /api/products/:id
+GET    /api/products/slug/:slug
 POST   /api/products           [ADMIN]
 PATCH  /api/products/:id       [ADMIN]
 DELETE /api/products/:id       [ADMIN]
+```
+
+### Categories
+```
+GET    /api/categories
+GET    /api/categories/:id
+POST   /api/categories         [ADMIN]
+PATCH  /api/categories/:id     [ADMIN]
+DELETE /api/categories/:id     [ADMIN]
 ```
 
 ### Cart
@@ -179,7 +220,11 @@ GET    /api/promo/:code        public
 ```
 GET  /api/menus                public — active nav items
 GET  /api/health               public — health check
+GET  /api/health/email         public — SMTP connectivity test
+GET  /api/config/stripe        public — Stripe publishable key
 POST /api/images/upload        [x-admin-password header]
+POST /api/contact              public — contact form
+POST /api/analytics/event      [JWT optional] — track GA4/Meta/TikTok events
 ```
 
 ---
@@ -197,7 +242,7 @@ const API_BASE = (window.location.hostname === '127.0.0.1' || window.location.ho
 - JWT stored in `localStorage` key: `token`
 - User data stored in `localStorage` key: `user` (JSON)
 - All authenticated requests: `Authorization: Bearer <token>` header
-- Admin dashboard uses fallback password header: `x-admin-password: btmusicdrive-admin-2025`
+- Admin dashboard uses password header: `x-admin-password: <ADMIN_PASSWORD from env>`
 
 ### Error Response Format (Backend)
 ```json
@@ -227,7 +272,7 @@ const API_BASE = (window.location.hostname === '127.0.0.1' || window.location.ho
 - **CSS classes**: Tailwind utility classes only; custom classes in `style.css` use BEM-lite (`.hero-grainy`, `.glass-card`)
 
 ### Database IDs
-- All Prisma models use `cuid()` as default ID (e.g., `cm4xyz...`)
+- All Prisma models use `uuid()` as default ID
 
 ---
 
@@ -237,14 +282,15 @@ const API_BASE = (window.location.hostname === '127.0.0.1' || window.location.ho
 # Required
 DATABASE_URL="postgresql://..."        # Neon PostgreSQL
 JWT_SECRET="..."                       # JWT signing key (min 32 chars)
+ADMIN_PASSWORD="..."                   # Admin dashboard password (required, no fallback)
 
 # Stripe Payment
 STRIPE_SECRET_KEY="sk_live_..."
 STRIPE_WEBHOOK_SECRET="whsec_..."
 
-# Google OAuth
-GOOGLE_CLIENT_ID="..."
-GOOGLE_CLIENT_SECRET="..."
+# Google OAuth + Analytics
+GOOGLE_CLIENT_ID="46644504211-02mjffk321u1h5hbh1r5e5j5in30od93.apps.googleusercontent.com"
+GA4_PROPERTY_ID="533617757"
 
 # Email
 SMTP_HOST="smtp.gmail.com"
@@ -252,33 +298,57 @@ SMTP_PORT="587"
 SMTP_USER="..."
 SMTP_PASS="..."                        # Gmail App Password
 
-# URLs
+# URLs / CORS
 FRONTEND_URL="https://btmusicdrive.vercel.app"
 CLIENT_URL="http://localhost:3000"
-SERVER_URL="https://btmusicdrive.vercel.app"
+ALLOWED_ORIGINS="https://btmusicdrive.com,https://btmusicdrive.vercel.app"
 
 # Other
 NODE_ENV="development"
 PORT="5000"                            # local dev only
-ADMIN_PASSWORD="btmusicdrive-admin-2025"
 ```
+
+> `GOOGLE_CLIENT_SECRET` **ไม่จำเป็น** — ใช้ ID-token flow ฝั่งเดียว
 
 ---
 
 ## 7. Prisma Schema (Models สรุป)
 
 ```
-User       — id, email, passwordHash, googleId, name, phone, role(ADMIN|CUSTOMER)
-Product    — id, name, price, originalPrice, stock, imageUrl, images[], specs(JSON), category
-Category   — id, name, products[]
-Cart       — id, userId(unique), items[]
-CartItem   — id, cartId, productId, quantity | unique(cartId, productId)
-Order      — id, userId, totalAmount, status(PENDING|PROCESSING|PAID|SHIPPED|DELIVERED|CANCELLED)
-             paymentIntentId, trackingNumber, carrier, shippingAddress, promoCode, discountAmount
-OrderItem  — id, orderId, productId, quantity, priceAtTime
-MenuItem   — id, label, url, icon, sortOrder, isActive, parentId
-PromoCode  — id, code(unique), type(PERCENT|FIXED), value, minOrder, maxUses, usedCount, expiresAt
+User       — id(uuid), email, passwordHash, googleId, name, phone, birthday, gender,
+             role(ADMIN|CUSTOMER), timestamps
+
+Product    — id(uuid), name, description, price, originalPrice, stock,
+             imageUrl, images[], brand, sku, slug(unique), tags[], tracklist[],
+             specs(JSON), isActive(bool), categoryId, timestamps
+
+Category   — id(uuid), name(unique), slug(unique), products[], timestamps
+
+Cart       — id(uuid), userId(unique), items[], timestamps
+
+CartItem   — id(uuid), cartId, productId, quantity | unique(cartId, productId)
+
+Order      — id(uuid), userId, totalAmount,
+             status(PENDING|PROCESSING|PAID|SHIPPED|DELIVERED|CANCELLED),
+             paymentIntentId(unique), stripeSessionId(unique),
+             trackingNumber, carrier, shippingAddress(JSON),
+             promoCode, discountAmount, items[], timestamps
+             [indexes: userId, status]
+
+OrderItem  — id(uuid), orderId, productId, quantity, priceAtTime, timestamps
+
+MenuItem   — id(uuid), label, url, icon, sortOrder, isActive, parentId, timestamps
+
+PromoCode  — id(uuid), code(unique), type(PERCENT|FIXED), value, description,
+             minOrder, maxUses, usedCount, expiresAt, isActive, createdAt
 ```
+
+### Migrations (ตามลำดับ)
+1. `20260306200912_init`
+2. `20260401170842_add_user_profile_fields` — birthday, gender
+3. `20260411122725_add_order_indexes`
+4. `20260413135244_add_product_is_active`
+5. `20260416000001_add_slug_fields` — slug บน Category, Product
 
 ---
 
@@ -310,8 +380,8 @@ PromoCode  — id, code(unique), type(PERCENT|FIXED), value, minOrder, maxUses, 
 
 | ที่ | ปัญหา |
 |----|-------|
-| `server/.env` (Vercel) | `GOOGLE_CLIENT_ID` ต้องตั้งใน Vercel Dashboard: `46644504211-02mjffk321u1h5hbh1r5e5j5in30od93.apps.googleusercontent.com` (ค่าเดียวกับที่ hardcode ใน `components.js`) — `GOOGLE_CLIENT_SECRET` **ไม่จำเป็น** สำหรับ ID-token flow นี้ |
-| `products.json` | 5 สินค้า (ลูกทุ่ง, สากล, สตริง 90s, ลูกกรุง) ยังใช้รูป Unsplash placeholder |
+| `server/.env` (Vercel) | ต้องตั้ง env vars ทั้งหมดใน Vercel Dashboard ด้วย ไม่ใช่แค่ `.env` |
+| Meta CAPI / TikTok | `lib/meta-capi.ts` และ `lib/tiktok-events.ts` มีแล้วแต่ต้องตั้ง Pixel ID / Access Token ใน env |
 
 ---
 
@@ -360,16 +430,17 @@ npm run dev            # starts on :5000
 # เปิด index.html ตรงๆ ใน browser หรือใช้ Live Server extension
 # หลังแก้ frontend/build asset ให้รัน:
 npm run build
-# คำสั่งนี้จะทำครบ: build:css, combine:css, inline:products, inline:categories, hash:assets
+# คำสั่งนี้จะทำครบ: build:css, combine:css, inline:products, inline:categories, build:sitemap, hash:assets
 ```
 
 ---
 
 ## 12. Deployment (Vercel)
 
-- Frontend: static files ที่ root (`*.html`, `*.js`, `*.css`, `images/`)
-- Backend: serverless function จาก `server/` directory
-- `vercel.json` กำหนด routing ให้ `/api/*` ไปที่ backend
+- Frontend: static files ที่ root (`*.html`, `*.min.js`, `*.min.css`, `images/`)
+- Backend: serverless function จาก `server/src/index.ts` → @vercel/node
+- `vercel.json` กำหนด routing ให้ `/api/*` ไปที่ backend, region: **sin1** (Singapore)
+- Cache headers: `.min.*` และ `images/` → immutable 1 year; `.html` → no-cache; `products/categories.json` → 1h + SWR 1d
 - Environment variables ต้องตั้งใน Vercel Dashboard ด้วย (ไม่ใช่แค่ `.env`)
 - หลัง deploy ต้องเพิ่ม Stripe webhook URL: `https://btmusicdrive.vercel.app/api/payment/webhook`
 
@@ -396,8 +467,7 @@ npm run build
 
 ### Hardcoded secrets
 - **ห้ามใส่ hardcoded secret, password, หรือ key** ใน source code — ใช้ environment variables เสมอ
-- `server/src/middleware/auth.ts` — `ADMIN_PASSWORD` fallback ต้องเป็น `''` (empty string) เท่านั้น; ค่าจริงต้องมาจาก env เท่านั้น
-- `ADMIN_PASSWORD` อยู่ใน `requiredEnvVars` ที่ตรวจสอบตอน startup — server จะไม่ start ถ้า env ไม่มีค่านี้
+- `ADMIN_PASSWORD` ต้องมาจาก env เท่านั้น — server จะไม่ start ถ้า env ไม่มีค่านี้ (อยู่ใน requiredEnvVars)
 
 ### `.claude/settings.json` / `settings.local.json`
 - ห้ามใส่ credential หรือ token จริงใน allowed Bash commands ในไฟล์ settings — ใช้ env var reference แทน
@@ -407,3 +477,4 @@ npm run build
 - ทุก API route ที่รับ user input ต้องตรวจสอบ type และ sanitize ก่อนใช้
 - ใช้ Prisma parameterized queries เสมอ — ห้าม string interpolation ใน SQL
 - จำกัด request body size: backend ตั้งไว้ที่ `1mb` (`express.json({ limit: '1mb' })`) — อย่าเพิ่ม
+- Rate limit: 500 req/15min ต่อ IP (`middleware/rateLimiter.ts`)
