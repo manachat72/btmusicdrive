@@ -1399,6 +1399,35 @@ function _setupSharedEvents() {
   }
 }
 
+function _initThemeToggle() {
+  // Apply saved theme (also done inline in <head> for anti-FOUC; this is a safety fallback)
+  const saved = localStorage.getItem('btmusicdrive_theme');
+  if (saved === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+  // Don't create duplicate if already injected inline
+  if (document.getElementById('theme-toggle-btn')) return;
+  const btn = document.createElement('button');
+  btn.id = 'theme-toggle-btn';
+  btn.setAttribute('aria-label', 'สลับธีมมืด/สว่าง');
+  btn.setAttribute('title', 'สลับธีม');
+  const icon = document.createElement('span');
+  icon.id = 'theme-icon';
+  icon.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? '☀️' : '🌙';
+  btn.appendChild(icon);
+  btn.addEventListener('click', () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const next = isDark ? 'light' : 'dark';
+    localStorage.setItem('btmusicdrive_theme', next);
+    if (next === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      icon.textContent = '☀️';
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+      icon.textContent = '🌙';
+    }
+  });
+  document.body.appendChild(btn);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   if (_IS_LIVE_SERVER) _patchLinks(document);
   // Don't block on nav menus — let them resolve async alongside other init.
@@ -1408,6 +1437,7 @@ document.addEventListener('DOMContentLoaded', () => {
   _loadCartFromStorage();
   _updateCartUI();
   _initCookieConsent();
+  _initThemeToggle();
   // Google Identity SDK is deferred: loads only when auth modal opens
   // (see _toggleAuthModal → _initGoogleSignIn) to keep it off the critical path.
 });
