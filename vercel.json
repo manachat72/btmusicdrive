@@ -173,6 +173,11 @@
       "status": 301
     },
     {
+      "src": "/product/usb-mp3-carabao-4gb",
+      "headers": { "Location": "https://btmusicdrive.com/product/usb-mp3-phuea-chiwit-carabao-4gb-325-songs" },
+      "status": 301
+    },
+    {
       "src": "/product/([^/]+)",
       "dest": "/product.html"
     },
