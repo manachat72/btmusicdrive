@@ -1,0 +1,10 @@
+{
+  "eval_id": 1,
+  "eval_name": "keyword-research-luk-thung-usb",
+  "prompt": "ช่วยหาคีย์เวิร์ดที่เหมาะสมสำหรับสินค้า USB เพลงลูกทุ่ง 200 เพลง ของร้าน btmusicdrive หน่วยงานที่ต้องการคือหน้าสินค้าบนเว็บไซต์ อยากให้มีทั้ง head keyword และ long-tail ที่คนน่าจะค้นหาจริงๆ",
+  "assertions": [
+    {"text": "มีตารางหรือรายการคีย์เวิร์ดแยกประเภท head keyword และ long-tail keyword ชัดเจน", "passed": null, "evidence": ""},
+    {"text": "ไม่มีชื่อศิลปิน ค่ายเพลง หรือชื่อเพลงที่มีลิขสิทธิ์ (copyright-safe)", "passed": null, "evidence": ""},
+    {"text": "มีการระบุ search intent หรือประเภทการใช้งานของแต่ละคีย์เวิร์ด", "passed": null, "evidence": ""}
+  ]
+}

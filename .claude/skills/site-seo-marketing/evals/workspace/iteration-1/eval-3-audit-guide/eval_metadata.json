@@ -1,0 +1,10 @@
+{
+  "eval_id": 3,
+  "eval_name": "seo-audit-guide-usb-music-shop",
+  "prompt": "ช่วยวิเคราะห์ SEO เบื้องต้นของหน้าสินค้าทั่วไปสำหรับร้านขาย USB เพลงออนไลน์ ว่าควรมีองค์ประกอบอะไรบ้าง และบอกด้วยว่าปัญหา SEO ที่พบบ่อยสำหรับร้านพวกนี้คืออะไร พร้อมวิธีแก้",
+  "assertions": [
+    {"text": "มีรายการ on-page checklist ที่ครอบคลุม title, meta desc, H1, alt text", "passed": null, "evidence": ""},
+    {"text": "มีการระบุปัญหา SEO ที่พบบ่อยพร้อมวิธีแก้ที่ทำได้จริง", "passed": null, "evidence": ""},
+    {"text": "เนื้อหาเกี่ยวข้องกับร้านขาย USB เพลง ไม่ใช่ SEO ทั่วไปที่ไม่จำเพาะ", "passed": null, "evidence": ""}
+  ]
+}

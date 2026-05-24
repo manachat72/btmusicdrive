@@ -1,0 +1,23 @@
+{
+  "eval_id": 1,
+  "eval_name": "keyword-research-luk-thung-usb",
+  "configuration": "with_skill",
+  "assertions": [
+    {
+      "text": "มีตารางหรือรายการคีย์เวิร์ดแยกประเภท head keyword และ long-tail keyword ชัดเจน",
+      "passed": true,
+      "evidence": "Output มีตาราง Head Keywords, Long-tail Keywords, Transactional Keywords, Informational Keywords แยกชัดเจนพร้อมตาราง markdown"
+    },
+    {
+      "text": "ไม่มีชื่อศิลปิน ค่ายเพลง หรือชื่อเพลงที่มีลิขสิทธิ์ (copyright-safe)",
+      "passed": true,
+      "evidence": "ตรวจสอบแล้วไม่พบชื่อศิลปิน ค่ายเพลง หรือชื่อเพลงใดๆ ใช้คำกลาง เช่น เพลงลูกทุ่งฮิต, เพลงยุคทอง, เพลงดังอมตะ"
+    },
+    {
+      "text": "มีการระบุ search intent หรือประเภทการใช้งานของแต่ละคีย์เวิร์ด",
+      "passed": true,
+      "evidence": "ทุกตารางมีคอลัมน์ Intent ระบุ Transactional/Commercial/Informational ชัดเจน"
+    }
+  ],
+  "overall_pass_rate": 1.0
+}

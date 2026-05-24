@@ -1,0 +1,79 @@
+{
+  "skill_name": "site-seo-marketing",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "ช่วยหาคีย์เวิร์ดที่เหมาะสมสำหรับสินค้า USB เพลงลูกทุ่ง 200 เพลง ของร้าน btmusicdrive หน่วยงานที่ต้องการคือหน้าสินค้าบนเว็บไซต์ อยากให้มีทั้ง head keyword และ long-tail ที่คนน่าจะค้นหาจริงๆ",
+      "expected_output": "ตารางคีย์เวิร์ดแยก head/long-tail, มี intent, ไม่มีชื่อศิลปิน",
+      "assertions": [
+        {
+          "name": "มีตารางคีย์เวิร์ดแยกประเภท head และ long-tail",
+          "type": "contains_section",
+          "check": "output มีหัวข้อ head keyword และ long-tail"
+        },
+        {
+          "name": "ไม่มีชื่อศิลปินหรือค่ายเพลง (copyright-safe)",
+          "type": "not_contains",
+          "check": "ไม่มีคำว่า Grammy, RS, ไมค์, ยิ่งยง, หรือชื่อศิลปินดังอื่นๆ"
+        },
+        {
+          "name": "มีระบุ search intent ของแต่ละคีย์เวิร์ด",
+          "type": "contains",
+          "check": "output ระบุ intent หรือ transactional/informational"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "เขียน SEO title, meta description และ H1 สำหรับสินค้า USB เพลงสตริงไทย 500 เพลง ราคา 199 บาท จุดขายคือฟังในรถได้เลยไม่ต้องเน็ต ของขวัญผู้ใหญ่ได้",
+      "expected_output": "SEO title 50-60 ตัว, meta description 150-160 ตัว, H1 — ทั้งหมด copyright-safe",
+      "assertions": [
+        {
+          "name": "SEO title ความยาวไม่เกิน 65 ตัวอักษร",
+          "type": "length_check",
+          "check": "title ไม่เกิน 65 ตัวอักษร"
+        },
+        {
+          "name": "meta description มีคีย์เวิร์ดและ CTA",
+          "type": "contains",
+          "check": "มีคำ CTA เช่น สั่งได้เลย, ส่งไว, สั่งซื้อ"
+        },
+        {
+          "name": "ไม่มีชื่อศิลปิน/ค่าย (copyright-safe)",
+          "type": "not_contains",
+          "check": "ไม่ระบุชื่อศิลปินหรือค่าย"
+        },
+        {
+          "name": "ครบ 3 องค์ประกอบ (title, meta desc, H1)",
+          "type": "contains_all",
+          "check": "output มีทั้ง SEO Title, Meta Description และ H1"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "ช่วยวิเคราะห์ SEO เบื้องต้นของหน้าสินค้าทั่วไปสำหรับร้านขาย USB เพลงออนไลน์ ว่าควรมีองค์ประกอบอะไรบ้าง และบอกด้วยว่าปัญหา SEO ที่พบบ่อยสำหรับร้านพวกนี้คืออะไร พร้อมวิธีแก้",
+      "expected_output": "รายการ on-page checklist, ปัญหาที่พบบ่อย, วิธีแก้แต่ละข้อ",
+      "assertions": [
+        {
+          "name": "มีรายการ on-page checklist",
+          "type": "contains_section",
+          "check": "output มีหัวข้อหรือรายการตรวจสอบ on-page"
+        },
+        {
+          "name": "ครอบคลุม title, meta desc, H1, alt text อย่างน้อย",
+          "type": "contains_all",
+          "check": "พูดถึง title tag, meta description, H1, alt text"
+        },
+        {
+          "name": "มีวิธีแก้ปัญหาที่ actionable",
+          "type": "contains",
+          "check": "output ให้คำแนะนำที่เป็นขั้นตอนทำได้จริง"
+        }
+      ],
+      "files": []
+    }
+  ]
+}

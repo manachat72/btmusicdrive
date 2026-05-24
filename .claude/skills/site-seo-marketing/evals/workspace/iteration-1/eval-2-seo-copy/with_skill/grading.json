@@ -1,0 +1,28 @@
+{
+  "eval_id": 2,
+  "eval_name": "seo-copy-string-usb-product",
+  "configuration": "with_skill",
+  "assertions": [
+    {
+      "text": "SEO Title มีความยาวไม่เกิน 65 ตัวอักษร",
+      "passed": true,
+      "evidence": "SEO Title = 56 ตัวอักษร ผ่านเกณฑ์ 50-60 ตัว skill ระบุ และไม่เกิน 65 ตัว"
+    },
+    {
+      "text": "Meta Description มีคีย์เวิร์ดหลักและมี CTA (เช่น สั่งได้เลย, ส่งไว)",
+      "passed": true,
+      "evidence": "Meta Description มีคีย์เวิร์ด 'USB เพลงสตริงไทย' และ CTA 'สั่งวันนี้ ส่งไว' ชัดเจน"
+    },
+    {
+      "text": "ไม่มีชื่อศิลปินหรือค่ายเพลง (copyright-safe)",
+      "passed": true,
+      "evidence": "ไม่มีชื่อศิลปิน ค่ายเพลง ชื่อเพลง มีการตรวจสอบ copyright-safe ใน output พร้อมรายการตรวจสอบ"
+    },
+    {
+      "text": "Output ครบ 3 องค์ประกอบ: SEO Title, Meta Description, และ H1",
+      "passed": true,
+      "evidence": "Output มีครบ: SEO Title (56 ตัว), Meta Description (158 ตัว), H1 — พร้อมตาราง quality check"
+    }
+  ],
+  "overall_pass_rate": 1.0
+}

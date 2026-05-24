@@ -1,0 +1,11 @@
+{
+  "eval_id": 2,
+  "eval_name": "seo-copy-string-usb-product",
+  "prompt": "เขียน SEO title, meta description และ H1 สำหรับสินค้า USB เพลงสตริงไทย 500 เพลง ราคา 199 บาท จุดขายคือฟังในรถได้เลยไม่ต้องเน็ต ของขวัญผู้ใหญ่ได้",
+  "assertions": [
+    {"text": "SEO Title มีความยาวไม่เกิน 65 ตัวอักษร", "passed": null, "evidence": ""},
+    {"text": "Meta Description มีคีย์เวิร์ดหลักและมี CTA (เช่น สั่งได้เลย, ส่งไว)", "passed": null, "evidence": ""},
+    {"text": "ไม่มีชื่อศิลปินหรือค่ายเพลง (copyright-safe)", "passed": null, "evidence": ""},
+    {"text": "Output ครบ 3 องค์ประกอบ: SEO Title, Meta Description, และ H1", "passed": null, "evidence": ""}
+  ]
+}

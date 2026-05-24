@@ -1,0 +1,23 @@
+{
+  "eval_id": 3,
+  "eval_name": "seo-audit-guide-usb-music-shop",
+  "configuration": "with_skill",
+  "assertions": [
+    {
+      "text": "มีรายการ on-page checklist ที่ครอบคลุม title, meta desc, H1, alt text",
+      "passed": true,
+      "evidence": "Section 1 มีตารางองค์ประกอบ title, meta desc, H1 พร้อม Section 4 Checklist ก่อนเผยแพร่ครอบคลุมทุกจุด"
+    },
+    {
+      "text": "มีการระบุปัญหา SEO ที่พบบ่อยพร้อมวิธีแก้ที่ทำได้จริง",
+      "passed": true,
+      "evidence": "Section 3 มีปัญหา 8 ข้อ แต่ละข้อมีอาการ-ผลกระทบ-วิธีแก้ พร้อม Quick Wins timeline"
+    },
+    {
+      "text": "เนื้อหาเกี่ยวข้องกับร้านขาย USB เพลง ไม่ใช่ SEO ทั่วไปที่ไม่จำเพาะ",
+      "passed": true,
+      "evidence": "ตัวอย่างทุกข้อใช้ 'USB เพลงลูกทุ่ง', 'USB เพลงสำเร็จรูป' มีปัญหาที่ 8 เฉพาะสินค้า USB เพลง (copyright-safe)"
+    }
+  ],
+  "overall_pass_rate": 1.0
+}
