@@ -119,6 +119,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <i class="ph ph-caret-right text-xs"></i>
                 <span id="breadcrumb-cat" class="text-gray-700 font-medium">หมวดหมู่</span>
             </div>
+            <script>
+            (function(){try{
+              var cats=window.__CATEGORIES__||[];
+              var m=window.location.pathname.match(/\/category\/([^/?#]+)/);
+              var slug=m?decodeURIComponent(m[1]):new URLSearchParams(window.location.search).get('cat');
+              if(!slug)return;
+              var cat=cats.find(function(c){return c.slug===slug||c.name===slug;});
+              if(!cat)return;
+              var h1=document.getElementById('cat-title');if(h1)h1.textContent=cat.name;
+              var desc=document.getElementById('cat-desc');if(desc&&cat.h1Description)desc.textContent=cat.h1Description;
+              var bc=document.getElementById('breadcrumb-cat');if(bc)bc.textContent=cat.name;
+              if(cat.titleTag)document.title=cat.titleTag;
+              var md=document.querySelector('meta[name="description"]');if(md&&cat.metaDescription)md.content=cat.metaDescription;
+              var ogT=document.getElementById('og-title');if(ogT&&cat.titleTag)ogT.content=cat.titleTag;
+              var ogD=document.getElementById('og-description');if(ogD&&cat.metaDescription)ogD.content=cat.metaDescription;
+              var catUrl=cat.slug?'https://btmusicdrive.com/category/'+cat.slug:'https://btmusicdrive.com/category?cat='+encodeURIComponent(cat.name);
+              var can=document.getElementById('canonical-url');if(can)can.href=catUrl;
+              var ogU=document.getElementById('og-url');if(ogU)ogU.content=catUrl;
+            }catch(e){}})();
+            </script>
             <!-- Category Chips -->
             <div class="flex items-center gap-3 overflow-x-auto scrollbar-hide" id="cat-chips">
                 <!-- Populated by JS -->
