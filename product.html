@@ -29,7 +29,9 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
   <meta name="keywords"
     content="แฟลชไดร์ฟเพลง MP3, USB เพลง, เพลงลูกทุ่ง, สตริง, เพลงสากล, เสียบปุ๊บฟังปั๊บ, เสียงชัด HD, ฟังเพลงในรถ">
   <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://btmusicdrive.com/product.html">
+  <link rel="canonical" href="https://btmusicdrive.com/product.html" id="canonical-url">
+  <!-- Inline slug-to-canonical: runs synchronously in <head> so Googlebot sees correct URL before JS loads -->
+  <script>(function(){try{var p=new URLSearchParams(window.location.search),slug=p.get('slug');if(!slug){var m=window.location.pathname.match(/\/product\/([^/?#]+)/);if(m)slug=decodeURIComponent(m[1]);}if(slug){var url='https://btmusicdrive.com/product/'+slug;var c=document.getElementById('canonical-url');if(c)c.href=url;var o=document.getElementById('og-url');if(o)o.setAttribute('content',url);}}catch(e){}})();</script>
 
   <!-- ══ Open Graph (Facebook / LINE) ══ -->
   <meta property="og:type" content="product">
@@ -37,10 +39,10 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
   <meta property="og:title" content="แฟลชไดร์ฟเพลง MP3 — Bt music drive">
   <meta property="og:description"
     content="รวมเพลงฮิตคุณภาพเสียง HD เสียบปุ๊บฟังปั๊บ ไม่ต้องลงโปรแกรม รองรับรถยนต์ทุกรุ่น จัดส่งด่วนทั่วไทย">
-  <meta property="og:image" content="https://btmusicdrive.com/images/logo1.webp">
+  <meta property="og:image" content="https://btmusicdrive.com/images/logo1.webp" id="og-image">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:url" content="https://btmusicdrive.com/product.html">
+  <meta property="og:url" content="https://btmusicdrive.com/product.html" id="og-url">
   <meta property="og:locale" content="th_TH">
 
   <!-- ══ Twitter Card ══ -->
@@ -1301,6 +1303,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       let ldScript = document.getElementById('product-jsonld');
       if (!ldScript) { ldScript = document.createElement('script'); ldScript.id = 'product-jsonld'; ldScript.type = 'application/ld+json'; document.head.appendChild(ldScript); }
       ldScript.textContent = JSON.stringify(ld);
+
+      // ── BreadcrumbList JSON-LD ────────────────────────────────────────────────
+      const bcLd = {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"หน้าหลัก","item":"https://btmusicdrive.com/"},{"@type":"ListItem","position":2,"name":"ร้านค้า","item":"https://btmusicdrive.com/shop"},{"@type":"ListItem","position":3,"name":product.name,"item":pageUrl}]};
+      let bcScript = document.getElementById('product-breadcrumb-jsonld');
+      if (!bcScript) { bcScript = document.createElement('script'); bcScript.id = 'product-breadcrumb-jsonld'; bcScript.type = 'application/ld+json'; document.head.appendChild(bcScript); }
+      bcScript.textContent = JSON.stringify(bcLd);
       // ── End SEO update ───────────────────────────────────────────────────────
 
       // ── Share buttons ─────────────────────────────────────────────────────────

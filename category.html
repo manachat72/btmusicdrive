@@ -189,6 +189,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         return jc?.slug ? `/category/${jc.slug}` : `/category?cat=${encodeURIComponent(catName)}`;
     }
 
+    // Inject BreadcrumbList JSON-LD for the active category
+    function injectCatBreadcrumb(catName) {
+        const jc = getJsonCatForName(catName);
+        const catUrl = jc?.slug ? `https://btmusicdrive.com/category/${jc.slug}` : `https://btmusicdrive.com/category?cat=${encodeURIComponent(catName)}`;
+        const bc = {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"หน้าหลัก","item":"https://btmusicdrive.com/"},{"@type":"ListItem","position":2,"name":catName,"item":catUrl}]};
+        let s = document.getElementById('cat-breadcrumb-jsonld');
+        if (!s) { s = document.createElement('script'); s.id = 'cat-breadcrumb-jsonld'; s.type = 'application/ld+json'; document.head.appendChild(s); }
+        s.textContent = JSON.stringify(bc);
+    }
+
     // Update canonical and OG URL meta tags for the active category
     function updateCatMetaUrls(catName) {
         const jc = getJsonCatForName(catName);
@@ -296,6 +306,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         // Update canonical + OG URL to use clean slug URL if available
         updateCatMetaUrls(activeCat);
+        injectCatBreadcrumb(activeCat);
         // Update OG title and description
         const ogTitleEl = document.getElementById('og-title');
         if (ogTitleEl) ogTitleEl.content = titleTag;
@@ -439,6 +450,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
             // Update meta tags
             updateCatMetaUrls(activeCat);
+            injectCatBreadcrumb(activeCat);
             const ogTitleEl = document.getElementById('og-title');
             if (ogTitleEl) ogTitleEl.content = titleTag;
             const metaDesc = (savedCat?.metaDescription) || (jcClick?.metaDescription) || '';
