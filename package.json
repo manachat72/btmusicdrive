@@ -10,8 +10,9 @@
     "hash:assets": "node scripts/hash-assets.js",
     "inline:products": "node scripts/inline-products.js",
     "inline:categories": "node scripts/inline-categories.js",
+    "inline:product-jsonld": "node scripts/inline-product-jsonld.js",
     "build:sitemap": "node scripts/generate-sitemap.js",
-    "build": "npm run build:css && npm run combine:css && npm run inline:products && npm run inline:categories && npm run build:sitemap && npm run hash:assets",
+    "build": "npm run build:css && npm run combine:css && npm run inline:products && npm run inline:categories && npm run inline:product-jsonld && npm run build:sitemap && npm run hash:assets",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
