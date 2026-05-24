@@ -33,7 +33,7 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
     <meta property="og:site_name" content="Bt music drive">
     <meta property="og:title" content="หมวดหมู่เพลง — Bt music drive" id="og-title">
     <meta property="og:description" content="เลือกหมวดหมู่แฟลชไดร์ฟเพลง MP3 ทุกแนว ลูกทุ่ง สตริง เพื่อชีวิต สากล" id="og-description">
-    <meta property="og:image" content="https://btmusicdrive.com/images/logo1.webp">
+    <meta property="og:image" content="https://btmusicdrive.com/images/logo1.webp" id="og-image">
     <meta property="og:url" content="https://btmusicdrive.com/category.html" id="og-url">
     <meta property="og:locale" content="th_TH">
     <link rel="preload" href="/vendor/phosphor/regular/style.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><link rel="preload" href="/vendor/phosphor/fill/style.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="/vendor/phosphor/regular/style.css"><link rel="stylesheet" href="/vendor/phosphor/fill/style.css"></noscript>
@@ -137,6 +137,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               var catUrl=cat.slug?'https://btmusicdrive.com/category/'+cat.slug:'https://btmusicdrive.com/category?cat='+encodeURIComponent(cat.name);
               var can=document.getElementById('canonical-url');if(can)can.href=catUrl;
               var ogU=document.getElementById('og-url');if(ogU)ogU.content=catUrl;
+              if(cat.imageUrl){var ogI=document.getElementById('og-image');if(ogI)ogI.content='https://btmusicdrive.com/'+cat.imageUrl;}
             }catch(e){}})();
             </script>
             <!-- Category Chips -->

@@ -154,6 +154,12 @@
   "routes": [
     {
       "src": "/(.*)",
+      "has": [{ "type": "host", "value": "www.btmusicdrive.com" }],
+      "headers": { "Location": "https://btmusicdrive.com/$1" },
+      "status": 301
+    },
+    {
+      "src": "/(.*)",
       "has": [{ "type": "header", "key": "x-forwarded-proto", "value": "http" }],
       "headers": { "Location": "https://btmusicdrive.com/$1" },
       "status": 301
