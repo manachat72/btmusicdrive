@@ -88,6 +88,71 @@ router.post('/google', authLimiter, async (req: Request, res: Response) => {
   }
 });
 
+// Facebook Sign-In
+router.post('/facebook', authLimiter, async (req: Request, res: Response) => {
+  try {
+    const { accessToken } = req.body;
+    if (!accessToken) {
+      res.status(400).json({ error: 'Facebook access token is required' });
+      return;
+    }
+
+    // Verify token via Graph API
+    const graphRes = await fetch(
+      `https://graph.facebook.com/me?fields=id,name,email,picture&access_token=${encodeURIComponent(accessToken)}`
+    );
+    const profile = await graphRes.json() as any;
+
+    if (!graphRes.ok || profile.error || !profile.id) {
+      res.status(400).json({ error: 'Invalid Facebook token' });
+      return;
+    }
+
+    const facebookId: string = profile.id;
+    const name: string | undefined = profile.name;
+    const picture: string | undefined = profile.picture?.data?.url;
+    const rawEmail: string | undefined = profile.email;
+    const email = rawEmail?.trim().toLowerCase();
+
+    // Find by facebookId first, then by email
+    let user = await prisma.user.findUnique({ where: { facebookId } });
+
+    if (!user && email) {
+      user = await prisma.user.findUnique({ where: { email } });
+      if (user && !user.facebookId) {
+        user = await prisma.user.update({ where: { email }, data: { facebookId } });
+      }
+    }
+
+    if (!user) {
+      user = await prisma.user.create({
+        data: {
+          email: email || `fb_${facebookId}@noemail.local`,
+          facebookId,
+          name,
+        },
+      });
+    }
+
+    const jwtToken = jwt.sign(
+      { id: user.id, role: user.role },
+      process.env.JWT_SECRET as string,
+      { expiresIn: '7d' }
+    );
+
+    const { passwordHash, ...userWithoutPassword } = user;
+
+    res.json({
+      message: 'Facebook login successful',
+      user: { ...userWithoutPassword, avatar: picture || null },
+      token: jwtToken,
+    });
+  } catch (error) {
+    console.error('Facebook login error:', error);
+    res.status(500).json({ error: 'Failed to authenticate with Facebook' });
+  }
+});
+
 // Register a new user
 router.post('/register', authLimiter, async (req: Request, res: Response) => {
   try {
@@ -188,7 +253,7 @@ router.post('/login', authLimiter, async (req: Request, res: Response) => {
     }
 
     if (!user.passwordHash) {
-      res.status(401).json({ error: 'Please log in with Google' });
+      res.status(401).json({ error: 'Please log in with Google or Facebook' });
       return;
     }
 
