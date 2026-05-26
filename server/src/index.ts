@@ -16,6 +16,7 @@ import menuRoutes from './routes/menu';
 import imageRoutes from './routes/images';
 import contactRoutes from './routes/contact';
 import analyticsRoutes from './routes/analytics';
+import feedRoutes from './routes/feed';
 import { sendOrderConfirmationEmail } from './services/emailService';
 
 dotenv.config();
@@ -85,6 +86,7 @@ app.use('/api/menus', menuRoutes);
 app.use('/api/images', imageRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/feed', feedRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
