@@ -1739,6 +1739,49 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
     .wp-spinner {
       animation: spin .75s cubic-bezier(.4,0,.6,1) infinite;
     }
+
+    /* ═══════════════════════════════════════════════════════════
+       No-Sidebar Layout — ซ่อน text sidebar ใช้แค่ Icon Rail
+       ═══════════════════════════════════════════════════════════ */
+
+    /* Desktop: ซ่อน sidebar ทั้งหมด */
+    #wp-sidebar,
+    #sb-overlay {
+      display: none !important;
+    }
+
+    /* Topbar เริ่มต้นที่ขอบซ้ายของ main card (left:144px) แทน left:324px */
+    #wp-topbar {
+      left: 144px;
+    }
+
+    /* Main content ขยับซ้ายเข้ามา: 144 - 54(dashboard padding) = 90px */
+    #wp-main {
+      margin-left: 90px;
+    }
+
+    /* Tablet (≤1180px): rail ซ่อนอยู่แล้ว → คืน sidebar กลับมา */
+    @media (max-width: 1180px) {
+      #wp-sidebar {
+        display: flex !important;
+      }
+      #wp-topbar {
+        left: 200px;
+      }
+      #wp-main {
+        margin-left: 180px;
+      }
+    }
+
+    /* Mobile (≤782px): sidebar เป็น overlay ผ่าน hamburger — ไม่ต้องแก้ */
+    @media (max-width: 782px) {
+      #wp-topbar {
+        left: 0;
+      }
+      #wp-main {
+        margin-left: 0;
+      }
+    }
   </style>
   </head>
 <body>
