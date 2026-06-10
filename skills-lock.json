@@ -29,7 +29,7 @@
       "source": "heygen-com/hyperframes",
       "sourceType": "github",
       "skillPath": "skills/hyperframes/SKILL.md",
-      "computedHash": "f726a7478c7a3133e763c9af5f8ade12bc65dbdf32f09a854696ebabc68433a5"
+      "computedHash": "5bf0372dfef8aab1085816b3c733f860d2500fa8197d14d208e84464aa0d2b3c"
     },
     "hyperframes-cli": {
       "source": "heygen-com/hyperframes",
@@ -89,7 +89,7 @@
       "source": "heygen-com/hyperframes",
       "sourceType": "github",
       "skillPath": "skills/website-to-hyperframes/SKILL.md",
-      "computedHash": "4d6f7ea7c0fabd0e7572d26f85fcf83974ac75b19ec1e49529a4e01115302ab4"
+      "computedHash": "efd61bd08f79921dba79e353c369c5c28185a47d215a4c2e33974fdbfe45cb1d"
     }
   }
 }
