@@ -1447,7 +1447,7 @@ function _setupSharedEvents() {
     window.addEventListener('scroll', () => {
       if (window.scrollY > 30) {
         navbar.classList.add('shadow-lg', 'backdrop-blur-sm');
-        navbar.style.background = 'rgba(15,23,42,0.92)';
+        navbar.style.background = 'rgba(18,11,6,0.94)';
       } else {
         navbar.classList.remove('shadow-lg', 'backdrop-blur-sm');
         navbar.style.background = '';

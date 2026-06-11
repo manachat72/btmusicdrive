@@ -18,7 +18,7 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
 <base href="/">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="app.min.css?v=26773b99">
+    <link rel="stylesheet" href="app.min.css?v=efa8c5a0">
     <meta name="theme-color" content="#8B7355">
     <link rel="icon" type="image/webp" href="images/logo.webp">
     <title>แฟลชไดร์ฟเพลง MP3 รวมเพลงฮิต เสียบปุ๊บฟังปั๊บ เสียงชัด HD | Bt music drive</title>
@@ -168,7 +168,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <span
                         class="hero-gradient-text text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-200 to-amber-400">รวมเพลงฮิตทุกแนวที่คุณคิดถึง</span>
                 </h1>
-                <p class="text-lg text-amber-100/80 md:max-w-md leading-relaxed">
+                <p class="hero-glass-desc text-base md:text-lg text-amber-100/90 md:max-w-md leading-relaxed rounded-2xl px-5 py-4">
                     เสียบปุ๊บฟังปั๊บ — เสียงชัด HD ทุกเพลง ไม่ต้องโหลด ไม่ต้องอินเทอร์เน็ต
                     รวมเพลงฮิต ลูกทุ่ง สตริง สากล พร้อมฟังในรถและเครื่องเสียงได้ทันที
                 </p>
@@ -183,21 +183,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                </div> 
             </div>
             <div class="md:w-1/2 relative">
-                <!-- Glow ring behind image -->
-                <div
-                    class="absolute inset-0 rounded-3xl bg-gradient-to-tr from-amber-600/40 to-yellow-400/20 blur-2xl transform scale-105">
-                </div>
-                <!-- Floating USB image with dark overlay gradient for depth -->
+                <!-- Gold neon ring behind video -->
+                <div class="hero-neon-ring absolute inset-0 rounded-3xl transform scale-110"></div>
+                <!-- Floating USB video with gold neon frame -->
                 <div class="relative z-10 animate-float">
-                    <picture>
-                        <source media="(max-width: 767px)" srcset="images/mobile-hero.avif" type="image/avif" width="750" height="1000">
-                        <source media="(max-width: 767px)" srcset="images/mobile-hero.webp" type="image/webp" width="750" height="1000">
-                        <source media="(min-width: 768px)" srcset="images/hero-banner1.avif" type="image/avif" width="1920" height="1080">
-                        <source media="(min-width: 768px)" srcset="images/hero-banner1.webp" type="image/webp" width="1920" height="1080">
+                    <video
+                        class="hero-video-frame rounded-3xl object-cover w-full aspect-[3/4] md:aspect-auto md:h-[450px] lg:h-[500px]"
+                        autoplay muted loop playsinline preload="none"
+                        poster="images/hero-banner1.webp"
+                        width="1920" height="1080"
+                        aria-label="แฟลชไดร์ฟเพลง MP3 เสียบฟังในรถยนต์">
+                        <source src="images/hero-video.mp4?v=20260611c" type="video/mp4">
                         <img src="images/hero-banner1.webp" alt="แฟลชไดร์ฟเพลง MP3 เสียบฟังในรถยนต์"
-                            class="rounded-3xl shadow-2xl object-cover w-full aspect-[3/4] md:aspect-auto md:h-[450px] lg:h-[500px]"
-                            fetchpriority="high" width="1920" height="1080" decoding="auto">
-                    </picture>
+                            class="rounded-3xl shadow-2xl object-cover w-full aspect-[3/4] md:aspect-auto md:h-[450px] lg:h-[500px]">
+                    </video>
                     <div
                         class="absolute inset-0 rounded-3xl bg-gradient-to-r from-black/40 via-transparent to-transparent pointer-events-none">
                     </div>
@@ -207,14 +206,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </section>
 
     <!-- Flash Sale Countdown -->
-    <section id="flash-sale" class="theme-flash-sale py-14 relative overflow-hidden"
-        style="background: linear-gradient(135deg, #0c1a4a 0%, #1a1060 25%, #4a0830 60%, #8b0000 85%, #c00020 100%);">
-        <!-- Animated blobs for urgency depth -->
-        <div class="flash-blob-top absolute -top-16 -right-16 w-72 h-72 rounded-full opacity-20"
-            style="background: radial-gradient(circle, #ff4040 0%, transparent 70%); animation: pulse-slow 5s infinite;">
+    <section id="flash-sale" class="theme-flash-sale py-14 relative overflow-hidden">
+        <!-- Animated gold blobs for premium depth -->
+        <div class="flash-blob-top absolute -top-16 -right-16 w-72 h-72 rounded-full opacity-25"
+            style="background: radial-gradient(circle, #f4ce76 0%, transparent 70%); animation: pulse-slow 5s infinite;">
         </div>
-        <div class="flash-blob-bottom absolute -bottom-16 -left-16 w-56 h-56 rounded-full opacity-15"
-            style="background: radial-gradient(circle, #3060ff 0%, transparent 70%); animation: pulse-slow 7s infinite 1s;">
+        <div class="flash-blob-bottom absolute -bottom-16 -left-16 w-56 h-56 rounded-full opacity-20"
+            style="background: radial-gradient(circle, #d4af52 0%, transparent 70%); animation: pulse-slow 7s infinite 1s;">
         </div>
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="text-center mb-8">
@@ -224,9 +222,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <span class="text-white font-bold text-sm tracking-widest uppercase">Flash Sale</span>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="1em" height="1em" fill="currentColor" style="vertical-align:-0.125em" class="text-yellow-300 text-lg inline-block"><path d="M213.85,125.46l-112,120a8,8,0,0,1-13.69-7l14.66-73.33L45.19,143.49a8,8,0,0,1-3-13l112-120a8,8,0,0,1,13.69,7L153.18,90.9l57.63,21.61a8,8,0,0,1,3,12.95Z"/></svg>
                 </div>
-                <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-3 drop-shadow-lg">🔥 ลดราคาแรง! เฉพาะวันนี้
+                <h2 class="text-3xl md:text-4xl font-extrabold mb-3 drop-shadow-lg">🔥 <span class="heading-gold">ลดราคาแรง! เฉพาะวันนี้</span>
                 </h2>
-                <p class="text-red-200 text-lg">ข้อเสนอคัดสรรพิเศษ พร้อมจัดส่งทั่วไทยภายในเวลาจำกัด</p>
+                <p class="text-amber-100/80 text-lg">ข้อเสนอคัดสรรพิเศษ พร้อมจัดส่งทั่วไทยภายในเวลาจำกัด</p>
             </div>
             <!-- Countdown Timer — Glassmorphism style -->
             <div class="flex justify-center gap-3 sm:gap-5 mb-8">
@@ -261,7 +259,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </section>
 
     <!-- Features Section -->
-    <section class="theme-features bg-white py-12 border-y border-gray-100">
+    <section class="theme-features section-cream section-seam relative py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div class="flex flex-col items-center text-center p-4">
@@ -297,11 +295,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </section>
 
     <!-- Categories Section -->
-    <section id="categories" class="theme-categories py-16 bg-gray-50">
+    <section id="categories" class="theme-categories section-dark relative py-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-gray-900 mb-4">หมวดหมู่แนวเพลง</h2>
-                <div class="w-16 h-1 bg-primary mx-auto rounded"></div>
+                <h2 class="text-3xl font-bold mb-4"><span class="heading-gold">หมวดหมู่แนวเพลง</span></h2>
+                <div class="w-16 h-1 mx-auto rounded" style="background:linear-gradient(90deg,#f4ce76,#d4af52);"></div>
             </div>
 
             <div class="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-5 auto-rows-[200px] md:auto-rows-[220px]"
@@ -434,7 +432,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </script>
 
     <!-- Trending Products Section -->
-    <section id="shop" class="theme-products py-16 bg-white">
+    <section id="shop" class="theme-products section-cream section-seam relative py-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-end mb-10">
                 <div>
@@ -618,7 +616,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- Shared Footer -->
     <div id="site-footer"></div>
 
-    <script src="components.min.js?v=79fc9026"></script>
+    <script src="components.min.js?v=2060bb80"></script>
 
 <script>
         (function () {

@@ -132,10 +132,165 @@ body {
 /* ── Hero Grainy Gradient ───────────────────────────────────────────── */
 .hero-grainy {
     background:
-        radial-gradient(ellipse at 20% 0%, rgba(200,168,78,0.12) 0%, transparent 55%),
-        radial-gradient(ellipse at 85% 100%, rgba(139,115,85,0.18) 0%, transparent 60%),
-        linear-gradient(140deg, #0e0a07 0%, #1a120d 35%, #2a1d13 65%, #3a2818 100%);
+        radial-gradient(ellipse 70% 50% at 50% -8%, rgba(212,175,82,0.28) 0%, rgba(212,175,82,0.05) 40%, transparent 70%),
+        radial-gradient(ellipse at 12% 18%, rgba(230,193,106,0.10) 0%, transparent 50%),
+        radial-gradient(ellipse at 88% 92%, rgba(160,118,52,0.16) 0%, transparent 58%),
+        linear-gradient(160deg, #0a0705 0%, #140d08 30%, #1c130b 60%, #0d0906 100%);
     position: relative;
+}
+
+/* ── Hero gold neon ring (เรืองรอบวิดีโอ — โทนทองหรู) ──────────────── */
+.hero-neon-ring {
+    background:
+        radial-gradient(ellipse at 50% 50%, rgba(244,206,118,0.55) 0%, rgba(212,175,82,0.30) 35%, rgba(160,118,52,0.12) 60%, transparent 75%);
+    filter: blur(34px);
+    animation: hero-neon-pulse 4.5s ease-in-out infinite;
+}
+
+@keyframes hero-neon-pulse {
+    0%, 100% { opacity: 0.7; transform: scale(1.04); }
+    50%      { opacity: 1;   transform: scale(1.1); }
+}
+
+/* ── Hero glass description card ───────────────────────────────────── */
+.hero-glass-desc {
+    background: linear-gradient(135deg, rgba(255,255,255,0.07) 0%, rgba(212,175,82,0.05) 100%);
+    border: 1px solid rgba(212,175,82,0.25);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06);
+}
+
+/* ── Hero video gold neon frame ───────────────────────────────────── */
+.hero-video-frame {
+    border: 1px solid rgba(244,206,118,0.45);
+    box-shadow:
+        0 0 0 1px rgba(212,175,82,0.20),
+        0 0 28px rgba(212,175,82,0.45),
+        0 22px 60px rgba(0,0,0,0.55);
+}
+
+/* ── Homepage luxury theme: dark / cream alternating sections ──────── */
+/* Warm cream sections (สว่าง) — refined off-white with subtle gold wash */
+.section-cream {
+    background:
+        radial-gradient(ellipse at 50% 0%, rgba(212,175,82,0.06) 0%, transparent 55%),
+        linear-gradient(180deg, #faf7f0 0%, #f3ebdc 100%);
+}
+
+/* Dark luxury sections (ดำ) — black with gold spotlight, like BT banner */
+.section-dark {
+    background:
+        radial-gradient(ellipse 60% 45% at 50% 0%, rgba(212,175,82,0.20) 0%, transparent 65%),
+        radial-gradient(ellipse at 88% 100%, rgba(160,118,52,0.14) 0%, transparent 60%),
+        linear-gradient(165deg, #0a0705 0%, #160e08 45%, #0d0906 100%);
+    position: relative;
+}
+
+/* Thin gold seam at the top of dark sections to separate from cream */
+.section-dark::after,
+.section-cream.section-seam::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(212,175,82,0.55), transparent);
+    pointer-events: none;
+}
+
+/* Gold gradient heading helper for dark sections */
+.heading-gold {
+    background: linear-gradient(90deg, #f4ce76 0%, #fff3cf 50%, #d4af52 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+/* Flash Sale luxury black-gold restyle (overrides inline gradient) */
+#flash-sale.theme-flash-sale {
+    background:
+        radial-gradient(ellipse 55% 50% at 50% 0%, rgba(212,175,82,0.28) 0%, transparent 62%),
+        linear-gradient(135deg, #0a0705 0%, #1a120a 45%, #2a1c0e 75%, #1a120a 100%) !important;
+}
+
+/* ── Navbar & Footer luxury black-gold (matches hero, all pages) ───── */
+/* #navbar id beats .bg-secondary class — no JS change needed.
+   Gold spotlight at top-center mirrors the hero so they blend seamlessly. */
+#navbar {
+    background:
+        radial-gradient(ellipse 75% 190% at 50% 0%, rgba(212,175,82,0.18) 0%, transparent 70%),
+        linear-gradient(180deg, #120b06 0%, #0a0705 100%);
+    border-bottom: none;
+    box-shadow: 0 1px 0 rgba(212,175,82,0.12), 0 6px 24px rgba(0,0,0,0.35);
+}
+
+/* Brand centered on mobile (top bar shows brand alone), left on desktop */
+@media (max-width: 767px) {
+    #navbar > div > div { position: relative; }
+    #navbar > div > div > a:first-child {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
+
+#navbar-search-bar {
+    background: linear-gradient(180deg, #140d08 0%, #0a0705 100%);
+    border-bottom: 1px solid rgba(212,175,82,0.22);
+}
+
+#site-footer > footer {
+    background:
+        radial-gradient(ellipse 65% 75% at 50% 0%, rgba(212,175,82,0.10) 0%, transparent 60%),
+        linear-gradient(180deg, #0d0906 0%, #0a0705 100%);
+    border-top: 1px solid rgba(212,175,82,0.22);
+}
+
+/* Mobile bottom nav uses inline #0F172A — needs !important to override */
+#mobile-bottom-nav {
+    background: linear-gradient(180deg, #100a06, #0a0705) !important;
+    border-top: 1px solid rgba(212,175,82,0.22) !important;
+}
+
+/* ── Reusable luxury helpers (sub-pages: about, contact, policy pages) ── */
+/* Dark hero/section with gold spotlight — replaces green/blue/orange/navy heros */
+.luxe-hero {
+    background:
+        radial-gradient(ellipse 70% 60% at 50% 0%, rgba(212,175,82,0.22) 0%, transparent 65%),
+        radial-gradient(ellipse at 85% 110%, rgba(160,118,52,0.14) 0%, transparent 55%),
+        linear-gradient(160deg, #0a0705 0%, #160e08 45%, #0d0906 100%);
+    border: 1px solid rgba(212,175,82,0.18);
+}
+
+/* Gold gradient primary button — premium CTA */
+.btn-luxe {
+    background: linear-gradient(135deg, #f6d488 0%, #d4af52 55%, #b8923f 100%);
+    color: #1a1206;
+    border: none;
+    transition: filter .2s, box-shadow .2s, transform .15s;
+}
+.btn-luxe:hover {
+    filter: brightness(1.06);
+    box-shadow: 0 10px 28px rgba(212,175,82,0.40);
+    transform: translateY(-2px);
+}
+.btn-luxe:active { transform: translateY(0); }
+
+/* Global gold text (mirrors about page .text-gold so all pages can use it) */
+.text-gold-lux {
+    background: linear-gradient(135deg, #C9A84C 0%, #F0D080 50%, #C9A84C 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+}
+
+/* Warm-black override for brand secondary surfaces (cards, table headers, CTAs).
+   Loses to #navbar / #site-footer>footer (id) so those keep their gradients. */
+.bg-secondary {
+    background-color: #0d0906;
 }
 
 .hero-grainy::before {

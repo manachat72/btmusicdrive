@@ -16,7 +16,7 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
 <base href="/">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="app.min.css?v=26773b99">
+    <link rel="stylesheet" href="app.min.css?v=efa8c5a0">
   <meta name="theme-color" content="#8B7355">
   <link rel="icon" type="image/webp" href="images/logo.webp">
   <title>ติดต่อเรา — Bt music drive</title>
@@ -58,8 +58,10 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
     .contact-card:focus-visible { outline: 2px solid rgba(139,115,85,.35); outline-offset: 3px; }
     .contact-hero {
       background:
-        radial-gradient(circle at top right, rgba(255,255,255,.18), transparent 28%),
-        linear-gradient(135deg, #0F172A 0%, #172033 58%, #8B7355 140%);
+        radial-gradient(ellipse 70% 60% at 50% 0%, rgba(212,175,82,.22), transparent 62%),
+        radial-gradient(circle at top right, rgba(244,206,118,.12), transparent 30%),
+        linear-gradient(150deg, #0a0705 0%, #160e08 48%, #241708 120%);
+      border: 1px solid rgba(212,175,82,.20);
     }
     .contact-info-card {
       background: linear-gradient(180deg, #ffffff 0%, #faf8f5 100%);
@@ -350,7 +352,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               </div>
 
               <button type="submit" id="cf-submit"
-                class="w-full sm:w-auto sm:min-w-[220px] bg-secondary hover:bg-slate-800 text-white font-bold py-3.5 px-6 rounded-xl transition-colors flex items-center justify-center gap-2 text-base">
+                class="btn-luxe w-full sm:w-auto sm:min-w-[220px] font-bold py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 text-base">
                 <i class="ph ph-paper-plane-tilt text-lg" id="cf-btn-icon"></i>
                 <span id="cf-btn-text">ส่งข้อความ</span>
                 <i class="ph ph-spinner animate-spin hidden" id="cf-spinner"></i>
@@ -364,7 +366,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </main>
 
   <div id="site-footer"></div>
-  <script src="components.min.js?v=79fc9026"></script>
+  <script src="components.min.js?v=2060bb80"></script>
   <script>
     const CONTACT_API_BASE = (typeof API_BASE !== 'undefined')
       ? API_BASE
