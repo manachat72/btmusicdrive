@@ -273,6 +273,12 @@ body {
 #mobile-bottom-nav button.active-tab i { color: var(--gold-hi) !important; }
 #mobile-bottom-nav #bnav-cart-count { background: var(--gold) !important; }
 
+/* Footer link lists: warm muted gold instead of cool gray-400, gold on hover.
+   Scoped to li a + bottom-bar so social icon <a> (white) stays untouched. */
+#site-footer > footer li a { color: #a8966f; transition: color .2s; }
+#site-footer > footer li a:hover,
+#site-footer > footer .border-t a:hover { color: var(--gold-hi) !important; }
+
 /* ── Reusable luxury helpers (sub-pages: about, contact, policy pages) ── */
 /* Dark hero/section with gold spotlight — replaces green/blue/orange/navy heros */
 .luxe-hero {
