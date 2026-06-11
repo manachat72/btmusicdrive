@@ -1,5 +1,14 @@
 /* Custom styles to supplement Tailwind */
 
+/* ── Luxury gold palette (single source of truth) ────────────────────
+   Keep gold to 2 core tones + a deep stop for gradient depth. */
+:root {
+    --gold-hi: #f4ce76;   /* bright highlight gold */
+    --gold: #d4af52;      /* core gold (matches rgba 212,175,82 glows) */
+    --gold-deep: #b8923f; /* deep gold for shadow/gradient end */
+    --gold-soft: #fff3cf; /* near-white gold sheen for text gradients */
+}
+
 /* ── Font fallbacks with metric overrides (reduces CLS while display=swap) ── */
 @font-face {
     font-family: 'Kanit Fallback';
@@ -202,7 +211,7 @@ body {
 
 /* Gold gradient heading helper for dark sections */
 .heading-gold {
-    background: linear-gradient(90deg, #f4ce76 0%, #fff3cf 50%, #d4af52 100%);
+    background: linear-gradient(90deg, var(--gold-hi) 0%, var(--gold-soft) 50%, var(--gold) 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -254,6 +263,16 @@ body {
     border-top: 1px solid rgba(212,175,82,0.22) !important;
 }
 
+/* Bottom-nav item colors: warm muted gold (inactive) / bright gold (active).
+   Overrides inline color:#64748b and the injected #8B7355 active rule. */
+#mobile-bottom-nav a,
+#mobile-bottom-nav button { color: #a8966f !important; }
+#mobile-bottom-nav a.active-tab,
+#mobile-bottom-nav a.active-tab i,
+#mobile-bottom-nav button.active-tab,
+#mobile-bottom-nav button.active-tab i { color: var(--gold-hi) !important; }
+#mobile-bottom-nav #bnav-cart-count { background: var(--gold) !important; }
+
 /* ── Reusable luxury helpers (sub-pages: about, contact, policy pages) ── */
 /* Dark hero/section with gold spotlight — replaces green/blue/orange/navy heros */
 .luxe-hero {
@@ -266,7 +285,7 @@ body {
 
 /* Gold gradient primary button — premium CTA */
 .btn-luxe {
-    background: linear-gradient(135deg, #f6d488 0%, #d4af52 55%, #b8923f 100%);
+    background: linear-gradient(135deg, var(--gold-hi) 0%, var(--gold) 55%, var(--gold-deep) 100%);
     color: #1a1206;
     border: none;
     transition: filter .2s, box-shadow .2s, transform .15s;
@@ -280,11 +299,24 @@ body {
 
 /* Global gold text (mirrors about page .text-gold so all pages can use it) */
 .text-gold-lux {
-    background: linear-gradient(135deg, #C9A84C 0%, #F0D080 50%, #C9A84C 100%);
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-hi) 50%, var(--gold) 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
     color: transparent;
+}
+
+/* ── Product cards: warm gold hairline + soft warm shadow (ties to theme) ──
+   Overrides inline border-gray-100 / gray shadow on .product-card. */
+.product-card {
+    border-color: rgba(212,175,82,0.22);
+    box-shadow: 0 4px 20px rgba(94,70,30,0.08);
+    transition: border-color .25s, box-shadow .25s, transform .25s;
+}
+.product-card:hover {
+    border-color: rgba(212,175,82,0.55);
+    box-shadow: 0 14px 38px rgba(212,175,82,0.22);
+    transform: translateY(-3px);
 }
 
 /* Warm-black override for brand secondary surfaces (cards, table headers, CTAs).
