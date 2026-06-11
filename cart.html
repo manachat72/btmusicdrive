@@ -16,7 +16,7 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
 <base href="/">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="app.min.css?v=8ec8405b">
+    <link rel="stylesheet" href="app.min.css?v=e4928bb3">
     <meta name="robots" content="noindex, nofollow">
     <meta name="theme-color" content="#8B7355">
     <link rel="icon" type="image/webp" href="images/logo.webp">
@@ -46,7 +46,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <header id="site-header"></header>
 
     <!-- Progress Bar -->
-    <section class="pt-24 bg-white border-b border-gray-100">
+    <section class="pt-24 section-cream" style="border-bottom:1px solid rgba(212,175,82,0.22);">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <nav class="mb-3 text-sm text-gray-500">
                 <a href="/" class="hover:text-primary transition-colors">หน้าแรก</a>
@@ -56,7 +56,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <h1 class="text-2xl md:text-3xl font-extrabold text-gray-900 mb-4">ตะกร้าสินค้า</h1>
             <div class="flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm">
                 <a href="/cart" class="flex items-center gap-1.5 text-primary font-semibold hover:opacity-80 transition-opacity">
-                    <span class="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold">1</span>
+                    <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold" style="background:linear-gradient(135deg,var(--gold-hi),var(--gold));color:#1a1206;">1</span>
                     <span class="text-gray-800">ตะกร้า</span>
                 </a>
                 <div class="w-8 sm:w-16 h-0.5 bg-gray-300"></div>
@@ -126,7 +126,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     </div>
                     <p class="text-xs text-gray-400 mt-1">ยอดรวม (รวมภาษีมูลค่าเพิ่ม)</p>
 
-                    <button id="cart-checkout-btn" onclick="window.location='/checkout'" class="w-full mt-5 bg-primary hover:bg-amber-700 text-white font-bold py-4 px-6 rounded-xl transition-colors text-base flex items-center justify-center gap-2 shadow-lg">
+                    <button id="cart-checkout-btn" onclick="window.location='/checkout'" class="btn-luxe w-full mt-5 font-bold py-4 px-6 rounded-xl text-base flex items-center justify-center gap-2 shadow-lg">
                         <i class="ph ph-lock-key"></i> ดำเนินการชำระเงิน (<span id="cart-btn-total">฿0.00</span>)
                     </button>
 

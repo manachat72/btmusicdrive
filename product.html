@@ -17,7 +17,7 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
 <base href="/">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="app.min.css?v=8ec8405b">
+    <link rel="stylesheet" href="app.min.css?v=e4928bb3">
   <meta name="theme-color" content="#8B7355">
   <link rel="icon" type="image/webp" href="images/logo.webp">
 
@@ -71,23 +71,23 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
     }
 
     .thumb.active {
-      border-color: #8B7355;
+      border-color: var(--gold);
     }
 
     .thumb:hover {
-      border-color: #8B7355;
+      border-color: var(--gold);
       opacity: .85;
     }
 
     .gallery-main {
       aspect-ratio: 1;
-      background: #f8fafc;
+      background: #faf7f0;
       border-radius: 16px;
       overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
-      border: 1px solid #e2e8f0;
+      border: 1px solid rgba(212,175,82,0.20);
       position: relative;
     }
 
@@ -131,13 +131,13 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
       position: relative;
       padding: 12px 24px;
       font-weight: 600;
-      color: #64748b;
+      color: #8a7c61;
       transition: color .2s;
       white-space: nowrap;
     }
 
     .tab-btn.active {
-      color: #0F172A;
+      color: #1a1206;
     }
 
     .tab-btn.active::after {
@@ -147,12 +147,12 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
       left: 0;
       right: 0;
       height: 3px;
-      background: #8B7355;
+      background: linear-gradient(90deg, var(--gold-hi), var(--gold));
       border-radius: 3px 3px 0 0;
     }
 
     .tab-btn:hover {
-      color: #334155;
+      color: var(--gold-deep);
     }
 
     /* Specs */
@@ -188,8 +188,8 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
     }
 
     .qty-btn:hover {
-      background: #8B7355;
-      color: #fff;
+      background: var(--gold);
+      color: #1a1206;
     }
 
     /* Add to Cart button animation */
@@ -213,7 +213,7 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
 
     .btn-buy-now:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(15, 23, 42, 0.3);
+      box-shadow: 0 8px 24px rgba(212, 175, 82, 0.4);
     }
 
     /* Trust badges */
@@ -251,18 +251,18 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
     }
 
     .ptab-btn.ptab-active {
-      color: #8B7355;
-      border-bottom-color: #8B7355;
+      color: var(--gold-deep);
+      border-bottom-color: var(--gold);
     }
 
     .ptab-btn:not(.ptab-active) {
       border-bottom-color: transparent;
-      color: #64748b;
+      color: #8a7c61;
     }
 
     .ptab-btn:not(.ptab-active):hover {
-      color: #1e293b;
-      background: rgba(139, 115, 85, 0.04);
+      color: var(--gold-deep);
+      background: rgba(212, 175, 82, 0.06);
     }
 
     /* Specs table rows */
@@ -328,15 +328,15 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
       width: 42px;
       height: 42px;
       border-radius: 50%;
-      border: 1.5px solid #e2e8f0;
-      color: #64748b;
+      border: 1.5px solid #e7dcc4;
+      color: #a8966f;
       transition: all .2s;
       cursor: pointer;
     }
 
     .shop-link:hover {
-      border-color: #8B7355;
-      color: #8B7355;
+      border-color: var(--gold);
+      color: var(--gold);
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(139, 115, 85, .18);
     }
@@ -489,11 +489,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <!-- Buttons -->
           <div class="flex flex-col sm:flex-row gap-3 mb-4">
             <button onclick="addToCartFromDetail()"
-              class="btn-add-cart flex-1 bg-primary text-white font-bold py-3.5 px-4 sm:px-6 rounded-xl flex items-center justify-center gap-2 text-base shadow-md">
-              <i class="ph ph-shopping-cart text-xl"></i> เพิ่มในตะกร้า
+              class="btn-add-cart flex-1 bg-secondary text-white font-bold py-3.5 px-4 sm:px-6 rounded-xl flex items-center justify-center gap-2 text-base shadow-md">
+              <i class="ph ph-shopping-cart text-xl text-[#f4ce76]"></i> เพิ่มในตะกร้า
             </button>
             <button onclick="buyNow()"
-              class="btn-buy-now flex-1 bg-secondary hover:bg-slate-800 text-white font-bold py-3.5 px-4 sm:px-6 rounded-xl flex items-center justify-center gap-2 text-base shadow-md">
+              class="btn-buy-now btn-luxe flex-1 font-bold py-3.5 px-4 sm:px-6 rounded-xl flex items-center justify-center gap-2 text-base shadow-md">
               <i class="ph ph-lightning text-xl"></i> ซื้อเลย
             </button>
           </div>

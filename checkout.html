@@ -16,7 +16,7 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
 <base href="/">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="app.min.css?v=8ec8405b">
+    <link rel="stylesheet" href="app.min.css?v=e4928bb3">
     <meta name="theme-color" content="#8B7355">
     <link rel="icon" type="image/webp" href="images/logo.webp">
     <title>ชำระเงิน — Bt music drive</title>
@@ -41,10 +41,10 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
     <style>
         body { font-family: 'Inter', sans-serif; }
 
-        /* Form focus ring — primary color */
+        /* Form focus ring — gold */
         .input-field:focus {
-            border-color: #8B7355;
-            box-shadow: 0 0 0 3px rgba(139, 115, 85, 0.18);
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(212, 175, 82, 0.22);
             outline: none;
         }
 
@@ -61,9 +61,9 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
         }
         /* Active payment card */
         .payment-box.active {
-            border-color: #8B7355;
+            border-color: var(--gold);
             background: #fdf8f3;
-            box-shadow: 0 0 0 3px rgba(139,115,85,0.12);
+            box-shadow: 0 0 0 3px rgba(212,175,82,0.16);
         }
         .payment-box.active label {
             color: #5c4a30;
@@ -98,12 +98,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
                 <div class="flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm">
                     <a href="/cart" class="flex items-center gap-1.5 text-primary font-semibold hover:opacity-80 transition-opacity">
-                        <span class="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold">1</span>
+                        <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold" style="background:linear-gradient(135deg,var(--gold-hi),var(--gold));color:#1a1206;">1</span>
                         <span class="text-gray-300">ตะกร้า</span>
                     </a>
-                    <div class="w-8 sm:w-16 h-0.5 bg-primary"></div>
+                    <div class="w-8 sm:w-16 h-0.5" style="background:linear-gradient(90deg,var(--gold-hi),var(--gold));"></div>
                     <span class="flex items-center gap-1.5 text-primary font-semibold">
-                        <span class="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold">2</span>
+                        <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold" style="background:linear-gradient(135deg,var(--gold-hi),var(--gold));color:#1a1206;">2</span>
                         <span class="text-gray-300">รายละเอียด</span>
                     </span>
                     <div class="w-8 sm:w-16 h-0.5 bg-gray-600"></div>
@@ -327,7 +327,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <div class="lg:hidden">
                     <button id="place-order-btn-mobile" onclick="placeOrder()"
                         aria-label="ยืนยันและสั่งซื้อสินค้า"
-                        class="w-full bg-secondary hover:bg-slate-800 text-white font-bold py-4 px-6 rounded-xl transition-colors text-base flex items-center justify-center gap-2 shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+                        class="btn-luxe w-full font-bold py-4 px-6 rounded-xl text-base flex items-center justify-center gap-2 shadow-lg focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2">
                         <i class="ph ph-lock-key" aria-hidden="true"></i>
                         ยืนยันและสั่งซื้อ
                     </button>
@@ -422,7 +422,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         <!-- Place Order Button (desktop) -->
                         <button id="place-order-btn" onclick="placeOrder()"
                             aria-label="ยืนยันและสั่งซื้อสินค้า"
-                            class="hidden lg:flex w-full mt-5 bg-secondary hover:bg-slate-800 text-white font-bold py-4 px-6 rounded-xl transition-colors text-base items-center justify-center gap-2 shadow-lg shadow-slate-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+                            class="btn-luxe hidden lg:flex w-full mt-5 font-bold py-4 px-6 rounded-xl text-base items-center justify-center gap-2 shadow-lg focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2">
                             <i class="ph ph-lock-key" aria-hidden="true"></i>
                             ยืนยันและสั่งซื้อ
                         </button>

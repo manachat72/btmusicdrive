@@ -16,7 +16,7 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
 <base href="/">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="app.min.css?v=8ec8405b">
+    <link rel="stylesheet" href="app.min.css?v=e4928bb3">
     <meta name="theme-color" content="#8B7355">
     <link rel="icon" type="image/webp" href="images/logo.webp">
     <title>ร้านค้าแฟลชไดร์ฟเพลง MP3 ทุกแนว — Bt music drive</title>
@@ -50,8 +50,9 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
     <style>
         body { font-family: 'Kanit', 'Kanit Fallback', 'Inter', 'Inter Fallback', sans-serif; }
         .category-chip { transition: all .2s; flex-shrink: 0; white-space: nowrap; }
-        .category-chip.active { background-color: #8B7355; color: #fff; border-color: #8B7355; }
-        .category-chip:not(.active):hover { border-color: #8B7355; color: #8B7355; }
+        .category-chip.active { background: linear-gradient(135deg, var(--gold-hi), var(--gold)); color: #1a1206; border-color: var(--gold); }
+        .category-chip:not(.active):hover { border-color: var(--gold); color: var(--gold-deep); }
+        #active-filter-count, #active-filter-count-top { background: var(--gold); color: #1a1206; }
         .sort-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%236b7280' viewBox='0 0 256 256'%3E%3Cpath d='M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z'%3E%3C/path%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
         @media (max-width: 1023px) {
             .category-chip { padding: 0.5rem 0.875rem; font-size: 0.8125rem; }
@@ -77,7 +78,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <header id="site-header"></header>
 
     <!-- Page Header -->
-    <section class="pt-24 pb-8 md:pt-28 md:pb-10 bg-white border-b border-gray-100">
+    <section class="pt-24 pb-8 md:pt-28 md:pb-10 section-cream" style="border-bottom:1px solid rgba(212,175,82,0.22);">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Breadcrumb -->
             <nav class="mb-4 text-sm text-gray-500">
@@ -87,6 +88,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </nav>
             <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
                 <div>
+                    <span class="inline-flex items-center gap-1.5 mb-2 py-1 px-3 rounded-full text-xs font-semibold tracking-wide bg-amber-100 text-amber-800 border border-amber-200"><i class="ph-fill ph-sparkle"></i> คัดสรรคุณภาพ • พร้อมส่งทันที</span>
                     <h1 class="text-2xl md:text-4xl font-extrabold text-gray-900" id="page-title">แฟลชไดร์ฟเพลง MP3 พร้อมฟัง</h1>
                     <p class="text-gray-500 text-sm md:text-base mt-1" id="product-count-text">กำลังโหลด...</p>
                 </div>

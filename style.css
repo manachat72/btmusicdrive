@@ -278,6 +278,9 @@ body {
 #site-footer > footer li a { color: #a8966f; transition: color .2s; }
 #site-footer > footer li a:hover,
 #site-footer > footer .border-t a:hover { color: var(--gold-hi) !important; }
+/* Warm the remaining cool grays (tagline, contact text, copyright) */
+#site-footer > footer .text-gray-400 { color: #a8966f; }
+#site-footer > footer .text-gray-500 { color: #8a7c61; }
 
 /* ── Reusable luxury helpers (sub-pages: about, contact, policy pages) ── */
 /* Dark hero/section with gold spotlight — replaces green/blue/orange/navy heros */
