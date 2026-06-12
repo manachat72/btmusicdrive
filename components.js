@@ -128,6 +128,9 @@ function _escapeHtml(str) {
 // ── HTML Templates ──────────────────────────────────────────────────────────
 
 function _navbarHTML() {
+  const _fbUrl   = localStorage.getItem('btmd_social_facebook') || 'https://www.facebook.com/btmusicdrive';
+  const _lineUrl = localStorage.getItem('btmd_social_line')     || 'https://line.me/R/ti/p/@bt1992?from=page&openQrModal=true&searchId=bt1992';
+  const _ttUrl   = localStorage.getItem('btmd_social_tiktok')   || 'https://www.tiktok.com/@btmusicdrive';
   return `
   <nav class="bg-secondary shadow-sm fixed w-full z-50 top-0 transition-all duration-300" id="navbar">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -193,6 +196,24 @@ function _navbarHTML() {
       </div>
     </div>
     <div id="mobile-nav" class="flex-1 overflow-y-auto" style="padding:0;"></div>
+    <div style="padding:14px 20px 20px;border-top:1px solid rgba(212,175,82,0.25);flex-shrink:0;text-align:center;">
+      <p style="font-size:11px;color:#7a7163;letter-spacing:0.03em;margin:0 0 10px 0;display:flex;align-items:center;justify-content:center;gap:5px;">
+        <i class="ph ph-clock" style="font-size:12px;color:#a8956e;"></i>เวลาทำการ จันทร์-เสาร์ 09.00-18.00
+      </p>
+      <div style="height:1px;background:rgba(212,175,82,0.1);margin:10px 0;"></div>
+      <p style="font-size:10px;color:#5a5248;letter-spacing:0.12em;text-transform:uppercase;margin:0 0 10px 0;">ติดตามเรา</p>
+      <div style="display:flex;gap:10px;justify-content:center;">
+        <a href="${_fbUrl}" target="_blank" rel="noopener" title="Facebook" style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:linear-gradient(135deg,#1877f2,#0c5fd8);">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M22 12c0-5.522-4.477-10-10-10S2 6.478 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987H7.898V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg>
+        </a>
+        <a href="${_lineUrl}" target="_blank" rel="noopener" title="LINE" style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:linear-gradient(135deg,#06c755,#059d43);">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+        </a>
+        <a href="${_ttUrl}" target="_blank" rel="noopener" title="TikTok" style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:#111111;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="white"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.19 8.19 0 004.79 1.54V6.78a4.85 4.85 0 01-1.02-.09z"/></svg>
+        </a>
+      </div>
+    </div>
   </div>`;
 }
 
