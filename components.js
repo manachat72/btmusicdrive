@@ -155,6 +155,17 @@ function _navbarHTML() {
           <button id="mobile-menu-btn" class="md:hidden text-gray-300 hover:text-primary transition-colors" aria-label="เมนู" aria-expanded="false"><i class="ph ph-list text-2xl"></i></button>
         </div>
       </div>
+      <div class="md:hidden flex items-center justify-between px-8 py-2.5 border-t border-amber-300/15">
+        <a href="https://www.tiktok.com/@btmusicdrive" target="_blank" rel="noopener" title="TikTok Shop" class="inline-flex p-[2px] rounded-full border border-amber-300/40 hover:border-amber-300/80 transition-colors">
+          <img src="images/tiktok.webp" alt="TikTok Shop btmusicdrive" class="w-8 h-8 rounded-full" loading="lazy">
+        </a>
+        <a href="https://shopee.co.th/shop/134575937" target="_blank" rel="noopener" title="Shopee" class="inline-flex p-[2px] rounded-full border border-amber-300/40 hover:border-amber-300/80 transition-colors">
+          <img src="images/shopeer.webp" alt="Shopee btmusicdrive" class="w-8 h-8 rounded-full" loading="lazy">
+        </a>
+        <a href="https://www.lazada.co.th/shop/buythrrm1992/" target="_blank" rel="noopener" title="Lazada" class="inline-flex p-[2px] rounded-full border border-amber-300/40 hover:border-amber-300/80 transition-colors">
+          <img src="images/lazada.webp" alt="Lazada btmusicdrive" class="w-8 h-8 rounded-full" loading="lazy">
+        </a>
+      </div>
     </div>
   </nav>
   <div id="search-overlay-backdrop" class="fixed inset-0 bg-black/60 z-[100] hidden"></div>
