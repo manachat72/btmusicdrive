@@ -158,7 +158,7 @@ function _navbarHTML() {
           <button id="mobile-menu-btn" class="md:hidden text-gray-300 hover:text-primary transition-colors" aria-label="เมนู" aria-expanded="false"><i class="ph ph-list text-2xl"></i></button>
         </div>
       </div>
-      <div id="mobile-market-row" class="md:hidden flex items-center justify-between px-8 border-t border-amber-300/15" style="overflow:hidden;max-height:52px;opacity:1;padding-top:10px;padding-bottom:10px;transition:max-height 0.3s ease,opacity 0.2s ease,padding 0.3s ease;">
+      <div id="mobile-market-row" class="md:hidden flex items-center justify-between px-8 border-t border-amber-300/15" style="overflow:hidden;max-height:64px;opacity:1;padding-top:10px;padding-bottom:18px;transition:max-height 0.3s ease,opacity 0.2s ease,padding 0.3s ease;">
         <a href="https://www.tiktok.com/@btmusicdrive" target="_blank" rel="noopener" title="TikTok Shop" class="inline-flex p-[2px] rounded-full border border-amber-300/40 hover:border-amber-300/80 transition-colors">
           <img src="images/tiktok.webp" alt="TikTok Shop btmusicdrive" class="w-8 h-8 rounded-full" loading="lazy">
         </a>
@@ -1528,7 +1528,7 @@ function _setupSharedEvents() {
       } else {
         navbar.classList.remove('shadow-lg', 'backdrop-blur-sm');
         navbar.style.background = '';
-        if (_mRow) { _mRow.style.maxHeight = '52px'; _mRow.style.opacity = '1'; _mRow.style.paddingTop = ''; _mRow.style.paddingBottom = ''; }
+        if (_mRow) { _mRow.style.maxHeight = '64px'; _mRow.style.opacity = '1'; _mRow.style.paddingTop = '10px'; _mRow.style.paddingBottom = '18px'; }
       }
     }, { passive: true });
   }
