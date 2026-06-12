@@ -192,7 +192,7 @@ function _navbarHTML() {
         </div>
       </div>
     </div>
-    <div id="mobile-nav" class="flex-1 overflow-y-auto" style="padding:10px 12px;"></div>
+    <div id="mobile-nav" class="flex-1 overflow-y-auto" style="padding:0;"></div>
   </div>`;
 }
 
@@ -683,22 +683,24 @@ function _renderNavMenus(menus) {
   if (_IS_LIVE_SERVER && desktop) _patchLinks(desktop);
 
   if (mobile) {
+    const _mLinkStyle = 'display:flex;align-items:center;gap:11px;padding:13px 16px;font-size:14px;font-weight:500;color:#efe9dc;border-bottom:1px solid rgba(212,175,82,0.08);text-decoration:none;';
+    const _mIconStyle = 'font-size:17px;color:#d4af52;flex-shrink:0;';
     mobile.innerHTML = menus.map((m, i) => {
-      const icon = m.icon ? `<i class="${m.icon}"></i>` : '';
+      const icon = m.icon ? `<i class="${m.icon}" style="${_mIconStyle}"></i>` : '';
       if (m.children && m.children.length > 0) {
         const subItems = m.children.map(c =>
-          `<a href="${c.url}" class="block pl-7 pr-3 py-[6px] text-xs text-gray-400 hover:text-primary hover:bg-white/10 rounded-md flex items-center gap-2">${c.icon ? `<i class="${c.icon}"></i>` : ''}${c.label}</a>`
+          `<a href="${c.url}" style="display:flex;align-items:center;gap:9px;padding:9px 16px 9px 44px;font-size:13px;color:#9c8f78;border-bottom:1px solid rgba(212,175,82,0.05);text-decoration:none;">${c.icon ? `<i class="${c.icon}" style="font-size:14px;color:#a8956e;flex-shrink:0;"></i>` : ''}${c.label}</a>`
         ).join('');
         return `<div class="mob-has-sub">
-          <button type="button" class="mob-sub-toggle w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-primary hover:bg-white/10" data-sub="${i}" aria-expanded="false">
-            ${icon}<span class="flex-1 text-left">${m.label}</span>
-            <i class="mob-caret" style="font-size:10px;transition:transform .2s;">▾</i>
+          <button type="button" class="mob-sub-toggle" data-sub="${i}" aria-expanded="false" style="${_mLinkStyle}width:100%;background:none;border:none;border-bottom:1px solid rgba(212,175,82,0.08);text-align:left;cursor:pointer;">
+            ${icon}<span style="flex:1;">${m.label}</span>
+            <i class="ph ph-caret-down mob-caret" style="font-size:12px;color:#d4af52;transition:transform .2s;"></i>
           </button>
-          <div class="mob-sub-panel" data-sub="${i}" style="display:none;">${subItems}</div>
+          <div class="mob-sub-panel" data-sub="${i}" style="display:none;background:rgba(0,0,0,0.25);">${subItems}</div>
         </div>`;
       }
-      return `<a href="${m.url}" class="block px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-primary hover:bg-white/10 flex items-center gap-2">${icon}${m.label}</a>`;
-    }).join('') + `<a href="/admin" id="admin-nav-link-mobile" class="hidden px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-primary hover:bg-white/10 flex items-center gap-2"><i class="ph ph-shield-check"></i> Admin Dashboard</a>`;
+      return `<a href="${m.url}" style="${_mLinkStyle}">${icon}${m.label}</a>`;
+    }).join('') + `<a href="/admin" id="admin-nav-link-mobile" class="hidden flex items-center" style="gap:11px;padding:13px 16px;font-size:14px;font-weight:500;color:#efe9dc;border-bottom:1px solid rgba(212,175,82,0.08);text-decoration:none;"><i class="ph ph-shield-check" style="${_mIconStyle}"></i> Admin Dashboard</a>`;
     if (_IS_LIVE_SERVER) _patchLinks(mobile);
 
     // Event delegation ผ่าน parent ที่ไม่ถูก re-render
