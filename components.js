@@ -152,6 +152,7 @@ function _navbarHTML() {
             <i class="ph ph-user text-2xl"></i>
             <span id="user-greeting" class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs font-medium text-white hidden whitespace-nowrap bg-gray-800 px-2 py-1 rounded shadow-sm"></span>
           </button>
+          <button id="mobile-menu-btn" class="md:hidden text-gray-300 hover:text-primary transition-colors" aria-label="เมนู" aria-expanded="false"><i class="ph ph-list text-2xl"></i></button>
         </div>
       </div>
     </div>
@@ -163,6 +164,24 @@ function _navbarHTML() {
       <input type="text" id="navbar-search-input" placeholder="ค้นหาสินค้า เช่น เพลงลูกทุ่ง, ป๊อปเกาหลี..." autocomplete="off" class="flex-1 bg-transparent text-white placeholder-gray-400 text-lg outline-none">
       <button id="navbar-search-close" class="text-gray-400 hover:text-white transition-colors p-1 flex-shrink-0" aria-label="ปิดการค้นหา"><i class="ph ph-x text-xl"></i></button>
     </div>
+  </div>
+
+  <!-- Mobile nav menu (hamburger) -->
+  <div id="mobile-menu-overlay" class="fixed inset-0 z-[58] hidden md:hidden" style="background:rgba(0,0,0,0.72);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);"></div>
+  <div id="mobile-menu" class="fixed inset-y-0 right-0 z-[59] transform translate-x-full transition-transform duration-300 ease-in-out md:hidden flex flex-col" style="width:82%;max-width:300px;background:#0F0D0B;box-shadow:-12px 0 48px rgba(0,0,0,0.7);">
+    <div style="position:relative;padding:18px 20px;background:linear-gradient(165deg,#1A1510 0%,#0F0D0B 65%);border-bottom:1px solid rgba(212,175,82,0.12);">
+      <button id="mobile-menu-close" aria-label="ปิดเมนู" style="position:absolute;top:13px;right:14px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(212,175,82,0.07);border:1px solid rgba(212,175,82,0.1);cursor:pointer;">
+        <i class="ph ph-x" style="font-size:15px;color:#9c8f78;"></i>
+      </button>
+      <div style="display:flex;align-items:center;gap:11px;">
+        <img src="images/logo.webp" alt="" style="width:38px;height:38px;border-radius:50%;flex-shrink:0;">
+        <div style="min-width:0;">
+          <p style="margin:0;font-weight:700;font-size:15px;color:#efe9dc;letter-spacing:-0.01em;">btmusicdrive</p>
+          <p style="margin:1px 0 0;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#C9A876;">เมนู</p>
+        </div>
+      </div>
+    </div>
+    <div id="mobile-nav" class="flex-1 overflow-y-auto" style="padding:10px 12px;"></div>
   </div>`;
 }
 
@@ -388,12 +407,12 @@ function _footerHTML() {
 function _mobileBottomNavHTML() {
   return `
   <style>
-    ._dlink:active { background: rgba(255,255,255,0.07) !important; }
-    @media (hover: hover) { ._dlink:hover { background: rgba(255,255,255,0.04) !important; } }
+    ._dlink:active { background: rgba(212,175,82,0.1) !important; }
+    @media (hover: hover) { ._dlink:hover { background: rgba(212,175,82,0.06) !important; } }
     #bnav-home.active-tab, #bnav-home.active-tab i,
-    .bnav-tab.active-tab, .bnav-tab.active-tab i { color: #8B7355 !important; }
+    .bnav-tab.active-tab, .bnav-tab.active-tab i { color: #d4af52 !important; }
     #bnav-account-btn {
-      color: #64748b;
+      color: #7a7163;
       outline: none !important;
       box-shadow: none !important;
       -webkit-tap-highlight-color: transparent;
@@ -408,28 +427,28 @@ function _mobileBottomNavHTML() {
       box-shadow: none !important;
       border: 0 !important;
     }
-    #bnav-account-btn:hover { color: #8B7355; }
+    #bnav-account-btn:hover { color: #d4af52; }
   </style>
 
   <!-- ── Mobile Bottom Bar ── -->
-  <nav id="mobile-bottom-nav" aria-label="เมนูหลัก" class="fixed bottom-0 left-0 right-0 z-50 md:hidden" style="background:#0F172A;border-top:1px solid rgba(139,115,85,0.18);height:60px;">
+  <nav id="mobile-bottom-nav" aria-label="เมนูหลัก" class="fixed bottom-0 left-0 right-0 z-50 md:hidden" style="background:#0F172A;border-top:1px solid rgba(212,175,82,0.18);height:60px;">
     <div class="flex h-full">
-      <a href="/" id="bnav-home" class="flex flex-col items-center justify-center flex-1 gap-[3px] no-underline" style="color:#64748b;">
+      <a href="/" id="bnav-home" class="flex flex-col items-center justify-center flex-1 gap-[3px] no-underline" style="color:#7a7163;">
         <i class="ph ph-house" style="font-size:21px;line-height:1;"></i>
         <span style="font-size:9px;letter-spacing:0.04em;font-weight:500;">หน้าแรก</span>
       </a>
-      <a href="/shop" class="flex flex-col items-center justify-center flex-1 gap-[3px] no-underline" style="color:#64748b;">
+      <a href="/shop" class="flex flex-col items-center justify-center flex-1 gap-[3px] no-underline" style="color:#7a7163;">
         <i class="ph ph-storefront" style="font-size:21px;line-height:1;"></i>
         <span style="font-size:9px;letter-spacing:0.04em;font-weight:500;">ร้านค้า</span>
       </a>
-      <button id="bnav-search-btn" class="flex flex-col items-center justify-center flex-1 gap-[3px]" style="background:none;border:none;cursor:pointer;color:#64748b;" aria-label="ค้นหาสินค้า">
+      <button id="bnav-search-btn" class="flex flex-col items-center justify-center flex-1 gap-[3px]" style="background:none;border:none;cursor:pointer;color:#7a7163;" aria-label="ค้นหาสินค้า">
         <i class="ph ph-magnifying-glass" style="font-size:21px;line-height:1;"></i>
         <span style="font-size:9px;letter-spacing:0.04em;font-weight:500;">ค้นหา</span>
       </button>
-      <a href="/cart" id="bnav-cart-btn" class="flex flex-col items-center justify-center flex-1 gap-[3px] relative no-underline" style="color:#64748b;" aria-label="ตะกร้าสินค้า">
+      <a href="/cart" id="bnav-cart-btn" class="flex flex-col items-center justify-center flex-1 gap-[3px] relative no-underline" style="color:#7a7163;" aria-label="ตะกร้าสินค้า">
         <div class="relative flex-shrink-0" style="width:28px;height:21px;display:flex;align-items:center;justify-content:center;">
           <i class="ph ph-shopping-cart" style="font-size:21px;line-height:1;"></i>
-          <span id="bnav-cart-count" class="absolute flex items-center justify-center" style="top:-2px;right:-4px;min-width:14px;height:14px;padding:0 3px;font-size:7.5px;font-weight:700;color:#fff;background:#8B7355;border-radius:99px;display:none;">0</span>
+          <span id="bnav-cart-count" class="absolute flex items-center justify-center" style="top:-2px;right:-4px;min-width:14px;height:14px;padding:0 3px;font-size:7.5px;font-weight:700;color:#1a1408;background:#d4af52;border-radius:99px;display:none;">0</span>
         </div>
         <span id="bnav-cart-label" style="font-size:9px;letter-spacing:0.04em;font-weight:500;">ตะกร้า</span>
         <span id="bnav-cart-amount" style="display:none;font-size:8px;line-height:1;font-weight:700;color:#C9A876;">฿0</span>
@@ -445,37 +464,37 @@ function _mobileBottomNavHTML() {
   <div id="bnav-account-overlay" class="fixed inset-0 z-[55] hidden md:hidden" style="background:rgba(0,0,0,0.72);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);"></div>
 
   <!-- ── Side Drawer (right, dark minimalist) ── -->
-  <div id="bnav-account-menu" class="fixed inset-y-0 right-0 z-[56] transform translate-x-full transition-transform duration-300 ease-in-out md:hidden flex flex-col" style="width:82%;max-width:300px;background:#0A1120;box-shadow:-12px 0 48px rgba(0,0,0,0.7);">
+  <div id="bnav-account-menu" class="fixed inset-y-0 right-0 z-[56] transform translate-x-full transition-transform duration-300 ease-in-out md:hidden flex flex-col" style="width:82%;max-width:300px;background:#0F0D0B;box-shadow:-12px 0 48px rgba(0,0,0,0.7);">
 
     <!-- Profile Header -->
-    <div style="position:relative;padding:52px 22px 20px;background:linear-gradient(165deg,#13213a 0%,#0A1120 65%);border-bottom:1px solid rgba(139,115,85,0.12);">
-      <button id="bnav-drawer-close" aria-label="ปิดเมนู" style="position:absolute;top:12px;right:14px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.07);cursor:pointer;">
-        <i class="ph ph-x" style="font-size:15px;color:#94a3b8;"></i>
+    <div style="position:relative;padding:52px 22px 20px;background:linear-gradient(165deg,#1A1510 0%,#0F0D0B 65%);border-bottom:1px solid rgba(212,175,82,0.12);">
+      <button id="bnav-drawer-close" aria-label="ปิดเมนู" style="position:absolute;top:12px;right:14px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(212,175,82,0.07);border:1px solid rgba(212,175,82,0.1);cursor:pointer;">
+        <i class="ph ph-x" style="font-size:15px;color:#9c8f78;"></i>
       </button>
 
       <div style="display:flex;align-items:center;gap:14px;">
-        <div id="bnav-avatar" style="width:50px;height:50px;border-radius:50%;background:rgba(139,115,85,0.12);border:1.5px solid rgba(139,115,85,0.3);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
-          <i class="ph ph-user" style="font-size:24px;color:#8B7355;"></i>
+        <div id="bnav-avatar" style="width:50px;height:50px;border-radius:50%;background:rgba(212,175,82,0.12);border:1.5px solid rgba(212,175,82,0.3);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
+          <i class="ph ph-user" style="font-size:24px;color:#d4af52;"></i>
         </div>
         <div style="flex:1;min-width:0;">
-          <p id="bnav-user-name" style="margin:0;font-weight:600;font-size:14px;color:#e2e8f0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">ยังไม่ได้เข้าสู่ระบบ</p>
-          <p id="bnav-user-email" style="margin:3px 0 0;font-size:11px;color:#475569;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></p>
+          <p id="bnav-user-name" style="margin:0;font-weight:600;font-size:14px;color:#efe9dc;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">ยังไม่ได้เข้าสู่ระบบ</p>
+          <p id="bnav-user-email" style="margin:3px 0 0;font-size:11px;color:#8a7f6b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></p>
         </div>
       </div>
 
       <!-- Stats (JS toggles display) -->
       <div id="bnav-stats" class="flex" style="display:none;gap:8px;margin-top:16px;">
-        <div style="flex:1;background:rgba(139,115,85,0.1);border:1px solid rgba(139,115,85,0.14);border-radius:10px;padding:8px 4px;text-align:center;">
-          <p id="bnav-order-count" style="margin:0;font-weight:700;font-size:16px;color:#8B7355;">0</p>
-          <p style="margin:2px 0 0;font-size:9px;color:#64748b;">คำสั่งซื้อ</p>
+        <div style="flex:1;background:rgba(212,175,82,0.1);border:1px solid rgba(212,175,82,0.14);border-radius:10px;padding:8px 4px;text-align:center;">
+          <p id="bnav-order-count" style="margin:0;font-weight:700;font-size:16px;color:#d4af52;">0</p>
+          <p style="margin:2px 0 0;font-size:9px;color:#7a7163;">คำสั่งซื้อ</p>
         </div>
-        <div style="flex:1;background:rgba(139,115,85,0.1);border:1px solid rgba(139,115,85,0.14);border-radius:10px;padding:8px 4px;text-align:center;">
-          <p id="bnav-wishlist-count" style="margin:0;font-weight:700;font-size:16px;color:#8B7355;">0</p>
-          <p style="margin:2px 0 0;font-size:9px;color:#64748b;">ถูกใจ</p>
+        <div style="flex:1;background:rgba(212,175,82,0.1);border:1px solid rgba(212,175,82,0.14);border-radius:10px;padding:8px 4px;text-align:center;">
+          <p id="bnav-wishlist-count" style="margin:0;font-weight:700;font-size:16px;color:#d4af52;">0</p>
+          <p style="margin:2px 0 0;font-size:9px;color:#7a7163;">ถูกใจ</p>
         </div>
-        <div style="flex:1;background:rgba(139,115,85,0.1);border:1px solid rgba(139,115,85,0.14);border-radius:10px;padding:8px 4px;text-align:center;">
-          <p id="bnav-review-count" style="margin:0;font-weight:700;font-size:16px;color:#8B7355;">0</p>
-          <p style="margin:2px 0 0;font-size:9px;color:#64748b;">รีวิว</p>
+        <div style="flex:1;background:rgba(212,175,82,0.1);border:1px solid rgba(212,175,82,0.14);border-radius:10px;padding:8px 4px;text-align:center;">
+          <p id="bnav-review-count" style="margin:0;font-weight:700;font-size:16px;color:#d4af52;">0</p>
+          <p style="margin:2px 0 0;font-size:9px;color:#7a7163;">รีวิว</p>
         </div>
       </div>
     </div>
@@ -486,54 +505,54 @@ function _mobileBottomNavHTML() {
       <p style="margin:0;padding:14px 20px 6px;font-size:11px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;color:#C9A876;">เมนูหลัก</p>
 
       <a href="/" class="_dlink" style="display:flex;align-items:center;gap:13px;padding:11px 20px;text-decoration:none;transition:background 0.15s;">
-        <span style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(139,115,85,0.1);flex-shrink:0;"><i class="ph ph-house" style="font-size:17px;color:#8B7355;"></i></span>
-        <span style="font-size:13.5px;font-weight:500;color:#cbd5e1;">หน้าแรก</span>
+        <span style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(212,175,82,0.1);flex-shrink:0;"><i class="ph ph-house" style="font-size:17px;color:#d4af52;"></i></span>
+        <span style="font-size:13.5px;font-weight:500;color:#cfc6b6;">หน้าแรก</span>
       </a>
       <a href="/shop" class="_dlink" style="display:flex;align-items:center;gap:13px;padding:11px 20px;text-decoration:none;transition:background 0.15s;">
-        <span style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(139,115,85,0.1);flex-shrink:0;"><i class="ph ph-storefront" style="font-size:17px;color:#8B7355;"></i></span>
-        <span style="font-size:13.5px;font-weight:500;color:#cbd5e1;">ร้านค้า</span>
+        <span style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(212,175,82,0.1);flex-shrink:0;"><i class="ph ph-storefront" style="font-size:17px;color:#d4af52;"></i></span>
+        <span style="font-size:13.5px;font-weight:500;color:#cfc6b6;">ร้านค้า</span>
       </a>
       <a href="/track-order" class="_dlink" style="display:flex;align-items:center;gap:13px;padding:11px 20px;text-decoration:none;transition:background 0.15s;">
-        <span style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(139,115,85,0.1);flex-shrink:0;"><i class="ph ph-truck" style="font-size:17px;color:#8B7355;"></i></span>
-        <span style="font-size:13.5px;font-weight:500;color:#cbd5e1;">ติดตามพัสดุ</span>
+        <span style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(212,175,82,0.1);flex-shrink:0;"><i class="ph ph-truck" style="font-size:17px;color:#d4af52;"></i></span>
+        <span style="font-size:13.5px;font-weight:500;color:#cfc6b6;">ติดตามพัสดุ</span>
       </a>
-      <div style="height:1px;background:rgba(255,255,255,0.05);margin:6px 20px;"></div>
+      <div style="height:1px;background:rgba(212,175,82,0.07);margin:6px 20px;"></div>
 
       <p style="margin:0;padding:10px 20px 6px;font-size:11px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;color:#C9A876;">บัญชี</p>
 
       <a href="/orders" class="_dlink" style="display:flex;align-items:center;gap:13px;padding:11px 20px;text-decoration:none;transition:background 0.15s;">
-        <span style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(139,115,85,0.1);flex-shrink:0;"><i class="ph ph-package" style="font-size:17px;color:#8B7355;"></i></span>
-        <span style="font-size:13.5px;font-weight:500;color:#cbd5e1;">คำสั่งซื้อ</span>
+        <span style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(212,175,82,0.1);flex-shrink:0;"><i class="ph ph-package" style="font-size:17px;color:#d4af52;"></i></span>
+        <span style="font-size:13.5px;font-weight:500;color:#cfc6b6;">คำสั่งซื้อ</span>
       </a>
       <a href="/profile" class="_dlink" style="display:flex;align-items:center;gap:13px;padding:11px 20px;text-decoration:none;transition:background 0.15s;">
-        <span style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(139,115,85,0.1);flex-shrink:0;"><i class="ph ph-user-circle" style="font-size:17px;color:#8B7355;"></i></span>
-        <span style="font-size:13.5px;font-weight:500;color:#cbd5e1;">ข้อมูลส่วนตัว</span>
+        <span style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(212,175,82,0.1);flex-shrink:0;"><i class="ph ph-user-circle" style="font-size:17px;color:#d4af52;"></i></span>
+        <span style="font-size:13.5px;font-weight:500;color:#cfc6b6;">ข้อมูลส่วนตัว</span>
       </a>
       <a href="/address" class="_dlink" style="display:flex;align-items:center;gap:13px;padding:11px 20px;text-decoration:none;transition:background 0.15s;">
-        <span style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(139,115,85,0.1);flex-shrink:0;"><i class="ph ph-map-pin" style="font-size:17px;color:#8B7355;"></i></span>
-        <span style="font-size:13.5px;font-weight:500;color:#cbd5e1;">ที่อยู่จัดส่ง</span>
+        <span style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(212,175,82,0.1);flex-shrink:0;"><i class="ph ph-map-pin" style="font-size:17px;color:#d4af52;"></i></span>
+        <span style="font-size:13.5px;font-weight:500;color:#cfc6b6;">ที่อยู่จัดส่ง</span>
       </a>
 
-      <div style="height:1px;background:rgba(255,255,255,0.05);margin:6px 20px;"></div>
+      <div style="height:1px;background:rgba(212,175,82,0.07);margin:6px 20px;"></div>
 
       <p style="margin:0;padding:10px 20px 6px;font-size:11px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;color:#C9A876;">ช่วยเหลือ</p>
 
       <a href="/contact" class="_dlink" style="display:flex;align-items:center;gap:13px;padding:11px 20px;text-decoration:none;transition:background 0.15s;">
-        <span style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(139,115,85,0.1);flex-shrink:0;"><i class="ph ph-chat-circle-dots" style="font-size:17px;color:#8B7355;"></i></span>
-        <span style="font-size:13.5px;font-weight:500;color:#cbd5e1;">ติดต่อเรา</span>
+        <span style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(212,175,82,0.1);flex-shrink:0;"><i class="ph ph-chat-circle-dots" style="font-size:17px;color:#d4af52;"></i></span>
+        <span style="font-size:13.5px;font-weight:500;color:#cfc6b6;">ติดต่อเรา</span>
       </a>
       <a href="/about" class="_dlink" style="display:flex;align-items:center;gap:13px;padding:11px 20px;text-decoration:none;transition:background 0.15s;">
-        <span style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(139,115,85,0.1);flex-shrink:0;"><i class="ph ph-info" style="font-size:17px;color:#8B7355;"></i></span>
-        <span style="font-size:13.5px;font-weight:500;color:#cbd5e1;">เกี่ยวกับเรา</span>
+        <span style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(212,175,82,0.1);flex-shrink:0;"><i class="ph ph-info" style="font-size:17px;color:#d4af52;"></i></span>
+        <span style="font-size:13.5px;font-weight:500;color:#cfc6b6;">เกี่ยวกับเรา</span>
       </a>
     </div>
 
     <!-- Footer: Logout / Login -->
-    <div style="padding:12px 14px 20px;border-top:1px solid rgba(255,255,255,0.06);">
+    <div style="padding:12px 14px 20px;border-top:1px solid rgba(212,175,82,0.1);">
       <a href="#" id="bnav-logout-btn" class="flex" style="align-items:center;justify-content:center;gap:8px;padding:11px;border-radius:12px;font-size:13px;font-weight:600;color:#f87171;background:rgba(248,113,113,0.07);text-decoration:none;border:1px solid rgba(248,113,113,0.1);">
         <i class="ph ph-sign-out" style="font-size:16px;"></i> ออกจากระบบ
       </a>
-      <a href="#" id="bnav-login-btn" class="flex" style="align-items:center;justify-content:center;gap:8px;padding:11px;border-radius:12px;font-size:13px;font-weight:600;color:#fff;background:#8B7355;text-decoration:none;border:1px solid rgba(139,115,85,0.3);">
+      <a href="#" id="bnav-login-btn" class="flex" style="align-items:center;justify-content:center;gap:8px;padding:11px;border-radius:12px;font-size:13px;font-weight:600;color:#1a1408;background:linear-gradient(135deg,#f4ce76 0%,#d4af52 55%,#b8923f 100%);text-decoration:none;border:1px solid rgba(212,175,82,0.3);">
         <i class="ph ph-sign-in" style="font-size:16px;"></i> เข้าสู่ระบบ
       </a>
     </div>
@@ -698,7 +717,7 @@ function _renderNavMenus(menus) {
 }
 
 function closeMobileMenu(mobile) {
-  document.getElementById('mobile-menu')?.classList.add('hidden');
+  _toggleMobileMenu(false);
   mobile.querySelectorAll('.mob-sub-panel').forEach(panel => { panel.style.display = 'none'; });
   mobile.querySelectorAll('.mob-sub-toggle').forEach(btn => btn.setAttribute('aria-expanded', 'false'));
   mobile.querySelectorAll('.mob-caret').forEach(caret => { caret.style.transform = ''; });
@@ -1031,6 +1050,26 @@ function _toggleAccountDrawer(forceOpen) {
     drawer.classList.add('translate-x-full');
     overlay?.classList.add('hidden');
     document.body.style.overflow = '';
+  }
+}
+
+function _toggleMobileMenu(forceOpen) {
+  const menu = document.getElementById('mobile-menu');
+  const overlay = document.getElementById('mobile-menu-overlay');
+  const btn = document.getElementById('mobile-menu-btn');
+  if (!menu) return;
+  const isOpen = !menu.classList.contains('translate-x-full');
+  const shouldOpen = forceOpen !== undefined ? forceOpen : !isOpen;
+  if (shouldOpen) {
+    overlay?.classList.remove('hidden');
+    menu.classList.remove('translate-x-full');
+    document.body.style.overflow = 'hidden';
+    btn?.setAttribute('aria-expanded', 'true');
+  } else {
+    menu.classList.add('translate-x-full');
+    overlay?.classList.add('hidden');
+    document.body.style.overflow = '';
+    btn?.setAttribute('aria-expanded', 'false');
   }
 }
 
@@ -1376,10 +1415,9 @@ function _setupSharedEvents() {
   authToggle?.addEventListener('click', () => { if (typeof toggleAuthModal === 'function') return; _isLoginMode = !_isLoginMode; _updateAuthUI(); });
   authForm?.addEventListener('submit', (e) => { if (typeof handleAuthSubmit === 'function') return; _handleAuthSubmit(e); });
 
-  mobileBtn?.addEventListener('click', () => {
-    if (typeof toggleCart === 'function') return;
-    mobileMenu?.classList.toggle('hidden');
-  });
+  mobileBtn?.addEventListener('click', () => _toggleMobileMenu());
+  document.getElementById('mobile-menu-close')?.addEventListener('click', () => _toggleMobileMenu(false));
+  document.getElementById('mobile-menu-overlay')?.addEventListener('click', () => _toggleMobileMenu(false));
 
   // Bottom nav events
   const bnavCartBtn = document.getElementById('bnav-cart-btn');

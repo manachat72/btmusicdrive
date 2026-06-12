@@ -18,7 +18,7 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
 <base href="/">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="app.min.css?v=401f095f">
+    <link rel="stylesheet" href="app.min.css?v=050fda85">
     <meta name="theme-color" content="#8B7355">
     <link rel="icon" type="image/webp" href="images/logo.webp">
     <title>แฟลชไดร์ฟเพลง MP3 รวมเพลงฮิต เสียบปุ๊บฟังปั๊บ เสียงชัด HD | Bt music drive</title>
@@ -90,6 +90,30 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
         @media (prefers-reduced-motion: reduce) {
             .hero-cta { animation: none; opacity: 1; }
         }
+        /* Full-bleed luxury hero */
+        .hero-overlay-lux {
+            background:
+                linear-gradient(to top, rgba(6,5,3,0.95) 0%, rgba(6,5,3,0.80) 13%, rgba(6,5,3,0.32) 30%, rgba(6,5,3,0.05) 50%, rgba(6,5,3,0.18) 76%, rgba(6,5,3,0.42) 100%);
+        }
+        .hero-overlay-lux::after {
+            content: ""; position: absolute; inset: 0; pointer-events: none;
+            background: radial-gradient(72% 55% at 50% 42%, rgba(212,175,82,0.12) 0%, transparent 68%);
+        }
+        .hero-script {
+            font-family: Georgia, 'Times New Roman', serif;
+            font-style: italic; font-weight: 400; letter-spacing: 0.015em;
+        }
+        .hero-fade {
+            opacity: 0;
+            animation: heroCtaSlideDown 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            will-change: transform, opacity;
+        }
+        .hero-fade-1 { animation-delay: 0.05s; }
+        .hero-fade-2 { animation-delay: 0.18s; }
+        .hero-fade-3 { animation-delay: 0.32s; }
+        @media (prefers-reduced-motion: reduce) {
+            .hero-fade { animation: none; opacity: 1; }
+        }
     </style>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -156,51 +180,59 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <header id="site-header"></header>
 
     <!-- Hero Section -->
-    <section class="hero-grainy pt-24 pb-16 md:pt-32 md:pb-28 lg:pt-40 lg:pb-36 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-12">
-            <div class="md:w-1/2 space-y-6">
-                <span
-                    class="hero-badge inline-block py-1.5 px-4 rounded-full bg-amber-900/40 text-amber-200 text-sm font-semibold tracking-wide border border-amber-700/40 backdrop-blur-sm">
-                    ✦ สินค้าขายดี 2026
-                </span>
-                <h1 class="hero-h1 text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight text-white drop-shadow-lg">
-                    แฟลชไดร์ฟเพลง MP3 <br>
-                    <span class="hero-gradient-text heading-gold">รวมเพลงฮิตทุกแนวที่คุณคิดถึง</span>
-                </h1>
-                <p class="hero-glass-desc text-base md:text-lg text-amber-100/90 md:max-w-md leading-relaxed rounded-2xl px-5 py-4">
-                    เสียบปุ๊บฟังปั๊บ — เสียงชัด HD ทุกเพลง ไม่ต้องโหลด ไม่ต้องอินเทอร์เน็ต
-                    รวมเพลงฮิต ลูกทุ่ง สตริง สากล พร้อมฟังในรถและเครื่องเสียงได้ทันที
-                </p>
-                <div class="flex flex-row gap-3 pt-4"> <a href="#shop"
-                       class="hero-cta hero-cta-1 hero-cta-primary-btn w-1/2 bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-600 hover:to-yellow-500 text-gray-900 font-bold py-3 px-4 rounded-lg text-center transition-all shadow-lg hover:shadow-amber-500/40 hover:shadow-xl transform hover:-translate-y-1 text-sm sm:text-base">
-                       สั่งซื้อเลย
-                     </a>
-                     <a href="#categories"
-                     class="hero-cta hero-cta-2 hero-cta-secondary-btn w-1/2 bg-white/10 hover:bg-white/20 text-white border border-white/30 font-semibold py-3 px-4 rounded-lg text-center transition-all backdrop-blur-sm text-sm sm:text-base">
-                       ดูหมวดหมู่เพลง
-                     </a>
-               </div> 
+    <section class="relative w-full h-[78vh] min-h-[520px] md:h-[88vh] md:min-h-[600px] overflow-hidden bg-secondary">
+        <!-- Background video (full-bleed) -->
+        <video
+            class="absolute inset-0 w-full h-full object-cover"
+            autoplay muted loop playsinline preload="none"
+            poster="images/hero-banner1.webp"
+            width="1280" height="720"
+            aria-label="แฟลชไดร์ฟเพลง MP3 เสียบฟังในรถยนต์">
+            <source src="images/hero-video.mp4?v=20260612a" type="video/mp4">
+            <img src="images/hero-banner1.webp" alt="แฟลชไดร์ฟเพลง MP3 เสียบฟังในรถยนต์ รวมเพลงฮิตทุกแนว"
+                class="absolute inset-0 w-full h-full object-cover">
+        </video>
+        <!-- Gold-black luxury overlay -->
+        <div class="hero-overlay-lux absolute inset-0"></div>
+
+        <!-- Content (compact, anchored bottom) -->
+        <div class="relative z-10 h-full flex flex-col items-center justify-end text-center px-6 pb-7 md:pb-12">
+            <p class="hero-script hero-fade hero-fade-1 text-sm md:text-lg text-amber-200/85 tracking-wide mb-2 md:mb-3">
+                แฟลชไดร์ฟเพลงพรีเมียม · เสียงชัด HD · ฟังได้ทันที
+            </p>
+            <h1 class="hero-fade hero-fade-2 text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-extrabold leading-[1.15] text-white max-w-3xl drop-shadow-2xl">
+                แฟลชไดร์ฟเพลง MP3<br>
+                <span class="heading-gold">รวมเพลงฮิตทุกแนวที่คุณคิดถึง</span>
+            </h1>
+            <div class="hero-fade hero-fade-3 flex flex-row items-stretch justify-center gap-3 mt-5 md:mt-7 w-full max-w-md">
+                <a href="#shop"
+                   class="flex-1 sm:flex-none flex items-center justify-center bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-500 hover:to-yellow-500 text-gray-900 font-bold py-3 px-5 sm:px-10 rounded-xl text-center text-sm sm:text-base whitespace-nowrap shadow-lg shadow-amber-500/20 hover:shadow-amber-400/40 hover:shadow-xl transform hover:-translate-y-0.5 transition-all">
+                    สั่งซื้อเลย
+                </a>
+                <a href="#categories"
+                   class="flex-1 sm:flex-none flex items-center justify-center bg-white/5 hover:bg-white/10 text-white border border-white/30 hover:border-amber-300/60 font-semibold py-3 px-5 sm:px-10 rounded-xl text-center text-sm sm:text-base whitespace-nowrap backdrop-blur-sm transition-all">
+                    ดูหมวดหมู่เพลง
+                </a>
             </div>
-            <div class="md:w-1/2 relative">
-                <!-- Gold neon ring behind video -->
-                <div class="hero-neon-ring absolute inset-0 rounded-3xl transform scale-110"></div>
-                <!-- Floating USB video with gold neon frame -->
-                <div class="relative z-10 animate-float">
-                    <video
-                        class="hero-video-frame rounded-3xl object-cover w-full aspect-[3/4] md:aspect-auto md:h-[450px] lg:h-[500px]"
-                        autoplay muted loop playsinline preload="none"
-                        poster="images/hero-banner1.webp"
-                        width="1920" height="1080"
-                        aria-label="แฟลชไดร์ฟเพลง MP3 เสียบฟังในรถยนต์">
-                        <source src="images/hero-video.mp4?v=20260611c" type="video/mp4">
-                        <img src="images/hero-banner1.webp" alt="แฟลชไดร์ฟเพลง MP3 เสียบฟังในรถยนต์"
-                            class="rounded-3xl shadow-2xl object-cover w-full aspect-[3/4] md:aspect-auto md:h-[450px] lg:h-[500px]">
-                    </video>
-                    <div
-                        class="absolute inset-0 rounded-3xl bg-gradient-to-r from-black/40 via-transparent to-transparent pointer-events-none">
-                    </div>
-                </div>
-            </div>
+        </div>
+    </section>
+
+    <!-- SEO intro / store description -->
+    <section class="bg-secondary border-t border-amber-900/20 py-12 md:py-16 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-2xl md:text-3xl font-bold text-white mb-4 leading-snug">
+                แฟลชไดร์ฟเพลง MP3 <span class="heading-gold">รวมเพลงฮิตทุกแนว เสียบปุ๊บฟังปั๊บ</span>
+            </h2>
+            <p class="text-gray-300/90 leading-relaxed md:text-lg">
+                <strong class="text-amber-200 font-semibold">BT Music Drive</strong> คัดเพลงฮิตทุกแนวไว้ในแฟลชไดร์ฟ USB คุณภาพสูง ทั้ง
+                <a href="/category/lukthung" class="text-amber-300 hover:text-amber-200 underline-offset-2 hover:underline">เพลงลูกทุ่ง</a>,
+                <a href="/category/phleng-satring" class="text-amber-300 hover:text-amber-200 underline-offset-2 hover:underline">เพลงสตริง</a>,
+                <a href="/category/phuea-chiwit" class="text-amber-300 hover:text-amber-200 underline-offset-2 hover:underline">เพื่อชีวิต</a>,
+                <a href="/category/international" class="text-amber-300 hover:text-amber-200 underline-offset-2 hover:underline">เพลงสากล</a> และ
+                <a href="/category/luk-krung" class="text-amber-300 hover:text-amber-200 underline-offset-2 hover:underline">ลูกกรุง</a>
+                เสียงชัดระดับ HD เสียบปุ๊บฟังปั๊บได้ทั้งในรถยนต์และเครื่องเสียงบ้าน ไม่ต้องโหลด ไม่ต้องต่อเน็ต พร้อม
+                <a href="/shop" class="text-amber-300 hover:text-amber-200 underline-offset-2 hover:underline">จัดส่งทั่วไทย</a>
+            </p>
         </div>
     </section>
 
@@ -615,7 +647,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- Shared Footer -->
     <div id="site-footer"></div>
 
-    <script src="components.min.js?v=ca2d4d09"></script>
+    <script src="components.min.js?v=bcf557b6"></script>
 
 <script>
         (function () {
