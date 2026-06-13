@@ -3149,7 +3149,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   async function initDashboard() {
     if (_dashLoaded) return;
     _dashLoaded = true;
-    await loadDashboardStats();
+    // โหลดแยกอิสระ — ถ้า orders/stats fail ต้องไม่ทำให้ GA4 ไม่ทำงาน
+    loadDashboardStats();
+    loadGoogleAnalyticsStats();
   }
 
   // ── Dashboard Stats ───────────────────────────────────────────────────────
@@ -3410,7 +3412,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       document.getElementById('dash-last-month').textContent = '฿' + Math.max(0, Math.round(revenuePrev)).toLocaleString();
       document.getElementById('dash-earning-value').textContent = '฿' + Math.round(revenueNow).toLocaleString();
       renderDashboardCharts(d, revenueNow, revenuePrev);
-      loadGoogleAnalyticsStats();
 
       // Pending badge
       if (d.orders.pending > 0) {
