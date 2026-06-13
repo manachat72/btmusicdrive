@@ -91,7 +91,7 @@ router.get('/stats', authenticateToken, async (req: AuthRequest, res: Response) 
     }
 
     const token = await getAccessToken(credentials);
-    const [monthlyReport, topPagesReport] = await Promise.all([
+    const [monthlyReport, topPagesReport, countryReport, channelReport, weekReport] = await Promise.all([
       runGaReport(propertyId, token, {
         dateRanges: [{ startDate: '365daysAgo', endDate: 'today' }],
         dimensions: [{ name: 'yearMonth' }],
@@ -104,14 +104,39 @@ router.get('/stats', authenticateToken, async (req: AuthRequest, res: Response) 
         orderBys: [{ dimension: { dimensionName: 'yearMonth' } }],
       }),
       runGaReport(propertyId, token, {
-        dateRanges: [{ startDate: '30daysAgo', endDate: 'today' }],
-        dimensions: [{ name: 'pagePath' }],
+        dateRanges: [{ startDate: '7daysAgo', endDate: 'today' }],
+        dimensions: [{ name: 'pageTitle' }],
         metrics: [
           { name: 'screenPageViews' },
           { name: 'activeUsers' },
         ],
         orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }],
+        limit: 8,
+      }),
+      runGaReport(propertyId, token, {
+        dateRanges: [{ startDate: '7daysAgo', endDate: 'today' }],
+        dimensions: [{ name: 'country' }],
+        metrics: [{ name: 'activeUsers' }],
+        orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }],
+        limit: 5,
+      }),
+      runGaReport(propertyId, token, {
+        dateRanges: [{ startDate: '7daysAgo', endDate: 'today' }],
+        dimensions: [{ name: 'sessionDefaultChannelGroup' }],
+        metrics: [{ name: 'sessions' }],
+        orderBys: [{ metric: { metricName: 'sessions' }, desc: true }],
         limit: 6,
+      }),
+      runGaReport(propertyId, token, {
+        dateRanges: [
+          { startDate: '7daysAgo', endDate: 'today', name: 'current' },
+          { startDate: '14daysAgo', endDate: '8daysAgo', name: 'previous' },
+        ],
+        metrics: [
+          { name: 'activeUsers' },
+          { name: 'sessions' },
+          { name: 'screenPageViews' },
+        ],
       }),
     ]);
 
@@ -138,10 +163,32 @@ router.get('/stats', authenticateToken, async (req: AuthRequest, res: Response) 
     );
 
     const topPages = (topPagesReport.rows || []).map((row: any) => ({
-      path: row.dimensionValues?.[0]?.value || '/',
+      title: row.dimensionValues?.[0]?.value || '/',
       pageViews: reportMetric(row, 0),
       activeUsers: reportMetric(row, 1),
     }));
+
+    const topCountries = (countryReport.rows || []).map((row: any) => ({
+      country: row.dimensionValues?.[0]?.value || 'Unknown',
+      activeUsers: reportMetric(row, 0),
+    }));
+
+    const channels = (channelReport.rows || []).map((row: any) => ({
+      channel: row.dimensionValues?.[0]?.value || 'Unknown',
+      sessions: reportMetric(row, 0),
+    }));
+
+    const weekRows = weekReport.rows || [];
+    const weekCurrent = weekRows.find((r: any) => r.dimensionValues?.[0]?.value === 'current') || weekRows[0] || {};
+    const weekPrevious = weekRows.find((r: any) => r.dimensionValues?.[0]?.value === 'previous') || weekRows[1] || {};
+    const week7 = {
+      activeUsers: reportMetric(weekCurrent, 0),
+      sessions: reportMetric(weekCurrent, 1),
+      pageViews: reportMetric(weekCurrent, 2),
+      prevActiveUsers: reportMetric(weekPrevious, 0),
+      prevSessions: reportMetric(weekPrevious, 1),
+      prevPageViews: reportMetric(weekPrevious, 2),
+    };
 
     return res.json({
       configured: true,
@@ -150,6 +197,9 @@ router.get('/stats', authenticateToken, async (req: AuthRequest, res: Response) 
       monthly,
       totals,
       topPages,
+      topCountries,
+      channels,
+      week7,
     });
   } catch (error: any) {
     console.error('Google Analytics stats error:', error);
