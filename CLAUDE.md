@@ -92,9 +92,13 @@ btmusicdrive/
 
 ### Brand Colors (Tailwind config)
 ```js
-primary: '#8B7355'   // Bronze (amber-brown)
+primary: '#8B7355'   // Bronze (amber-brown) — ใช้กับ icon, badge, accent
 secondary: '#0F172A' // Dark slate (navbar/footer bg)
 ```
+
+> **ปุ่ม CTA หลัก** (เช่น "สั่งซื้อเลย") ใช้ Tailwind amber/yellow gradient จริง:
+> `bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500` (สีทองสว่าง)
+> — **ไม่ใช้ primary** สำหรับปุ่ม hero
 
 ---
 

@@ -3265,7 +3265,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   async function loadDashboardStats() {
     try {
       const res = await fetch(`${API_BASE}/orders/stats`, { headers: adminHeaders(false) });
-      if (!res.ok) throw new Error('stats failed');
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => ({}));
+        throw new Error(`${res.status}: ${errBody.error || 'stats failed'}`);
+      }
       const d = await res.json();
 
       // Stat cards
@@ -3348,7 +3351,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     } catch (e) {
       console.error('Dashboard stats error:', e);
-      document.getElementById('dash-revenue').textContent = 'โหลดไม่ได้';
+      document.getElementById('dash-revenue').textContent = 'Error';
+      document.getElementById('dash-revenue-lbl').textContent = e.message;
     }
   }
 
