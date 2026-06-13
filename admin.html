@@ -2077,6 +2077,64 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
       </div>
 
+      <!-- GA4 Analytics Section -->
+      <div id="ga4-section" style="display:none;margin-bottom:24px;">
+        <!-- 7-day summary -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px;">
+          <div class="wp-card" style="margin:0;padding:16px;">
+            <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">ผู้ใช้งาน 7 วัน</div>
+            <div id="ga4-users" style="font-size:28px;font-weight:700;color:var(--text);">—</div>
+            <div id="ga4-users-trend" style="font-size:11px;color:var(--muted);margin-top:2px;"></div>
+          </div>
+          <div class="wp-card" style="margin:0;padding:16px;">
+            <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">เซสชัน 7 วัน</div>
+            <div id="ga4-sessions" style="font-size:28px;font-weight:700;color:var(--text);">—</div>
+            <div id="ga4-sessions-trend" style="font-size:11px;color:var(--muted);margin-top:2px;"></div>
+          </div>
+          <div class="wp-card" style="margin:0;padding:16px;">
+            <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">การดูหน้า 7 วัน</div>
+            <div id="ga4-pageviews" style="font-size:28px;font-weight:700;color:var(--text);">—</div>
+            <div id="ga4-pageviews-trend" style="font-size:11px;color:var(--muted);margin-top:2px;"></div>
+          </div>
+        </div>
+        <!-- Tables -->
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;">
+          <!-- Top Pages -->
+          <div class="wp-card" style="margin:0;">
+            <div class="card-hdr"><h2>จำนวนการดู <span style="font-size:11px;color:var(--muted);font-weight:400;">7 วันล่าสุด</span></h2></div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px;">
+              <thead><tr>
+                <th style="text-align:left;padding:6px 8px;color:var(--muted);font-weight:600;border-bottom:1px solid var(--border);">ชื่อหน้า</th>
+                <th style="text-align:right;padding:6px 8px;color:var(--muted);font-weight:600;border-bottom:1px solid var(--border);">การดู</th>
+              </tr></thead>
+              <tbody id="ga4-pages-tbody"><tr><td colspan="2" style="padding:12px 8px;color:var(--muted);text-align:center;">กำลังโหลด...</td></tr></tbody>
+            </table>
+          </div>
+          <!-- Country -->
+          <div class="wp-card" style="margin:0;">
+            <div class="card-hdr"><h2>ผู้ใช้ตามประเทศ <span style="font-size:11px;color:var(--muted);font-weight:400;">7 วันล่าสุด</span></h2></div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px;">
+              <thead><tr>
+                <th style="text-align:left;padding:6px 8px;color:var(--muted);font-weight:600;border-bottom:1px solid var(--border);">ประเทศ</th>
+                <th style="text-align:right;padding:6px 8px;color:var(--muted);font-weight:600;border-bottom:1px solid var(--border);">ผู้ใช้งาน</th>
+              </tr></thead>
+              <tbody id="ga4-countries-tbody"><tr><td colspan="2" style="padding:12px 8px;color:var(--muted);text-align:center;">กำลังโหลด...</td></tr></tbody>
+            </table>
+          </div>
+          <!-- Channel -->
+          <div class="wp-card" style="margin:0;">
+            <div class="card-hdr"><h2>เซสชันตาม Channel <span style="font-size:11px;color:var(--muted);font-weight:400;">7 วันล่าสุด</span></h2></div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px;">
+              <thead><tr>
+                <th style="text-align:left;padding:6px 8px;color:var(--muted);font-weight:600;border-bottom:1px solid var(--border);">Channel</th>
+                <th style="text-align:right;padding:6px 8px;color:var(--muted);font-weight:600;border-bottom:1px solid var(--border);">เซสชัน</th>
+              </tr></thead>
+              <tbody id="ga4-channels-tbody"><tr><td colspan="2" style="padding:12px 8px;color:var(--muted);text-align:center;">กำลังโหลด...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
       <!-- Pending + Low Stock -->
       <div class="dash-ops-grid">
 
@@ -3241,21 +3299,77 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const ga = await res.json();
       if (!ga.configured || !Array.isArray(ga.monthly)) return;
 
+      // Visitor Insights chart
       const monthly = ga.monthly.map(m => ({
         label: m.label,
         customers: Number(m.activeUsers || 0),
         orders: Number(m.sessions || 0),
       }));
       renderVisitorChart(monthly, 'Active Users');
-
       const last = ga.monthly[ga.monthly.length - 1] || {};
       const prev = ga.monthly[ga.monthly.length - 2] || {};
       const currentUsers = Number(last.activeUsers || 0);
       const previousUsers = Number(prev.activeUsers || 0);
       const change = previousUsers > 0 ? ((currentUsers - previousUsers) / previousUsers) * 100 : 0;
       const visitorLabel = document.getElementById('dash-visitor-label');
-      if (visitorLabel) {
-        visitorLabel.textContent = `Active Users ${currentUsers.toLocaleString()} (${change >= 0 ? '+' : ''}${change.toFixed(1)}%)`;
+      if (visitorLabel) visitorLabel.textContent = `Active Users ${currentUsers.toLocaleString()} (${change >= 0 ? '+' : ''}${change.toFixed(1)}%)`;
+
+      // GA4 section
+      const sec = document.getElementById('ga4-section');
+      if (sec) sec.style.display = 'block';
+
+      // 7-day summary
+      const w = ga.week7 || {};
+      function ga4Trend(cur, prev) {
+        if (!prev) return '';
+        const pct = ((cur - prev) / prev * 100).toFixed(1);
+        return `<span style="color:${pct >= 0 ? '#22c55e' : '#ef4444'}">${pct >= 0 ? '▲' : '▼'} ${Math.abs(pct)}% vs สัปดาห์ก่อน</span>`;
+      }
+      document.getElementById('ga4-users').textContent = Number(w.activeUsers || 0).toLocaleString();
+      document.getElementById('ga4-users-trend').innerHTML = ga4Trend(w.activeUsers, w.prevActiveUsers);
+      document.getElementById('ga4-sessions').textContent = Number(w.sessions || 0).toLocaleString();
+      document.getElementById('ga4-sessions-trend').innerHTML = ga4Trend(w.sessions, w.prevSessions);
+      document.getElementById('ga4-pageviews').textContent = Number(w.pageViews || 0).toLocaleString();
+      document.getElementById('ga4-pageviews-trend').innerHTML = ga4Trend(w.pageViews, w.prevPageViews);
+
+      // Top pages
+      const pagesTbody = document.getElementById('ga4-pages-tbody');
+      if (pagesTbody) {
+        pagesTbody.innerHTML = (ga.topPages || []).length
+          ? ga.topPages.map(p => `<tr>
+              <td style="padding:6px 8px;color:var(--text);border-bottom:1px solid var(--border);">${(p.title||'/').slice(0,40)}</td>
+              <td style="padding:6px 8px;text-align:right;font-weight:600;border-bottom:1px solid var(--border);">${Number(p.pageViews).toLocaleString()}</td>
+            </tr>`).join('')
+          : '<tr><td colspan="2" style="padding:12px;text-align:center;color:var(--muted);">ไม่มีข้อมูล</td></tr>';
+      }
+
+      // Countries
+      const ctbody = document.getElementById('ga4-countries-tbody');
+      if (ctbody) {
+        ctbody.innerHTML = (ga.topCountries || []).length
+          ? ga.topCountries.map(c => `<tr>
+              <td style="padding:6px 8px;color:var(--text);border-bottom:1px solid var(--border);">${c.country}</td>
+              <td style="padding:6px 8px;text-align:right;font-weight:600;border-bottom:1px solid var(--border);">${Number(c.activeUsers).toLocaleString()}</td>
+            </tr>`).join('')
+          : '<tr><td colspan="2" style="padding:12px;text-align:center;color:var(--muted);">ไม่มีข้อมูล</td></tr>';
+      }
+
+      // Channels
+      const chtbody = document.getElementById('ga4-channels-tbody');
+      if (chtbody) {
+        const totalSessions = (ga.channels || []).reduce((s, c) => s + Number(c.sessions), 0);
+        chtbody.innerHTML = (ga.channels || []).length
+          ? ga.channels.map(c => {
+              const pct = totalSessions ? ((Number(c.sessions) / totalSessions) * 100).toFixed(1) : 0;
+              return `<tr>
+                <td style="padding:6px 8px;color:var(--text);border-bottom:1px solid var(--border);">${c.channel}</td>
+                <td style="padding:6px 8px;text-align:right;border-bottom:1px solid var(--border);">
+                  <span style="font-weight:600;">${Number(c.sessions).toLocaleString()}</span>
+                  <span style="color:var(--muted);font-size:11px;margin-left:4px;">${pct}%</span>
+                </td>
+              </tr>`;
+            }).join('')
+          : '<tr><td colspan="2" style="padding:12px;text-align:center;color:var(--muted);">ไม่มีข้อมูล</td></tr>';
       }
     } catch (e) {
       console.warn('Google Analytics stats unavailable:', e);
