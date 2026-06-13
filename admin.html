@@ -3144,7 +3144,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   }
 
   // ── Init ──────────────────────────────────────────────────────────────────
-  let _dashLoaded = false;
+  // ใช้ var (hoisted, ไม่มี TDZ) — กัน ReferenceError เมื่อ Cloudflare Rocket Loader จัดลำดับ script ใหม่
+  var _dashLoaded = false;
 
   async function initDashboard() {
     if (_dashLoaded) return;
