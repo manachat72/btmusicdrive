@@ -46,7 +46,8 @@ app.use(helmet({
 app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (mobile apps, curl, etc.)
-    if (!origin || allowedOrigins.includes(origin)) {
+    // Allow whitelisted origins + any Vercel preview/production deployment (*.vercel.app)
+    if (!origin || allowedOrigins.includes(origin) || /^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(origin)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
