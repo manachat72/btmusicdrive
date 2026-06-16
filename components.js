@@ -439,7 +439,7 @@ function _footerHTML() {
 function _chatWidgetHTML() {
   return `
   <style>
-    #bt-chat-widget { position:fixed; bottom:78px; right:12px; z-index:9998; display:flex; flex-direction:column; align-items:flex-end; gap:10px; }
+    #bt-chat-widget { position:fixed; bottom:78px; right:12px; z-index:45; display:flex; flex-direction:column; align-items:flex-end; gap:10px; }
     @media (min-width:768px) { #bt-chat-widget { bottom:24px; right:24px; } }
     #bt-chat-toggle { position:relative; cursor:pointer; border:none; background:none; padding:0; display:block;
       animation:btBounce 2.6s ease-in-out infinite; filter:drop-shadow(0 4px 12px rgba(0,0,0,0.25)); transition:transform 0.15s; }
