@@ -17,6 +17,7 @@ import imageRoutes from './routes/images';
 import contactRoutes from './routes/contact';
 import analyticsRoutes from './routes/analytics';
 import feedRoutes from './routes/feed';
+import lineRoutes from './routes/line';
 import { sendOrderConfirmationEmail } from './services/emailService';
 
 dotenv.config();
@@ -68,6 +69,8 @@ app.use(rateLimit({
 
 // Stripe webhook needs raw body — must be BEFORE express.json()
 app.use('/api/payment/webhook', express.raw({ type: 'application/json' }));
+// LINE webhook needs raw body to verify the x-line-signature HMAC
+app.use('/api/line/webhook', express.raw({ type: 'application/json' }));
 
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true, limit: '1mb' }));
@@ -89,6 +92,7 @@ app.use('/api/images', imageRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/feed', feedRoutes);
+app.use('/api/line', lineRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
