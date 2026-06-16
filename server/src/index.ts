@@ -18,6 +18,7 @@ import contactRoutes from './routes/contact';
 import analyticsRoutes from './routes/analytics';
 import feedRoutes from './routes/feed';
 import lineRoutes from './routes/line';
+import messengerRoutes from './routes/messenger';
 import { sendOrderConfirmationEmail } from './services/emailService';
 
 dotenv.config();
@@ -93,6 +94,7 @@ app.use('/api/contact', contactRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/feed', feedRoutes);
 app.use('/api/line', lineRoutes);
+app.use('/api/messenger', messengerRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
