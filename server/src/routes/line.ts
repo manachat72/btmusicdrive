@@ -100,26 +100,29 @@ router.post('/webhook', async (req: Request, res: Response) => {
     return res.status(401).json({ error: 'Invalid signature' });
   }
 
-  // Acknowledge LINE immediately (must respond 200 fast), then process.
-  res.status(200).end();
-
   let events: any[] = [];
   try {
     events = JSON.parse(rawBody.toString('utf-8')).events || [];
   } catch {
-    return;
+    return res.status(200).end();
   }
 
-  for (const ev of events) {
-    if (ev.type === 'message' && ev.message?.type === 'text' && ev.replyToken) {
-      const reply = await askAI(ev.message.text);
-      try {
-        await replyToLine(ev.replyToken, reply);
-      } catch (err: any) {
-        console.error('[LINE] reply failed:', err?.message || err);
+  // On serverless (Vercel) the function is frozen once the response is sent,
+  // so all async work (OpenAI + LINE reply) must finish BEFORE we respond.
+  await Promise.all(
+    events.map(async (ev) => {
+      if (ev.type === 'message' && ev.message?.type === 'text' && ev.replyToken) {
+        const reply = await askAI(ev.message.text);
+        try {
+          await replyToLine(ev.replyToken, reply);
+        } catch (err: any) {
+          console.error('[LINE] reply failed:', err?.message || err);
+        }
       }
-    }
-  }
+    })
+  );
+
+  res.status(200).end();
 });
 
 export default router;
