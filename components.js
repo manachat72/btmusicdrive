@@ -459,7 +459,7 @@ function _chatWidgetHTML() {
 
   <div id="bt-chat-widget">
     <div id="bt-chat-panel" role="menu" aria-label="ติดต่อเรา">
-      <a href="https://www.facebook.com/btmusicdrivemp3" target="_blank" rel="noopener" class="bt-chat-icon" style="background:#1877f2;" aria-label="Facebook Messenger">
+      <a href="https://m.me/btmusicdrivemp3" target="_blank" rel="noopener" class="bt-chat-icon" style="background:#1877f2;" aria-label="Facebook Messenger">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="#fff"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.413c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
       </a>
       <a href="https://line.me/R/ti/p/@bt1992?from=page&openQrModal=true&searchId=bt1992" target="_blank" rel="noopener" class="bt-chat-icon" style="background:#06c755;" aria-label="LINE @bt1992">
