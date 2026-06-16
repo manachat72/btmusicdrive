@@ -445,8 +445,8 @@ function _chatWidgetHTML() {
       animation:btBounce 2.6s ease-in-out infinite; filter:drop-shadow(0 4px 12px rgba(0,0,0,0.25)); transition:transform 0.15s; }
     #bt-chat-toggle:hover { transform:scale(1.05); }
     #bt-chat-toggle:active { transform:scale(0.97); }
-    #bt-chat-avatar { width:96px; height:96px; object-fit:contain; display:block; }
-    @media (min-width:768px) { #bt-chat-avatar { width:108px; height:108px; } }
+    #bt-chat-avatar { width:76px; height:76px; object-fit:contain; display:block; }
+    @media (min-width:768px) { #bt-chat-avatar { width:88px; height:88px; } }
     @keyframes btBounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-5px);} }
     #bt-chat-panel { display:none; flex-direction:column; gap:12px; padding:0 6px; }
     #bt-chat-panel.open { display:flex; animation:btFadeIn 0.2s ease; }
@@ -468,7 +468,7 @@ function _chatWidgetHTML() {
     </div>
 
     <button id="bt-chat-toggle" aria-label="แชทกับเรา" aria-expanded="false">
-      <img id="bt-chat-avatar" src="/images/chat-support.webp" alt="แชทกับเรา" width="108" height="108">
+      <img id="bt-chat-avatar" src="/images/chat-support.webp" alt="แชทกับเรา" width="88" height="88">
     </button>
   </div>
 
