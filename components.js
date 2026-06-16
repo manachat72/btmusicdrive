@@ -436,6 +436,79 @@ function _footerHTML() {
   </footer>`;
 }
 
+function _chatWidgetHTML() {
+  return `
+  <style>
+    #bt-chat-widget { position:fixed; bottom:90px; right:18px; z-index:9998; display:flex; flex-direction:column; align-items:flex-end; gap:10px; }
+    @media (min-width:768px) { #bt-chat-widget { bottom:28px; right:24px; } }
+    #bt-chat-toggle { position:relative; cursor:pointer; border:none; background:none; padding:0; }
+    #bt-chat-avatar { width:64px; height:64px; border-radius:50%; object-fit:cover; box-shadow:0 4px 16px rgba(0,0,0,0.28); border:2.5px solid #d4af52; display:block; }
+    #bt-chat-badge { position:absolute; top:0; right:0; width:18px; height:18px; background:#22c55e; border-radius:50%; border:2px solid #fff;
+      animation:btPulse 1.8s ease-in-out infinite; }
+    @keyframes btPulse { 0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0.5);} 50%{box-shadow:0 0 0 7px rgba(34,197,94,0);} }
+    #bt-chat-label { background:linear-gradient(135deg,#b8973e,#d4af52); color:#fff; font-size:12px; font-weight:700;
+      padding:5px 12px; border-radius:20px; white-space:nowrap; box-shadow:0 2px 8px rgba(0,0,0,0.18);
+      animation:btBounce 2.5s ease-in-out infinite; letter-spacing:0.02em; }
+    @keyframes btBounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-4px);} }
+    #bt-chat-panel { display:none; flex-direction:column; gap:0; background:#fff; border-radius:16px;
+      box-shadow:0 8px 32px rgba(0,0,0,0.18); overflow:hidden; min-width:220px; }
+    #bt-chat-panel.open { display:flex; }
+    .bt-chat-head { background:linear-gradient(135deg,#b8973e,#d4af52); padding:14px 16px; display:flex; align-items:center; gap:10px; }
+    .bt-chat-head img { width:40px; height:40px; border-radius:50%; object-fit:cover; border:2px solid rgba(255,255,255,0.5); }
+    .bt-chat-head-info p { margin:0; }
+    .bt-chat-head-info .name { font-size:14px; font-weight:700; color:#fff; }
+    .bt-chat-head-info .status { font-size:11px; color:rgba(255,255,255,0.85); }
+    .bt-chat-links a { display:flex; align-items:center; gap:12px; padding:14px 18px; text-decoration:none;
+      font-size:14px; font-weight:600; color:#1a1a1a; border-bottom:1px solid #f0f0f0; transition:background 0.15s; }
+    .bt-chat-links a:last-child { border-bottom:none; }
+    .bt-chat-links a:hover { background:#faf7f0; }
+    .bt-chat-links .icon-wrap { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .bt-chat-links .lbl { font-size:13px; color:#666; font-weight:400; }
+  </style>
+
+  <div id="bt-chat-widget">
+    <div id="bt-chat-panel" role="dialog" aria-label="ติดต่อเรา">
+      <div class="bt-chat-head">
+        <img src="/images/support.webp" alt="ทีมงาน BT Music Drive">
+        <div class="bt-chat-head-info">
+          <p class="name">BT Music Drive</p>
+          <p class="status">&#x1F7E2; ออนไลน์ พร้อมช่วยเหลือ</p>
+        </div>
+      </div>
+      <div class="bt-chat-links">
+        <a href="https://www.facebook.com/btmusicdrivemp3" target="_blank" rel="noopener">
+          <span class="icon-wrap" style="background:#1877f2;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.413c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
+          </span>
+          <div>
+            <div>Facebook</div>
+            <div class="lbl">แชทผ่าน Messenger</div>
+          </div>
+        </a>
+        <a href="https://line.me/R/ti/p/@bt1992?from=page&openQrModal=true&searchId=bt1992" target="_blank" rel="noopener">
+          <span class="icon-wrap" style="background:#06c755;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M24 10.304c0-5.369-5.383-9.738-12-9.738-6.616 0-12 4.369-12 9.738 0 4.814 4.269 8.846 10.036 9.608.391.084.922.258 1.057.592.121.303.079.778.039 1.085l-.171 1.027c-.053.303-.242 1.186 1.039.647 1.281-.54 6.911-4.069 9.428-6.967C23.418 14.013 24 12.228 24 10.304zm-17.154 2.706h-2.252a.515.515 0 0 1-.515-.515V9.03a.515.515 0 1 1 1.03 0v3.012h1.737a.515.515 0 1 1 0 1.03zm2.061-.515a.515.515 0 1 1-1.03 0V9.03a.515.515 0 1 1 1.03 0v3.465zm4.917 0a.515.515 0 0 1-.876.366l-1.78-2.433v2.067a.515.515 0 1 1-1.03 0V9.03a.515.515 0 0 1 .876-.366l1.78 2.433V9.03a.515.515 0 1 1 1.03 0v3.465zm3.511.515H15.08a.515.515 0 0 1-.515-.515V9.03a.515.515 0 0 1 .515-.515h2.255a.515.515 0 1 1 0 1.03H15.6v.97h1.735a.515.515 0 1 1 0 1.03H15.6v.97h1.735a.515.515 0 1 1 0 1.03z"/></svg>
+          </span>
+          <div>
+            <div>LINE</div>
+            <div class="lbl">@bt1992</div>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:10px;justify-content:flex-end;">
+      <div id="bt-chat-label">แชทกับเรา</div>
+      <button id="bt-chat-toggle" aria-label="เปิด/ปิดเมนูติดต่อ" aria-expanded="false">
+        <img id="bt-chat-avatar" src="/images/support.webp" alt="แชทกับเรา">
+        <span id="bt-chat-badge"></span>
+      </button>
+    </div>
+  </div>
+
+  `;
+}
+
 function _mobileBottomNavHTML() {
   return `
   <style>
@@ -629,6 +702,27 @@ function _mobileBottomNavHTML() {
   // Mobile Bottom Navigation Bar
   if (!document.getElementById('mobile-bottom-nav')) {
     document.body.insertAdjacentHTML('beforeend', _mobileBottomNavHTML());
+  }
+
+  // Floating Chat Widget
+  if (!document.getElementById('bt-chat-widget')) {
+    document.body.insertAdjacentHTML('beforeend', _chatWidgetHTML());
+    var _ctoggle = document.getElementById('bt-chat-toggle');
+    var _cpanel  = document.getElementById('bt-chat-panel');
+    if (_ctoggle && _cpanel) {
+      _ctoggle.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var open = _cpanel.classList.toggle('open');
+        _ctoggle.setAttribute('aria-expanded', String(open));
+      });
+      document.addEventListener('click', function(e) {
+        var w = document.getElementById('bt-chat-widget');
+        if (w && !w.contains(e.target)) {
+          _cpanel.classList.remove('open');
+          _ctoggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
   }
 
 
