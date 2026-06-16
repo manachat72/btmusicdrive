@@ -8,7 +8,12 @@ const VERIFY_TOKEN = process.env.FB_VERIFY_TOKEN || '';
 
 // Send a text message back to a Messenger user via the Graph API.
 async function sendMessage(recipientId: string, text: string): Promise<void> {
-  await fetch(`https://graph.facebook.com/v21.0/me/messages?access_token=${PAGE_TOKEN}`, {
+  if (!PAGE_TOKEN) {
+    console.error('[Messenger] FB_PAGE_ACCESS_TOKEN is missing — cannot reply');
+    return;
+  }
+
+  const resp = await fetch(`https://graph.facebook.com/v21.0/me/messages?access_token=${PAGE_TOKEN}`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({
@@ -17,6 +22,11 @@ async function sendMessage(recipientId: string, text: string): Promise<void> {
       message: { text: text.slice(0, 1900) },
     }),
   });
+
+  // Facebook returns 200 on success; surface the exact error otherwise.
+  if (!resp.ok) {
+    console.error('[Messenger] Graph API rejected the reply:', resp.status, await resp.text());
+  }
 }
 
 // GET /api/messenger/webhook — Facebook calls this once to verify the webhook.
