@@ -49,7 +49,7 @@ ${getProductContext()}`;
 }
 
 /**
- * Shared support-bot brain used by every channel (LINE, Messenger, ...).
+ * Shared support-bot brain used by the LINE bot.
  * Answers a customer message via OpenAI using the live catalog + KB.
  * Always resolves to a string — never throws — so callers can just reply.
  */

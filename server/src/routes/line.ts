@@ -18,6 +18,34 @@ function verifySignature(rawBody: Buffer, signature: string): boolean {
   }
 }
 
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+// Human-like typing delay scaled to how long the reply is, so a long answer
+// feels like it took longer to "type". Clamped to keep replies snappy and
+// within LINE's 30s webhook timeout.
+function typingDelay(text: string): number {
+  const ms = 600 + text.length * 35; // ~base + per-character
+  return Math.min(ms, 6000);
+}
+
+// Show the typing/loading animation (3 dots) in the chat while the AI thinks.
+// LINE shows it for `seconds` (5–60, multiples of 5) or until the bot replies.
+async function showLoading(userId: string, seconds = 20): Promise<void> {
+  if (!userId) return;
+  try {
+    await fetch('https://api.line.me/v2/bot/chat/loading/start', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        authorization: `Bearer ${LINE_TOKEN}`,
+      },
+      body: JSON.stringify({ chatId: userId, loadingSeconds: seconds }),
+    });
+  } catch (err: any) {
+    console.error('[LINE] loading animation failed:', err?.message || err);
+  }
+}
+
 // Reply to a LINE event using its one-time replyToken.
 async function replyToLine(replyToken: string, text: string): Promise<void> {
   await fetch('https://api.line.me/v2/bot/message/reply', {
@@ -54,7 +82,11 @@ router.post('/webhook', async (req: Request, res: Response) => {
   await Promise.all(
     events.map(async (ev) => {
       if (ev.type === 'message' && ev.message?.type === 'text' && ev.replyToken) {
+        // Show "typing…" while the AI generates a reply (1:1 chats only).
+        if (ev.source?.userId) await showLoading(ev.source.userId);
         const reply = await askSupportAI(ev.message.text);
+        // Delay scaled to reply length so it feels like real typing.
+        await sleep(typingDelay(reply));
         try {
           await replyToLine(ev.replyToken, reply);
         } catch (err: any) {
