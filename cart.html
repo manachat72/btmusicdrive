@@ -222,8 +222,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         emptyDiv.classList.add('hidden');
         contentDiv.classList.remove('hidden');
 
+        const esc = s => String(s ?? '').replace(/[&<>"']/g, c => (
+            { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+        ));
         listDiv.innerHTML = pageCart.map(item => {
-            const img = item.image || 'https://via.placeholder.com/120x120?text=No+Image';
+            const img = esc(item.image || 'https://via.placeholder.com/120x120?text=No+Image');
             const fmtP = p => `฿${Math.round(p).toLocaleString('th-TH')}`;
             const hasDiscount = item.originalPrice && item.originalPrice > item.price;
             const originalPriceHtml = hasDiscount
@@ -232,12 +235,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             const currentPriceClass = hasDiscount ? 'price-current-sale' : 'price-current-neutral';
 
             return `
-            <div class="flex items-center gap-3 sm:gap-4 p-4 sm:p-5" data-id="${item.id}">
-                <a href="product.html?id=${item.id}" class="flex-shrink-0">
-                    <img src="${img}" alt="${item.name}" class="w-18 h-18 sm:w-24 sm:h-24 object-cover rounded-xl border border-gray-100" style="width:72px;height:72px">
+            <div class="flex items-center gap-3 sm:gap-4 p-4 sm:p-5" data-id="${esc(item.id)}">
+                <a href="product.html?id=${encodeURIComponent(item.id)}" class="flex-shrink-0">
+                    <img src="${img}" alt="${esc(item.name)}" class="w-18 h-18 sm:w-24 sm:h-24 object-cover rounded-xl border border-gray-100" style="width:72px;height:72px">
                 </a>
                 <div class="flex-1 min-w-0">
-                    <a href="product.html?id=${item.id}" class="text-xs sm:text-sm font-semibold text-gray-900 hover:text-primary line-clamp-2 transition-colors">${item.name}</a>
+                    <a href="product.html?id=${encodeURIComponent(item.id)}" class="text-xs sm:text-sm font-semibold text-gray-900 hover:text-primary line-clamp-2 transition-colors">${esc(item.name)}</a>
                     <div class="flex items-baseline gap-1 mt-1">
                         <span class="text-sm sm:text-base font-extrabold ${currentPriceClass}">${fmtP(item.price)}</span>
                         ${originalPriceHtml}

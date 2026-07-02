@@ -458,6 +458,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         return filtered;
     }
 
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => (
+        { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+    ));
+
     function renderShopProducts() {
         const container = document.getElementById('shop-products');
         const noResults = document.getElementById('no-results');
@@ -507,13 +511,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 return `
                 <div class="bg-white rounded-2xl border border-gray-100 flex overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_12px_36px_rgba(139,115,85,0.16)] transition-all duration-300 animate-fade-in-up" style="animation-delay:${index * 0.05}s">
                     <a href="${pUrl}" class="w-36 sm:w-48 flex-shrink-0 overflow-hidden relative">
-                        <img src="${product.imageUrl}" alt="${product.name}" loading="lazy" decoding="async" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                        <img src="${esc(product.imageUrl)}" alt="${esc(product.name)}" loading="lazy" decoding="async" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
                         ${discBadge}
                     </a>
                     <div class="p-3 sm:p-5 flex-1 flex flex-col justify-between min-w-0">
                         <div>
-                            <div class="text-[10px] sm:text-xs text-gray-400 font-medium uppercase tracking-wider mb-0.5">${product.category?.name || product.category || ''}</div>
-                            <a href="${pUrl}" class="block"><h3 class="text-sm sm:text-base font-bold text-gray-900 hover:text-primary transition-colors line-clamp-2">${product.name}</h3></a>
+                            <div class="text-[10px] sm:text-xs text-gray-400 font-medium uppercase tracking-wider mb-0.5">${esc(product.category?.name || product.category || '')}</div>
+                            <a href="${pUrl}" class="block"><h3 class="text-sm sm:text-base font-bold text-gray-900 hover:text-primary transition-colors line-clamp-2">${esc(product.name)}</h3></a>
                             <div class="flex items-center mt-1.5">${ratingOrMeta}</div>
                         </div>
                         <div class="flex items-center justify-between mt-3 gap-2 flex-wrap">
@@ -530,13 +534,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             return `
             <div class="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_12px_36px_rgba(139,115,85,0.16)] transition-all duration-300 animate-fade-in-up" style="animation-delay:${index * 0.05}s">
                 <a href="${pUrl}" class="block relative aspect-square overflow-hidden group cursor-pointer">
-                    <img src="${product.imageUrl}" alt="${product.name}" loading="lazy" decoding="async" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                    <img src="${esc(product.imageUrl)}" alt="${esc(product.name)}" loading="lazy" decoding="async" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     ${discBadge}
                 </a>
                 <div class="p-2.5 sm:p-4">
-                    <div class="text-[10px] sm:text-xs text-gray-400 font-medium mb-0.5 uppercase tracking-wider">${product.category?.name || product.category || ''}</div>
-                    <a href="${pUrl}" class="block"><h3 class="text-xs sm:text-sm font-bold text-gray-900 mb-1 line-clamp-2 hover:text-primary transition-colors leading-snug">${product.name}</h3></a>
+                    <div class="text-[10px] sm:text-xs text-gray-400 font-medium mb-0.5 uppercase tracking-wider">${esc(product.category?.name || product.category || '')}</div>
+                    <a href="${pUrl}" class="block"><h3 class="text-xs sm:text-sm font-bold text-gray-900 mb-1 line-clamp-2 hover:text-primary transition-colors leading-snug">${esc(product.name)}</h3></a>
                     <div class="flex items-center mb-2">${ratingOrMeta}</div>
                     <div class="flex items-center justify-between gap-2 mb-2">
                         <div class="flex items-baseline gap-1.5 flex-wrap">
@@ -895,10 +899,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             return `
             <a href="${itemUrl}" class="flex items-center gap-3 group hover:bg-gray-50 rounded-lg p-1.5 -mx-1.5 transition-colors">
                 <div class="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
-                    <img src="${item.image}" alt="${item.name} — แฟลชไดร์ฟเพลง MP3" loading="lazy" decoding="async" class="w-full h-full object-cover">
+                    <img src="${esc(item.image)}" alt="${esc(item.name)} — แฟลชไดร์ฟเพลง MP3" loading="lazy" decoding="async" class="w-full h-full object-cover">
                 </div>
                 <div class="flex-1 min-w-0">
-                    <p class="text-xs font-medium text-gray-700 truncate group-hover:text-primary transition-colors">${item.name}</p>
+                    <p class="text-xs font-medium text-gray-700 truncate group-hover:text-primary transition-colors">${esc(item.name)}</p>
                     <p class="text-xs text-gray-500 font-bold">฿${item.price?.toFixed(2) || '0.00'}</p>
                 </div>
             </a>

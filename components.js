@@ -119,10 +119,11 @@ let _googleSdkPromise = null;
 let _googleInitialized = false;
 let _fbSdkPromise = null;
 
+// Escapes quotes too — createTextNode-based escaping is unsafe in attribute contexts
 function _escapeHtml(str) {
-  const div = document.createElement('div');
-  div.appendChild(document.createTextNode(String(str ?? '')));
-  return div.innerHTML;
+  return String(str ?? '').replace(/[&<>"']/g, c => (
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+  ));
 }
 
 // ── HTML Templates ──────────────────────────────────────────────────────────
@@ -748,17 +749,17 @@ function _renderNavMenus(menus) {
   if (!desktop) return;
 
   desktop.innerHTML = menus.map(m => {
-    const icon = m.icon ? `<i class="${m.icon} text-base"></i> ` : '';
+    const icon = m.icon ? `<i class="${_escapeHtml(m.icon)} text-base"></i> ` : '';
     if (m.children && m.children.length > 0) {
       const sub = m.children.map(c =>
-        `<a href="${c.url}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary">${c.icon ? `<i class="${c.icon}"></i> ` : ''}${c.label}</a>`
+        `<a href="${_escapeHtml(c.url)}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary">${c.icon ? `<i class="${_escapeHtml(c.icon)}"></i> ` : ''}${_escapeHtml(c.label)}</a>`
       ).join('');
       return `<div class="relative group">
-        <button class="text-gray-300 hover:text-primary transition-colors font-medium flex items-center gap-1 px-3 py-2 rounded-lg hover:bg-white/10">${icon}${m.label} <i class="ph ph-caret-down text-xs ml-1"></i></button>
+        <button class="text-gray-300 hover:text-primary transition-colors font-medium flex items-center gap-1 px-3 py-2 rounded-lg hover:bg-white/10">${icon}${_escapeHtml(m.label)} <i class="ph ph-caret-down text-xs ml-1"></i></button>
         <div class="absolute left-0 top-full mt-1 w-52 bg-white rounded-xl shadow-xl border border-gray-100 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">${sub}</div>
       </div>`;
     }
-    return `<a href="${m.url}" class="text-gray-300 hover:text-primary transition-colors font-medium flex items-center gap-1 px-3 py-2 rounded-lg hover:bg-white/10">${icon}${m.label}</a>`;
+    return `<a href="${_escapeHtml(m.url)}" class="text-gray-300 hover:text-primary transition-colors font-medium flex items-center gap-1 px-3 py-2 rounded-lg hover:bg-white/10">${icon}${_escapeHtml(m.label)}</a>`;
   }).join('');
 
   if (_IS_LIVE_SERVER && desktop) _patchLinks(desktop);
@@ -767,20 +768,20 @@ function _renderNavMenus(menus) {
     const _mLinkStyle = 'display:flex;align-items:center;gap:11px;padding:13px 16px;font-size:14px;font-weight:500;color:#efe9dc;border-bottom:1px solid rgba(212,175,82,0.08);text-decoration:none;';
     const _mIconStyle = 'font-size:17px;color:#d4af52;flex-shrink:0;';
     mobile.innerHTML = menus.map((m, i) => {
-      const icon = m.icon ? `<i class="${m.icon}" style="${_mIconStyle}"></i>` : '';
+      const icon = m.icon ? `<i class="${_escapeHtml(m.icon)}" style="${_mIconStyle}"></i>` : '';
       if (m.children && m.children.length > 0) {
         const subItems = m.children.map(c =>
-          `<a href="${c.url}" style="display:flex;align-items:center;gap:9px;padding:9px 16px 9px 44px;font-size:13px;color:#9c8f78;border-bottom:1px solid rgba(212,175,82,0.05);text-decoration:none;">${c.icon ? `<i class="${c.icon}" style="font-size:14px;color:#a8956e;flex-shrink:0;"></i>` : ''}${c.label}</a>`
+          `<a href="${_escapeHtml(c.url)}" style="display:flex;align-items:center;gap:9px;padding:9px 16px 9px 44px;font-size:13px;color:#9c8f78;border-bottom:1px solid rgba(212,175,82,0.05);text-decoration:none;">${c.icon ? `<i class="${_escapeHtml(c.icon)}" style="font-size:14px;color:#a8956e;flex-shrink:0;"></i>` : ''}${_escapeHtml(c.label)}</a>`
         ).join('');
         return `<div class="mob-has-sub">
           <button type="button" class="mob-sub-toggle" data-sub="${i}" aria-expanded="false" style="${_mLinkStyle}width:100%;background:none;border:none;border-bottom:1px solid rgba(212,175,82,0.08);text-align:left;cursor:pointer;">
-            ${icon}<span style="flex:1;">${m.label}</span>
+            ${icon}<span style="flex:1;">${_escapeHtml(m.label)}</span>
             <i class="ph ph-caret-down mob-caret" style="font-size:12px;color:#d4af52;transition:transform .2s;"></i>
           </button>
           <div class="mob-sub-panel" data-sub="${i}" style="display:none;background:rgba(0,0,0,0.25);">${subItems}</div>
         </div>`;
       }
-      return `<a href="${m.url}" style="${_mLinkStyle}">${icon}${m.label}</a>`;
+      return `<a href="${_escapeHtml(m.url)}" style="${_mLinkStyle}">${icon}${_escapeHtml(m.label)}</a>`;
     }).join('') + `<a href="/admin" id="admin-nav-link-mobile" class="hidden flex items-center" style="gap:11px;padding:13px 16px;font-size:14px;font-weight:500;color:#efe9dc;border-bottom:1px solid rgba(212,175,82,0.08);text-decoration:none;"><i class="ph ph-shield-check" style="${_mIconStyle}"></i> Admin Dashboard</a>`;
     if (_IS_LIVE_SERVER) _patchLinks(mobile);
 
@@ -1220,22 +1221,26 @@ function _updateCartUI() {
   _cart.forEach(item => {
     const sub = item.price * item.quantity;
     total += sub;
+    const safeName = _escapeHtml(item.name);
+    const safeImage = _escapeHtml(item.image);
+    // id goes inside inline JS strings \u2014 entity-escaping can't protect that context, so whitelist chars
+    const safeId = String(item.id ?? '').replace(/[^\w-]/g, '');
     const el = document.createElement('div');
     el.className = 'flex gap-4 py-4 border-b border-gray-100';
     el.innerHTML = `
       <div class="w-20 h-20 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
-        <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover">
+        <img src="${safeImage}" alt="${safeName}" class="w-full h-full object-cover">
       </div>
       <div class="flex-1 flex flex-col">
         <div class="flex justify-between">
-          <h4 class="text-sm font-bold text-gray-900 line-clamp-2 pr-2">${item.name}</h4>
-          <button class="text-gray-300 hover:text-red-500 transition-colors flex-shrink-0 min-w-[44px] min-h-[44px] flex items-center justify-center -mt-2 -mr-2" onclick="_removeFromCart('${item.id}')"><i class="ph ph-trash text-base"></i></button>
+          <h4 class="text-sm font-bold text-gray-900 line-clamp-2 pr-2">${safeName}</h4>
+          <button class="text-gray-300 hover:text-red-500 transition-colors flex-shrink-0 min-w-[44px] min-h-[44px] flex items-center justify-center -mt-2 -mr-2" onclick="_removeFromCart('${safeId}')"><i class="ph ph-trash text-base"></i></button>
         </div>
         <div class="flex justify-between items-center mt-auto pt-1">
           <div class="flex items-center border border-gray-200 rounded-lg overflow-hidden">
-            <button class="min-w-[44px] min-h-[44px] flex items-center justify-center text-gray-500 hover:text-primary hover:bg-gray-50 transition-colors" onclick="_updateQty('${item.id}',-1)"><i class="ph ph-minus text-sm"></i></button>
+            <button class="min-w-[44px] min-h-[44px] flex items-center justify-center text-gray-500 hover:text-primary hover:bg-gray-50 transition-colors" onclick="_updateQty('${safeId}',-1)"><i class="ph ph-minus text-sm"></i></button>
             <span class="px-3 text-sm font-bold text-gray-900 min-w-[32px] text-center">${item.quantity}</span>
-            <button class="min-w-[44px] min-h-[44px] flex items-center justify-center text-gray-500 hover:text-primary hover:bg-gray-50 transition-colors" onclick="_updateQty('${item.id}',1)"><i class="ph ph-plus text-sm"></i></button>
+            <button class="min-w-[44px] min-h-[44px] flex items-center justify-center text-gray-500 hover:text-primary hover:bg-gray-50 transition-colors" onclick="_updateQty('${safeId}',1)"><i class="ph ph-plus text-sm"></i></button>
           </div>
           <span class="font-bold text-gray-900">\u0E3F${sub.toFixed(2)}</span>
         </div>
@@ -1348,13 +1353,22 @@ async function _renderFreeShipRecs(total) {
       </div>
       <div class="p-1.5">
         <p class="text-[10px] font-semibold text-gray-800 leading-tight mb-1.5" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.4em">${name}</p>
-        <button onclick="_addRecToCart(this,'${id}','${name}',${price},'${img}')"
+        <button data-rec-id="${id}" data-rec-name="${name}" data-rec-price="${price}" data-rec-img="${img}"
           class="w-full text-[10px] bg-white border border-red-600 hover:bg-red-50 text-red-600 hover:text-red-700 font-bold rounded-lg py-1 transition-colors flex items-center justify-center gap-0.5" aria-label="เพิ่ม ${name} ลงตะกร้า">
           <i class="ph ph-plus text-[10px]"></i> เพิ่ม
         </button>
       </div>
     </div>`;
   }).join('');
+
+  if (!list.dataset.recHandlerBound) {
+    list.dataset.recHandlerBound = '1';
+    list.addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-rec-id]');
+      if (!btn) return;
+      _addRecToCart(btn, btn.dataset.recId, btn.dataset.recName, Number(btn.dataset.recPrice), btn.dataset.recImg);
+    });
+  }
 }
 
 function _addRecToCart(btn, id, name, price, img) {

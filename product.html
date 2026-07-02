@@ -1702,7 +1702,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       list.innerHTML = reviews.sort((a, b) => new Date(b.date) - new Date(a.date)).map(r => {
         let rStars = '';
         for (let i = 1; i <= 5; i++) rStars += i <= r.rating ? '<i class="ph-fill ph-star text-yellow-400 text-sm"></i>' : '<i class="ph ph-star text-gray-300 text-sm"></i>';
-        const images = (r.images || []).map((img, idx) => `<img src="${img}" class="w-16 h-16 rounded-lg object-cover cursor-pointer hover:opacity-80 transition-opacity" onclick="window.open('${img}','_blank')" alt="รูปรีวิวจากลูกค้า ${idx + 1}" loading="lazy" decoding="async">`).join('');
+        const images = (r.images || []).map((img, idx) => `<img src="${escHtml(img)}" class="w-16 h-16 rounded-lg object-cover cursor-pointer hover:opacity-80 transition-opacity" onclick="window.open(this.src,'_blank')" alt="รูปรีวิวจากลูกค้า ${idx + 1}" loading="lazy" decoding="async">`).join('');
         return `<div class="bg-white rounded-xl border border-gray-100 p-5">
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center gap-3">
@@ -1943,9 +1943,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     // ── Utils ────────────────────────────────────────────────────────────────────
     function escHtml(str) {
-      const d = document.createElement('div');
-      d.appendChild(document.createTextNode(String(str || '')));
-      return d.innerHTML;
+      return String(str ?? '').replace(/[&<>"']/g, c => (
+        { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+      ));
     }
 
     function showToast(message) {

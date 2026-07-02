@@ -2765,21 +2765,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="wp-card">
         <div class="card-hdr"><h2><i class="fa-solid fa-shield-halved"></i>ความปลอดภัยแอดมิน</h2></div>
         <div class="card-body">
-          <div class="settings-grid">
-            <div class="settings-row">
-              <label class="settings-label">รหัสผ่านปัจจุบัน</label>
-              <input type="password" id="s-pw-current" class="settings-input" placeholder="กรอกรหัสผ่านปัจจุบัน">
-            </div>
-            <div class="settings-row">
-              <label class="settings-label">รหัสผ่านใหม่</label>
-              <input type="password" id="s-pw-new" class="settings-input" placeholder="อย่างน้อย 8 ตัวอักษร">
-            </div>
-            <div class="settings-row">
-              <label class="settings-label">ยืนยันรหัสผ่านใหม่</label>
-              <input type="password" id="s-pw-confirm" class="settings-input" placeholder="กรอกรหัสผ่านใหม่อีกครั้ง">
-            </div>
-          </div>
-          <div style="margin-top:14px;"><button onclick="changeAdminPassword()" class="settings-save-btn"><i class="fa-solid fa-key"></i> เปลี่ยนรหัสผ่าน</button></div>
+          <p style="font-size:14px;line-height:1.7;color:#64748b;">รหัสผ่านแอดมินเก็บเป็น Environment Variable <code>ADMIN_PASSWORD</code> บนเซิร์ฟเวอร์ — เปลี่ยนได้ที่ Vercel Dashboard → Settings → Environment Variables จากนั้น Redeploy</p>
         </div>
       </div>
     </section>
@@ -3060,11 +3046,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>
   const API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
     ? 'http://localhost:5000/api' : '/api';
-  const ADMIN_PASSWORD = 'BTmd@9x#Kp2!vZ7qLw';
+  const ADMIN_PW_KEY = 'btmusicdrive_admin_pw';
 
   function adminHeaders(json = true) {
     const token = localStorage.getItem('btmusicdrive_token');
-    const h = { 'X-Admin-Password': ADMIN_PASSWORD };
+    const h = { 'X-Admin-Password': sessionStorage.getItem(ADMIN_PW_KEY) || '' };
     if (token) h['Authorization'] = `Bearer ${token}`;
     if (json) h['Content-Type'] = 'application/json';
     return h;
@@ -3078,10 +3064,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   };
 
   // ── Gate ──────────────────────────────────────────────────────────────────
-  function checkPassword() {
+  async function checkPassword() {
     const val = document.getElementById('gate-password').value;
-    if (val === ADMIN_PASSWORD) {
-      sessionStorage.setItem('btmusicdrive_admin', '1');
+    if (!val) return;
+    let ok = false;
+    try {
+      const res = await fetch(`${API_BASE}/auth/admin/verify`, { headers: { 'X-Admin-Password': val } });
+      ok = res.ok;
+    } catch { ok = false; }
+    if (ok) {
+      sessionStorage.setItem(ADMIN_PW_KEY, val);
       document.getElementById('password-gate').style.display = 'none';
       document.getElementById('dashboard').style.display = 'block';
       initDashboard();
@@ -3095,13 +3087,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     if (e.key === 'Enter') checkPassword();
   });
   function logout() {
+    sessionStorage.removeItem(ADMIN_PW_KEY);
     sessionStorage.removeItem('btmusicdrive_admin');
     document.getElementById('dashboard').style.display = 'none';
     document.getElementById('password-gate').style.display = 'flex';
     document.getElementById('gate-password').value = '';
     document.getElementById('gate-error').classList.remove('show');
   }
-  if (sessionStorage.getItem('btmusicdrive_admin')) {
+  if (sessionStorage.getItem(ADMIN_PW_KEY)) {
     document.getElementById('password-gate').style.display = 'none';
     document.getElementById('dashboard').style.display = 'block';
     initDashboard();
@@ -3431,7 +3424,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         d.recentOrders.length ? d.recentOrders.map(o => `
           <tr>
             <td style="font-size:11px;color:var(--muted);">#${o.id.slice(-6).toUpperCase()}<br>
-              <span style="font-size:11px;">${o.customerName}</span></td>
+              <span style="font-size:11px;">${escHtml(o.customerName)}</span></td>
             <td class="r"><strong>฿${Number(o.totalAmount).toLocaleString()}</strong></td>
             <td class="r"><span style="font-size:11px;font-weight:600;color:${STATUS_COLOR[o.status]||'#666'};">${STATUS_TH[o.status]||o.status}</span></td>
           </tr>`).join('')
@@ -3441,7 +3434,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       document.getElementById('dash-low-stock').querySelector('tbody').innerHTML =
         d.lowStock.length ? d.lowStock.map(p => `
           <tr>
-            <td>${p.name}</td>
+            <td>${escHtml(p.name)}</td>
             <td class="r"><span style="font-weight:700;color:${p.stock === 0 ? '#d63638' : '#856404'};">${p.stock} ชิ้น</span></td>
           </tr>`).join('')
         : '<tr><td colspan="2" style="text-align:center;color:var(--muted);padding:16px;">สต็อกปกติทั้งหมด</td></tr>';
@@ -3458,7 +3451,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           return `
           <tr>
             <td style="color:var(--muted);font-weight:700;">${String(i + 1).padStart(2, '0')}</td>
-            <td>${p.name || '-'}</td>
+            <td>${escHtml(p.name || '-')}</td>
             <td><div class="pop-track"><div class="pop-fill" style="--w:${Math.min(100, pct)}%;--c:${color};"></div></div></td>
             <td class="r"><span class="sales-pill" style="--c:${color};">${pct}%</span></td>
           </tr>`;
@@ -3650,9 +3643,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   }
 
   function escHtml(str) {
-    const d = document.createElement('div');
-    d.appendChild(document.createTextNode(String(str)));
-    return d.innerHTML;
+    return String(str ?? '').replace(/[&<>"']/g, c => (
+      { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+    ));
   }
 
 
@@ -4283,20 +4276,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if (el) el.value = savedThreshold;
     }
   })();
-
-  function changeAdminPassword() {
-    const current = document.getElementById('s-pw-current').value;
-    const next    = document.getElementById('s-pw-new').value;
-    const confirm = document.getElementById('s-pw-confirm').value;
-    if (!current) { showToast('กรุณากรอกรหัสผ่านปัจจุบัน', true); return; }
-    if (current !== ADMIN_PASSWORD) { showToast('รหัสผ่านปัจจุบันไม่ถูกต้อง', true); return; }
-    if (next.length < 8) { showToast('รหัสผ่านใหม่ต้องมีอย่างน้อย 8 ตัวอักษร', true); return; }
-    if (next !== confirm) { showToast('รหัสผ่านไม่ตรงกัน', true); return; }
-    showToast('เปลี่ยนรหัสผ่านสำเร็จ!');
-    document.getElementById('s-pw-current').value = '';
-    document.getElementById('s-pw-new').value = '';
-    document.getElementById('s-pw-confirm').value = '';
-  }
 
   // ══════════════════════════════════════════════════════════════════════════
   // MENUS  (with localStorage fallback when backend is offline)
@@ -5784,7 +5763,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       try {
         const res = await fetch(`${API_BASE}/images/upload`, {
           method: 'POST',
-          headers: { 'X-Admin-Password': ADMIN_PASSWORD },
+          headers: adminHeaders(false),
           body: fd,
         });
         if (!res.ok) throw new Error(await res.text());

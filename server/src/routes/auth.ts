@@ -323,4 +323,13 @@ router.get('/me', authenticateToken, async (req: AuthRequest, res: Response) => 
   }
 });
 
+// Admin dashboard gate — verifies x-admin-password (or admin JWT) without exposing the password client-side
+router.get('/admin/verify', authenticateToken, (req: AuthRequest, res: Response) => {
+  if (req.user?.role !== 'ADMIN') {
+    res.status(403).json({ error: 'Forbidden' });
+    return;
+  }
+  res.json({ ok: true });
+});
+
 export default router;

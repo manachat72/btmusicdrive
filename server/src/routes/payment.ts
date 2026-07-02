@@ -112,21 +112,29 @@ async function createOrderInDB(
       include: { items: { include: { product: true } }, user: true },
     });
 
-    // Decrement stock
+    // Decrement stock — guarded so concurrent orders can't drive stock negative
     for (const item of cart.items) {
-      await tx.product.update({
-        where: { id: item.productId },
+      const updated = await tx.product.updateMany({
+        where: { id: item.productId, stock: { gte: item.quantity } },
         data: { stock: { decrement: item.quantity } },
       });
+      if (updated.count === 0) {
+        throw new Error(`สินค้า "${item.product?.name || item.productId}" มีในสต็อกไม่เพียงพอ`);
+      }
     }
 
     // Clear cart
     await tx.cartItem.deleteMany({ where: { cartId: cart.id } });
 
-    // Update promo usage
+    // Update promo usage — guarded against exceeding maxUses under concurrency
+    // (if the guard misses, the order still proceeds: the discount was already priced in)
     if (validatedPromo) {
       await tx.promoCode.updateMany({
-        where: { code: validatedPromo.code, isActive: true },
+        where: {
+          code: validatedPromo.code,
+          isActive: true,
+          ...(validatedPromo.maxUses ? { usedCount: { lt: validatedPromo.maxUses } } : {}),
+        },
         data: { usedCount: { increment: 1 } },
       });
     }
@@ -192,6 +200,60 @@ router.post('/create-payment-intent', authenticateToken, async (req: AuthRequest
   }
 });
 
+// ── Update Payment Intent (re-sync amount/address with current cart, pre-confirm) ─
+router.post('/update-payment-intent', authenticateToken, async (req: AuthRequest, res: Response) => {
+  try {
+    if (!stripe) {
+      return res.status(500).json({ error: 'Stripe is not configured' });
+    }
+
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+
+    const { paymentIntentId, shippingAddress, phone, promoCode } = req.body;
+    if (!paymentIntentId) {
+      return res.status(400).json({ error: 'Missing paymentIntentId' });
+    }
+
+    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+
+    if (paymentIntent.metadata?.userId !== userId) {
+      return res.status(403).json({ error: 'Payment intent does not belong to this user' });
+    }
+    if (paymentIntent.status === 'succeeded') {
+      return res.status(400).json({ error: 'Payment already completed' });
+    }
+
+    const { totalAmount, discountAmount, validatedPromo } = await calculateOrderTotals(
+      userId,
+      promoCode
+    );
+
+    await stripe.paymentIntents.update(paymentIntentId, {
+      amount: Math.round(totalAmount * 100),
+      metadata: {
+        userId,
+        invoiceNo: paymentIntent.metadata.invoiceNo,
+        shippingAddress:
+          typeof shippingAddress === 'string' && shippingAddress
+            ? shippingAddress
+            : paymentIntent.metadata.shippingAddress,
+        phone: typeof phone === 'string' && phone ? phone : paymentIntent.metadata.phone,
+        promoCode: validatedPromo?.code || '',
+        discountAmount: String(discountAmount),
+      },
+    });
+
+    return res.json({ totalAmount });
+  } catch (error: any) {
+    console.error('Update PaymentIntent error:', error);
+    if (error.message?.includes('สต็อก') || error.message?.includes('Cart is empty')) {
+      return res.status(400).json({ error: error.message });
+    }
+    return res.status(500).json({ error: 'Failed to update payment intent' });
+  }
+});
+
 // ── Confirm Order (after Stripe payment succeeded on frontend) ──────────────
 router.post('/confirm-order', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
@@ -213,6 +275,11 @@ router.post('/confirm-order', authenticateToken, async (req: AuthRequest, res: R
 
     if (paymentIntent.status !== 'succeeded') {
       return res.status(400).json({ error: `การชำระเงินไม่สำเร็จ (status: ${paymentIntent.status})` });
+    }
+
+    // PaymentIntent must have been created by this server for this user
+    if (paymentIntent.metadata?.userId !== userId) {
+      return res.status(403).json({ error: 'Payment intent does not belong to this user' });
     }
 
     // Check if order already exists for this paymentIntent (idempotency)
@@ -237,6 +304,17 @@ router.post('/confirm-order', authenticateToken, async (req: AuthRequest, res: R
       userId,
       promoCode
     );
+
+    // Amount actually paid must match the current cart total — otherwise the cart
+    // was modified after the PaymentIntent was created (underpayment attack)
+    if (paymentIntent.amount !== Math.round(totalAmount * 100)) {
+      console.error(
+        `[confirm-order] Amount mismatch: paid ${paymentIntent.amount}, cart total ${Math.round(totalAmount * 100)} (pi: ${paymentIntentId})`
+      );
+      return res.status(400).json({
+        error: 'ยอดชำระไม่ตรงกับยอดตะกร้าปัจจุบัน กรุณาติดต่อร้านค้าพร้อมแจ้งเลขที่ใบแจ้งหนี้',
+      });
+    }
 
     const order = (await createOrderInDB(
       userId,
@@ -320,20 +398,93 @@ router.post('/webhook', async (req: Request, res: Response) => {
       const paymentIntent = event.data.object as any;
       console.log(`[Webhook] PaymentIntent ${paymentIntent.id} succeeded`);
 
-      // Update order status to PAID if order exists
       try {
         const order = await prisma.order.findUnique({
           where: { paymentIntentId: paymentIntent.id },
         });
-        if (order && order.status !== 'PAID') {
-          await prisma.order.update({
-            where: { id: order.id },
-            data: { status: 'PAID' },
-          });
-          console.log(`[Webhook] Order ${order.id} updated to PAID`);
+
+        if (order) {
+          if (order.status !== 'PAID') {
+            await prisma.order.update({
+              where: { id: order.id },
+              data: { status: 'PAID' },
+            });
+            console.log(`[Webhook] Order ${order.id} updated to PAID`);
+          }
+          break;
         }
-      } catch (e) {
-        console.error('[Webhook] Error updating order:', e);
+
+        // No order yet — customer paid but closed the browser before confirm-order.
+        // Create the order from metadata so paid money never goes orderless.
+        const { userId, invoiceNo, shippingAddress, promoCode } = paymentIntent.metadata || {};
+        if (!userId) {
+          console.error(`[Webhook] PaymentIntent ${paymentIntent.id} has no userId metadata — order not created`);
+          break;
+        }
+
+        const { cart, totalAmount, discountAmount, validatedPromo } = await calculateOrderTotals(
+          userId,
+          promoCode || undefined
+        );
+
+        if (paymentIntent.amount !== Math.round(totalAmount * 100)) {
+          console.error(
+            `[Webhook] Amount mismatch for ${paymentIntent.id}: paid ${paymentIntent.amount}, cart ${Math.round(totalAmount * 100)} — order NOT auto-created, needs manual follow-up`
+          );
+          break;
+        }
+
+        const newOrder = (await createOrderInDB(
+          userId,
+          cart,
+          totalAmount,
+          discountAmount,
+          validatedPromo,
+          shippingAddress || '',
+          'PAID',
+          invoiceNo || paymentIntent.id,
+          paymentIntent.id
+        )) as any;
+        console.log(`[Webhook] Order ${newOrder.id} created from webhook fallback`);
+
+        if (newOrder.user) {
+          try {
+            await sendOrderConfirmationEmail({
+              orderId: newOrder.id,
+              customerEmail: newOrder.user.email,
+              customerName: newOrder.user.name || '',
+              items: newOrder.items.map((i: any) => ({
+                name: i.product.name,
+                quantity: i.quantity,
+                priceAtTime: Number(i.priceAtTime),
+              })),
+              totalAmount,
+            });
+          } catch (err: any) {
+            console.error('[Email] Confirmation failed:', err);
+          }
+        }
+
+        const _webhookEventData = {
+          orderId: newOrder.id,
+          totalAmount,
+          contentIds: cart.items.map((i: any) => i.productId),
+          numItems: cart.items.reduce((s: number, i: any) => s + (i.quantity || 1), 0),
+          userData: {
+            email: newOrder.user?.email,
+            phone: newOrder.user?.phone,
+          },
+        };
+        // Await so Vercel doesn't freeze the function before events are sent
+        await sendPurchaseEvent(_webhookEventData).catch(() => {});
+        await sendTikTokPurchaseEvent(_webhookEventData).catch(() => {});
+      } catch (e: any) {
+        // 'Cart is empty' / unique-constraint here means confirm-order won the race — order already exists
+        if (e?.message?.includes('Cart is empty') || e?.code === 'P2002') {
+          console.log(`[Webhook] Order for ${paymentIntent.id} already handled by confirm-order`);
+        } else {
+          console.error('[Webhook] Error handling payment_intent.succeeded:', e);
+        }
       }
       break;
     }

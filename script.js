@@ -8,10 +8,11 @@ let products = [];
 let cart = JSON.parse(localStorage.getItem('btmusicdrive_cart') || '[]');
 
 // ── Utility: HTML escape to prevent XSS ──────────────────────────────────────
+// Escapes quotes too — createTextNode-based escaping is unsafe in attribute contexts
 function escapeHtml(str) {
-    const div = document.createElement('div');
-    div.appendChild(document.createTextNode(String(str ?? '')));
-    return div.innerHTML;
+    return String(str ?? '').replace(/[&<>"']/g, c => (
+        { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+    ));
 }
 
 // DOM Elements
@@ -159,7 +160,7 @@ function renderProducts() {
         const discPct = hasDiscount ? Math.round((1 - product.price / product.originalPrice) * 100) : 0;
         const badgeHtml = hasDiscount
             ? `<span class="absolute top-2 left-2 bg-red-600 text-white px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold shadow-sm">-${discPct}%</span>`
-            : (product.badge ? `<span class="absolute top-2 left-2 bg-white/90 backdrop-blur-sm px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold text-gray-900 shadow-sm">${product.badge}</span>` : '');
+            : (product.badge ? `<span class="absolute top-2 left-2 bg-white/90 backdrop-blur-sm px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold text-gray-900 shadow-sm">${escapeHtml(product.badge)}</span>` : '');
 
         // Low stock
         const lowStockHtml = (product.stock > 0 && product.stock <= 5) ?

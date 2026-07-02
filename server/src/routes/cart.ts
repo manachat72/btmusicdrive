@@ -73,11 +73,16 @@ router.post('/sync', authenticateToken, async (req: AuthRequest, res: Response) 
 
     // Process each item in the sync request
     for (const item of items) {
-      const { productId, quantity } = item;
+      const { productId, quantity } = item || {};
 
-      // Check if product exists
+      // Skip invalid entries — negative/fractional quantity would corrupt totals and stock
+      if (typeof productId !== 'string' || !Number.isInteger(quantity) || quantity < 1) continue;
+
+      // Check if product exists and has stock
       const product = await prisma.product.findUnique({ where: { id: productId } });
-      if (!product) continue;
+      if (!product || product.stock < 1) continue;
+
+      const safeQuantity = Math.min(quantity, product.stock);
 
       // Upsert cart item
       await prisma.cartItem.upsert({
@@ -88,12 +93,12 @@ router.post('/sync', authenticateToken, async (req: AuthRequest, res: Response) 
           }
         },
         update: {
-          quantity: quantity
+          quantity: safeQuantity
         },
         create: {
           cartId: cart.id,
           productId: productId,
-          quantity: quantity
+          quantity: safeQuantity
         }
       });
     }
@@ -285,81 +290,6 @@ router.delete('/', authenticateToken, async (req: AuthRequest, res: Response) =>
   } catch (error) {
     console.error('Error clearing cart:', error);
     res.status(500).json({ error: 'Failed to clear cart' });
-  }
-});
-
-// ==========================================
-// ORDER ROUTES
-// ==========================================
-
-// Create an order from the current cart
-router.post('/checkout', authenticateToken, async (req: AuthRequest, res: Response) => {
-  try {
-    const userId = req.user?.id;
-
-    if (!userId) {
-      res.status(401).json({ error: 'Not authenticated' });
-      return;
-    }
-
-    // 1. Get the user's cart
-    const cart = await prisma.cart.findUnique({
-      where: { userId },
-      include: {
-        items: {
-          include: { product: true }
-        }
-      }
-    });
-
-    if (!cart || cart.items.length === 0) {
-      res.status(400).json({ error: 'Cart is empty' });
-      return;
-    }
-
-    // 2. Calculate total and prepare order items
-    let totalAmount = 0;
-    const orderItems = cart.items.map((item: any) => {
-      totalAmount += item.product.price * item.quantity;
-      return {
-        productId: item.productId,
-        quantity: item.quantity,
-        priceAtTime: item.product.price,
-      };
-    });
-
-    // 3. Use a transaction to create the order and clear the cart
-    const order = await prisma.$transaction(async (tx) => {
-      // Create the order
-      const newOrder = await tx.order.create({
-        data: {
-          userId,
-          totalAmount,
-          status: 'PENDING',
-          items: {
-            create: orderItems
-          }
-        },
-        include: {
-          items: true
-        }
-      });
-
-      // Clear the cart
-      await tx.cartItem.deleteMany({
-        where: { cartId: cart.id }
-      });
-
-      return newOrder;
-    });
-
-    res.status(201).json({
-      message: 'Order created successfully',
-      order
-    });
-  } catch (error) {
-    console.error('Error creating order:', error);
-    res.status(500).json({ error: 'Failed to create order' });
   }
 });
 

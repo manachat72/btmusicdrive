@@ -1,7 +1,8 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import { authenticateToken, AuthRequest } from '../middleware/auth';
 
 const router = express.Router();
 
@@ -39,16 +40,15 @@ const upload = multer({
   },
 });
 
-// Admin password check middleware (reuse same header pattern)
-function requireAdmin(req: Request, res: Response, next: () => void) {
-  const pw = req.headers['x-admin-password'];
-  const adminPw = process.env.ADMIN_PASSWORD || 'nu3gtXBTlef6i4wmnqjjcw';
-  if (pw !== adminPw) {
+// Admin check — authenticateToken handles both admin JWT and x-admin-password (constant-time + lockout)
+function requireAdminRole(req: AuthRequest, res: Response, next: NextFunction) {
+  if (req.user?.role !== 'ADMIN') {
     res.status(403).json({ error: 'Forbidden' });
     return;
   }
   next();
 }
+const requireAdmin = [authenticateToken, requireAdminRole];
 
 // ── GET /api/images — list all image files ────────────────────────────────────
 router.get('/', requireAdmin, (_req: Request, res: Response) => {

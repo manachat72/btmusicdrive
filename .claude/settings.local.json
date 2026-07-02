@@ -17,7 +17,6 @@
       "Bash(find:*)",
       "Bash(npx tsc:*)",
       "Bash(echo \"Exit: $?\")",
-      "Bash(curl -s -X PATCH https://btmusicdrive.vercel.app/api/products/test123 -H 'Content-Type: application/json' -H 'X-Admin-Password: nu3gtXBTlef6i4wmnqjjcw' -d '{\"name\":\"test\"}')",
       "Bash(curl -s https://btmusicdrive.vercel.app/api/products?limit=1)",
       "Bash(curl:*)",
       "mcp__Neon__list_projects",
@@ -55,7 +54,8 @@
       "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\may\\\\programpython\\\\btmusicdrive\" -File)",
       "Bash(Select-Object Name)",
       "Bash(Sort-Object Name)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "PowerShell(Set-Location server; node_modules/.bin/tsc --noEmit; Write-Output \"tsc exit: $LASTEXITCODE\")"
     ]
   }
 }

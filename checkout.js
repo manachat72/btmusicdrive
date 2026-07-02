@@ -647,6 +647,32 @@ async function processStripeOrder(method, shippingAddress, phone, btn, btnMobile
     }
 
     try {
+        // Re-sync intent amount + real shipping info with the current cart before charging —
+        // server rejects confirm-order if paid amount doesn't match the cart total
+        const updRes = await fetch(`${API_BASE}/payment/update-payment-intent`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                paymentIntentId: stripePaymentIntentId,
+                shippingAddress,
+                phone,
+                ...(appliedPromo ? { promoCode: appliedPromo.code } : {})
+            })
+        });
+        if (!updRes.ok) {
+            const updData = await updRes.json().catch(() => ({}));
+            showError(updData.error || 'ไม่สามารถอัปเดตยอดชำระเงินได้ กรุณาลองใหม่');
+            setLoading(btn, false);
+            setLoading(btnMobile, false);
+            return;
+        }
+        if (typeof elements.fetchUpdates === 'function') {
+            await elements.fetchUpdates().catch(() => {});
+        }
+
         // Confirm payment with Stripe
         const { error, paymentIntent } = await stripeInstance.confirmPayment({
             elements,
@@ -805,9 +831,9 @@ function setLoading(btn, loading) {
 }
 
 function escapeHtml(str) {
-    const div = document.createElement('div');
-    div.appendChild(document.createTextNode(String(str)));
-    return div.innerHTML;
+    return String(str ?? '').replace(/[&<>"']/g, c => (
+        { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+    ));
 }
 
 // ── Thailand Address Dropdown Logic ─────────────────────────────────────────
