@@ -936,7 +936,7 @@ async function _handleFacebookLogin() {
   try {
     const FB = await _loadFacebookSDK();
     const loginResult = await new Promise((resolve) => {
-      FB.login((r) => resolve(r), { scope: 'email,public_profile' });
+      FB.login((r) => resolve(r), { scope: 'public_profile' });
     });
     if (loginResult.status !== 'connected') {
       throw new Error('Facebook login was cancelled');

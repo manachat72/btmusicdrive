@@ -31,11 +31,13 @@ const upload = multer({
   storage,
   limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB
   fileFilter: (_req, file, cb) => {
-    const allow = /\.(jpg|jpeg|png|gif|webp|svg)$/i;
+    // svg is intentionally excluded — it can embed <script>/on* handlers and is
+    // served as-is from the site's own origin, making it a stored-XSS vector.
+    const allow = /\.(jpg|jpeg|png|gif|webp)$/i;
     if (allow.test(file.originalname)) {
       cb(null, true);
     } else {
-      cb(new Error('Only image files are allowed (jpg, jpeg, png, gif, webp, svg)'));
+      cb(new Error('Only image files are allowed (jpg, jpeg, png, gif, webp)'));
     }
   },
 });

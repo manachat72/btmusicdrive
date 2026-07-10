@@ -3728,7 +3728,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </td>
         <td style="white-space:nowrap;">
           <button class="action-btn prod-edit-btn" data-product-id="${escHtml(p.id)}"><i class="fa-solid fa-pen"></i> แก้ไข</button>
-          <button class="action-btn del" onclick="askDeleteProduct('${escHtml(p.id)}','${escHtml(p.name)}')" style="margin-left:4px;"><i class="fa-solid fa-trash"></i></button>
+          <button class="action-btn del prod-delete-btn" data-product-id="${escHtml(p.id)}" style="margin-left:4px;"><i class="fa-solid fa-trash"></i></button>
         </td>
       </tr>`;
     }).join('');
@@ -3744,11 +3744,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     if (!tbody._editListenerBound) {
       tbody._editListenerBound = true;
       tbody.addEventListener('click', function(e) {
-        const btn = e.target.closest('.prod-edit-btn');
-        if (!btn) return;
-        const pid = btn.dataset.productId;
-        const product = _products.find(p => p.id === pid);
-        if (product) openProductModal(product);
+        const editBtn = e.target.closest('.prod-edit-btn');
+        if (editBtn) {
+          const product = _products.find(p => p.id === editBtn.dataset.productId);
+          if (product) openProductModal(product);
+          return;
+        }
+        const delBtn = e.target.closest('.prod-delete-btn');
+        if (delBtn) {
+          const product = _products.find(p => p.id === delBtn.dataset.productId);
+          if (product) askDeleteProduct(product.id, product.name);
+        }
       });
     }
   }
@@ -4437,6 +4443,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     });
     container.innerHTML = html;
     initDragDrop();
+
+    // Event delegation — safe for any menu label (no string-built onclick)
+    if (!container._deleteListenerBound) {
+      container._deleteListenerBound = true;
+      container.addEventListener('click', function(e) {
+        const btn = e.target.closest('.menu-delete-btn');
+        if (!btn) return;
+        const id = btn.dataset.menuId;
+        let item = null;
+        for (const m of _menus) {
+          if (m.id === id) { item = m; break; }
+          if (m.children) { const c = m.children.find(c => c.id === id); if (c) { item = c; break; } }
+        }
+        if (item) askDeleteMenu(item.id, item.label);
+      });
+    }
   }
 
   function menuStructItem(m, isChild) {
@@ -4490,7 +4512,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           </label>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center;">
-          <a onclick="askDeleteMenu('${m.id}','${escHtml(m.label)}')" style="color:#d63638;cursor:pointer;font-size:12px;">
+          <a class="menu-delete-btn" data-menu-id="${escHtml(m.id)}" style="color:#d63638;cursor:pointer;font-size:12px;">
             <i class="fa-solid fa-trash"></i> ลบออกจากเมนู
           </a>
           <button onclick="saveMenuItemEdit('${m.id}')" class="settings-save-btn" style="font-size:12px;padding:6px 14px;">
@@ -5478,10 +5500,29 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           </label>
         </td>
         <td style="white-space:nowrap;">
-          <button class="action-btn" onclick='openCategoryModal(${JSON.stringify(c)})'><i class="fa-solid fa-pen"></i> แก้ไข</button>
-          <button class="action-btn del" onclick="askDeleteCategory('${escHtml(c.id)}','${escHtml(c.name)}')" style="margin-left:4px;"><i class="fa-solid fa-trash"></i></button>
+          <button class="action-btn cat-edit-btn" data-cat-id="${escHtml(c.id)}"><i class="fa-solid fa-pen"></i> แก้ไข</button>
+          <button class="action-btn del cat-delete-btn" data-cat-id="${escHtml(c.id)}" style="margin-left:4px;"><i class="fa-solid fa-trash"></i></button>
         </td>
       </tr>`).join('');
+
+    // Event delegation — safe for any category name (no JSON/string-built onclick)
+    const catTbody = document.getElementById('categories-tbody');
+    if (!catTbody._clickListenerBound) {
+      catTbody._clickListenerBound = true;
+      catTbody.addEventListener('click', function(e) {
+        const editBtn = e.target.closest('.cat-edit-btn');
+        if (editBtn) {
+          const cat = _categories.find(c => c.id === editBtn.dataset.catId);
+          if (cat) openCategoryModal(cat);
+          return;
+        }
+        const delBtn = e.target.closest('.cat-delete-btn');
+        if (delBtn) {
+          const cat = _categories.find(c => c.id === delBtn.dataset.catId);
+          if (cat) askDeleteCategory(cat.id, cat.name);
+        }
+      });
+    }
   }
 
   function toggleCategoryActive(id, checked) {
