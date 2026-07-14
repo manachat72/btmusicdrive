@@ -386,6 +386,7 @@ function _footerHTML() {
             <li><a href="/contact" class="text-gray-400 hover:text-primary transition-colors text-sm">ติดต่อเรา</a></li>
             <li><a href="/about" class="text-gray-400 hover:text-primary transition-colors text-sm">เกี่ยวกับเรา</a></li>
             <li><a href="/faq" class="text-gray-400 hover:text-primary transition-colors text-sm">คำถามที่พบบ่อย</a></li>
+            <li><a href="/blog" class="text-gray-400 hover:text-primary transition-colors text-sm">บทความน่ารู้</a></li>
             <li><a href="/terms" class="text-gray-400 hover:text-primary transition-colors text-sm">ข้อกำหนดและเงื่อนไข</a></li>
             <li><a href="/privacy" class="text-gray-400 hover:text-primary transition-colors text-sm">นโยบายความเป็นส่วนตัว</a></li>
           </ul>

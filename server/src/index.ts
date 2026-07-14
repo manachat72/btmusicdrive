@@ -19,6 +19,7 @@ import analyticsRoutes from './routes/analytics';
 import feedRoutes from './routes/feed';
 import lineRoutes from './routes/line';
 import { sendOrderConfirmationEmail } from './services/emailService';
+import { isSocialBot, renderProductOgPage } from './lib/socialOg';
 
 dotenv.config();
 
@@ -171,15 +172,33 @@ _pages.forEach(p => {
 app.get('/category/:slug', (req, res) => {
   res.sendFile(path.join(__dirname, '../../category.html'));
 });
+app.get('/blog', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../blog.html'));
+});
+app.get('/blog/:slug', (req, res) => {
+  const slug = String(req.params.slug);
+  if (!/^[a-z0-9-]+$/i.test(slug)) return res.status(404).json({ error: 'Route not found' });
+  res.sendFile(path.join(__dirname, `../../blog/${slug}.html`));
+});
 
 const legacyProductSlugRedirects: Record<string, string> = {
   'usb-flash-drive-mp3-sunarathip': 'usb-mp3-luk-krung-suntharaporn',
   'sku-036': 'usb-mp3-phuea-chiwit-carabao-4gb-325-songs',
 };
 
-app.get('/product/:slug', (req, res) => {
+app.get('/product/:slug', async (req, res) => {
   const nextSlug = legacyProductSlugRedirects[req.params.slug];
   if (nextSlug) return res.redirect(301, `/product/${nextSlug}`);
+
+  // Social scraper (FB/LINE/Twitter ฯลฯ) ไม่รัน JS — ต้องได้ OG meta จาก server
+  if (isSocialBot(req.headers['user-agent'])) {
+    try {
+      const rendered = await renderProductOgPage(req.params.slug, res);
+      if (rendered) return;
+    } catch (err) {
+      console.error('[socialOg]', err);
+    }
+  }
 
   res.sendFile(path.join(__dirname, '../../product.html'));
 });

@@ -23,6 +23,12 @@ for (const asset of ASSETS) {
 }
 
 const htmlFiles = fs.readdirSync(root).filter(f => f.endsWith('.html'));
+const blogDir = path.join(root, 'blog');
+if (fs.existsSync(blogDir)) {
+  for (const f of fs.readdirSync(blogDir).filter(f => f.endsWith('.html'))) {
+    htmlFiles.push(path.join('blog', f));
+  }
+}
 
 let changed = 0;
 for (const f of htmlFiles) {

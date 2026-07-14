@@ -499,3 +499,13 @@ npm run build
 - ใช้ Prisma parameterized queries เสมอ — ห้าม string interpolation ใน SQL
 - จำกัด request body size: backend ตั้งไว้ที่ `1mb` (`express.json({ limit: '1mb' })`) — อย่าเพิ่ม
 - Rate limit: 500 req/15min ต่อ IP (`middleware/rateLimiter.ts`)
+
+---
+
+## 15. Blog + Social OG (เพิ่ม 2026-07-14)
+
+- **Blog**: `blog.html` (index) + บทความใน `blog/*.html` — clean URL `/blog` และ `/blog/:slug` ผ่าน vercel.json + express (local dev)
+  - เพิ่มบทความใหม่: วางไฟล์ `blog/<slug>.html` แล้ว `npm run build` — sitemap, tailwind scan (`./blog/*.html`), hash-assets จะรวม blog ให้อัตโนมัติ
+- **Social OG ฝั่ง server**: FB/LINE/Twitter scraper ไม่รัน JS — vercel.json route UA ของ social bot ที่เข้า `/product/:slug` ไปที่ server → `server/src/lib/socialOg.ts` render OG meta จาก DB (Googlebot ยังได้ static + JS ปกติ)
+- **OG image กลาง**: `images/og-cover.jpg` (1200×630) — FB ไม่รองรับ webp/avif ห้ามเปลี่ยนกลับไปใช้ .webp
+- **Minify components.js/script.js**: ไม่มี build script สำหรับ JS — ใช้ `npx terser <file>.js -c -m -o <file>.min.js` แล้ว `npm run build` เพื่อ bump version

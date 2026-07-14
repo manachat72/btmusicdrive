@@ -16,7 +16,7 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
 <base href="/">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="app.min.css?v=1d77d6ab">
+    <link rel="stylesheet" href="app.min.css?v=607b1cb2">
     <meta name="theme-color" content="#8B7355">
     <link rel="icon" type="image/webp" href="images/logo.webp">
     <title>ร้านค้าแฟลชไดร์ฟเพลง MP3 ทุกแนว — Bt music drive</title>
@@ -29,7 +29,7 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
     <meta property="og:site_name" content="Bt music drive">
     <meta property="og:title" content="ร้านค้าแฟลชไดร์ฟเพลง MP3 ทุกแนว — Bt music drive">
     <meta property="og:description" content="เลือกซื้อแฟลชไดร์ฟเพลง MP3 ลูกทุ่ง สตริง เพื่อชีวิต สากล เสียงชัด HD เสียบปุ๊บฟังปั๊บ จัดส่งทั่วไทย">
-    <meta property="og:image" content="https://btmusicdrive.com/images/logo1.webp">
+    <meta property="og:image" content="https://btmusicdrive.com/images/og-cover.jpg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:url" content="https://btmusicdrive.com/shop">
@@ -37,7 +37,7 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="ร้านค้าแฟลชไดร์ฟเพลง MP3 — Bt music drive">
     <meta name="twitter:description" content="เลือกซื้อแฟลชไดร์ฟเพลง MP3 ทุกแนว เสียงชัด HD เสียบปุ๊บฟังปั๊บ จัดส่งทั่วไทย">
-    <meta name="twitter:image" content="https://btmusicdrive.com/images/logo1.webp">
+    <meta name="twitter:image" content="https://btmusicdrive.com/images/og-cover.jpg">
     <link rel="preload" href="/vendor/phosphor/regular/style.css?v=2" as="style" onload="this.onload=null;this.rel='stylesheet'"><link rel="preload" href="/vendor/phosphor/fill/style.css?v=2" as="style" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="/vendor/phosphor/regular/style.css?v=2"><link rel="stylesheet" href="/vendor/phosphor/fill/style.css?v=2"></noscript>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -261,7 +261,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- Shared Footer -->
     <div id="site-footer"></div>
 
-    <script src="components.min.js?v=8cfc2c40"></script>
+    <script src="components.min.js?v=ab974aa2"></script>
     <script>
     // ── Shop Page Logic ──────────────────────────────────────────────
     // API_BASE is already defined in components.min.js
@@ -461,6 +461,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
     ));
 
+    // ItemList JSON-LD ของสินค้าที่แสดง (สูงสุด 24 ตัว) เพื่อ rich results
+    function injectItemListLd(products) {
+        const items = products.slice(0, 24).map((p, i) => ({
+            "@type": "ListItem",
+            "position": i + 1,
+            "url": `https://btmusicdrive.com/product/${p.slug || ('?id=' + p.id)}`,
+            "name": p.name
+        }));
+        const ld = { "@context": "https://schema.org", "@type": "ItemList", "numberOfItems": products.length, "itemListElement": items };
+        let s = document.getElementById('itemlist-jsonld');
+        if (!s) { s = document.createElement('script'); s.id = 'itemlist-jsonld'; s.type = 'application/ld+json'; document.head.appendChild(s); }
+        s.textContent = JSON.stringify(ld);
+    }
+
     function renderShopProducts() {
         const container = document.getElementById('shop-products');
         const noResults = document.getElementById('no-results');
@@ -475,6 +489,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             return;
         }
         noResults.classList.add('hidden');
+        injectItemListLd(filtered);
 
         // Grid or list
         if (viewMode === 'grid') {

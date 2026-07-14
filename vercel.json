@@ -18,6 +18,10 @@
       "use": "@vercel/static"
     },
     {
+      "src": "blog/**",
+      "use": "@vercel/static"
+    },
+    {
       "src": "script.min.js",
       "use": "@vercel/static"
     },
@@ -185,11 +189,24 @@
     },
     {
       "src": "/product/([^/]+)",
+      "has": [{ "type": "header", "key": "user-agent", "value": ".*(facebookexternalhit|Facebot|Twitterbot|LinkedInBot|Slackbot|TelegramBot|WhatsApp|Discordbot|Pinterestbot|SkypeUriPreview|line-poker).*" }],
+      "dest": "/server/src/index.ts"
+    },
+    {
+      "src": "/product/([^/]+)",
       "dest": "/product.html"
     },
     {
       "src": "/category/([^/]+)",
       "dest": "/category.html"
+    },
+    {
+      "src": "/blog",
+      "dest": "/blog.html"
+    },
+    {
+      "src": "/blog/([^/]+)",
+      "dest": "/blog/$1.html"
     },
     {
       "src": "/(shop|cart|checkout|orders|profile|wishlist|address|track-order|shipping|about|contact|faq|terms|privacy|refund|returns|exchange|warranty|admin|category|product)",

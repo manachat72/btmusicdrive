@@ -39,6 +39,11 @@ const categories = readJson('categories.json')
   .map(category => category && (category.slug || category.id))
   .filter(Boolean);
 
+const blogDir = path.join(ROOT, 'blog');
+const blogSlugs = fs.existsSync(blogDir)
+  ? fs.readdirSync(blogDir).filter(f => f.endsWith('.html')).map(f => f.replace(/\.html$/, ''))
+  : [];
+
 const entries = [
   '  <!-- Core pages -->',
   urlEntry('/', 'daily', '1.0'),
@@ -60,6 +65,9 @@ const entries = [
   urlEntry('/returns', 'yearly', '0.4'),
   urlEntry('/exchange', 'yearly', '0.4'),
   urlEntry('/warranty', 'yearly', '0.4'),
+  '  <!-- Blog -->',
+  ...(blogSlugs.length ? [urlEntry('/blog', 'weekly', '0.6')] : []),
+  ...blogSlugs.map(slug => urlEntry(`/blog/${slug}`, 'monthly', '0.6')),
 ];
 
 const sitemap = [
