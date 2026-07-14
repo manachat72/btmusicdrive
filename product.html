@@ -1272,6 +1272,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       document.getElementById('loading').classList.add('hidden');
       document.getElementById('product-content').classList.add('hidden');
       document.getElementById('error').classList.remove('hidden');
+      // Soft-404 guard: URL ที่ไม่มีสินค้าจริงต้องไม่ถูก index
+      document.title = 'ไม่พบสินค้า — Bt music drive';
+      let robotsMeta = document.querySelector('meta[name="robots"]');
+      if (!robotsMeta) { robotsMeta = document.createElement('meta'); robotsMeta.name = 'robots'; document.head.appendChild(robotsMeta); }
+      robotsMeta.content = 'noindex, follow';
     }
 
     // ── Render ───────────────────────────────────────────────────────────────────
