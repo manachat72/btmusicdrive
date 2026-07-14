@@ -789,6 +789,110 @@ body {
     box-shadow: 0 0 0 5px rgba(212, 175, 82, 0.08);
 }
 
+/* ══════════════════════════════════════════════════════════════════════════ */
+/* Homepage motion — scroll reveal, shimmer, shine, floating notes            */
+/* All transform/opacity only (no layout thrash); reduced-motion safe          */
+/* ══════════════════════════════════════════════════════════════════════════ */
+
+/* Scroll reveal — .reveal is only ever added by JS, so no-JS users see a static page */
+.reveal {
+    opacity: 0;
+    transform: translateY(26px);
+    transition: opacity .7s cubic-bezier(.22, 1, .36, 1), transform .7s cubic-bezier(.22, 1, .36, 1);
+    will-change: opacity, transform;
+}
+.reveal-in {
+    opacity: 1;
+    transform: none;
+}
+
+/* Slow Ken Burns zoom on the hero image */
+@keyframes hero-kenburns {
+    from { transform: scale(1); }
+    to   { transform: scale(1.07); }
+}
+.hero-kenburns {
+    animation: hero-kenburns 18s cubic-bezier(.25, .1, .25, 1) forwards;
+    transform-origin: 50% 42%;
+    will-change: transform;
+}
+
+/* Gold shimmer sweeping across .heading-gold text */
+@keyframes gold-shimmer {
+    0%, 100% { background-position: 0% 50%; }
+    50%      { background-position: 100% 50%; }
+}
+.heading-gold {
+    background-size: 220% auto;
+    animation: gold-shimmer 7s ease-in-out infinite;
+}
+
+/* Periodic light sweep across gold CTA buttons */
+.btn-shine {
+    position: relative;
+    overflow: hidden;
+}
+.btn-shine::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 45%;
+    background: linear-gradient(105deg, transparent, rgba(255, 255, 255, .55), transparent);
+    transform: translateX(-220%) skewX(-20deg);
+    animation: btn-shine 4.8s ease-in-out infinite;
+    pointer-events: none;
+    will-change: transform;
+}
+@keyframes btn-shine {
+    0%        { transform: translateX(-220%) skewX(-20deg); }
+    45%, 100% { transform: translateX(320%) skewX(-20deg); }
+}
+
+/* Floating music notes (flash sale) — gold, low opacity, drift upward */
+.flash-note {
+    position: absolute;
+    bottom: -2.5rem;
+    left: var(--x, 50%);
+    font-size: var(--s, 1.5rem);
+    color: var(--gold-hi);
+    opacity: 0;
+    animation: note-float var(--d, 12s) linear infinite;
+    animation-delay: var(--dl, 0s);
+    pointer-events: none;
+    -webkit-user-select: none;
+    user-select: none;
+    will-change: transform, opacity;
+}
+@keyframes note-float {
+    0%   { transform: translateY(0) translateX(0) rotate(-10deg); opacity: 0; }
+    10%  { opacity: .32; }
+    50%  { transform: translateY(-190px) translateX(14px) rotate(6deg); }
+    80%  { opacity: .32; }
+    100% { transform: translateY(-400px) translateX(-10px) rotate(-8deg); opacity: 0; }
+}
+
+/* Countdown seconds box pop on each tick */
+@keyframes tick-pop {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+.tick-pop {
+    animation: tick-pop .4s cubic-bezier(.22, 1, .36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+    .hero-kenburns,
+    .heading-gold,
+    .btn-shine::after,
+    .flash-note,
+    .tick-pop { animation: none; }
+    .flash-note { display: none; }
+}
+
 /* Mobile cart tab label */
 #bnav-cart-label {
     display: inline-block !important;
