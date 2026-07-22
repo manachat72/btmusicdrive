@@ -52,8 +52,8 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
     <!-- Custom CSS -->
     <link rel="preload" as="image" href="images/mobile-hero-bg.avif" media="(max-width: 767px)" fetchpriority="high" type="image/avif">
     <link rel="preload" as="image" href="images/hero-bg.avif" media="(min-width: 768px)" fetchpriority="high" type="image/avif">
-    <link rel="preload" as="image" href="images/mobile-hero-packs.avif" media="(max-width: 767px)" type="image/avif">
-    <link rel="preload" as="image" href="images/hero-packs.avif" media="(min-width: 768px)" type="image/avif">
+    <link rel="preload" as="image" href="images/mobile-hero-packs.avif" media="(max-width: 767px)" fetchpriority="high" type="image/avif">
+    <link rel="preload" as="image" href="images/hero-packs.avif" media="(min-width: 768px)" fetchpriority="high" type="image/avif">
     <link rel="preload" as="fetch" href="/api/menus" crossorigin>
     <link rel="preload" as="fetch" href="/api/products?limit=8" crossorigin>
 
@@ -199,7 +199,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <source srcset="images/hero-packs.avif" type="image/avif">
                 <img src="images/hero-packs.webp" alt="แฟลชไดร์ฟเพลง MP3 BT รวมเพลงคาราบาว ลูกทุ่ง ก็อต จักรพรรณ์ เสียบฟังในรถยนต์"
                     class="hero-layer absolute inset-0 w-full h-full object-cover"
-                    width="1920" height="1080" decoding="async">
+                    width="1920" height="1080" fetchpriority="high" decoding="async">
             </picture>
         </div>
         <!-- Bottom scrim for headline/CTA legibility -->
@@ -521,7 +521,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <!-- INLINE_PRODUCTS_START -->
 <div class="bg-white rounded-2xl overflow-hidden product-card border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.07)] hover:shadow-[0_12px_36px_rgba(139,115,85,0.18)]">
   <a href="/product/usb-mp3-3cha-peuachiwit-cover" class="block relative aspect-square overflow-hidden group cursor-pointer">
-    <img src="/images/products/usb-mp3-3cha-peuachiwit-cover/usb-mp3-3cha-peuachiwit-cover-1.webp" alt="USB แฟลชไดร์ฟ - MP3 รวมเพลง 3 ช่าเพื่อชีวิต แฟลชไดร์ฟรวมเพลง" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="eager" decoding="async" fetchpriority="high" width="400" height="400">
+    <img src="/images/products/usb-mp3-3cha-peuachiwit-cover/usb-mp3-3cha-peuachiwit-cover-1.webp" alt="USB แฟลชไดร์ฟ - MP3 รวมเพลง 3 ช่าเพื่อชีวิต แฟลชไดร์ฟรวมเพลง" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" decoding="async" width="400" height="400">
     <span class="absolute top-2 left-2 bg-red-600 text-white px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold shadow-sm">-29%</span>
     <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
   </a>
@@ -541,7 +541,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </div>
 <div class="bg-white rounded-2xl overflow-hidden product-card border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.07)] hover:shadow-[0_12px_36px_rgba(139,115,85,0.18)]">
   <a href="/product/usb-flash-drive-mp3-includes-80s-era-string-music" class="block relative aspect-square overflow-hidden group cursor-pointer">
-    <img src="/images/products/usb-flash-drive-mp3-includes-80s-era-string-music/usb-flash-drive-mp3-includes-80s-era-string-music-1.webp" alt="USB แฟลชไดรฟ์ MP3 รวมเพลงสตริงยุค 80s" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="eager" decoding="async" width="400" height="400">
+    <img src="/images/products/usb-flash-drive-mp3-includes-80s-era-string-music/usb-flash-drive-mp3-includes-80s-era-string-music-1.webp" alt="USB แฟลชไดรฟ์ MP3 รวมเพลงสตริงยุค 80s" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" decoding="async" width="400" height="400">
     <span class="absolute top-2 left-2 bg-red-600 text-white px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold shadow-sm">-29%</span>
     <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
   </a>

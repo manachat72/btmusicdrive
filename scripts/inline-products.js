@@ -60,9 +60,10 @@ function renderCard(product, index) {
   const categoryName =
     (product.category && product.category.name) || product.category || '';
 
-  // First 2 images eager for LCP, rest lazy
-  const loading = index < 2 ? 'eager' : 'lazy';
-  const fetchPri = index === 0 ? ' fetchpriority="high"' : '';
+  // Product grid sits below the full-viewport hero — never the LCP.
+  // Keep all lazy + default priority so the hero image wins bandwidth on mobile.
+  const loading = 'lazy';
+  const fetchPri = '';
 
   return `<div class="bg-white rounded-2xl overflow-hidden product-card border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.07)] hover:shadow-[0_12px_36px_rgba(139,115,85,0.18)]">
   <a href="${pUrl}" class="block relative aspect-square overflow-hidden group cursor-pointer">
