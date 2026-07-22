@@ -18,7 +18,7 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
 <base href="/">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="app.min.css?v=607b1cb2">
+    <link rel="stylesheet" href="app.min.css?v=a94c848a">
     <meta name="theme-color" content="#8B7355">
     <link rel="icon" type="image/webp" href="images/logo.webp">
     <title>แฟลชไดร์ฟเพลง MP3 รวมเพลงฮิต เสียบปุ๊บฟังปั๊บ | Bt music drive</title>
@@ -50,8 +50,10 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
 
 
     <!-- Custom CSS -->
-    <link rel="preload" as="image" href="images/mobile-hero.avif" media="(max-width: 767px)" fetchpriority="high" type="image/avif">
-    <link rel="preload" as="image" href="images/hero-banner1.avif" media="(min-width: 768px)" fetchpriority="high" type="image/avif">
+    <link rel="preload" as="image" href="images/mobile-hero-bg.avif" media="(max-width: 767px)" fetchpriority="high" type="image/avif">
+    <link rel="preload" as="image" href="images/hero-bg.avif" media="(min-width: 768px)" fetchpriority="high" type="image/avif">
+    <link rel="preload" as="image" href="images/mobile-hero-packs.avif" media="(max-width: 767px)" type="image/avif">
+    <link rel="preload" as="image" href="images/hero-packs.avif" media="(min-width: 768px)" type="image/avif">
     <link rel="preload" as="fetch" href="/api/menus" crossorigin>
     <link rel="preload" as="fetch" href="/api/products?limit=8" crossorigin>
 
@@ -181,16 +183,49 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     <!-- Hero Section -->
     <section class="relative w-full h-[78vh] min-h-[520px] md:h-[88vh] md:min-h-[600px] overflow-hidden bg-secondary">
-        <!-- LCP image (full-bleed) — matches the preloaded AVIF files in <head> -->
-        <picture>
-            <source media="(max-width: 767px)" srcset="images/mobile-hero.avif" type="image/avif">
-            <source srcset="images/hero-banner1.avif" type="image/avif">
-            <img src="images/hero-banner1.webp" alt="แฟลชไดร์ฟเพลง MP3 เสียบฟังในรถยนต์ รวมเพลงฮิตทุกแนว"
-                class="hero-kenburns absolute inset-0 w-full h-full object-cover"
-                width="1280" height="720" fetchpriority="high" decoding="async">
-        </picture>
-        <!-- Gold-black luxury overlay -->
+        <!-- Layered hero: background scene + product packs (AVIF/WebP, LCP-safe, ken-burns together) -->
+        <div class="hero-stack hero-kenburns absolute inset-0">
+            <picture>
+                <source media="(max-width: 767px)" srcset="images/mobile-hero-bg.avif" type="image/avif">
+                <source media="(max-width: 767px)" srcset="images/mobile-hero-bg.webp" type="image/webp">
+                <source srcset="images/hero-bg.avif" type="image/avif">
+                <img src="images/hero-bg.webp" alt="พื้นหลังพรีเมียมดำ-ทอง โพเดียมหินอ่อนและแสงทองสำหรับแฟลชไดร์ฟเพลง MP3"
+                    class="hero-layer absolute inset-0 w-full h-full object-cover"
+                    width="1920" height="1080" fetchpriority="high" decoding="async">
+            </picture>
+            <picture>
+                <source media="(max-width: 767px)" srcset="images/mobile-hero-packs.avif" type="image/avif">
+                <source media="(max-width: 767px)" srcset="images/mobile-hero-packs.webp" type="image/webp">
+                <source srcset="images/hero-packs.avif" type="image/avif">
+                <img src="images/hero-packs.webp" alt="แฟลชไดร์ฟเพลง MP3 BT รวมเพลงคาราบาว ลูกทุ่ง ก็อต จักรพรรณ์ เสียบฟังในรถยนต์"
+                    class="hero-layer absolute inset-0 w-full h-full object-cover"
+                    width="1920" height="1080" decoding="async">
+            </picture>
+        </div>
+        <!-- Bottom scrim for headline/CTA legibility -->
         <div class="hero-overlay-lux absolute inset-0"></div>
+        <!-- Sweeping gold light beam (CSS, transform/opacity only) -->
+        <div class="hero-beam" aria-hidden="true"></div>
+        <!-- Floating gold dust (CSS) -->
+        <div class="hero-dust" aria-hidden="true">
+            <span style="--x:12%;--s:3px;--d:11s;--dl:0s"></span>
+            <span style="--x:22%;--s:2px;--d:14s;--dl:2s"></span>
+            <span style="--x:34%;--s:4px;--d:9s;--dl:1s"></span>
+            <span style="--x:45%;--s:2px;--d:13s;--dl:4s"></span>
+            <span style="--x:53%;--s:3px;--d:10s;--dl:.5s"></span>
+            <span style="--x:61%;--s:2px;--d:15s;--dl:3s"></span>
+            <span style="--x:70%;--s:4px;--d:12s;--dl:1.5s"></span>
+            <span style="--x:78%;--s:2px;--d:9.5s;--dl:5s"></span>
+            <span style="--x:86%;--s:3px;--d:13.5s;--dl:2.5s"></span>
+            <span style="--x:92%;--s:2px;--d:11.5s;--dl:6s"></span>
+            <span style="--x:5%;--s:2px;--d:16s;--dl:3.5s"></span>
+            <span style="--x:40%;--s:3px;--d:12.5s;--dl:6.5s"></span>
+        </div>
+        <!-- Floating brand mark (top-left) -->
+        <img src="images/hero-logo.webp" alt="โลโก้ BT Music Drive แฟลชไดร์ฟเพลง"
+            class="hero-logo" width="104" height="104" decoding="async" onerror="this.style.display='none'">
+        <!-- Drifting gold light (echoes the beams in the scene) -->
+        <div class="hero-glow" aria-hidden="true"></div>
         <!-- Thin gold frame with corner ticks -->
         <div class="lux-frame z-[5]" aria-hidden="true"></div>
 
