@@ -65,9 +65,18 @@ function renderCard(product, index) {
   const loading = 'lazy';
   const fetchPri = '';
 
+  // Prefer AVIF when a sibling file exists on disk (build-time check → no 404 fallback cost)
+  let avifSource = '';
+  if (product.imageUrl && /\.webp$/i.test(product.imageUrl)) {
+    const avifUrl = product.imageUrl.replace(/\.webp$/i, '.avif');
+    if (fs.existsSync(path.join(ROOT, avifUrl))) {
+      avifSource = `<source srcset="${escapeHtml(avifUrl)}" type="image/avif">`;
+    }
+  }
+
   return `<div class="bg-white rounded-2xl overflow-hidden product-card border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.07)] hover:shadow-[0_12px_36px_rgba(139,115,85,0.18)]">
   <a href="${pUrl}" class="block relative aspect-square overflow-hidden group cursor-pointer">
-    <img src="${escapeHtml(product.imageUrl)}" alt="${escapeHtml(product.name)}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="${loading}" decoding="async"${fetchPri} width="400" height="400">
+    <picture class="block w-full h-full">${avifSource}<img src="${escapeHtml(product.imageUrl)}" alt="${escapeHtml(product.name)}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="${loading}" decoding="async"${fetchPri} width="400" height="400"></picture>
     ${badgeHtml}
     <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
   </a>
