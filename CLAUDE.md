@@ -509,3 +509,19 @@ npm run build
 - **Social OG ฝั่ง server**: FB/LINE/Twitter scraper ไม่รัน JS — vercel.json route UA ของ social bot ที่เข้า `/product/:slug` ไปที่ server → `server/src/lib/socialOg.ts` render OG meta จาก DB (Googlebot ยังได้ static + JS ปกติ)
 - **OG image กลาง**: `images/og-cover.jpg` (1200×630) — FB ไม่รองรับ webp/avif ห้ามเปลี่ยนกลับไปใช้ .webp
 - **Minify components.js/script.js**: ไม่มี build script สำหรับ JS — ใช้ `npx terser <file>.js -c -m -o <file>.min.js` แล้ว `npm run build` เพื่อ bump version
+
+---
+
+## 16. Agent skills
+
+### Issue tracker
+
+Issues live in GitHub Issues for `manachat72/btmusicdrive`, via the `gh` CLI. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+The five canonical roles, each label string equal to its name (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`). See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context — one `CONTEXT.md` + `docs/adr/` at the repo root. See `docs/agents/domain.md`.
