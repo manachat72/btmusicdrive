@@ -27,3 +27,7 @@ images/original/
 
 # Source/working video folders (not for repo — derived asset lives in images/)
 vdo_mp4/
+
+# products1: keep only web assets in git (masters/originals stay local)
+images/products1/png/
+images/products1/original/
