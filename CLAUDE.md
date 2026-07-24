@@ -416,7 +416,7 @@ PromoCode  — id(uuid), code(unique), type(PERCENT|FIXED), value, description,
 - **ห้ามสร้าง** duplicate route files ใน path ผิด (เช่น `server/server/src/...`)
 - **ห้ามแก้** `server/prisma/schema.prisma` โดยไม่ run `prisma migrate` ด้วย
 - **ห้ามเปลี่ยน** Stripe live keys ที่อยู่ใน `.env` — ใช้งานจริงอยู่
-- **ห้าม push** ขึ้น git โดยไม่ให้ user ยืนยันก่อน
+- **Push ได้เลยไม่ต้องถาม** — user อนุญาต auto commit + push ขึ้น main แล้ว (allowlist `Bash(git push:*)` ใน `.claude/settings.local.json`) แต่ต้อง**รายงานทุกครั้ง**ว่า commit/push อะไรไปบ้าง และยังห้าม force push
 
 ### ✅ ควรทำเสมอ
 - อ่านไฟล์ก่อนแก้ไขทุกครั้ง (ใช้ Read tool ไม่ใช่ cat)
