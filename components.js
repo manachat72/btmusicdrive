@@ -443,7 +443,7 @@ function _chatWidgetHTML() {
   <style>
     #bt-chat-widget { position:fixed; bottom:78px; right:12px; z-index:45; display:flex; flex-direction:column; align-items:flex-end; gap:10px; }
     @media (min-width:768px) { #bt-chat-widget { bottom:24px; right:24px; } }
-    #bt-chat-toggle { position:relative; cursor:pointer; border:none; background:none; padding:0; display:block;
+    #bt-chat-toggle { position:relative; cursor:pointer; border:none; background:none; padding:0; display:block; touch-action:none;
       animation:btBounce 2.6s ease-in-out infinite; filter:drop-shadow(0 4px 12px rgba(0,0,0,0.25)); transition:transform 0.15s; }
     #bt-chat-toggle:hover { transform:scale(1.05); }
     #bt-chat-toggle:active { transform:scale(0.97); }
@@ -678,11 +678,71 @@ function _mobileBottomNavHTML() {
     var _ctoggle = document.getElementById('bt-chat-toggle');
     var _cpanel  = document.getElementById('bt-chat-panel');
     if (_ctoggle && _cpanel) {
+      var _cdragged = false;
       _ctoggle.addEventListener('click', function(e) {
         e.stopPropagation();
+        if (_cdragged) { _cdragged = false; return; }
         var open = _cpanel.classList.toggle('open');
         _ctoggle.setAttribute('aria-expanded', String(open));
       });
+
+      // ลากย้ายตำแหน่งได้ (กันบังปุ่มอื่น) — anchor ที่มุมขวาล่าง จำตำแหน่งใน localStorage
+      (function() {
+        var _cwidget = document.getElementById('bt-chat-widget');
+        var POS_KEY = 'btChatPos';
+        function clampPos(r, b) {
+          var maxR = window.innerWidth - _cwidget.offsetWidth - 4;
+          var maxB = window.innerHeight - _cwidget.offsetHeight - 4;
+          return { r: Math.min(Math.max(4, r), Math.max(4, maxR)), b: Math.min(Math.max(4, b), Math.max(4, maxB)) };
+        }
+        function applyPos(p) {
+          _cwidget.style.right = p.r + 'px';
+          _cwidget.style.bottom = p.b + 'px';
+        }
+        try {
+          var saved = JSON.parse(localStorage.getItem(POS_KEY));
+          if (saved && typeof saved.r === 'number' && typeof saved.b === 'number') applyPos(clampPos(saved.r, saved.b));
+        } catch {}
+
+        var sx, sy, sr, sb, pid = null;
+        _ctoggle.addEventListener('pointerdown', function(e) {
+          var rect = _cwidget.getBoundingClientRect();
+          sx = e.clientX; sy = e.clientY;
+          sr = window.innerWidth - rect.right;
+          sb = window.innerHeight - rect.bottom;
+          pid = e.pointerId;
+          try { _ctoggle.setPointerCapture(pid); } catch {}
+        });
+        _ctoggle.addEventListener('pointermove', function(e) {
+          if (pid === null || e.pointerId !== pid) return;
+          var dx = e.clientX - sx, dy = e.clientY - sy;
+          if (!_cdragged && Math.hypot(dx, dy) < 8) return;
+          _cdragged = true;
+          applyPos(clampPos(sr - dx, sb - dy));
+        });
+        function endDrag(e) {
+          if (pid === null || e.pointerId !== pid) return;
+          pid = null;
+          if (_cdragged) {
+            var rect = _cwidget.getBoundingClientRect();
+            try {
+              localStorage.setItem(POS_KEY, JSON.stringify({
+                r: Math.round(window.innerWidth - rect.right),
+                b: Math.round(window.innerHeight - rect.bottom)
+              }));
+            } catch {}
+            setTimeout(function() { _cdragged = false; }, 0);
+          }
+        }
+        _ctoggle.addEventListener('pointerup', endDrag);
+        _ctoggle.addEventListener('pointercancel', endDrag);
+        window.addEventListener('resize', function() {
+          if (_cwidget.style.right) {
+            var rect = _cwidget.getBoundingClientRect();
+            applyPos(clampPos(window.innerWidth - rect.right, window.innerHeight - rect.bottom));
+          }
+        });
+      })();
       document.addEventListener('click', function(e) {
         var w = document.getElementById('bt-chat-widget');
         if (w && !w.contains(e.target)) {
