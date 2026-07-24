@@ -950,6 +950,62 @@ body {
     45%, 100% { transform: translateX(320%) skewX(-20deg); }
 }
 
+/* Scrolling artist/genre marquee (below hero) — transform-only, seamless 2x loop */
+.music-marquee {
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+    mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+.marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marquee-scroll 38s linear infinite;
+    will-change: transform;
+}
+.music-marquee:hover .marquee-track { animation-play-state: paused; }
+.marquee-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 2.25rem;
+    padding-right: 2.25rem;
+}
+@keyframes marquee-scroll {
+    to { transform: translateX(-50%); }
+}
+
+/* Equalizer bars on product image hover (pointer devices only) */
+.eq-bars {
+    position: absolute;
+    right: .75rem;
+    bottom: .75rem;
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 18px;
+    opacity: 0;
+    transition: opacity .3s ease;
+    pointer-events: none;
+}
+.eq-bars i {
+    width: 4px;
+    height: 100%;
+    border-radius: 2px;
+    background: linear-gradient(to top, #f59e0b, #fde68a);
+    transform-origin: bottom;
+    transform: scaleY(.3);
+}
+.eq-bars i:nth-child(1) { animation-delay: -.10s; animation-duration: .85s; }
+.eq-bars i:nth-child(2) { animation-delay: -.35s; animation-duration: 1.05s; }
+.eq-bars i:nth-child(3) { animation-delay: -.60s; animation-duration: .75s; }
+.eq-bars i:nth-child(4) { animation-delay: -.25s; animation-duration: .95s; }
+@media (hover: hover) {
+    .group:hover .eq-bars { opacity: 1; }
+    .group:hover .eq-bars i { animation-name: eq-bounce; animation-timing-function: ease-in-out; animation-iteration-count: infinite; }
+}
+@keyframes eq-bounce {
+    0%, 100% { transform: scaleY(.3); }
+    50%      { transform: scaleY(1); }
+}
+
 /* Floating music notes (flash sale) — gold, low opacity, drift upward */
 .flash-note {
     position: absolute;
@@ -993,6 +1049,8 @@ body {
     .heading-gold,
     .btn-shine::after,
     .flash-note,
+    .marquee-track,
+    .eq-bars i,
     .tick-pop { animation: none; }
     .flash-note,
     .hero-beam,

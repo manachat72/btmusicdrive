@@ -79,6 +79,7 @@ function renderCard(product, index) {
     <picture class="block w-full h-full">${avifSource}<img src="${escapeHtml(product.imageUrl)}" alt="${escapeHtml(product.name)}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="${loading}" decoding="async"${fetchPri} width="400" height="400"></picture>
     ${badgeHtml}
     <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+    <span class="eq-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
   </a>
   <div class="p-2.5 sm:p-4">
     <div class="text-[10px] sm:text-xs text-gray-500 font-medium mb-0.5 uppercase tracking-wider">${escapeHtml(categoryName)}</div>
