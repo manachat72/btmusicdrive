@@ -509,6 +509,7 @@ npm run build
 - **Social OG ฝั่ง server**: FB/LINE/Twitter scraper ไม่รัน JS — vercel.json route UA ของ social bot ที่เข้า `/product/:slug` ไปที่ server → `server/src/lib/socialOg.ts` render OG meta จาก DB (Googlebot ยังได้ static + JS ปกติ)
 - **OG image กลาง**: `images/og-cover.jpg` (1200×630) — FB ไม่รองรับ webp/avif ห้ามเปลี่ยนกลับไปใช้ .webp
 - **Minify components.js/script.js**: ไม่มี build script สำหรับ JS — ใช้ `npx terser <file>.js -c -m -o <file>.min.js` แล้ว `npm run build` เพื่อ bump version
+- **Chat widget ลากย้ายได้** (เพิ่ม 2026-07-25): `#bt-chat-widget` ใน components.js ลากย้ายตำแหน่งได้ (pointer events บน `#bt-chat-toggle`, threshold 8px แยกแตะ/ลาก) — ตำแหน่งเก็บใน localStorage key `btChatPos` แบบ `{r, b}` (px จากขวา/ล่าง) **ห้ามเปลี่ยนชื่อ key** และห้ามลบ `touch-action:none` บนปุ่ม ไม่งั้นลากบนมือถือไม่ได้
 
 ---
 
