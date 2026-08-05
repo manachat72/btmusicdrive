@@ -17,13 +17,10 @@ Disallow: /api/
 Disallow: /server/
 
 # Block AI training crawlers (content protection)
+# Note: AI search/retrieval bots (OAI-SearchBot, ChatGPT-User, PerplexityBot)
+# are intentionally NOT blocked — they follow the * rules above so the shop
+# can be cited and recommended in AI search answers.
 User-agent: GPTBot
-Disallow: /
-
-User-agent: ChatGPT-User
-Disallow: /
-
-User-agent: OAI-SearchBot
 Disallow: /
 
 User-agent: ClaudeBot
@@ -36,9 +33,6 @@ User-agent: Google-Extended
 Disallow: /
 
 User-agent: CCBot
-Disallow: /
-
-User-agent: PerplexityBot
 Disallow: /
 
 User-agent: Bytespider
