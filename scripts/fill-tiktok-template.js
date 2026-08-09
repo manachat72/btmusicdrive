@@ -73,8 +73,13 @@ const LAST_COL = 27;        // AB
     process.exit(1);
   }
   const lwb = XLSX.read(fs.readFileSync(listFile), { type: 'buffer' });
-  const items = XLSX.utils.sheet_to_json(lwb.Sheets['TikTok Shop'], { defval: '' });
-  console.log(`ข้อมูล    : ${items.length} รายการ (ชีต TikTok Shop)`);
+  let items = XLSX.utils.sheet_to_json(lwb.Sheets['TikTok Shop'], { defval: '' });
+  const CODE = arg('--code') ? String(arg('--code')).padStart(2, '0') : null;
+  if (CODE) {
+    items = items.filter(it => String(it.Code ?? '').padStart(2, '0') === CODE);
+    if (!items.length) { console.error(`✖ ไม่พบสินค้า code ${CODE} ในชีต TikTok Shop`); process.exit(1); }
+  }
+  console.log(`ข้อมูล    : ${items.length} รายการ (ชีต TikTok Shop)${CODE ? ` — เฉพาะ code ${CODE}` : ''}`);
 
   // 3) เปิดเทมเพลต + ตรวจว่าหมวดหมู่/แบรนด์ตรงกับดรอปดาวน์จริง
   const wb = XLSX.read(fs.readFileSync(tplFile), { type: 'buffer', cellStyles: false });
@@ -135,9 +140,9 @@ const LAST_COL = 27;        // AB
   XLSX.utils.sheet_add_aoa(ws, [new Array(LAST_COL + 1).fill('')], { origin: { r: EXAMPLE_ROW, c: 0 } });
   XLSX.utils.sheet_add_aoa(ws, rows, { origin: { r: DATA_START_ROW, c: 0 } });
   fs.mkdirSync(OUT_DIR, { recursive: true });
-  const outFile = path.join(OUT_DIR, 'tiktok-upload-filled.xlsx');
+  const outFile = path.join(OUT_DIR, CODE ? `tiktok-upload-${CODE}.xlsx` : 'tiktok-upload-filled.xlsx');
   XLSX.writeFile(wb, outFile, { bookType: 'xlsx' });
-  console.log(`\n✔ templates/tiktok-upload-filled.xlsx  (${rows.length} รายการ)`);
+  console.log(`\n✔ ${path.relative(ROOT, outFile)}  (${rows.length} รายการ)`);
   console.log('  อัปโหลดที่ Seller Center → สินค้า → เพิ่มสินค้าเป็นชุด (Batch upload)');
   console.log('  ⚠ รายการวิทยุยังไม่มีหมวดหมู่ — เปิดไฟล์เลือกจากดรอปดาวน์คอลัมน์ A ก่อนอัป');
 })();

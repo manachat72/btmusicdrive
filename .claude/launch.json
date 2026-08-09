@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "listing-studio",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["scripts/listing-studio.js"],
+      "port": 4777
+    }
+  ]
+}

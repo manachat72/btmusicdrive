@@ -275,7 +275,13 @@ function readGenericSpecs(file) {
     console.error('✖ ไม่พบ marketplace-images/catalog.json — รัน npm run mkt:build ก่อน');
     process.exit(1);
   }
-  const catalog = JSON.parse(fs.readFileSync(catalogPath, 'utf8')).products;
+  let catalog = JSON.parse(fs.readFileSync(catalogPath, 'utf8')).products;
+  const CODE = arg('--code') ? String(arg('--code')).padStart(2, '0') : null;
+  if (CODE) {
+    catalog = catalog.filter(p => p.code === CODE);
+    if (!catalog.length) { console.error(`✖ ไม่พบสินค้า code ${CODE} ใน catalog.json`); process.exit(1); }
+    console.log(`  → เฉพาะสินค้า code ${CODE}`);
+  }
 
   const products = JSON.parse(fs.readFileSync(path.join(ROOT, 'products.json'), 'utf8'))
     .map(p => ({ ...p, _norm: norm(p.name) }));
@@ -500,7 +506,7 @@ function readGenericSpecs(file) {
   fs.mkdirSync(OUT_DIR, { recursive: true });
   XLSX.utils.sheet_add_aoa(tpl.ws, outRows, { origin: { r: HEADER_ROWS, c: 0 } });
 
-  const outFile = path.join(OUT_DIR, 'shopee-upload-filled.xlsx');
+  const outFile = path.join(OUT_DIR, CODE ? `shopee-upload-${CODE}.xlsx` : 'shopee-upload-filled.xlsx');
   XLSX.writeFile(tpl.wb, outFile, { bookType: 'xlsx' });
 
   const csv = '\uFEFF' + report.map(r => r.map(v => {
@@ -510,7 +516,7 @@ function readGenericSpecs(file) {
   fs.writeFileSync(path.join(OUT_DIR, 'shopee-fill-report.csv'), csv, 'utf8');
 
   // ถ้ายังไม่มีไฟล์ override ให้สร้างโครงพร้อมรายการที่จับคู่ไม่ได้
-  if (!fs.existsSync(ovPath)) {
+  if (!CODE && !fs.existsSync(ovPath)) {
     const head = ['Code', 'ชื่อสินค้า', 'ราคา', 'สต็อก', 'SKU', 'น้ำหนัก', 'รายละเอียด'];
     const miss = report.slice(1).filter(r => r[2] === '— ไม่พบ —')
       .map(r => [r[0], r[1], '', '', '', '', '']);
@@ -522,7 +528,7 @@ function readGenericSpecs(file) {
     console.log(`\n✔ templates/shopee-overrides.csv  (${miss.length} รายการที่ต้องกรอกเอง — กรอกแล้วรันซ้ำ)`);
   }
 
-  console.log(`\n✔ templates/shopee-upload-filled.xlsx  (${outRows.length} รายการ)`);
+  console.log(`\n✔ ${path.relative(ROOT, outFile)}  (${outRows.length} รายการ)`);
   console.log('✔ templates/shopee-fill-report.csv     (ตรวจว่าจับคู่ถูกไหม)');
   console.log('\n⚠ เปิดเช็คก่อนอัป: หมวดหมู่สินค้า (คอลัมน์ A) และช่องทางขนส่ง ถ้ายังว่างต้องเลือกในไฟล์เอง');
 })().catch(e => { console.error('✖', e); process.exit(1); });

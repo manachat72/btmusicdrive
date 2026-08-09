@@ -83,6 +83,20 @@ npm run mkt:listings                            # เขียน templates/mark
 คอลัมน์ "หมายเหตุ" จะเตือนรายการที่รูปไม่ถึง 5 รูป (TikTok) หรือจับคู่ products.json ไม่ได้
 ราคา/สต็อก/น้ำหนักแก้ที่ `CONFIG` หัวไฟล์สคริปต์ที่เดียว
 
+## 🎛 Listing Studio — ลงสินค้าทีละชิ้นผ่านหน้าเว็บ (local)
+
+```bash
+npm run mkt:studio     # เปิด http://localhost:4777
+```
+
+เลือกสินค้าจากรายการ (มีรูป+ค้นหาได้) → เห็นรูปทั้ง 9 → กดปุ่มแพลตฟอร์ม → ได้ไฟล์ .xlsx ทันที:
+- **Shopee** → `shopee-upload-<code>.xlsx` (เทมเพลตทางการ อัปโหลดได้เลย)
+- **TikTok Shop** → `tiktok-upload-<code>.xlsx` (เทมเพลตทางการ อัปโหลดได้เลย)
+- **Lazada** → `lazada-upload-<code>.xlsx` (ข้อมูลครบ 1 รายการ copy ลงเทมเพลต Lazada)
+
+ต้องมี `marketplace-listings.xlsx` (จาก `npm run mkt:listings`) และเทมเพลตทางการของ Shopee/TikTok ใน Downloads
+สร้างทีละชิ้นจาก CLI ได้เช่นกัน: `node scripts/fill-tiktok-template.js --apply --code 03`
+
 ## เพิ่มสินค้าใหม่
 
 วางโฟลเดอร์ `<NN>-<ชื่อสินค้า>` ลง NAS แล้วรัน 2 คำสั่งเดิมซ้ำ — สคริปต์ข้ามของเก่าที่ไม่เปลี่ยน อัปเฉพาะไฟล์ใหม่
