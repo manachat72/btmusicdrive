@@ -33,6 +33,7 @@ const CONFIG = {
   length: 10, width: 10, height: 10,   // ซม.
   brand: 'btmusicdrive',
   shopUrl: 'https://btmusicdrive.com',
+  shopeeCategoryId: 101964,   // เลขหมวดหมู่ Shopee (แฟลชไดรฟ์)
 };
 
 // ── ข้อจำกัดต่อแพลตฟอร์ม ──
@@ -214,7 +215,7 @@ const tiktokHashtags = (x) => ['#USBเพลง', '#เพลงในรถ', 
   }
 
   const imgHead = ['ภาพปก', ...Array.from({ length: 8 }, (_, i) => `รูป ${i + 1}`)];
-  const S = [['Code', 'ชื่อสินค้า (SEO ≤120)', 'รายละเอียด', 'ราคา', 'สต็อก', 'SKU', 'น้ำหนัก(กก.)', 'ยาว', 'กว้าง', 'สูง', 'Tags', ...imgHead, 'จำนวนรูป', 'หมายเหตุ']];
+  const S = [['Code', 'หมวดหมู่ Shopee', 'ชื่อสินค้า (SEO ≤120)', 'รายละเอียด', 'ราคา', 'สต็อก', 'SKU', 'น้ำหนัก(กก.)', 'ยาว', 'กว้าง', 'สูง', 'Tags', ...imgHead, 'จำนวนรูป', 'หมายเหตุ']];
   const L = [['Code', 'ชื่อสินค้า (SEO ≤255)', 'Highlights (Short Description)', 'รายละเอียด', 'What\'s in the box', 'ราคา', 'สต็อก', 'SKU', 'แบรนด์', 'น้ำหนัก(กก.)', 'ยาว', 'กว้าง', 'สูง', ...imgHead, 'จำนวนรูป', 'หมายเหตุ']];
   const T = [['Code', 'ชื่อสินค้า (SEO ≤255)', 'รายละเอียด', 'Hashtags', 'ราคา', 'สต็อก', 'SKU', 'น้ำหนัก(กก.)', 'ยาว', 'กว้าง', 'สูง', ...imgHead, 'จำนวนรูป', 'หมายเหตุ']];
   const W = [['Code', 'ชื่อบนเว็บ (ปัจจุบัน)', 'SEO Title (≤60)', 'Meta Description (≤160)', 'H1 แนะนำ', 'สถานะ', 'คะแนนจับคู่']];
@@ -256,7 +257,7 @@ const tiktokHashtags = (x) => ['#USBเพลง', '#เพลงในรถ', 
     const matchNote = matched ? '' : '⚠ ไม่พบใน products.json — เช็คชื่อ/ราคาเอง';
     if (tkNote || matchNote) warn++;
 
-    S.push([p.code, shopeeTitle(x), spDesc, price, CONFIG.stock, sku, CONFIG.weight, CONFIG.length, CONFIG.width, CONFIG.height, shopeeTags(x), ...imgCells, nImg, matchNote]);
+    S.push([p.code, CONFIG.shopeeCategoryId, shopeeTitle(x), spDesc, price, CONFIG.stock, sku, CONFIG.weight, CONFIG.length, CONFIG.width, CONFIG.height, shopeeTags(x), ...imgCells, nImg, matchNote]);
     L.push([p.code, lazadaTitle(x), highlights, lzd, box, price, CONFIG.stock, sku, CONFIG.brand, CONFIG.weight, CONFIG.length, CONFIG.width, CONFIG.height, ...imgCells, nImg, matchNote]);
     T.push([p.code, tiktokTitle(x), clip(tiktokDesc(x), LIMIT.tiktok.desc), tiktokHashtags(x), price, CONFIG.stock, sku, CONFIG.weight, CONFIG.length, CONFIG.width, CONFIG.height, ...imgCells, nImg, [tkNote, matchNote].filter(Boolean).join(' · ')]);
 
@@ -287,7 +288,7 @@ const tiktokHashtags = (x) => ['#USBเพลง', '#เพลงในรถ', 
     ws['!cols'] = widths.map(wch => ({ wch }));
     XLSX.utils.book_append_sheet(wb, ws, name);
   };
-  addSheet('Shopee', S, [6, 60, 80, 8, 6, 10, 10, 5, 5, 5, 40, ...Array(9).fill(45), 8, 30]);
+  addSheet('Shopee', S, [6, 14, 60, 80, 8, 6, 10, 10, 5, 5, 5, 40, ...Array(9).fill(45), 8, 30]);
   addSheet('Lazada', L, [6, 60, 50, 80, 30, 8, 6, 10, 12, 10, 5, 5, 5, ...Array(9).fill(45), 8, 30]);
   addSheet('TikTok Shop', T, [6, 60, 80, 40, 8, 6, 10, 10, 5, 5, 5, ...Array(9).fill(45), 8, 30]);
   addSheet('Website', W, [6, 50, 55, 70, 60, 14, 8]);
