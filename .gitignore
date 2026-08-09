@@ -31,3 +31,10 @@ vdo_mp4/
 # products1: keep only web assets in git (masters/originals stay local)
 images/products1/png/
 images/products1/original/
+
+# Marketplace image staging (อยู่บน Cloudflare R2 ไม่ต้องเข้า git)
+marketplace-images/
+.env.r2
+
+# Generated marketplace upload files (มีข้อมูลร้าน — ไม่เข้า git)
+templates/
