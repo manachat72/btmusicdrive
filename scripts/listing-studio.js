@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 /**
- * 🎛 Listing Studio — หน้าเว็บหลังบ้าน (local) สำหรับลงสินค้าทีละชิ้น
+ * 🎛 Listing Studio — หน้าเว็บหลังบ้าน (local) สำหรับลงสินค้า
  *
- * เปิดหน้าเว็บบนเครื่อง: เลือกสินค้า → เห็นรูปทั้งหมด → กดปุ่มสร้าง template.xlsx
- * ของแต่ละแพลตฟอร์ม (Shopee / Lazada / TikTok Shop) แล้วดาวน์โหลดไปอัปโหลดเอง
+ * ทำได้ 2 อย่าง:
+ *   1. ลงสินค้าใหม่: ตั้งชื่อสั้น (เช่น "ฮิตยุค90") → เลือกรูปจากโฟลเดอร์ NAS หรืออัปโหลดรูป
+ *      (สร้างโฟลเดอร์ให้เอง) → แนบ .txt รายชื่อเพลง → กดตกลง → ระบบแปลงรูปขึ้น R2 +
+ *      ทำ SEO ตั้งชื่อ/รายละเอียดให้ → รีวิว/แก้ → ยืนยันลงเว็บ btmusicdrive.com ก่อน
+ *   2. กระจายไปแพลตฟอร์ม: เลือกสินค้า → กดปุ่มสร้าง template.xlsx ของ Shopee / TikTok / Lazada
  *
- * ข้อมูล: marketplace-images/catalog.json + templates/marketplace-listings.xlsx
- * Shopee/TikTok ใช้เทมเพลตทางการ (หาใน Downloads) ผ่าน fill-*-template.js --code
- * Lazada ยังไม่มีเทมเพลตทางการ → สร้าง xlsx ข้อมูลครบให้ copy ลงเทมเพลต
+ * การลงเว็บใช้ API จริง (ต้อง login ด้วยบัญชีแอดมินในหน้านี้ก่อน) — มีขั้นรีวิวเสมอ ไม่ลงอัตโนมัติ
  *
  * Usage: npm run mkt:studio   → เปิด http://localhost:4777
  */
@@ -20,8 +21,52 @@ const XLSX = require('xlsx');
 const ROOT = path.resolve(__dirname, '..');
 const OUT_DIR = path.join(ROOT, 'templates');
 const PORT = 4777;
+const NAS_DIR = 'Z:\\รูป\\รูปสินค้า';
+const API_BASE = process.argv.includes('--local-api') ? 'http://localhost:5000/api' : 'https://btmusicdrive.com/api';
+const CDN = 'https://img.btmusicdrive.com';
 
-// ── โหลดข้อมูลสินค้า (โหลดใหม่ทุก request จะได้ไม่ต้อง restart เวลาข้อมูลเปลี่ยน) ──
+let ADMIN_TOKEN = null;   // JWT หลัง login (เก็บในหน่วยความจำระหว่างเปิด studio เท่านั้น)
+
+// ── SEO builders (แนวเดียวกับ generate-marketplace-listings.js) ──
+const GENRES = [
+  { re: /เพื่อชีวิต|คาราบาว|พงษ์สิทธิ์|คำภีร์|มาลีฮวนน่า/, name: 'เพื่อชีวิต', cat: 'เพื่อชีวิต', kw: ['เพลงเพื่อชีวิต', 'เพลงเพื่อชีวิตเก่า', 'เพลงในตำนาน'] },
+  { re: /ลูกทุ่ง|หมอลำ|อีสาน|พุ่มพวง|ครูสลา/, name: 'ลูกทุ่ง', cat: 'ลูกทุ่ง', kw: ['เพลงลูกทุ่ง', 'ลูกทุ่งเก่า', 'ลูกทุ่งฮิต'] },
+  { re: /ลูกกรุง|สุนทราภรณ์/, name: 'ลูกกรุง', cat: 'ลูกกรุง', kw: ['เพลงลูกกรุง', 'เพลงเก่าอมตะ', 'เพลงอมตะ'] },
+  { re: /ใต้|สตอ|สำเนียงใต้/, name: 'เพลงใต้', cat: 'เพลงใต้', kw: ['เพลงใต้', 'เพลงใต้เก่า', 'สำเนียงใต้'] },
+  { re: /ร็อค|โลโซ|bodyslam|ลาบานูน/i, name: 'ร็อคไทย', cat: 'เพลงสตริง', kw: ['เพลงร็อค', 'ร็อคไทย', 'ร็อคยุค 90'] },
+  { re: /สากล|international/i, name: 'สากล', cat: 'เพลงสากล', kw: ['เพลงสากล', 'เพลงสากลเก่า', 'เพลงฮิตสากล'] },
+  { re: /แดนซ์|dance|3 ?ช่า|สามช่า|มันส์/i, name: 'แดนซ์', cat: 'แดนซ์', kw: ['เพลงแดนซ์', 'เพลงมันส์', 'เพลงปาร์ตี้'] },
+  { re: /ธรรมะ|สวดมนต์|คาถา|นิยายเสียง/, name: 'ธรรมะ', cat: 'ธรรมะ', kw: ['ธรรมะ', 'เสียงสวดมนต์', 'ฟังธรรมะ'] },
+  { re: /วิทยุ|radio/i, name: 'วิทยุ', cat: 'วิทยุ', kw: ['วิทยุพกพา', 'วิทยุ FM', 'วิทยุเสียบ USB'] },
+  { re: /otg|หัวแปลง|adapter/i, name: 'อุปกรณ์เสริม', cat: 'อุปกรณ์เสริม', kw: ['อุปกรณ์เสริม', 'OTG', 'หัวแปลง USB'] },
+  { re: /สตริง|ยุค ?90|ยุค ?80|ยุค ?2000|tiktok|ฮิต/i, name: 'สตริง', cat: 'เพลงสตริง', kw: ['เพลงสตริง', 'เพลงเก่า', 'เพลงฮิตยุค 90'] },
+];
+const CATEGORIES = ['เพื่อชีวิต', 'เพลงสตริง', 'เพลงใต้', 'เพลงสากล', 'ลูกกรุง', 'ลูกทุ่ง', 'อุปกรณ์เสริม', 'แดนซ์', 'วิทยุ', 'ธรรมะ'];
+
+function buildSeoDraft({ shortName, songs, capacity, price }) {
+  const g = GENRES.find(x => x.re.test(shortName)) || { name: 'เพลงฮิต', cat: 'เพลงสตริง', kw: ['เพลงฮิต', 'รวมเพลง', 'เพลงเพราะ'] };
+  const era = (shortName.match(/ยุค ?(\d{2,4})/) || [])[1] || null;
+  const n = songs ? `${songs} เพลง` : 'เพลงฮิตจัดเต็ม';
+  const name = `USB แฟลชไดรฟ์ MP3 รวมเพลง${shortName} ${songs ? songs + ' เพลง ' : ''}${capacity} ฟังในรถ ไม่ต้องเน็ต`.replace(/\s{2,}/g, ' ');
+  const description = [
+    `รวมเพลง${shortName} ${era ? `ยุค ${era} ` : ''}${n} อัดลงแฟลชไดรฟ์ USB พร้อมฟังทันที เสียบปุ๊บเล่นปั๊บ ไม่ต้องต่อเน็ต ไม่ต้องโหลดแอป ไม่มีโฆษณาคั่น`,
+    '',
+    'สิ่งที่คุณได้รับ:',
+    `• ${n} คัดมาให้แล้ว — ไม่ต้องเสียเวลาหาเอง`,
+    '• ไฟล์ MP3 320kbps เสียงคมชัด เบสแน่น ฟังในรถได้อารมณ์เต็ม',
+    '• ใช้ได้กับรถยนต์ทุกรุ่นที่มีช่อง USB, ลำโพงบลูทูธ, คอม, สมาร์ททีวี',
+    '• ตั้งชื่อไฟล์เรียงเลขเป็นระเบียบ เลื่อนหาเพลงง่าย มีรายชื่อเพลงครบ',
+    '• เพิ่ม-ลบเพลงเองได้ ใช้เป็นแฟลชไดรฟ์เก็บไฟล์ต่อได้',
+    '',
+    `เหมาะสำหรับ: คนขับรถที่อยากฟังเพลงโดยไม่ง้อเน็ต · คนชอบ${g.name} · ซื้อเป็นของขวัญให้พ่อแม่ผู้ใหญ่ ใช้ง่าย ไม่ต้องสอน`,
+    '',
+    `ความจุ: ${capacity} · คุณภาพเสียง: MP3 320kbps · ราคา ${price} บาท`,
+    'ส่งไวจากไทย แพ็กกันกระแทก มีปัญหาเปลี่ยนใหม่ภายใน 7 วัน',
+  ].join('\n');
+  return { name, description, categoryName: g.cat, tags: [...g.kw, 'USB เพลง', 'แฟลชไดรฟ์เพลง', 'เพลงในรถ'].slice(0, 8) };
+}
+
+// ── data helpers ──
 function loadProducts() {
   const catalog = JSON.parse(fs.readFileSync(path.join(ROOT, 'marketplace-images', 'catalog.json'), 'utf8')).products;
   const listFile = path.join(OUT_DIR, 'marketplace-listings.xlsx');
@@ -32,25 +77,33 @@ function loadProducts() {
       meta[String(r.Code).padStart(2, '0')] = { price: r['ราคา'], stock: r['สต็อก'], sku: r['SKU'], note: r['หมายเหตุ'] };
     }
   }
-  return catalog.map(p => ({
-    code: p.code, title: p.title, images: p.images, count: p.images.length,
-    ...(meta[p.code] || {}),
-  }));
+  return catalog.map(p => ({ code: p.code, title: p.title, images: p.images, count: p.images.length, ...(meta[p.code] || {}) }));
+}
+
+function nasFolders() {
+  try {
+    return fs.readdirSync(NAS_DIR, { withFileTypes: true }).filter(d => d.isDirectory()).map(d => {
+      let n = 0;
+      try { n = fs.readdirSync(path.join(NAS_DIR, d.name)).filter(f => /\.(jpe?g|png|webp|avif)$/i.test(f)).length; } catch { }
+      return { name: d.name, count: n };
+    }).sort((a, b) => a.name.localeCompare(b.name, 'th'));
+  } catch { return null; }   // null = เข้าถึง NAS ไม่ได้
+}
+
+function nextCode() {
+  const codes = (nasFolders() || []).map(f => parseInt((f.name.match(/^(\d+)/) || [])[1] || '0', 10));
+  return String(Math.max(0, ...codes) + 1).padStart(2, '0');
+}
+
+function runScript(script, args) {
+  execFileSync(process.execPath, [path.join(__dirname, script), ...args], { cwd: ROOT, stdio: 'pipe' });
 }
 
 function genFile(platform, code) {
   code = String(code).padStart(2, '0');
-  const node = process.execPath;
-  if (platform === 'shopee') {
-    execFileSync(node, [path.join(__dirname, 'fill-shopee-template.js'), '--apply', '--code', code], { cwd: ROOT, stdio: 'pipe' });
-    return path.join(OUT_DIR, `shopee-upload-${code}.xlsx`);
-  }
-  if (platform === 'tiktok') {
-    execFileSync(node, [path.join(__dirname, 'fill-tiktok-template.js'), '--apply', '--code', code], { cwd: ROOT, stdio: 'pipe' });
-    return path.join(OUT_DIR, `tiktok-upload-${code}.xlsx`);
-  }
+  if (platform === 'shopee') { runScript('fill-shopee-template.js', ['--apply', '--code', code]); return path.join(OUT_DIR, `shopee-upload-${code}.xlsx`); }
+  if (platform === 'tiktok') { runScript('fill-tiktok-template.js', ['--apply', '--code', code]); return path.join(OUT_DIR, `tiktok-upload-${code}.xlsx`); }
   if (platform === 'lazada') {
-    // Lazada: สร้าง xlsx ข้อมูลครบ 1 รายการจากชีต Lazada (ยังไม่มีเทมเพลตทางการให้เติม)
     const wb0 = XLSX.read(fs.readFileSync(path.join(OUT_DIR, 'marketplace-listings.xlsx')), { type: 'buffer' });
     const rows = XLSX.utils.sheet_to_json(wb0.Sheets['Lazada'], { header: 1, defval: '' });
     const hit = rows.filter((r, i) => i === 0 || String(r[0]).padStart(2, '0') === code);
@@ -66,20 +119,31 @@ function genFile(platform, code) {
   throw new Error('platform ไม่ถูกต้อง');
 }
 
+async function api(pathname, opts = {}) {
+  const r = await fetch(API_BASE + pathname, {
+    ...opts,
+    headers: { 'content-type': 'application/json', ...(ADMIN_TOKEN ? { authorization: `Bearer ${ADMIN_TOKEN}` } : {}), ...(opts.headers || {}) },
+  });
+  const body = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(body.error || `${r.status} ${r.statusText}`);
+  return body;
+}
+
 // ── หน้าเว็บ ──
 const PAGE = /* html */ `<!doctype html>
 <html lang="th"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Listing Studio — btmusicdrive</title>
 <style>
-  :root { --primary:#8B7355; --dark:#0F172A; --gold:#f5c343; }
+  :root { --primary:#8B7355; --dark:#0F172A; }
   * { box-sizing:border-box; margin:0; }
   body { font-family:'Segoe UI',Tahoma,sans-serif; background:#f6f4f1; color:#1e293b; }
-  header { background:var(--dark); color:#fff; padding:14px 22px; display:flex; align-items:center; gap:12px; position:sticky; top:0; z-index:5; }
+  header { background:var(--dark); color:#fff; padding:12px 22px; display:flex; align-items:center; gap:12px; position:sticky; top:0; z-index:5; }
   header h1 { font-size:18px; font-weight:600; }
   header .badge { background:var(--primary); border-radius:99px; padding:2px 12px; font-size:12px; }
-  header input { margin-left:auto; border:0; border-radius:8px; padding:8px 14px; width:min(340px,40vw); font-size:14px; }
-  main { display:grid; grid-template-columns:minmax(300px,380px) 1fr; gap:0; height:calc(100vh - 56px); }
+  header input { border:0; border-radius:8px; padding:8px 14px; width:min(280px,32vw); font-size:14px; }
+  .newbtn { margin-left:auto; background:linear-gradient(135deg,#fbbf24,#f59e0b); color:#3b2f06; border:0; border-radius:10px; padding:10px 18px; font-size:14px; font-weight:700; cursor:pointer; }
+  main { display:grid; grid-template-columns:minmax(300px,380px) 1fr; height:calc(100vh - 56px); }
   #list { overflow-y:auto; border-right:1px solid #e2ded8; background:#fff; }
   .item { display:flex; gap:10px; padding:10px 14px; cursor:pointer; border-bottom:1px solid #f1eee9; align-items:center; }
   .item:hover { background:#faf7f2; } .item.active { background:#f3ecdf; border-left:4px solid var(--primary); padding-left:10px; }
@@ -87,73 +151,90 @@ const PAGE = /* html */ `<!doctype html>
   .item .t { font-size:13px; line-height:1.35; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
   .item .m { font-size:11px; color:#94a3b8; margin-top:2px; }
   #detail { overflow-y:auto; padding:22px 26px; }
-  #detail .empty { color:#94a3b8; text-align:center; margin-top:18vh; font-size:15px; }
+  #detail .empty { color:#94a3b8; text-align:center; margin-top:16vh; font-size:15px; line-height:2; }
   h2 { font-size:17px; line-height:1.4; margin-bottom:4px; }
-  .meta { color:#64748b; font-size:13px; margin-bottom:14px; }
-  .meta b { color:var(--primary); }
+  .meta { color:#64748b; font-size:13px; margin-bottom:14px; } .meta b { color:var(--primary); }
   .warn { background:#fef3c7; border:1px solid #fcd34d; color:#92400e; border-radius:8px; padding:8px 12px; font-size:13px; margin-bottom:14px; display:inline-block; }
   .imgs { display:grid; grid-template-columns:repeat(auto-fill,minmax(110px,1fr)); gap:10px; margin-bottom:22px; }
-  .imgs a { position:relative; display:block; }
-  .imgs img { width:100%; aspect-ratio:1; object-fit:cover; border-radius:10px; border:1px solid #e2ded8; background:#eee; }
+  .imgs a { position:relative; } .imgs img { width:100%; aspect-ratio:1; object-fit:cover; border-radius:10px; border:1px solid #e2ded8; background:#eee; }
   .imgs .cover::after { content:'ภาพปก'; position:absolute; top:6px; left:6px; background:var(--dark); color:#fff; font-size:10px; padding:2px 8px; border-radius:99px; }
   h3 { font-size:14px; color:#475569; margin:18px 0 10px; }
   .btns { display:flex; flex-wrap:wrap; gap:12px; }
-  .btn { border:0; border-radius:12px; padding:14px 22px; font-size:15px; font-weight:600; cursor:pointer; color:#fff; display:flex; align-items:center; gap:8px; box-shadow:0 2px 6px rgb(15 23 42 / .12); transition:transform .1s; }
-  .btn:hover { transform:translateY(-2px); } .btn:disabled { opacity:.55; cursor:wait; transform:none; }
+  .btn { border:0; border-radius:12px; padding:14px 22px; font-size:15px; font-weight:600; cursor:pointer; color:#fff; display:flex; align-items:center; gap:8px; box-shadow:0 2px 6px rgb(15 23 42 / .12); }
+  .btn:disabled { opacity:.55; cursor:wait; }
   .btn small { font-weight:400; opacity:.85; font-size:11px; display:block; text-align:left; }
   .shopee { background:#ee4d2d; } .lazada { background:#0f146d; } .tiktok { background:#000; }
-  #status { margin-top:14px; font-size:13px; color:#475569; min-height:20px; white-space:pre-wrap; }
-  #status .ok { color:#15803d; } #status .err { color:#b91c1c; }
-  @media (max-width:760px){ main{grid-template-columns:1fr;} #detail{display:none;} #detail.show{display:block;} #list.hide{display:none;} }
+  #status, .st { margin-top:14px; font-size:13px; color:#475569; min-height:20px; white-space:pre-wrap; }
+  .ok { color:#15803d; } .err { color:#b91c1c; }
+  /* modal ลงสินค้าใหม่ */
+  #overlay { position:fixed; inset:0; background:rgb(15 23 42 / .55); display:none; z-index:10; overflow-y:auto; }
+  #overlay.show { display:block; }
+  .modal { background:#fff; border-radius:16px; max-width:720px; margin:5vh auto; padding:26px 30px; }
+  .modal h2 { margin-bottom:16px; }
+  .f { margin-bottom:14px; }
+  .f label { display:block; font-size:13px; font-weight:600; color:#475569; margin-bottom:5px; }
+  .f input[type=text], .f input[type=number], .f select, .f textarea { width:100%; border:1px solid #d6d3ce; border-radius:8px; padding:9px 12px; font-size:14px; font-family:inherit; }
+  .f textarea { min-height:180px; line-height:1.55; }
+  .row { display:flex; gap:14px; } .row .f { flex:1; }
+  .src { border:1px dashed #cbc7c0; border-radius:10px; padding:12px 14px; margin-bottom:10px; }
+  .src input[type=radio] { margin-right:8px; }
+  .hint { font-size:12px; color:#94a3b8; margin-top:4px; }
+  .primary { background:linear-gradient(135deg,#fbbf24,#f59e0b); color:#3b2f06; border:0; border-radius:10px; padding:12px 26px; font-size:15px; font-weight:700; cursor:pointer; }
+  .ghost { background:#eee; color:#334155; border:0; border-radius:10px; padding:12px 20px; font-size:14px; cursor:pointer; }
+  .primary:disabled { opacity:.6; cursor:wait; }
+  .thumbs { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+  .thumbs img { width:64px; height:64px; object-fit:cover; border-radius:8px; border:1px solid #e2ded8; }
+  .login { background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:14px; margin-bottom:14px; }
+  @media (max-width:760px){ main{grid-template-columns:1fr;} }
 </style></head><body>
 <header>
   <h1>🎛 Listing Studio</h1><span class="badge">btmusicdrive หลังบ้าน</span>
   <input id="q" placeholder="ค้นหาสินค้า… (ชื่อ / code)" autocomplete="off">
+  <button class="newbtn" onclick="openNew()">➕ ลงสินค้าใหม่</button>
 </header>
 <main>
   <div id="list"></div>
-  <div id="detail"><div class="empty">← เลือกสินค้าจากรายการซ้ายมือ<br>แล้วกดปุ่มสร้างไฟล์ลงสินค้าของแพลตฟอร์มที่ต้องการ</div></div>
+  <div id="detail"><div class="empty">← เลือกสินค้าเพื่อกระจายไปแพลตฟอร์ม<br>หรือกด <b>➕ ลงสินค้าใหม่</b> มุมขวาบน — ลงเว็บก่อน แล้วค่อยกระจาย</div></div>
 </main>
+
+<div id="overlay"><div class="modal" id="modalBody"></div></div>
+
 <script>
-let PRODUCTS = [], current = null;
+let PRODUCTS = [], current = null, FOLDERS = null, CATS = [], draft = null, upImages = [], trackList = [];
 
 async function load() {
   PRODUCTS = await (await fetch('/api/products')).json();
   render(PRODUCTS);
 }
 function render(items) {
-  const el = document.getElementById('list');
-  el.innerHTML = items.map(p => \`
+  document.getElementById('list').innerHTML = items.map(p => \`
     <div class="item" data-code="\${p.code}" onclick="pick('\${p.code}')">
       <img loading="lazy" src="\${p.images[0] || ''}" alt="">
       <div><div class="t">\${esc(p.title)}</div>
       <div class="m">code \${p.code} · \${p.count} รูป · ฿\${p.price ?? '-'}\${p.note ? ' · ⚠' : ''}</div></div>
     </div>\`).join('');
 }
-function esc(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function esc(s){ return String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
 function pick(code) {
   current = PRODUCTS.find(p => p.code === code);
   document.querySelectorAll('.item').forEach(i => i.classList.toggle('active', i.dataset.code === code));
-  const d = document.getElementById('detail');
-  d.classList.add('show'); document.getElementById('list').classList.remove('hide');
-  d.innerHTML = \`
+  document.getElementById('detail').innerHTML = \`
     <h2>\${esc(current.title)}</h2>
     <div class="meta">code <b>\${current.code}</b> · SKU \${esc(current.sku ?? '-')} · ราคา <b>฿\${current.price ?? '-'}</b> · สต็อก \${current.stock ?? '-'} · รูป \${current.count}</div>
     \${current.note ? '<div class="warn">⚠ ' + esc(current.note) + '</div>' : ''}
     <div class="imgs">\${current.images.map((u,i) => \`<a href="\${u}" target="_blank" class="\${i===0?'cover':''}"><img loading="lazy" src="\${u}"></a>\`).join('')}</div>
-    <h3>สร้างไฟล์ลงสินค้า (1 ชิ้น) — กดแล้วได้ .xlsx ไปอัปโหลดที่ Seller Center ของแต่ละเจ้า</h3>
+    <h3>กระจายไปแพลตฟอร์ม — กดแล้วได้ .xlsx ไปอัปโหลดที่ Seller Center</h3>
     <div class="btns">
       <button class="btn shopee" onclick="gen(this,'shopee')">🟠 Shopee<small>เทมเพลตทางการ พร้อมอัป</small></button>
       <button class="btn tiktok" onclick="gen(this,'tiktok')">⬛ TikTok Shop<small>เทมเพลตทางการ พร้อมอัป</small></button>
       <button class="btn lazada" onclick="gen(this,'lazada')">🔵 Lazada<small>ข้อมูลครบ copy ลงเทมเพลต</small></button>
     </div>
     <div id="status"></div>\`;
-  window.scrollTo(0,0);
 }
 async function gen(btn, platform) {
   const st = document.getElementById('status');
-  btn.disabled = true;
-  st.innerHTML = '⏳ กำลังสร้างไฟล์ ' + platform + '…';
+  btn.disabled = true; st.innerHTML = '⏳ กำลังสร้างไฟล์ ' + platform + '…';
   try {
     const r = await fetch('/api/generate?platform=' + platform + '&code=' + current.code);
     if (!r.ok) throw new Error(await r.text());
@@ -161,41 +242,245 @@ async function gen(btn, platform) {
     const name = r.headers.get('x-filename') || (platform + '-' + current.code + '.xlsx');
     const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: name });
     a.click(); URL.revokeObjectURL(a.href);
-    st.innerHTML = '<span class="ok">✔ ดาวน์โหลด ' + name + ' แล้ว — เอาไปอัปโหลดที่ Seller Center ได้เลย</span>';
-  } catch (e) {
-    st.innerHTML = '<span class="err">✖ ' + esc(e.message).slice(0, 400) + '</span>';
-  }
+    st.innerHTML = '<span class="ok">✔ ดาวน์โหลด ' + name + ' แล้ว</span>';
+  } catch (e) { st.innerHTML = '<span class="err">✖ ' + esc(e.message).slice(0, 400) + '</span>'; }
   btn.disabled = false;
 }
 document.getElementById('q').addEventListener('input', e => {
   const q = e.target.value.toLowerCase();
   render(PRODUCTS.filter(p => p.title.toLowerCase().includes(q) || p.code.includes(q)));
 });
+
+/* ───────── ลงสินค้าใหม่ ───────── */
+async function openNew() {
+  const meta = await (await fetch('/api/meta')).json();
+  FOLDERS = meta.folders; CATS = meta.categories;
+  upImages = []; trackList = []; draft = null;
+  document.getElementById('overlay').classList.add('show');
+  document.getElementById('modalBody').innerHTML = \`
+    <h2>➕ ลงสินค้าใหม่ <span style="font-size:13px;color:#94a3b8;font-weight:400">(code ถัดไป: \${meta.nextCode})</span></h2>
+    <div class="f"><label>ชื่อสินค้าแบบสั้น (เช่น ฮิตยุค90, ลูกทุ่งอมตะ)</label>
+      <input type="text" id="nName" placeholder="ฮิตยุค90"></div>
+    <div class="row">
+      <div class="f"><label>ราคา (บาท)</label><input type="number" id="nPrice" value="279"></div>
+      <div class="f"><label>ความจุ</label><select id="nCap"><option>4GB</option><option>8GB</option><option>16GB</option><option>32GB</option></select></div>
+    </div>
+    <div class="f"><label>รูปสินค้า</label>
+      <div class="src"><input type="radio" name="src" id="srcNas" value="nas" \${FOLDERS ? '' : 'disabled'} checked>
+        <label for="srcNas" style="display:inline">เลือกโฟลเดอร์ที่มีอยู่บน NAS</label>
+        <select id="nFolder" style="width:100%;margin-top:8px;border:1px solid #d6d3ce;border-radius:8px;padding:8px">
+          \${FOLDERS ? FOLDERS.map(f => \`<option value="\${esc(f.name)}">\${esc(f.name)} (\${f.count} รูป)</option>\`).join('') : '<option>เข้าถึง NAS ไม่ได้</option>'}
+        </select></div>
+      <div class="src"><input type="radio" name="src" id="srcUp" value="upload" \${FOLDERS ? '' : 'checked'}>
+        <label for="srcUp" style="display:inline">อัปโหลดรูปใหม่ (สร้างโฟลเดอร์บน NAS ให้เอง)</label>
+        <input type="file" id="nFiles" accept="image/*" multiple style="margin-top:8px" onchange="previewFiles(this)">
+        <div class="hint">รูปแรก = ภาพปก · สูงสุด 9 รูป · จะบันทึกเป็น หลัก_01.jpg, หลัก_02.jpg …</div>
+        <div class="thumbs" id="thumbs"></div></div>
+    </div>
+    <div class="f"><label>📄 รายชื่อเพลง (.txt — 1 เพลงต่อบรรทัด)</label>
+      <input type="file" id="nTxt" accept=".txt" onchange="readTxt(this)">
+      <div class="hint" id="txtInfo">ยังไม่ได้แนบไฟล์ (ไม่บังคับ แต่แนะนำ — ใช้ทำ SEO และโชว์รายชื่อเพลงบนเว็บ)</div></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:18px">
+      <button class="ghost" onclick="closeNew()">ยกเลิก</button>
+      <button class="primary" id="goBtn" onclick="createDraft(this)">ตกลง → ทำ SEO ✨</button>
+    </div>
+    <div class="st" id="nStatus"></div>\`;
+}
+function closeNew(){ document.getElementById('overlay').classList.remove('show'); }
+function previewFiles(inp) {
+  document.getElementById('srcUp').checked = true;
+  upImages = [...inp.files].slice(0, 9);
+  const t = document.getElementById('thumbs'); t.innerHTML = '';
+  upImages.forEach(f => { const img = document.createElement('img'); img.src = URL.createObjectURL(f); t.appendChild(img); });
+}
+function readTxt(inp) {
+  const f = inp.files[0]; if (!f) return;
+  f.text().then(txt => {
+    trackList = txt.split(/\\r?\\n/).map(s => s.replace(/^\\s*\\d+[.)\\-]?\\s*/, '').trim()).filter(Boolean);
+    document.getElementById('txtInfo').textContent = '✔ อ่านได้ ' + trackList.length + ' เพลง — ' + trackList.slice(0,3).join(' / ') + (trackList.length > 3 ? ' …' : '');
+  });
+}
+function fileToB64(f){ return new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(r.result.split(',')[1]); r.onerror = no; r.readAsDataURL(f); }); }
+
+async function createDraft(btn) {
+  const name = document.getElementById('nName').value.trim();
+  const st = document.getElementById('nStatus');
+  if (!name) { st.innerHTML = '<span class="err">ใส่ชื่อสินค้าก่อนครับ</span>'; return; }
+  const useNas = document.getElementById('srcNas')?.checked;
+  const body = { name, price: +document.getElementById('nPrice').value || 279, capacity: document.getElementById('nCap').value, tracklist: trackList };
+  if (useNas) body.folder = document.getElementById('nFolder').value;
+  else {
+    if (!upImages.length) { st.innerHTML = '<span class="err">เลือกรูปก่อนครับ</span>'; return; }
+    st.innerHTML = '⏳ กำลังอ่านรูป…';
+    body.images = [];
+    for (const f of upImages) body.images.push({ name: f.name, data: await fileToB64(f) });
+  }
+  btn.disabled = true;
+  st.innerHTML = '⏳ กำลังแปลงรูป → อัปขึ้น R2 → ทำ SEO… (อาจใช้เวลาสักครู่)';
+  try {
+    const r = await fetch('/api/new-product', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+    if (!r.ok) throw new Error(await r.text());
+    draft = await r.json();
+    showPreview();
+  } catch (e) { st.innerHTML = '<span class="err">✖ ' + esc(e.message).slice(0, 500) + '</span>'; btn.disabled = false; }
+}
+
+function showPreview() {
+  document.getElementById('modalBody').innerHTML = \`
+    <h2>📝 รีวิวก่อนลงเว็บ <span style="font-size:13px;color:#94a3b8;font-weight:400">code \${draft.code} · \${draft.images.length} รูปบน R2 แล้ว</span></h2>
+    <div class="imgs" style="grid-template-columns:repeat(auto-fill,minmax(84px,1fr))">\${draft.images.map((u,i) => \`<a href="\${u}" target="_blank" class="\${i===0?'cover':''}"><img src="\${u}"></a>\`).join('')}</div>
+    <div class="f"><label>ชื่อสินค้า (SEO)</label><input type="text" id="pName" value="\${esc(draft.name)}"></div>
+    <div class="f"><label>รายละเอียด</label><textarea id="pDesc">\${esc(draft.description)}</textarea></div>
+    <div class="row">
+      <div class="f"><label>ราคา</label><input type="number" id="pPrice" value="\${draft.price}"></div>
+      <div class="f"><label>หมวดหมู่</label><select id="pCat">\${CATS.map(c => \`<option \${c === draft.categoryName ? 'selected' : ''}>\${esc(c)}</option>\`).join('')}</select></div>
+      <div class="f"><label>สต็อก</label><input type="number" id="pStock" value="100"></div>
+    </div>
+    <div class="f"><label>Tags</label><input type="text" id="pTags" value="\${esc(draft.tags.join(', '))}"></div>
+    <div class="hint">รายชื่อเพลง: \${draft.tracklist.length} เพลง · SKU: BT-\${draft.code}</div>
+    <div class="login" id="loginBox" style="display:none">
+      <b style="font-size:13px">เข้าสู่ระบบแอดมินก่อนลงเว็บ</b>
+      <div class="row" style="margin-top:8px">
+        <div class="f" style="margin:0"><input type="text" id="lEmail" placeholder="อีเมลแอดมิน"></div>
+        <div class="f" style="margin:0"><input type="password" id="lPass" placeholder="รหัสผ่าน"></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:18px">
+      <button class="ghost" onclick="closeNew()">ปิด (ไว้ลงทีหลัง)</button>
+      <button class="primary" id="pubBtn" onclick="publish(this)">✅ ยืนยันลงเว็บ btmusicdrive.com</button>
+    </div>
+    <div class="st" id="pStatus"></div>\`;
+  fetch('/api/auth-status').then(r => r.json()).then(s => { if (!s.loggedIn) document.getElementById('loginBox').style.display = 'block'; });
+}
+
+async function publish(btn) {
+  const st = document.getElementById('pStatus');
+  btn.disabled = true;
+  try {
+    const lb = document.getElementById('loginBox');
+    if (lb.style.display !== 'none') {
+      st.innerHTML = '⏳ กำลังเข้าสู่ระบบ…';
+      const lr = await fetch('/api/login', { method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ email: document.getElementById('lEmail').value, password: document.getElementById('lPass').value }) });
+      if (!lr.ok) throw new Error(await lr.text());
+      lb.style.display = 'none';
+    }
+    st.innerHTML = '⏳ กำลังลงสินค้าบนเว็บ…';
+    const r = await fetch('/api/publish', { method: 'POST', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ code: draft.code, name: document.getElementById('pName').value, description: document.getElementById('pDesc').value,
+        price: +document.getElementById('pPrice').value, stock: +document.getElementById('pStock').value, categoryName: document.getElementById('pCat').value,
+        tags: document.getElementById('pTags').value.split(',').map(s => s.trim()).filter(Boolean),
+        capacity: draft.capacity, tracklist: draft.tracklist, images: draft.images }) });
+    if (!r.ok) throw new Error(await r.text());
+    const out = await r.json();
+    st.innerHTML = \`<span class="ok">🎉 ลงเว็บสำเร็จ! <a href="\${out.url}" target="_blank">\${out.url}</a><br>
+      อัปเดตไฟล์แพลตฟอร์มให้แล้ว — ปิดหน้าต่างนี้แล้วเลือกสินค้า code \${draft.code} เพื่อกดกระจาย Shopee / TikTok / Lazada ได้เลย</span>\`;
+    load();
+  } catch (e) { st.innerHTML = '<span class="err">✖ ' + esc(e.message).slice(0, 500) + '</span>'; btn.disabled = false; }
+}
 load();
 </script></body></html>`;
 
 // ── server ──
-http.createServer((req, res) => {
+function readBody(req, limit = 120 * 1024 * 1024) {
+  return new Promise((ok, no) => {
+    const chunks = []; let size = 0;
+    req.on('data', c => { size += c.length; if (size > limit) { no(new Error('ไฟล์ใหญ่เกินไป')); req.destroy(); } chunks.push(c); });
+    req.on('end', () => ok(Buffer.concat(chunks)));
+    req.on('error', no);
+  });
+}
+
+http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);
+  const json = (code, obj) => { res.writeHead(code, { 'content-type': 'application/json; charset=utf-8' }); res.end(JSON.stringify(obj)); };
   try {
-    if (url.pathname === '/') {
-      res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
-      return res.end(PAGE);
+    if (url.pathname === '/') { res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' }); return res.end(PAGE); }
+    if (url.pathname === '/api/products') return json(200, loadProducts());
+    if (url.pathname === '/api/meta') return json(200, { folders: nasFolders(), categories: CATEGORIES, nextCode: nextCode() });
+    if (url.pathname === '/api/auth-status') return json(200, { loggedIn: !!ADMIN_TOKEN });
+
+    if (url.pathname === '/api/login' && req.method === 'POST') {
+      const { email, password } = JSON.parse(await readBody(req));
+      const out = await api('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) });
+      if (out.user?.role !== 'ADMIN') throw new Error('บัญชีนี้ไม่ใช่แอดมิน');
+      ADMIN_TOKEN = out.token;
+      console.log(`✔ login แอดมิน: ${out.user.email}`);
+      return json(200, { ok: true });
     }
-    if (url.pathname === '/api/products') {
-      res.writeHead(200, { 'content-type': 'application/json; charset=utf-8' });
-      return res.end(JSON.stringify(loadProducts()));
+
+    if (url.pathname === '/api/new-product' && req.method === 'POST') {
+      const b = JSON.parse(await readBody(req));
+      const shortName = String(b.name || '').trim().replace(/[\\/:*?"<>|]/g, '');
+      if (!shortName) throw new Error('ไม่มีชื่อสินค้า');
+      let code, folderName;
+
+      if (b.folder) {   // ใช้โฟลเดอร์ NAS เดิม
+        folderName = b.folder;
+        const m = folderName.match(/^(\d+)/);
+        code = m ? m[1].padStart(2, '0') : null;
+        if (!code) throw new Error('ชื่อโฟลเดอร์ต้องขึ้นต้นด้วยเลข เช่น "57-ชื่อสินค้า"');
+      } else {          // สร้างโฟลเดอร์ใหม่ + เซฟรูป
+        if (!Array.isArray(b.images) || !b.images.length) throw new Error('ไม่มีรูป');
+        code = nextCode();
+        folderName = `${code}-${shortName}`;
+        const dir = path.join(NAS_DIR, folderName);
+        fs.mkdirSync(dir, { recursive: true });
+        b.images.slice(0, 9).forEach((im, i) => {
+          const ext = (im.name.match(/\.(jpe?g|png|webp|avif)$/i) || ['.jpg'])[0].toLowerCase();
+          fs.writeFileSync(path.join(dir, `หลัก_${String(i + 1).padStart(2, '0')}${ext}`), Buffer.from(im.data, 'base64'));
+        });
+        console.log(`✔ สร้างโฟลเดอร์ NAS: ${folderName} (${Math.min(b.images.length, 9)} รูป)`);
+      }
+      // เก็บรายชื่อเพลงไว้คู่โฟลเดอร์
+      if (Array.isArray(b.tracklist) && b.tracklist.length) {
+        try { fs.writeFileSync(path.join(NAS_DIR, folderName, 'รายชื่อเพลง.txt'), b.tracklist.join('\r\n'), 'utf8'); } catch { }
+      }
+
+      console.log('⏳ แปลงรูป + อัปขึ้น R2…');
+      runScript('build-marketplace-images.js', ['--apply']);
+      runScript('upload-r2.js', ['--apply']);
+
+      const cat = JSON.parse(fs.readFileSync(path.join(ROOT, 'marketplace-images', 'catalog.json'), 'utf8')).products
+        .find(p => p.code === code);
+      if (!cat) throw new Error(`แปลงรูปแล้วแต่ไม่พบ code ${code} ใน catalog — เช็คชื่อโฟลเดอร์`);
+
+      const songs = (b.tracklist || []).length || null;
+      const seo = buildSeoDraft({ shortName, songs, capacity: b.capacity || '4GB', price: b.price || 279 });
+      console.log(`✔ SEO draft พร้อม: ${seo.name}`);
+      return json(200, { code, capacity: b.capacity || '4GB', price: b.price || 279, images: cat.images, tracklist: b.tracklist || [], ...seo });
     }
+
+    if (url.pathname === '/api/publish' && req.method === 'POST') {
+      if (!ADMIN_TOKEN) throw new Error('ยังไม่ได้เข้าสู่ระบบแอดมิน');
+      const b = JSON.parse(await readBody(req));
+      const product = await api('/products', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: b.name, price: b.price, stock: b.stock ?? 100, categoryName: b.categoryName,
+          imageUrl: b.images[0], images: b.images, brand: 'btmusicdrive', sku: `BT-${b.code}`,
+          tags: b.tags, tracklist: b.tracklist, specs: { capacity: b.capacity }, description: b.description,
+        }),
+      });
+      console.log(`🎉 ลงเว็บสำเร็จ: ${product.name} (slug: ${product.slug})`);
+
+      // sync products.json (fallback) + สร้าง listings ใหม่ให้รวมตัวใหม่ — พลาดได้ไม่ถือว่า fail
+      try { runScript('sync-products-json.js', []); console.log('✔ sync products.json'); }
+      catch { console.warn('⚠ sync products.json ไม่สำเร็จ (ต้องมี DATABASE_URL) — รัน node scripts/sync-products-json.js เองทีหลัง'); }
+      try { runScript('generate-marketplace-listings.js', ['--apply']); console.log('✔ อัปเดต marketplace-listings.xlsx'); } catch { }
+
+      return json(200, { ok: true, slug: product.slug, url: `https://btmusicdrive.com/product/${product.slug}` });
+    }
+
     if (url.pathname === '/api/generate') {
       const file = genFile(url.searchParams.get('platform'), url.searchParams.get('code'));
-      const buf = fs.readFileSync(file);
       res.writeHead(200, {
         'content-type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         'x-filename': path.basename(file),
         'content-disposition': `attachment; filename="${path.basename(file)}"`,
       });
-      console.log(`✔ ${new Date().toLocaleTimeString()}  ${url.searchParams.get('platform')} code ${url.searchParams.get('code')} → ${path.basename(file)}`);
-      return res.end(buf);
+      console.log(`✔ ${url.searchParams.get('platform')} code ${url.searchParams.get('code')} → ${path.basename(file)}`);
+      return res.end(fs.readFileSync(file));
     }
     res.writeHead(404); res.end('not found');
   } catch (e) {
@@ -206,5 +491,6 @@ http.createServer((req, res) => {
   }
 }).listen(PORT, () => {
   console.log(`🎛 Listing Studio เปิดแล้ว → http://localhost:${PORT}`);
-  console.log('   เลือกสินค้า → กดปุ่มแพลตฟอร์ม → ได้ไฟล์ .xlsx ไปอัปโหลดเอง (Ctrl+C เพื่อปิด)');
+  console.log(`   API เว็บ: ${API_BASE} · NAS: ${NAS_DIR}`);
+  console.log('   ➕ ลงสินค้าใหม่ = ลงเว็บก่อน → ค่อยกดกระจายแพลตฟอร์ม (Ctrl+C เพื่อปิด)');
 });
