@@ -18,6 +18,7 @@
     "mkt:desc": "node scripts/generate-shopee-descriptions.js --apply --force",
     "mkt:shopee": "node scripts/fill-shopee-template.js --apply",
     "mkt:listings": "node scripts/generate-marketplace-listings.js --apply",
+    "mkt:tiktok": "node scripts/fill-tiktok-template.js --apply",
     "build": "npm run build:css && npm run combine:css && npm run inline:products && npm run inline:categories && npm run inline:product-jsonld && npm run build:sitemap && npm run hash:assets",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
