@@ -263,7 +263,7 @@ async function openNew() {
       <input type="text" id="nName" placeholder="ฮิตยุค90"></div>
     <div class="row">
       <div class="f"><label>ราคา (บาท)</label><input type="number" id="nPrice" value="279"></div>
-      <div class="f"><label>ความจุ</label><select id="nCap"><option>4GB</option><option>8GB</option><option>16GB</option><option>32GB</option></select></div>
+      <div class="f"><label>ความจุ</label><select id="nCap"><option>512MB</option><option>1GB</option><option>2GB</option><option selected>4GB</option><option>8GB</option><option>16GB</option><option>32GB</option></select></div>
     </div>
     <div class="f"><label>รูปสินค้า</label>
       <div class="src"><input type="radio" name="src" id="srcNas" value="nas" \${FOLDERS ? '' : 'disabled'} checked>
