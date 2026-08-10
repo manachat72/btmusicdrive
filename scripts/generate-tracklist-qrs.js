@@ -89,18 +89,25 @@ function similarity(a, b) {
     const url = (out.match(/https:\/\/\S+/) || [])[0];
     if (!url) { console.error(`  ✖ ${j.code} อัป R2 ไม่สำเร็จ`); continue; }
 
-    // QR
-    const qrFile = `qr-tracklist-${j.code}.png`;
+    // QR — ตั้งชื่อไฟล์เป็น code + ชื่อสินค้า (ตัดคำนำหน้าซ้ำ ๆ ออก) ให้ดูออกในโฟลเดอร์
+    const shortName = p.name
+      .replace(/^usb[\s\-–—]*(แฟลชไดร์?ฟ์?|flash\s*drive)?(พร้อมเพลง)?[\s\-–—]*(mp3)?[\s\-–—]*/i, '')
+      .replace(/[\\/:*?"<>|]+/g, ' ').replace(/\s{2,}/g, ' ').trim().slice(0, 40).trim();
+    const qrFile = `qr-tracklist-${j.code} ${shortName}.png`;
+    // ลบไฟล์ชื่อแบบเก่า (ไม่มีชื่อสินค้า) ทิ้ง ไม่ให้ซ้ำซ้อน
+    try { fs.unlinkSync(path.join(QR_DIR, `qr-tracklist-${j.code}.png`)); } catch { }
     await QRCode.toFile(path.join(QR_DIR, qrFile), url, {
       errorCorrectionLevel: 'H', width: 1200, margin: 3,
       color: { dark: '#000000', light: '#FFFFFF' },
     });
 
-    // ลงทะเบียนในคลัง QR ของ studio
+    // ลงทะเบียนในคลัง QR ของ studio (ล้างรายการเดิมของ code นี้ทุกชื่อไฟล์ก่อน)
     const name = `${j.code} รายชื่อเพลง — ${p.name.slice(0, 45)}`;
-    const idx = reg.findIndex(r => r.file === qrFile);
-    const item = { name, url, file: qrFile, createdAt: new Date().toISOString() };
-    if (idx >= 0) reg[idx] = item; else reg.push(item);
+    for (let i = reg.length - 1; i >= 0; i--) {
+      const f = String(reg[i].file || '');
+      if (f === qrFile || f === `qr-tracklist-${j.code}.png` || f.startsWith(`qr-tracklist-${j.code} `)) reg.splice(i, 1);
+    }
+    reg.push({ name, url, file: qrFile, createdAt: new Date().toISOString() });
 
     console.log(`  ✔ ${j.code}  ${String(p.tracklist.length).padStart(3)} เพลง  ${(html.length / 1024).toFixed(0)} KB  ${p.name.slice(0, 45)}`);
   }
