@@ -75,7 +75,8 @@ function similarity(a, b) {
 
   for (const j of list) {
     const p = j.product;
-    const txt = p.tracklist.map((t, i) => `${i + 1}. ${t}`).join('\n');
+    // บาง tracklist มีเลขนำหน้าอยู่แล้ว (เช่น "001. ลุงขี้เมา") — ตัดออกก่อน ไม่ให้เลขซ้อนกัน
+    const txt = p.tracklist.map((t, i) => `${i + 1}. ${String(t).replace(/^\s*\d+\s*[.)\-]*\s*/, '').trim()}`).join('\n');
     const html = tracklistHtml(p.name, txt);
     const htmlFile = path.join(DOCS_DIR, `tracklist-${j.code}.html`);
     fs.writeFileSync(htmlFile, html, 'utf8');
