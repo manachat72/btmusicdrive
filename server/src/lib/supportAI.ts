@@ -8,7 +8,7 @@ const OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini';
 // When OLLAMA_URL is set we use it instead of OpenAI. Both speak the same
 // OpenAI-compatible /v1/chat/completions API, so only the URL/key/model differ.
 const OLLAMA_URL = process.env.OLLAMA_URL || '';
-const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'scb10x/llama3.1-typhoon2-8b-instruct';
+const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'qwen3vl:8b';
 
 const useOllama = !!OLLAMA_URL;
 const API_URL = useOllama
