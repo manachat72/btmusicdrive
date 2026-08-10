@@ -38,3 +38,6 @@ marketplace-images/
 
 # Generated marketplace upload files (มีข้อมูลร้าน — ไม่เข้า git)
 templates/
+
+# Generated QR codes (พิมพ์ใช้เอง ไม่เข้า git)
+qr/
