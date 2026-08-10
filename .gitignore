@@ -41,3 +41,6 @@ templates/
 
 # Generated QR codes (พิมพ์ใช้เอง ไม่เข้า git)
 qr/
+
+# Product PDFs/docs originals (อยู่บน R2 แล้ว)
+marketplace-docs/

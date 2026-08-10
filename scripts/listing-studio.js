@@ -17,6 +17,7 @@ const path = require('path');
 const http = require('http');
 const { execFileSync } = require('child_process');
 const XLSX = require('xlsx');
+const QRCode = require('qrcode');
 
 const ROOT = path.resolve(__dirname, '..');
 const OUT_DIR = path.join(ROOT, 'templates');
@@ -119,6 +120,71 @@ function genFile(platform, code) {
   throw new Error('platform ไม่ถูกต้อง');
 }
 
+// ── QR: คลังเก็บ + สร้าง ──
+const QR_DIR = path.join(ROOT, 'qr');
+const QR_REG = path.join(QR_DIR, 'qr-registry.json');
+const loadQrReg = () => { try { return JSON.parse(fs.readFileSync(QR_REG, 'utf8')); } catch { return []; } };
+const saveQrReg = (items) => { fs.mkdirSync(QR_DIR, { recursive: true }); fs.writeFileSync(QR_REG, JSON.stringify(items, null, 2), 'utf8'); };
+
+function uploadToR2(localFile, remoteKey) {
+  const out = execFileSync(process.execPath,
+    [path.join(__dirname, 'upload-r2-file.js'), localFile, remoteKey, '--force'],
+    { cwd: ROOT, stdio: 'pipe' }).toString();
+  const m = out.match(/https:\/\/\S+/);
+  if (!m) throw new Error('อัป R2 ไม่สำเร็จ: ' + out.slice(0, 300));
+  return m[0];
+}
+
+/** .txt รายชื่อเพลง → หน้าเว็บธีมทอง-ดำ (มือถือ + ช่องค้นหา) สำหรับให้ลูกค้าสแกนดู */
+function tracklistHtml(title, rawText) {
+  const lines = String(rawText).split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+  const rows = [];
+  let count = 0;
+  for (const l of lines) {
+    const m = l.match(/^(\d+)\s*[.)\-]?\s*(.+)$/);
+    if (m) { count++; rows.push(`<li><span>${m[1].padStart(3, '0')}</span>${m[2].replace(/\[official.*?\]|\.mp3$/gi, '').trim()}</li>`); }
+    else rows.push(`<li class="al">${l}</li>`);   // บรรทัดไม่มีเลข = หัวข้อ/ชื่ออัลบั้ม
+  }
+  return `<!doctype html><html lang="th"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${title} — รายชื่อเพลง</title>
+<style>
+  * { box-sizing:border-box; margin:0; }
+  body { font-family:'Segoe UI',Tahoma,sans-serif; background:#100d08; color:#e8ddc8; padding:0 0 40px; }
+  header { background:linear-gradient(180deg,#1a1508,#100d08); text-align:center; padding:28px 16px 18px; border-bottom:2px solid #8B7355; position:sticky; top:0; }
+  h1 { font-size:22px; color:#f5c343; letter-spacing:.5px; }
+  .n { color:#b3a180; font-size:14px; margin-top:4px; }
+  .search { margin:12px auto 0; max-width:420px; }
+  .search input { width:100%; padding:10px 16px; border-radius:99px; border:1px solid #8B7355; background:#1c1710; color:#e8ddc8; font-size:15px; outline:none; }
+  ol { list-style:none; max-width:560px; margin:14px auto; padding:0 16px; }
+  li { padding:7px 10px; border-bottom:1px solid #241d12; font-size:15px; display:flex; gap:10px; }
+  li span { color:#8B7355; font-variant-numeric:tabular-nums; flex:none; }
+  li.al { background:#1c1710; color:#f5c343; font-weight:600; border-radius:8px; margin:14px 0 4px; border:0; display:block; }
+  footer { text-align:center; color:#6b5d45; font-size:12px; margin-top:26px; }
+  footer a { color:#f5c343; }
+</style></head><body>
+<header><h1>${title}</h1><div class="n">รายชื่อเพลงทั้งหมด ${count} เพลง</div>
+<div class="search"><input id="q" placeholder="🔍 ค้นหาเพลง…" oninput="f(this.value)"></div></header>
+<ol id="list">${rows.join('')}</ol>
+<footer>BT Music Drive · <a href="https://btmusicdrive.com">btmusicdrive.com</a></footer>
+<script>function f(q){q=q.toLowerCase();document.querySelectorAll('#list li').forEach(li=>{li.style.display=!q||li.textContent.toLowerCase().includes(q)?'':'none'})}</script>
+</body></html>`;
+}
+
+async function makeQr({ name, url }) {
+  const safe = String(name || 'qr').trim().replace(/[\\/:*?"<>|\s]+/g, '-').slice(0, 60) || 'qr';
+  const file = `qr-${safe}.png`;
+  fs.mkdirSync(QR_DIR, { recursive: true });
+  await QRCode.toFile(path.join(QR_DIR, file), url, {
+    errorCorrectionLevel: 'H', width: 1200, margin: 3,
+    color: { dark: '#000000', light: '#FFFFFF' },
+  });
+  const items = loadQrReg().filter(i => i.file !== file);
+  items.unshift({ name: String(name || safe), url, file, createdAt: new Date().toISOString() });
+  saveQrReg(items);
+  return { name: String(name || safe), url, file };
+}
+
 async function api(pathname, opts = {}) {
   const r = await fetch(API_BASE + pathname, {
     ...opts,
@@ -191,6 +257,7 @@ const PAGE = /* html */ `<!doctype html>
   <h1>🎛 Listing Studio</h1><span class="badge">btmusicdrive หลังบ้าน</span>
   <input id="q" placeholder="ค้นหาสินค้า… (ชื่อ / code)" autocomplete="off">
   <button class="newbtn" onclick="openNew()">➕ ลงสินค้าใหม่</button>
+  <button class="newbtn" style="background:#0F172A;color:#fff;border:1px solid #8B7355" onclick="openQr()">🔗 QR</button>
 </header>
 <main>
   <div id="list"></div>
@@ -353,6 +420,69 @@ function showPreview() {
   fetch('/api/auth-status').then(r => r.json()).then(s => { if (!s.loggedIn) document.getElementById('loginBox').style.display = 'block'; });
 }
 
+/* ───────── QR: เก็บไฟล์ + สร้างคิวอาร์ ───────── */
+async function openQr() {
+  document.getElementById('overlay').classList.add('show');
+  document.getElementById('modalBody').innerHTML = \`
+    <h2>🔗 สร้าง QR Code <span style="font-size:13px;color:#94a3b8;font-weight:400">อัปไฟล์ขึ้น img.btmusicdrive.com แล้วได้ QR พร้อมพิมพ์ (1200px แปะโลโก้กลางได้)</span></h2>
+    <div class="f"><label>ชื่อ (ใช้ตั้งชื่อไฟล์ QR เช่น คาราบาว-รายชื่อเพลง)</label><input type="text" id="qName" placeholder="คาราบาว-รายชื่อเพลง"></div>
+    <div class="src"><input type="radio" name="qsrc" id="qsrcFile" value="file" checked>
+      <label for="qsrcFile" style="display:inline">อัปไฟล์ PDF / รูป / .txt รายชื่อเพลง (เก็บขึ้น R2 ให้ แล้ว QR ชี้ไปที่ไฟล์นี้)</label>
+      <input type="file" id="qFile" accept=".pdf,.txt,image/*" style="margin-top:8px" onchange="document.getElementById('qsrcFile').checked=true">
+      <div class="hint">สแกนแล้วเปิดเต็มจอทันที ไม่ผ่านหน้า Google Drive · ถ้าเป็น .txt รายชื่อเพลง จะทำเป็นหน้าเว็บสวย ๆ มีช่องค้นหาเพลงให้เลย (เหมาะกับสินค้าที่เพลงเยอะจนใส่กระดาษไม่หมด)</div></div>
+    <div class="src"><input type="radio" name="qsrc" id="qsrcUrl" value="url">
+      <label for="qsrcUrl" style="display:inline">ใช้ลิงก์ที่มีอยู่แล้ว (เช่น หน้าสินค้า / ไลน์ร้าน)</label>
+      <input type="text" id="qUrl" placeholder="https://btmusicdrive.com/product/…" style="width:100%;margin-top:8px;border:1px solid #d6d3ce;border-radius:8px;padding:8px" onfocus="document.getElementById('qsrcUrl').checked=true"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:14px">
+      <button class="ghost" onclick="closeNew()">ปิด</button>
+      <button class="primary" id="qGo" onclick="createQr(this)">สร้าง QR ✨</button>
+    </div>
+    <div class="st" id="qStatus"></div>
+    <h3 style="margin-top:22px">📁 คลัง QR ที่เคยสร้าง</h3>
+    <div id="qList" class="hint">กำลังโหลด…</div>\`;
+  loadQrList();
+}
+async function loadQrList() {
+  const items = await (await fetch('/api/qr-list')).json();
+  document.getElementById('qList').innerHTML = items.length ? \`
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px">\${items.map(i => \`
+      <div style="border:1px solid #e2ded8;border-radius:10px;padding:10px;text-align:center">
+        <img src="/qr/\${encodeURIComponent(i.file)}" style="width:100%;border-radius:6px">
+        <div style="font-size:12px;font-weight:600;margin:6px 0 2px">\${esc(i.name)}</div>
+        <div style="font-size:10px;color:#94a3b8;word-break:break-all;line-height:1.3">\${esc(i.url.replace('https://',''))}</div>
+        <div style="display:flex;gap:8px;justify-content:center;margin-top:4px">
+          <a href="\${i.url}" target="_blank" style="font-size:12px">📄 เปิดไฟล์</a>
+          <a href="/qr/\${encodeURIComponent(i.file)}" download="\${esc(i.file)}" style="font-size:12px">⬇ QR</a>
+        </div>
+      </div>\`).join('')}</div>\` : 'ยังไม่มี — สร้างอันแรกได้เลย';
+}
+async function createQr(btn) {
+  const st = document.getElementById('qStatus');
+  const name = document.getElementById('qName').value.trim();
+  if (!name) { st.innerHTML = '<span class="err">ใส่ชื่อก่อนครับ</span>'; return; }
+  const useFile = document.getElementById('qsrcFile').checked;
+  const body = { name };
+  if (useFile) {
+    const f = document.getElementById('qFile').files[0];
+    if (!f) { st.innerHTML = '<span class="err">เลือกไฟล์ก่อนครับ</span>'; return; }
+    st.innerHTML = '⏳ กำลังอ่านไฟล์…';
+    body.file = { name: f.name, data: await fileToB64(f) };
+  } else {
+    body.url = document.getElementById('qUrl').value.trim();
+    if (!/^https?:\\/\\//.test(body.url)) { st.innerHTML = '<span class="err">ใส่ลิงก์ให้ถูก (ขึ้นต้น https://)</span>'; return; }
+  }
+  btn.disabled = true;
+  st.innerHTML = '⏳ ' + (useFile ? 'อัปไฟล์ขึ้น R2 + สร้าง QR…' : 'สร้าง QR…');
+  try {
+    const r = await fetch('/api/qr-create', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+    if (!r.ok) throw new Error(await r.text());
+    const out = await r.json();
+    st.innerHTML = \`<span class="ok">✔ เสร็จแล้ว — ลิงก์: <a href="\${out.url}" target="_blank">\${out.url}</a></span>\`;
+    loadQrList();
+  } catch (e) { st.innerHTML = '<span class="err">✖ ' + esc(e.message).slice(0, 400) + '</span>'; }
+  btn.disabled = false;
+}
+
 async function publish(btn) {
   const st = document.getElementById('pStatus');
   btn.disabled = true;
@@ -470,6 +600,44 @@ http.createServer(async (req, res) => {
       try { runScript('generate-marketplace-listings.js', ['--apply']); console.log('✔ อัปเดต marketplace-listings.xlsx'); } catch { }
 
       return json(200, { ok: true, slug: product.slug, url: `https://btmusicdrive.com/product/${product.slug}` });
+    }
+
+    if (url.pathname === '/api/qr-list') return json(200, loadQrReg());
+
+    if (url.pathname.startsWith('/qr/')) {
+      const f = path.join(QR_DIR, path.basename(decodeURIComponent(url.pathname)));
+      if (!fs.existsSync(f)) { res.writeHead(404); return res.end('not found'); }
+      res.writeHead(200, { 'content-type': 'image/png' });
+      return res.end(fs.readFileSync(f));
+    }
+
+    if (url.pathname === '/api/qr-create' && req.method === 'POST') {
+      const b = JSON.parse(await readBody(req));
+      let target = b.url;
+      if (b.file) {
+        // เก็บไฟล์ต้นฉบับไว้ใน marketplace-docs/ แล้วอัปขึ้น R2 → QR ชี้ไปที่ไฟล์บน R2
+        const ext = (b.file.name.match(/\.[a-z0-9]+$/i) || ['.pdf'])[0].toLowerCase();
+        const safe = String(b.name).trim().replace(/[\\/:*?"<>|\s]+/g, '-').slice(0, 60);
+        const docsDir = path.join(ROOT, 'marketplace-docs');
+        fs.mkdirSync(docsDir, { recursive: true });
+        const local = path.join(docsDir, safe + ext);
+        fs.writeFileSync(local, Buffer.from(b.file.data, 'base64'));
+        console.log(`✔ เก็บไฟล์: marketplace-docs/${safe}${ext}`);
+        if (ext === '.txt') {
+          // .txt รายชื่อเพลง → สร้างหน้าเว็บสวย ๆ ให้ลูกค้าสแกนดู (ค้นหาเพลงได้)
+          const htmlLocal = path.join(docsDir, safe + '.html');
+          fs.writeFileSync(htmlLocal, tracklistHtml(b.name, Buffer.from(b.file.data, 'base64').toString('utf8')), 'utf8');
+          target = uploadToR2(htmlLocal, `docs/${safe}.html`);
+          console.log(`✔ สร้างหน้ารายชื่อเพลง + R2: ${target}`);
+        } else {
+          target = uploadToR2(local, `docs/${safe}${ext}`);
+          console.log(`✔ R2: ${target}`);
+        }
+      }
+      if (!/^https?:\/\//.test(String(target || ''))) throw new Error('ไม่มีลิงก์หรือไฟล์');
+      const item = await makeQr({ name: b.name, url: target });
+      console.log(`✔ QR: qr/${item.file} → ${target}`);
+      return json(200, item);
     }
 
     if (url.pathname === '/api/generate') {
