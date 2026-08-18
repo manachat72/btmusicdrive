@@ -216,6 +216,15 @@ GA4_PROPERTY_ID="533617757"       # GOOGLE_CLIENT_SECRET ไม่จำเป�
 - **Social OG ฝั่ง server**: social bot UA ที่เข้า `/product/:slug` ถูก route ไป `server/src/lib/socialOg.ts` render OG จาก DB (FB/LINE ไม่รัน JS) — Googlebot ได้ static ปกติ
 - **OG image กลาง**: `images/og-cover.jpg` (1200×630) — FB ไม่รองรับ webp/avif **ห้ามเปลี่ยนกลับ**
 - **Chat widget** (2026-07-25): `#bt-chat-widget` ใน components.js ลากย้ายได้ (pointer events, threshold 8px แยกแตะ/ลาก) — ตำแหน่งเก็บ localStorage `btChatPos` `{r,b}` px จากขวา/ล่าง · ห้ามลบ `touch-action:none` บนปุ่ม ไม่งั้นลากบนมือถือไม่ได้
+- **Product Studio** (2026-08-18): `npm run mkt:studio` → http://localhost:4777 — ลงสินค้าใหม่ / แก้ไขสินค้าเดิม / QR ครบในที่เดียว
+  - ไฟล์: `scripts/listing-studio.js` (server) + `scripts/lib/studio-page.js` (HTML/CSS) + `scripts/lib/studio-client.js` (client JS แยกไฟล์ — **ห้ามยัด client JS กลับเข้า template literal** จะต้อง escape `${}` ทุกจุด)
+  - SEO engine `scripts/lib/seo.js` — สร้างชื่อ/รายละเอียด/meta/tags/slug + ดึงชื่อศิลปินจาก tracklist ทำ long-tail keyword + validate ความยาว/ซ้ำ · **155 ตัวแรกของ description = meta description จริง** (inline-product-jsonld ตัดตรงนั้น)
+  - slug ไทย→โรมัน `scripts/lib/product-slug.js` — อ่านตารางจาก `server/src/lib/productSlug.ts` ตอน runtime **ห้ามก๊อปตารางมาไว้ 2 ที่**
+  - **รูป 3 ชั้น** (`scripts/lib/product-images.js`): ต้นฉบับ → R2 `originals/<NN>-<slug>/` (ไฟล์ดิบ) + NAS ถ้าไดรฟ์ต่อ · รูปกลาง 1200×1200 → R2 `products/<NN>/` = **ลิงก์ที่ xlsx ทุกแพลตฟอร์มใช้ ห้ามเปลี่ยนขนาด/ชื่อไฟล์** · รูปเว็บ ≤800 webp+avif → `images/products/<slug>/`
+  - ทำงานได้แม้ NAS ไม่ได้ต่อ (อัปโหลดรูปผ่านหน้าเว็บ → ต้นฉบับขึ้น R2 อย่างเดียว)
+  - `npm run mkt:originals -- --apply` = backfill ต้นฉบับเก่าจาก NAS ขึ้น R2 (รันตอน NAS ต่ออยู่)
+  - studio **commit + push ให้อัตโนมัติ** — ลำดับสำคัญ: rename/สร้างรูป → build → push → ค่อยเขียน DB (DB ชี้มาก่อนไฟล์ขึ้น = รูป 404)
+  - ⚠ `marketplace-images/` `templates/` `qr/` อยู่ใน .gitignore — ห้ามใส่ใน `git add` ของ studio จะล้ม
 
 ## 12. Agent skills
 

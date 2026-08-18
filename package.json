@@ -20,6 +20,7 @@
     "mkt:listings": "node scripts/generate-marketplace-listings.js --apply",
     "mkt:tiktok": "node scripts/fill-tiktok-template.js --apply",
     "mkt:studio": "node scripts/listing-studio.js",
+    "mkt:originals": "node scripts/backfill-originals.js",
     "mkt:qr-all": "node scripts/generate-tracklist-qrs.js --apply",
     "build": "npm run build:css && npm run combine:css && npm run inline:products && npm run inline:categories && npm run inline:product-jsonld && npm run build:sitemap && npm run hash:assets",
     "test": "echo \"Error: no test specified\" && exit 1"
