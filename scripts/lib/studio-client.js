@@ -184,9 +184,51 @@ async function ensureLogin(statusId) {
   if (!lb || lb.style.display === 'none') return;
   status(statusId, '⏳ กำลังเข้าสู่ระบบ…');
   await jpost('/api/login', { email: $('lEmail').value, password: $('lPass').value });
-  META.loggedIn = true;
+  setLoggedIn();
   lb.style.display = 'none';
-  $('who').textContent = 'แอดมิน ✔';
+}
+
+function setLoggedIn() {
+  META.loggedIn = true;
+  var w = $('who');
+  w.textContent = 'แอดมิน ✔ · ' + META.apiBase.replace('/api', '');
+  w.style.textDecoration = 'none';
+  w.style.cursor = 'default';
+  w.onclick = null;
+}
+
+/* ล็อกอินจากมุมขวาบน — ไม่ต้องรอถึงขั้นตอนลงเว็บ */
+function openLogin() {
+  if (META.loggedIn) return;
+  if ($('topLogin')) { $('lEmail2').focus(); return; }
+  var box = document.createElement('div');
+  box.className = 'card';
+  box.id = 'topLogin';
+  box.innerHTML =
+    '<h2>🔑 เข้าสู่ระบบแอดมิน</h2>' +
+    '<div class="sub">บัญชีแอดมินของ btmusicdrive.com — เก็บไว้ในหน่วยความจำระหว่างเปิด studio เท่านั้น ไม่เขียนลงไฟล์</div>' +
+    '<div class="row"><div class="f"><input type="text" id="lEmail2" placeholder="อีเมลแอดมิน"></div>' +
+    '<div class="f"><input type="password" id="lPass2" placeholder="รหัสผ่าน" onkeydown="if(event.key===\'Enter\')doLogin(document.getElementById(\'topLoginBtn\'))"></div></div>' +
+    '<div class="actions"><button class="ghost" onclick="this.closest(\'.card\').remove()">ปิด</button>' +
+    '<button class="primary" id="topLoginBtn" onclick="doLogin(this)">เข้าสู่ระบบ</button></div>' +
+    '<div class="st" id="topLoginStatus"></div>';
+  $('view').insertBefore(box, $('view').firstChild);
+  $('lEmail2').focus();
+}
+
+async function doLogin(btn) {
+  btn.disabled = true;
+  status('topLoginStatus', '⏳ กำลังเข้าสู่ระบบ…');
+  try {
+    await jpost('/api/login', { email: $('lEmail2').value, password: $('lPass2').value });
+    setLoggedIn();
+    var lb = $('loginBox'); if (lb) lb.style.display = 'none';
+    status('topLoginStatus', '<span class="ok">✔ เข้าสู่ระบบแล้ว</span>');
+    setTimeout(function () { var b = $('topLogin'); if (b) b.remove(); }, 900);
+  } catch (e) {
+    status('topLoginStatus', '✖ ' + esc(e.message).slice(0, 300), 'err');
+    btn.disabled = false;
+  }
 }
 
 function renderReview() {
@@ -449,7 +491,8 @@ async function createQr(btn) {
 (async function () {
   try {
     META = await jget('/api/meta');
-    $('who').textContent = (META.loggedIn ? 'แอดมิน ✔' : 'ยังไม่ล็อกอิน') + ' · ' + META.apiBase.replace('/api', '');
+    if (META.loggedIn) setLoggedIn();
+    else $('who').textContent = '🔑 ยังไม่ล็อกอิน — คลิกที่นี่ · ' + META.apiBase.replace('/api', '');
     WEB = await jget('/api/web-products');
     MKT = await jget('/api/products');
   } catch (e) { $('who').textContent = 'โหลดข้อมูลไม่ได้'; }

@@ -80,7 +80,7 @@ const PAGE = `<!doctype html>
   <button class="tab on" id="tabNew" onclick="go('new')">➕ ลงสินค้าใหม่</button>
   <button class="tab" id="tabEdit" onclick="go('edit')">✏ แก้ไขสินค้า</button>
   <button class="tab" id="tabQr" onclick="go('qr')">🔗 QR</button>
-  <div class="right"><span id="who">…</span></div>
+  <div class="right"><span id="who" onclick="openLogin()" title="คลิกเพื่อเข้าสู่ระบบแอดมิน" style="cursor:pointer;text-decoration:underline dotted">…</span></div>
 </header>
 <main id="view"></main>
 <script src="/studio.js"></script>

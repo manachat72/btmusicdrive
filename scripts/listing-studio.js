@@ -32,7 +32,7 @@ const { PAGE, CLIENT_JS } = require('./lib/studio-page');
 
 const ROOT = path.resolve(__dirname, '..');
 const OUT_DIR = path.join(ROOT, 'templates');
-const PORT = 4777;
+const PORT = Number(process.env.PORT) || 4777;   // ชนพอร์ต? สั่ง PORT=4788 npm run mkt:studio
 const NAS_DIR = 'Z:\\รูป\\รูปสินค้า';
 const API_BASE = process.argv.includes('--local-api') ? 'http://localhost:5000/api' : 'https://btmusicdrive.com/api';
 
