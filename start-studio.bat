@@ -23,7 +23,8 @@ echo   Close this window to stop Product Studio.
 echo.
 
 REM Give the server a moment before opening the browser.
-start "" /b cmd /c "timeout /t 3 /nobreak >nul & start "" http://localhost:%PORT%"
+REM No nested quotes here: the URL has no spaces, so "start <url>" is unambiguous.
+start "" /b cmd /c "timeout /t 3 /nobreak >nul & start http://localhost:%PORT%"
 
 call npm run mkt:studio
 
