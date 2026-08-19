@@ -80,7 +80,11 @@ function renderNew() {
     '</div>' +
     '<div class="f"><label>📄 รายชื่อเพลง (.txt — 1 เพลงต่อบรรทัด)</label>' +
     '<input type="file" id="nTxt" accept=".txt" onchange="readTxt(this)">' +
-    '<div class="hint" id="txtInfo">ไม่บังคับ แต่แนะนำมาก — ใช้ดึงชื่อศิลปินไปทำคีย์เวิร์ด และโชว์รายชื่อเพลงบนหน้าสินค้า</div></div>' +
+    '<div id="txtInfo">ไม่บังคับ แต่แนะนำมาก — ใช้ดึงชื่อศิลปินไปทำคีย์เวิร์ด และโชว์รายชื่อเพลงบนหน้าสินค้า</div></div>' +
+    '<div class="f" style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap"><div class="chk" style="margin:0;padding:6px 12px;border:1px solid #d6d3ce;border-radius:10px;background:#fff"><label style="font-weight:400"><input type="radio" name="seomode" value="rule" checked style="margin-right:6px">แบบธรรมดา (rule-based)</label></div>' +
+    '<div class="chk" style="margin:0;padding:6px 12px;border:1px solid var(--primary);border-radius:10px;background:#f8f5ef"><label style="font-weight:400"><input type="radio" name="seomode" value="ai" style="margin-right:6px">ใช้เอเจน (claude Max)</label></div>' +
+    '<button class="ghost" style="padding:6px 12px;font-size:12px" title="ให้ claude CLI (Max) วิจัยศิลปินที่ยังไม่รู้จัก" onclick="researchArtists(this,event)">✨ AI วิจัยศิลปิน</button></div>' +
+    '<div class="hint" style="margin-top:4px">โหมดแบบธรรมดา = rule-based ทันที · โหมดใช้เอเจน = กดปุ่ม ✨ เพื่อสั่ง AI ค้นเว็บหาว่าชื่อนี้คือใครก่อน (ไม่เสียเงิน API ใช้ Max) · กด Shift ค้างตอนคลิก = วิจัยซ้ำทับของเดิม</div>' +
     '<div class="f"><label>รูปสินค้า</label>' +
     '<div class="src"><input type="radio" name="src" id="srcNas" value="nas"' + (folders ? ' checked' : ' disabled') + '>' +
     '<label for="srcNas" style="display:inline">ใช้โฟลเดอร์ที่มีอยู่บน NAS</label>' +
@@ -119,6 +123,22 @@ async function previewSeo() {
   } catch (e) { $('seoBox').innerHTML = '<div class="issues error">✖ ' + esc(e.message).slice(0, 300) + '</div>'; }
 }
 
+/* วิจัยศิลปินที่ในรายชื่อเพลงด้วย claude CLI (Max) — เซฟลง artists.json
+ * เรียกเพียงครั้งเดียวต่อศิลปิน (ไม่ตัดซ้ำ cache อยู่แล้ว) */
+async function researchArtists(btn, ev) {
+  var shortName = ($('nName') && $('nName').value || '').trim();
+  if (!trackList.length && !shortName) { $('txtInfo').textContent = 'พิมพ์ชื่อสินค้า หรืออ่าน .txt รายชื่อเพลงก่อน'; return; }
+  try {
+    btn.disabled = true;
+    $('txtInfo').textContent = '⏳ กำลังวิจัยด้วย AI (ค้นเว็บด้วย) … อาจใช้ 1-2 นาที — ' + [shortName].concat(trackList.slice(0, 8)).filter(Boolean).join(', ');
+    var out = await jpost('/api/ai-research', { tracklist: trackList, shortName: shortName, force: !!(ev && ev.shiftKey) });
+    var done = out.ok.length, skip = out.skipped.length, err = out.errors.length;
+    $('txtInfo').innerHTML = '✔ เซ็น ' + done + ' · มีอยู่แล้ว ' + skip + (err ? ' · ⚠ ' + err + ' ข้อผิดพลาด (' + esc(out.errors.join(' · ')).slice(0, 300) + ')' : '');
+    previewSeo(); // เจนใหม่ — จะได้คีย์เวิร์ดจาก cache ที่เพิ่งเซฟ
+  } catch (e) { $('txtInfo').textContent = '✖ ' + e.message.slice(0, 200); }
+  btn.disabled = false;
+}
+
 function previewFiles(inp) {
   $('srcUp').checked = true;
   upImages = [].slice.call(inp.files, 0, 9);
@@ -145,6 +165,24 @@ function readTxt(inp) {
 async function createDraft(btn) {
   var name = $('nName').value.trim();
   if (!name) { status('nStatus', 'ใส่ชื่อสินค้าก่อนครับ', 'err'); return; }
+  // โหมดใช้เอเจน: ต้องบังคับว่า cache วิจัยจบก่อน ไม่งั้นยังไม่รู้ชื่อศิลปิน
+  var mode = document.querySelector('input[name=seomode]:checked') ?
+    document.querySelector('input[name=seomode]:checked').value : 'rule';
+  if (mode === 'ai' && draft && draft.artistsMissing && draft.artistsMissing.length) {
+    status('nStatus', '⚠ โหมดเอเจนแต่ยังไม่วิจัยศิลปิน: ' + draft.artistsMissing.slice(0, 3).join(', ') + ' — กด "✨ AI วิจัยศิลปิน" ก่อน', 'err');
+    return;
+  }
+  if (mode === 'ai') {
+    var prev = await jpost('/api/seo', {
+      shortName: name, tracklist: trackList,
+      capacity: $('nCap').value, price: +$('nPrice').value || 279,
+      categoryName: $('nCat').value || undefined
+    });
+    if (prev.artistsMissing && prev.artistsMissing.length) {
+      status('nStatus', '⚠ โหมดเอเจนแต่ยังไม่วิจัย: ' + prev.artistsMissing.slice(0, 3).join(', ') + ' — กด "✨ AI วิจัยศิลปิน" ก่อน', 'err');
+      return;
+    }
+  }
   var useNas = $('srcNas') && $('srcNas').checked;
   var body = {
     name: name, price: +$('nPrice').value || 279, capacity: $('nCap').value,

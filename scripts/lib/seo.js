@@ -12,6 +12,7 @@
  *   - ศิลปินจากรายชื่อเพลง = long-tail keyword ที่คนค้นจริง
  */
 const { slugify, imageSlug } = require('./product-slug');
+const { collect: collectArtistResearch } = require('./artists');
 
 const GENRES = [
   { re: /เพื่อชีวิต|คาราบาว|พงษ์สิทธิ์|คำภีร์|มาลีฮวนน่า|พงษ์เทพ/, name: 'เพื่อชีวิต', cat: 'เพื่อชีวิต',
@@ -37,6 +38,21 @@ const GENRES = [
   { re: /สตริง|ยุค ?90|ยุค ?80|ยุค ?2000|tiktok|ฮิต|เพราะ/i, name: 'สตริง', cat: 'เพลงสตริง',
     kw: ['เพลงสตริง', 'เพลงเก่า', 'เพลงฮิตยุค 90', 'เพลงเพราะ'] },
 ];
+
+/**
+ * คำนามตามประเภทเนื้อหา — สินค้าบางตัวไม่ใช่ "เพลง" (เรื่องเล่า/ธรรมะ/นิยายเสียง)
+ * noun = คำที่ต่อท้าย "รวม…" · unit = หน่วยนับ · verb = คำกริยาในประโยคขาย
+ * มาจาก contentType ที่ agent วิจัย (artists.json) หรือเดาจากหมวดถ้าไม่มี
+ */
+const CONTENT_NOUNS = {
+  // slugWord = คำโรมันใน URL (ทับศัพท์อัตโนมัติของ "เรื่องเล่า" อ่านไม่ออก จึงกำหนดเอง)
+  'เพลง':        { noun: 'เพลง',        unit: 'เพลง', listen: 'ฟังเพลง',      slugWord: 'phleng' },
+  'เรื่องเล่า':   { noun: 'เรื่องเล่า',   unit: 'ตอน',  listen: 'ฟังเรื่องเล่า', slugWord: 'rueang-lao' },
+  'ธรรมะ':       { noun: 'ธรรมะ',       unit: 'ตอน',  listen: 'ฟังธรรมะ',     slugWord: 'dhamma' },
+  'นิยายเสียง':  { noun: 'นิยายเสียง',  unit: 'ตอน',  listen: 'ฟังนิยายเสียง', slugWord: 'niyai-siang' },
+  'รายการวิทยุ': { noun: 'รายการ',      unit: 'ตอน',  listen: 'ฟังรายการ',    slugWord: 'raikan-witthayu' },
+};
+const DEFAULT_CONTENT = CONTENT_NOUNS['เพลง'];
 
 const CATEGORIES = ['เพื่อชีวิต', 'เพลงสตริง', 'เพลงใต้', 'เพลงสากล', 'ลูกกรุง', 'ลูกทุ่ง', 'อุปกรณ์เสริม', 'แดนซ์', 'วิทยุ', 'ธรรมะ'];
 
@@ -102,23 +118,39 @@ function truncAtWord(s, max) {
  */
 function buildSeo({ shortName, tracklist = [], capacity = '4GB', price = 279, categoryName } = {}) {
   const short = clean(shortName);
-  const hay = `${short} ${(tracklist || []).slice(0, 40).join(' ')}`;
-  const g = detectGenre(hay);
-  const cat = CATEGORIES.includes(categoryName) ? categoryName : g.cat;
-  const era = (short.match(/ยุค ?(\d{2,4})/) || [])[1] || null;
   const songs = tracklist.length || null;
   const artists = extractArtists(tracklist);
-  const nSongs = songs ? `${songs} เพลง` : 'เพลงฮิตจัดเต็ม';
+
+  // ── วัตถุดิบจาก artists.json (subagent seo-artist-research วิจัยไว้) ──
+  // ใช้เติม alias/คีย์เวิร์ดที่คนไทยพิมพ์จริง + ช่วยเดาแนวเพลงตอน regex เดาไม่ออก
+  // ถ้าไม่มี cache หรือ entry เป็น unknown:true → ทุกอย่างว่าง = พฤติกรรม rule-based เดิมเป๊ะ
+  // ค้น cache ด้วยชื่อสั้นที่ผู้ใช้พิมพ์ด้วย — สินค้าหลายตัวชื่อ = ชื่อคนทำคอนเทนต์ (เช่น "อาจารย์ยอด")
+  const research = collectArtistResearch([short, ...artists]);
+
+  const hay = `${short} ${(tracklist || []).slice(0, 40).join(' ')} ${research.aliases.join(' ')}`;
+  let g = detectGenre(hay);
+  // regex เดาไม่ออก (ตกมาที่ default 'เพลงฮิต') แต่ cache รู้แนว → เชื่อ cache
+  if (g.name === 'เพลงฮิต' && research.genres.length) {
+    g = GENRES.find(x => x.name === research.genres[0]) || g;
+  }
+  const cat = CATEGORIES.includes(categoryName) ? categoryName : g.cat;
+  const era = (short.match(/ยุค ?(\d{2,4})/) || [])[1] || null;
+
+  // ── คำนามเนื้อหา: เชื่อ contentType จาก agent ก่อน ถ้าไม่มีค่อยเดาจากหมวด ──
+  const C = CONTENT_NOUNS[research.contentTypes[0]]
+    || (cat === 'ธรรมะ' ? CONTENT_NOUNS['ธรรมะ'] : cat === 'วิทยุ' ? CONTENT_NOUNS['รายการวิทยุ'] : DEFAULT_CONTENT);
+  const isMusic = C.noun === 'เพลง';
+  const nSongs = songs ? `${songs} ${C.unit}` : `${C.noun}จัดเต็ม`;
 
   // ── ชื่อสินค้า: คีย์เวิร์ดหลักหน้าสุด, ตัดให้ ≤ 120 ตัวอักษร ──
   const name = clean(
-    `USB แฟลชไดรฟ์ MP3 รวมเพลง${short} ${songs ? songs + ' เพลง ' : ''}${capacity} ฟังในรถ ไม่ต้องใช้เน็ต`
+    `USB แฟลชไดรฟ์ MP3 รวม${C.noun}${short} ${songs ? songs + ' ' + C.unit + ' ' : ''}${capacity} ฟังในรถ ไม่ต้องใช้เน็ต`
   ).slice(0, 120);
 
   // ── 2 ประโยคแรก = meta description (155 ตัวแรกถูกตัดไปใช้) ──
   // ไม่เติม "ยุค xx" ซ้ำ — era ดึงมาจาก shortName เองอยู่แล้ว
   const hook = clean(
-    `รวมเพลง${short} ${nSongs} ลงแฟลชไดรฟ์ USB ${capacity} พร้อมฟังทันที ` +
+    `รวม${C.noun}${short} ${nSongs} ลงแฟลชไดรฟ์ USB ${capacity} พร้อมฟังทันที ` +
     `เสียบปุ๊บเล่นปั๊บในรถ ไม่ต้องต่อเน็ต ไม่มีโฆษณาคั่น MP3 320kbps เสียงคมชัด ส่งไวจากไทย`
   );
 
@@ -126,16 +158,18 @@ function buildSeo({ shortName, tracklist = [], capacity = '4GB', price = 279, ca
     hook,
     '',
     'สิ่งที่คุณได้รับ',
-    `• ${nSongs}${artists.length ? ` — มีเพลงของ ${artists.slice(0, 4).join(', ')} และศิลปินดังอีกเพียบ` : ' คัดมาให้แล้ว ไม่ต้องเสียเวลาหาเอง'}`,
-    '• ไฟล์ MP3 320kbps เสียงคมชัด เบสแน่น ฟังในรถได้อารมณ์เต็ม',
+    `• ${nSongs}${artists.length ? ` — มี${C.noun}ของ ${artists.slice(0, 4).join(', ')} และ${isMusic ? 'ศิลปินดัง' : 'คนดัง'}อีกเพียบ` : ' คัดมาให้แล้ว ไม่ต้องเสียเวลาหาเอง'}`,
+    `• ไฟล์ MP3 320kbps เสียงคมชัด${isMusic ? ' เบสแน่น' : ' ฟังชัดทุกคำ'} ฟังในรถได้อารมณ์เต็ม`,
     '• ใช้ได้กับรถยนต์ทุกรุ่นที่มีช่อง USB ลำโพงบลูทูธ คอมพิวเตอร์ และสมาร์ททีวี',
-    '• ตั้งชื่อไฟล์เรียงเลขเป็นระเบียบ เลื่อนหาเพลงง่าย แนบรายชื่อเพลงครบทุกแทร็ก',
-    '• เพิ่ม-ลบเพลงเองได้ ใช้เป็นแฟลชไดรฟ์เก็บไฟล์ต่อได้ตามปกติ',
+    `• ตั้งชื่อไฟล์เรียงเลขเป็นระเบียบ เลื่อนหา${C.noun}ง่าย แนบรายชื่อครบทุก${C.unit}`,
+    `• เพิ่ม-ลบไฟล์เองได้ ใช้เป็นแฟลชไดรฟ์เก็บไฟล์ต่อได้ตามปกติ`,
+    // hook รายศิลปินจาก cache — วางหลัง 155 ตัวแรกเสมอ ไม่แตะ meta description
+    ...(research.hooks.length ? ['', research.hooks.slice(0, 3).join(' · ')] : []),
     '',
-    `เหมาะกับใคร: คนขับรถที่อยากฟัง${g.name}โดยไม่ง้อสัญญาณเน็ต · คนชอบ${g.name}ตัวจริง · ` +
+    `เหมาะกับใคร: คนขับรถที่อยาก${C.listen}${isMusic ? g.name : ''}โดยไม่ง้อสัญญาณเน็ต · คนชอบ${g.name}ตัวจริง · ` +
     'ซื้อเป็นของขวัญให้พ่อแม่ผู้ใหญ่ ใช้ง่ายไม่ต้องสอน เสียบแล้วฟังได้เลย',
     '',
-    'วิธีใช้: เสียบแฟลชไดรฟ์เข้าช่อง USB ของเครื่องเสียงรถยนต์ → เลือกโหมด USB → เพลงเล่นอัตโนมัติ',
+    `วิธีใช้: เสียบแฟลชไดรฟ์เข้าช่อง USB ของเครื่องเสียงรถยนต์ → เลือกโหมด USB → เล่นอัตโนมัติ`,
     '',
     `ความจุ ${capacity} · คุณภาพเสียง MP3 320kbps · ราคา ${price} บาท`,
     'แพ็กกันกระแทก ส่งไวจากไทย มีปัญหาเปลี่ยนใหม่ภายใน 7 วัน',
@@ -144,19 +178,23 @@ function buildSeo({ shortName, tracklist = [], capacity = '4GB', price = 279, ca
   // ── tags: หมวด + long-tail ศิลปิน + คีย์เวิร์ดฐาน (ไม่ซ้ำ, ≤ 12) ──
   // ถ้ารู้ยุคแน่ชัด ตัดคีย์เวิร์ดที่อ้างยุคอื่นทิ้ง — "ยุค 80" กับ "ฮิตยุค 90" ในสินค้าเดียวกันขัดกันเอง
   const genreKw = era ? g.kw.filter(k => !/\d{2,4}/.test(k) || k.includes(era)) : g.kw;
+  // long-tail จาก cache ต่อท้าย BASE_KW และขยายเพดานเป็น 14
+  // (BASE_KW ต้องรอดเสมอ — ของเดิม 12 ช่องพอดี ถ้าแทรกหน้าจะเบียดคีย์เวิร์ดฐานหลุด)
+  const researchKw = research.keywords.filter(k => !BASE_KW.includes(k)).slice(0, 4);
   const tags = [...new Set([
     ...genreKw,
     ...(era ? [`เพลงยุค ${era}`] : []),
     ...artists.slice(0, 3),
-    ...BASE_KW,
-  ])].filter(Boolean).slice(0, 12);
+    ...(isMusic ? BASE_KW : [`แฟลชไดรฟ์${C.noun}`, ...BASE_KW.slice(1)]),
+    ...researchKw,
+  ])].filter(Boolean).slice(0, researchKw.length ? 14 : 12);
 
   // metaTitle ≤ 60 ตัวก่อนต่อชื่อร้าน (Google แสดงราว 60-70) และตัดที่ขอบคำ
   const metaTitle = clean(`${truncAtWord(name, 52)} | Bt Music Drive`);
   const metaDescription = truncAtWord(hook, 155);
 
   // slug สั้น อ่านออก คีย์เวิร์ดหลักครบ — ไม่ลากทั้งชื่อยาวมาแปลง
-  const slugBase = clean(`USB MP3 รวมเพลง${short} ${capacity}`);
+  const slugBase = clean(`USB MP3 ruam ${C.slugWord} ${short} ${capacity}`);
 
   return {
     name,
@@ -166,15 +204,19 @@ function buildSeo({ shortName, tracklist = [], capacity = '4GB', price = 279, ca
     categoryName: cat,
     tags,
     artists,
+    // ศิลปินที่ยังไม่เคยวิจัย — studio เอาไปขึ้นเตือนให้สั่ง subagent seo-artist-research
+    artistsMissing: research.missing,
+    artistsKnown: research.known,
     genre: g.name,
+    contentNoun: C.noun,
     songs,
     capacity,
     price,
     specs: {
       'ความจุ': capacity,
-      'จำนวนเพลง': songs ? `${songs} เพลง` : '-',
+      [isMusic ? 'จำนวนเพลง' : `จำนวน${C.unit}`]: songs ? `${songs} ${C.unit}` : '-',
       'คุณภาพเสียง': 'MP3 320kbps',
-      'แนวเพลง': g.name,
+      [isMusic ? 'แนวเพลง' : 'ประเภท']: g.name,
       'รองรับ': 'รถยนต์ / ลำโพงบลูทูธ / คอมพิวเตอร์ / สมาร์ททีวี',
     },
     slug: slugify(slugBase),
@@ -210,6 +252,10 @@ function validateSeo(seo, others = []) {
   if (dupSlug) push('warn', `slug ซ้ำกับ ${dupSlug.name} — ระบบจะต่อท้ายเลขให้อัตโนมัติ`);
 
   if (!seo.tracklistCount && !seo.songs) push('warn', 'ยังไม่มีรายชื่อเพลง — เสียโอกาสติดคำค้นชื่อเพลง/ศิลปิน');
+
+  if (seo.artistsMissing && seo.artistsMissing.length) {
+    push('warn', `ยังไม่ได้วิจัยศิลปิน ${seo.artistsMissing.length} ชื่อ: ${seo.artistsMissing.slice(0, 5).join(', ')} — กด '✨ AI วิจัยศิลปิน' (หรือรัน node scripts/ai-artist.js) แล้วเซ็นใหม่จะได้ long-tail keyword เพิ่ม`);
+  }
 
   return out;
 }

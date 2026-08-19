@@ -272,6 +272,22 @@ http.createServer(async (req, res) => {
     if (url.pathname === '/api/auth-status') return json(200, { loggedIn: isAuthed() });
     if (url.pathname === '/api/qr-list') return json(200, loadQrReg());
 
+    // วิจัยศิลปินด้วย claude CLI (ใช้ Max quota ของ user — ไม่ยิง Anthropic API)
+    // รับเป็นรายชื่อเพลงดิบ → ใช้ extractArtists เดียวกับ seo.js แล้ววิจัยทุกชื่อที่ไม่ติด cache
+    if (url.pathname === '/api/ai-research' && req.method === 'POST') {
+      const { extractArtists } = require('./lib/seo');
+      const { researchArtists } = require('./lib/ai-artist-spawn');
+      const b = JSON.parse(await readBody(req));
+      // ชื่อสั้นที่ผู้ใช้พิมพ์ต้องถูกวิจัยด้วยเสมอ — สินค้าหลายตัวชื่อ = ชื่อคนทำคอนเทนต์
+      // (เช่น "อาจารย์ยอด") ซึ่ง extractArtists() ดึงจาก tracklist ไม่เจอ
+      const fromTrack = b.tracklist ? extractArtists(b.tracklist, 15) : (b.artists || []);
+      const names = [...new Set([String(b.shortName || '').trim(), ...fromTrack].filter(Boolean))];
+      if (!names.length) return json(200, { ok: [], skipped: [], errors: [], msg: 'ยังไม่มีชื่อให้วิจัย — พิมพ์ชื่อสินค้าก่อน' });
+      log(`⏳ วิจัย ${names.length} ชื่อ: ${names.join(', ')}`);
+      const out = require('./lib/ai-artist-spawn').researchArtists(names.slice(0, 10), { force: !!b.force });
+      return json(200, out);
+    }
+
     if (url.pathname === '/api/login' && req.method === 'POST') {
       const { email, password } = JSON.parse(await readBody(req));
 
