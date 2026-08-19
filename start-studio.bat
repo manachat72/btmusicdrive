@@ -3,6 +3,15 @@ chcp 65001 >nul
 title Product Studio - BT Music Drive
 cd /d "%~dp0"
 
+if "%PORT%"=="" set PORT=4777
+
+REM เปิดอยู่แล้ว? เด้งไปหน้าเดิมเลย ไม่ต้องเปิดซ้ำ (กัน EADDRINUSE)
+netstat -an | findstr /c:"LISTENING" | findstr /c:":%PORT% " >nul
+if not errorlevel 1 (
+    start "" http://localhost:%PORT%
+    exit /b 0
+)
+
 echo.
 echo   ==========================================
 echo    Product Studio  -  BT Music Drive
@@ -12,9 +21,8 @@ echo   กำลังเปิดเซิร์ฟเวอร์... เบร
 echo   ปิดหน้าต่างนี้ = ปิด Studio
 echo.
 
-REM เปิดเบราว์เซอร์หลังเซิร์ฟเวอร์ตั้งตัวได้ (พอร์ตแก้ได้ด้วย set PORT=4788)
-if "%PORT%"=="" set PORT=4777
-start "" /b cmd /c "timeout /t 3 /nobreak >nul & start http://localhost:%PORT%"
+REM รอเซิร์ฟเวอร์ตั้งตัวแล้วค่อยเด้งเบราว์เซอร์
+start "" /b cmd /c "timeout /t 3 /nobreak >nul & start """" http://localhost:%PORT%"
 
 call npm run mkt:studio
 
