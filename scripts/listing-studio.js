@@ -37,6 +37,22 @@ const NAS_DIR = 'Z:\\รูป\\รูปสินค้า';
 const API_BASE = process.argv.includes('--local-api') ? 'http://localhost:5000/api' : 'https://btmusicdrive.com/api';
 
 let ADMIN_TOKEN = null;   // JWT หลัง login (อยู่ในหน่วยความจำระหว่างเปิด studio เท่านั้น)
+// บัญชีที่สมัครผ่าน Google ไม่มี passwordHash เลย login ด้วยอีเมล+รหัสไม่ได้
+// รองรับ ADMIN_PASSWORD (header x-admin-password) เป็นอีกทางเข้าหนึ่ง
+// อ่าน ADMIN_PASSWORD จาก server/.env ให้เอง จะได้ไม่ต้องพิมพ์รหัสทุกครั้งที่เปิด studio
+// (ไฟล์อยู่ในเครื่อง ไม่เข้า git — ไม่ log ค่าออกมาไม่ว่ากรณีใด)
+function adminPwFromEnvFile() {
+  for (const f of ['.env', '.env.local']) {
+    try {
+      const m = fs.readFileSync(path.join(ROOT, 'server', f), 'utf8')
+        .match(/^\s*ADMIN_PASSWORD\s*=\s*(.*)$/m);
+      if (m) return m[1].trim().replace(/^["']|["']$/g, '');
+    } catch { }
+  }
+  return null;
+}
+let ADMIN_PW = process.env.ADMIN_PASSWORD || adminPwFromEnvFile();
+const isAuthed = () => !!(ADMIN_TOKEN || ADMIN_PW);
 
 // ── data helpers ─────────────────────────────────────────────────────────────
 function loadCatalog() {
@@ -189,7 +205,12 @@ async function makeQr({ name, url }) {
 async function api(pathname, opts = {}) {
   const r = await fetch(API_BASE + pathname, {
     ...opts,
-    headers: { 'content-type': 'application/json', ...(ADMIN_TOKEN ? { authorization: `Bearer ${ADMIN_TOKEN}` } : {}), ...(opts.headers || {}) },
+    headers: {
+      'content-type': 'application/json',
+      ...(ADMIN_TOKEN ? { authorization: `Bearer ${ADMIN_TOKEN}` } : {}),
+      ...(ADMIN_PW ? { 'x-admin-password': ADMIN_PW } : {}),
+      ...(opts.headers || {}),
+    },
   });
   const body = await r.json().catch(() => ({}));
   if (!r.ok) throw new Error(body.error || `${r.status} ${r.statusText}`);
@@ -243,21 +264,40 @@ http.createServer(async (req, res) => {
     if (url.pathname === '/api/meta') {
       return json(200, {
         folders: nasFolders(), categories: CATEGORIES, nextCode: nextCode(),
-        loggedIn: !!ADMIN_TOKEN, nas: NAS_DIR, apiBase: API_BASE,
+        loggedIn: isAuthed(), nas: NAS_DIR, apiBase: API_BASE,
       });
     }
     if (url.pathname === '/api/products') return json(200, loadProducts());
     if (url.pathname === '/api/web-products') return json(200, loadWebProducts());
-    if (url.pathname === '/api/auth-status') return json(200, { loggedIn: !!ADMIN_TOKEN });
+    if (url.pathname === '/api/auth-status') return json(200, { loggedIn: isAuthed() });
     if (url.pathname === '/api/qr-list') return json(200, loadQrReg());
 
     if (url.pathname === '/api/login' && req.method === 'POST') {
       const { email, password } = JSON.parse(await readBody(req));
-      const out = await api('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) });
-      if (out.user?.role !== 'ADMIN') throw new Error('บัญชีนี้ไม่ใช่แอดมิน');
-      ADMIN_TOKEN = out.token;
-      console.log(`✔ login แอดมิน: ${out.user.email}`);
-      return json(200, { ok: true });
+
+      // 1) อีเมล + รหัสผ่าน (ใช้ได้เฉพาะบัญชีที่ตั้งรหัสไว้ ไม่ใช่บัญชี Google ล้วน)
+      let jwtErr = null;
+      if (email) {
+        try {
+          const out = await api('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) });
+          if (out.user?.role !== 'ADMIN') throw new Error('บัญชีนี้ไม่ใช่แอดมิน');
+          ADMIN_TOKEN = out.token;
+          console.log(`✔ login แอดมิน: ${out.user.email}`);
+          return json(200, { ok: true, via: 'jwt' });
+        } catch (e) { jwtErr = e; }
+      }
+
+      // 2) ตกมาที่ ADMIN_PASSWORD — ยิงเส้นที่ต้องเป็นแอดมินเพื่อพิสูจน์ว่ารหัสถูก
+      const prev = ADMIN_PW;
+      ADMIN_PW = password;
+      try {
+        await api('/orders?limit=1');
+        console.log('✔ login แอดมิน: ผ่าน ADMIN_PASSWORD');
+        return json(200, { ok: true, via: 'admin-password' });
+      } catch (e) {
+        ADMIN_PW = prev;
+        throw new Error(jwtErr ? `${jwtErr.message} · รหัสแอดมินก็ไม่ผ่าน (${e.message})` : e.message);
+      }
     }
 
     // ── SEO อย่างเดียว (เร็ว ไม่แตะรูป) — ใช้ทั้งตอนลงใหม่และตอนแก้ไข ──
@@ -474,4 +514,14 @@ http.createServer(async (req, res) => {
   console.log(`🎛 Product Studio เปิดแล้ว → http://localhost:${PORT}`);
   console.log(`   API เว็บ: ${API_BASE} · NAS: ${NAS_DIR}`);
   console.log('   ➕ ลงสินค้าใหม่ · ✏ แก้ไขสินค้าเดิม · 🔗 QR   (Ctrl+C เพื่อปิด)');
+
+  // ทดสอบรหัสแอดมินตั้งแต่ตอนเปิด จะได้รู้ทันทีว่าใช้ได้ไหม ไม่ต้องไปพังตอนกดบันทึก
+  if (ADMIN_PW) {
+    api('/orders?limit=1')
+      .then(() => console.log('   ✔ รหัสแอดมินจาก server/.env ใช้ได้ — ไม่ต้องล็อกอินซ้ำ'))
+      .catch(e => {
+        ADMIN_PW = null;
+        console.log(`   ✖ รหัสแอดมินใน server/.env ใช้ไม่ได้ (${e.message}) — ต้องล็อกอินในหน้าเว็บ`);
+      });
+  }
 });

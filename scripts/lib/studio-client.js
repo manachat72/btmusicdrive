@@ -175,8 +175,9 @@ async function createDraft(btn) {
 function loginBoxHtml() {
   return '<div class="card" id="loginBox"' + (META.loggedIn ? ' style="display:none"' : '') + '>' +
     '<h2>🔑 เข้าสู่ระบบแอดมิน</h2><div class="sub">ใช้บัญชีแอดมินของ btmusicdrive.com — เก็บไว้ในหน่วยความจำระหว่างเปิด studio เท่านั้น</div>' +
-    '<div class="row"><div class="f"><input type="text" id="lEmail" placeholder="อีเมลแอดมิน"></div>' +
-    '<div class="f"><input type="password" id="lPass" placeholder="รหัสผ่าน"></div></div></div>';
+    '<div class="sub">บัญชีที่สมัครผ่าน Google ไม่มีรหัสผ่าน — เว้นอีเมลว่างแล้วกรอกแค่ <b>ADMIN_PASSWORD</b> ก็เข้าได้</div>' +
+    '<div class="row"><div class="f"><input type="text" id="lEmail" placeholder="อีเมลแอดมิน (เว้นว่างได้)"></div>' +
+    '<div class="f"><input type="password" id="lPass" placeholder="รหัสผ่าน หรือ ADMIN_PASSWORD"></div></div></div>';
 }
 
 async function ensureLogin(statusId) {
