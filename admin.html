@@ -5692,7 +5692,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div id="img-picker-upload-zone" style="margin:16px 20px 0;border:2px dashed var(--card-border,#ccc);border-radius:6px;padding:14px;text-align:center;cursor:pointer;transition:border-color .2s;" onclick="document.getElementById('img-picker-file-input').click()" ondragover="event.preventDefault();this.style.borderColor='#2271b1'" ondragleave="this.style.borderColor=''" ondrop="handlePickerDrop(event)">
       <i class="fa-solid fa-cloud-arrow-up" style="font-size:22px;color:var(--muted,#aaa);"></i>
       <p style="margin:6px 0 0;font-size:13px;color:var(--muted,#888);">คลิกหรือลากไฟล์รูปมาวางที่นี่เพื่ออัปโหลด</p>
-      <p style="margin:4px 0 0;font-size:11px;color:var(--muted,#aaa);">รองรับ JPG, PNG, GIF, WEBP, SVG — สูงสุด 10 MB</p>
+      <p style="margin:4px 0 0;font-size:11px;color:var(--muted,#aaa);">รองรับ JPG, PNG, GIF, WEBP — สูงสุด 10 MB (อัปได้เฉพาะตอนรัน server ในเครื่อง)</p>
       <input id="img-picker-file-input" type="file" accept="image/*" multiple style="display:none" onchange="handlePickerFileSelect(this.files)">
     </div>
     <div id="img-picker-upload-status" style="margin:6px 20px 0;font-size:12px;color:var(--muted,#888);min-height:18px;"></div>
@@ -5797,7 +5797,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   async function uploadPickerFiles(files) {
     const status = document.getElementById('img-picker-upload-status');
     status.textContent = `กำลังอัปโหลด ${files.length} ไฟล์…`;
-    let ok = 0, fail = 0;
+    // อัปโหลดเขียนไฟล์ลงโฟลเดอร์ images/ ตรง ๆ — บน Vercel serverless ระบบไฟล์เป็น
+    // read-only เลยทำได้เฉพาะตอนรัน server ในเครื่อง (แล้วค่อย build + push ขึ้น git)
+    const isLocal = location.hostname === '127.0.0.1' || location.hostname === 'localhost';
+    if (!isLocal) {
+      status.innerHTML = '<span style="color:#d63638">อัปโหลดจากหน้าเว็บ production ไม่ได้</span> — ระบบไฟล์บน Vercel เป็น read-only<br>ให้รัน server ในเครื่อง (<code>cd server && npm run dev</code>) แล้วเปิด admin ผ่าน localhost อัปรูป → <code>npm run build</code> → commit + push';
+      document.getElementById('img-picker-file-input').value = '';
+      return;
+    }
+    let ok = 0, fail = 0, lastErr = '';
     for (const file of files) {
       const fd = new FormData();
       fd.append('image', file);
@@ -5807,13 +5815,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           headers: adminHeaders(false),
           body: fd,
         });
-        if (!res.ok) throw new Error(await res.text());
+        if (!res.ok) {
+          const raw = await res.text();
+          let msg = raw;
+          try { msg = JSON.parse(raw).error || raw; } catch {}
+          throw new Error(`${res.status} ${msg}`.slice(0, 200));
+        }
         ok++;
-      } catch {
+      } catch (e) {
         fail++;
+        lastErr = `${file.name}: ${e.message}`;
       }
     }
-    status.textContent = `อัปโหลดสำเร็จ ${ok} ไฟล์${fail ? ` (ล้มเหลว ${fail} ไฟล์)` : ''}`;
+    status.textContent = `อัปโหลดสำเร็จ ${ok} ไฟล์${fail ? ` (ล้มเหลว ${fail} ไฟล์ — ${lastErr})` : ''}`;
     document.getElementById('img-picker-file-input').value = '';
     await fetchPickerImages();
   }
