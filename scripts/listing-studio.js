@@ -369,7 +369,8 @@ http.createServer(async (req, res) => {
 
     // ── ยืนยันลงเว็บ ──
     if (url.pathname === '/api/publish' && req.method === 'POST') {
-      if (!ADMIN_TOKEN) throw new Error('ยังไม่ได้เข้าสู่ระบบแอดมิน');
+      // isAuthed() ไม่ใช่ ADMIN_TOKEN — ล็อกอินด้วย ADMIN_PASSWORD ก็ยิง API ได้ (ดู api() ส่ง x-admin-password)
+      if (!isAuthed()) throw new Error('ยังไม่ได้เข้าสู่ระบบแอดมิน');
       const b = JSON.parse(await readBody(req));
 
       // 1) push รูปเว็บขึ้น production ก่อน — DB ชี้มาก่อนไฟล์ขึ้น = รูป 404
@@ -411,7 +412,8 @@ http.createServer(async (req, res) => {
 
     // ── แก้ไขสินค้าเดิม ──
     if (url.pathname === '/api/update' && req.method === 'POST') {
-      if (!ADMIN_TOKEN) throw new Error('ยังไม่ได้เข้าสู่ระบบแอดมิน');
+      // isAuthed() ไม่ใช่ ADMIN_TOKEN — ล็อกอินด้วย ADMIN_PASSWORD ก็ยิง API ได้ (ดู api() ส่ง x-admin-password)
+      if (!isAuthed()) throw new Error('ยังไม่ได้เข้าสู่ระบบแอดมิน');
       const b = JSON.parse(await readBody(req));
       if (!b.id) throw new Error('ไม่มี id สินค้า');
 
