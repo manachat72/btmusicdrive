@@ -1,7 +1,7 @@
 /**
  * สร้างรูปสำหรับ "หน้าเว็บ" จากไฟล์ต้นฉบับบน NAS
  *
- *   ต้นฉบับ (เก็บไว้ตลอด)  Z:\รูป\รูปสินค้า\<NN>-<ชื่อ>\หลัก_01.jpg
+ *   ต้นฉบับ (เก็บไว้ตลอด)  Z:\photos\รูปสินค้า\<NN>-<ชื่อ>\หลัก_01.jpg
  *   เว็บ (เร็ว + ชื่อ SEO)  images/products/<slug>/<slug>-1.webp  (+ .avif เคียงข้าง)
  *   marketplace (1200px)   marketplace-images/products/<NN>/  → R2  (build-marketplace-images.js)
  *

@@ -2,7 +2,7 @@
 /**
  * สร้างชุดรูปสินค้า "กลาง" สำหรับ Shopee / Lazada / TikTok Shop / เว็บ
  *
- * อ่านจาก NAS:  Z:\รูป\รูปสินค้า\<NN>-<ชื่อสินค้า>\หลัก_01.jpg ...
+ * อ่านจาก NAS:  Z:\photos\รูปสินค้า\<NN>-<ชื่อสินค้า>\หลัก_01.jpg ...
  * เขียนออกที่:  marketplace-images/products/<NN>/<NN>-01.jpg ...
  *               marketplace-images/catalog.json
  *               marketplace-images/catalog.csv       (คอลัมน์ Image 1-9 พร้อมวางลงเทมเพลต)
@@ -33,7 +33,7 @@ const argVal = (flag, def) => {
   return i !== -1 && argv[i + 1] ? argv[i + 1] : def;
 };
 
-const SRC_DIR = argVal('--src', 'Z:\\รูป\\รูปสินค้า');
+const SRC_DIR = argVal('--src', require('./lib/nas').nasDir());
 const CDN_BASE = (argVal('--cdn', process.env.CDN_BASE || 'https://img.btmusicdrive.com')).replace(/\/$/, '');
 
 const SIZE = parseInt(argVal('--size', '1200'), 10);

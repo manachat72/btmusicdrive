@@ -22,7 +22,7 @@ const APPLY = argv.includes('--apply');
 const FORCE = argv.includes('--force');
 const argVal = (flag, def) => { const i = argv.indexOf(flag); return i !== -1 && argv[i + 1] ? argv[i + 1] : def; };
 const ONLY_CODE = argVal('--code', null);
-const SRC_DIR = argVal('--src', 'Z:\\รูป\\รูปสินค้า');
+const SRC_DIR = argVal('--src', require('./lib/nas').nasDir());
 
 const IMG_EXT = /\.(jpe?g|png|webp|avif|tiff?|bmp)$/i;
 const MAX_IMAGES = 9;

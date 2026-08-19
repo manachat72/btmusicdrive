@@ -10,7 +10,7 @@
  *   3. QR             อัปไฟล์ (PDF/รูป/.txt รายชื่อเพลง) ขึ้น R2 + สร้าง QR พร้อมพิมพ์
  *
  * รูปแบ่ง 3 ชั้น (ต้นฉบับไม่ถูกลบ/แก้ และเก็บ 2 ที่ กัน NAS ไม่ได้ต่อ):
- *   ต้นฉบับ      R2 originals/<NN>-<slug>/  (ไฟล์ดิบ) + NAS Z:\รูป\รูปสินค้า\<NN>-<ชื่อ>\ ถ้าต่ออยู่
+ *   ต้นฉบับ      R2 originals/<NN>-<slug>/  (ไฟล์ดิบ) + NAS Z:\photos\รูปสินค้า\<NN>-<ชื่อ>\ ถ้าต่ออยู่
  *   รูปกลาง      R2 products/<NN>/<NN>-01.jpg  1200×1200 ← ลิงก์ชุดนี้ที่ xlsx ทุกแพลตฟอร์มใช้
  *   เว็บ (เร็ว)   images/products/<slug>/<slug>-1.webp + .avif  ≤800px ← หน้าเว็บใช้ตัวนี้
  *
@@ -33,7 +33,7 @@ const { PAGE, CLIENT_JS } = require('./lib/studio-page');
 const ROOT = path.resolve(__dirname, '..');
 const OUT_DIR = path.join(ROOT, 'templates');
 const PORT = Number(process.env.PORT) || 4777;   // ชนพอร์ต? สั่ง PORT=4788 npm run mkt:studio
-const NAS_DIR = 'Z:\\รูป\\รูปสินค้า';
+const NAS_DIR = require('./lib/nas').nasDir();
 const API_BASE = process.argv.includes('--local-api') ? 'http://localhost:5000/api' : 'https://btmusicdrive.com/api';
 
 let ADMIN_TOKEN = null;   // JWT หลัง login (อยู่ในหน่วยความจำระหว่างเปิด studio เท่านั้น)
