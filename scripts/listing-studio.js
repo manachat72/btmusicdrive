@@ -332,6 +332,9 @@ http.createServer(async (req, res) => {
       const b = JSON.parse(await readBody(req));
       const shortName = String(b.name || '').trim().replace(/[\\/:*?"<>|]/g, '');
       if (!shortName) throw new Error('ไม่มีชื่อสินค้า');
+      // เช็คสิทธิ์ตั้งแต่ต้น — ไม่งั้นทำรูป/อัป R2 เสร็จหมดแล้วค่อยไปตายตอนเขียน DB
+      // ทิ้งโฟลเดอร์รูปค้างไว้ รอบหน้าชื่อเลยกลายเป็น -2 -3 -4
+      if (!isAuthed()) throw new Error('ยังไม่ได้เข้าสู่ระบบแอดมิน — ล็อกอินก่อนเริ่มเตรียมรูป');
 
       const tracklist = Array.isArray(b.tracklist) ? b.tracklist : [];
       const seo = buildSeo({ shortName, tracklist, capacity: b.capacity || '4GB', price: b.price || 279, categoryName: b.categoryName });
