@@ -26,7 +26,10 @@ REM Give the server a moment before opening the browser.
 REM No nested quotes here: the URL has no spaces, so "start <url>" is unambiguous.
 start "" /b cmd /c "timeout /t 3 /nobreak >nul & start http://localhost:%PORT%"
 
-call npm run mkt:studio
+REM Run node directly (not via "npm run"): npm.cmd adds an extra process layer,
+REM so closing this window could leave an orphan node holding the port.
+REM As a direct child, node dies with the console when you click the X.
+node scripts\listing-studio.js
 
 echo.
 echo   Product Studio stopped - press any key to close.
