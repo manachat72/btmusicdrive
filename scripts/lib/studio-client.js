@@ -236,10 +236,33 @@ function setLoggedIn() {
   w.onclick = null;
 }
 
+
+/* ล็อกอินแบบบังคับตอนเปิดโปรแกรม — เดิมปล่อยให้ทำงานไปจนถึงขั้นเขียน DB ค่อยฟ้อง
+   ทำให้เสียเวลาทำรูปทิ้งฟรี ตอนนี้บังหน้าจอไว้จนกว่าจะล็อกอินสำเร็จ */
+function showLoginGate() {
+  if ($('topLogin')) { $('lEmail2').focus(); return; }
+  var g = document.createElement('div');
+  g.id = 'loginGate';
+  g.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,.75);' +
+    'display:flex;align-items:center;justify-content:center;padding:20px';
+  g.innerHTML =
+    '<div class="card" id="topLogin" style="max-width:520px;width:100%;margin:0">' +
+    '<h2>🔑 เข้าสู่ระบบแอดมินก่อนเริ่มงาน</h2>' +
+    '<div class="sub">ต้องล็อกอินก่อนถึงจะลงสินค้า/แก้ไขสินค้าได้ — เก็บไว้ในหน่วยความจำระหว่างเปิด studio เท่านั้น ไม่เขียนลงไฟล์</div>' +
+    '<div class="row"><div class="f"><input type="text" id="lEmail2" placeholder="อีเมลแอดมิน (เว้นว่างได้ถ้าใช้รหัสแอดมิน)"></div>' +
+    '<div class="f"><input type="password" id="lPass2" placeholder="รหัสผ่าน" onkeydown="if(event.key===&quot;Enter&quot;)doLogin(document.getElementById(&quot;topLoginBtn&quot;))"></div></div>' +
+    '<div class="actions"><button class="primary" id="topLoginBtn" onclick="doLogin(this)">เข้าสู่ระบบ</button></div>' +
+    '<div class="st" id="topLoginStatus"></div></div>';
+  document.body.appendChild(g);
+  $('lEmail2').focus();
+}
+function closeLoginGate() { var g = $('loginGate'); if (g) g.remove(); }
+
 /* ล็อกอินจากมุมขวาบน — ไม่ต้องรอถึงขั้นตอนลงเว็บ */
 function openLogin() {
   if (META.loggedIn) return;
-  if ($('topLogin')) { $('lEmail2').focus(); return; }
+  if ($('loginGate') || $('topLogin')) { $('lEmail2').focus(); return; }
+  return showLoginGate();
   var box = document.createElement('div');
   box.className = 'card';
   box.id = 'topLogin';
@@ -263,7 +286,7 @@ async function doLogin(btn) {
     setLoggedIn();
     var lb = $('loginBox'); if (lb) lb.style.display = 'none';
     status('topLoginStatus', '<span class="ok">✔ เข้าสู่ระบบแล้ว</span>');
-    setTimeout(function () { var b = $('topLogin'); if (b) b.remove(); }, 900);
+    setTimeout(function () { closeLoginGate(); var b = $('topLogin'); if (b) b.remove(); }, 900);
   } catch (e) {
     status('topLoginStatus', '✖ ' + esc(e.message).slice(0, 300), 'err');
     btn.disabled = false;
@@ -531,7 +554,10 @@ async function createQr(btn) {
   try {
     META = await jget('/api/meta');
     if (META.loggedIn) setLoggedIn();
-    else $('who').textContent = '🔑 ยังไม่ล็อกอิน — คลิกที่นี่ · ' + META.apiBase.replace('/api', '');
+    else {
+      $('who').textContent = '🔑 ยังไม่ล็อกอิน — คลิกที่นี่ · ' + META.apiBase.replace('/api', '');
+      showLoginGate();   // บังหน้าจอไว้เลย ไม่ให้เริ่มทำงานแล้วไปตายตอนท้าย
+    }
     WEB = await jget('/api/web-products');
     MKT = await jget('/api/products');
   } catch (e) { $('who').textContent = 'โหลดข้อมูลไม่ได้'; }
