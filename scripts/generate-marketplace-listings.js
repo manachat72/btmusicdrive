@@ -64,9 +64,12 @@ const detectEra = (n) => { const m = n.match(/ยุค ?(\d{2,4})|(\d{2,4})\s*s
 const detectCapacity = (n) => { const m = n.match(/(\d+)\s*(gb|จิกะ|กิกะ)/i); return m ? `${m[1]}GB` : '4GB'; };
 const songCount = (prod, n) => {
   if (prod?.tracklist?.length) return prod.tracklist.length;
-  const m = n.match(/(\d{2,4})\s*\+?\s*เพลง/);
+  const m = n.match(/(\d{2,4})\s*\+?\s*(?:เพลง|ตอน|เรื่อง)/);
   return m ? parseInt(m[1], 10) : null;
 };
+
+// คำนามเนื้อหา (เพลง/เรื่องเล่า/ธรรมะ) — ใช้ตารางเดียวกับ seo.js ห้ามก๊อปคำมาไว้ 2 ที่
+const { contentFromName } = require('./lib/seo');
 
 // ── helpers ──
 const norm = (s) => String(s ?? '').toLowerCase().replace(/[​﻿]/g, '').replace(/[^\p{L}\p{N}]+/gu, '');
@@ -93,6 +96,11 @@ function clip(s, max) {
 function coreName(name) {
   return String(name)
     .replace(/^usb[\s\-–—]*(แฟลชไดรฟ์|flash\s*drive)?[\s\-–—]*(mp3)?[\s\-–—]*/i, '')
+    // ตัดหางมาตรฐานที่ buildSeo() ต่อไว้แล้ว (จำนวน/ความจุ/สโลแกน)
+    // ไม่ตัด = เทมเพลตข้างล่างเติมซ้ำอีกรอบ กลายเป็น "461 ตอน 16GB ฟังในรถ … 461 เพลง 16GB ฟังในรถ"
+    .replace(/\s*\d{1,4}\s*(เพลง|ตอน|เรื่อง)(?![ก-๙])/g, ' ')   // \b ใช้ไม่ได้กับอักษรไทย (JS \w = ASCII)
+    .replace(/\s*\d+\s*(GB|MB|TB)\b/gi, ' ')
+    .replace(/\s*(ฟังในรถ|ไม่ต้องใช้เน็ต|ไม่ใช้เน็ต|ไม่ต้องต่อเน็ต|ไม่ง้อเน็ต)\s*/g, ' ')
     .replace(/\s{2,}/g, ' ').trim() || String(name).trim();
 }
 
@@ -100,20 +108,20 @@ function coreName(name) {
 
 function shopeeTitle(x) {
   if (x.accessory) return clip(x.name, LIMIT.shopee.title);
-  const songs = x.songs ? `${x.songs} เพลง` : 'เพลงฮิตจัดเต็ม';
-  return clip(`USB เพลง แฟลชไดรฟ์ MP3 ${x.core} ${songs} ${x.capacity} ฟังในรถ ไม่ใช้เน็ต`, LIMIT.shopee.title);
+  const songs = x.songs ? `${x.songs} ${x.content.unit}` : `${x.content.noun}จัดเต็ม`;
+  return clip(`USB ${x.content.noun} แฟลชไดรฟ์ MP3 ${x.core} ${songs} ${x.capacity} ฟังในรถ ไม่ใช้เน็ต`, LIMIT.shopee.title);
 }
 
 function lazadaTitle(x) {
   if (x.accessory) return clip(x.name, LIMIT.lazada.title);
-  const songs = x.songs ? `${x.songs} เพลง` : 'เพลงฮิตจัดเต็ม';
-  return clip(`USB เพลง MP3 ${x.core} ${songs} แฟลชไดรฟ์ ${x.capacity} เสียงชัด 320kbps ฟังในรถ คอม เครื่องเสียง ไม่ต้องต่อเน็ต พร้อมส่ง`, LIMIT.lazada.title);
+  const songs = x.songs ? `${x.songs} ${x.content.unit}` : `${x.content.noun}จัดเต็ม`;
+  return clip(`USB ${x.content.noun} MP3 ${x.core} ${songs} แฟลชไดรฟ์ ${x.capacity} เสียงชัด 320kbps ฟังในรถ คอม เครื่องเสียง ไม่ต้องต่อเน็ต พร้อมส่ง`, LIMIT.lazada.title);
 }
 
 function tiktokTitle(x) {
   if (x.accessory) return clip(x.name, LIMIT.tiktok.title);
-  const songs = x.songs ? `${x.songs} เพลง` : 'เพลงฮิตจัดเต็ม';
-  return clip(`เสียบปุ๊บฟังปั๊บ! USB เพลง ${x.core} ${songs} ฟังในรถไม่ง้อเน็ต ไม่มีโฆษณาคั่น แฟลชไดรฟ์ ${x.capacity}`, LIMIT.tiktok.title);
+  const songs = x.songs ? `${x.songs} ${x.content.unit}` : `${x.content.noun}จัดเต็ม`;
+  return clip(`เสียบปุ๊บฟังปั๊บ! USB ${x.content.noun} ${x.core} ${songs} ฟังในรถไม่ง้อเน็ต ไม่มีโฆษณาคั่น แฟลชไดรฟ์ ${x.capacity}`, LIMIT.tiktok.title);
 }
 
 // ── ตัวสร้างรายละเอียดต่อแพลตฟอร์ม ──
@@ -128,24 +136,24 @@ function lazadaDesc(x) {
 
 ส่งจากไทย แพ็กกันกระแทกอย่างดี ได้รับภายใน 1-3 วันทำการ สินค้ามีปัญหาเปลี่ยนใหม่ภายใน 7 วัน`;
   }
-  const songs = x.songs ? `${x.songs} เพลง` : 'เพลงฮิตจัดเต็ม';
+  const songs = x.songs ? `${x.songs} ${x.content.unit}` : `${x.content.noun}จัดเต็ม`;
   const eraTxt = x.era ? `ยุค ${x.era} ` : '';
   return `รวม${x.genre.name} ${eraTxt}${songs} อัดลงแฟลชไดรฟ์ USB พร้อมฟังทันที เสียบกับรถยนต์ คอมพิวเตอร์ หรือเครื่องเสียงที่มีช่อง USB ได้เลย ไม่ต้องต่ออินเทอร์เน็ต ไม่ต้องโหลดแอป ไม่มีโฆษณาคั่น
 
 จุดเด่น
-• คัดเพลงมาให้แล้ว ${songs} — ไม่ต้องเสียเวลาหาเอง
+• คัด${x.content.noun}มาให้แล้ว ${songs} — ไม่ต้องเสียเวลาหาเอง
 • ไฟล์ MP3 320kbps เสียงคมชัด เบสแน่น ฟังในรถได้อารมณ์เต็ม
 • ใช้ได้กับรถยนต์ทุกรุ่นที่มีช่อง USB, ลำโพงบลูทูธ, คอม, สมาร์ททีวี
-• ตั้งชื่อไฟล์เรียงเลขเป็นระเบียบ เลื่อนหาเพลงง่าย
-• เพิ่ม-ลบเพลงเองได้ ใช้เป็นแฟลชไดรฟ์เก็บไฟล์ต่อได้
+• ตั้งชื่อไฟล์เรียงเลขเป็นระเบียบ เลื่อนหา${x.content.noun}ง่าย
+• เพิ่ม-ลบไฟล์เองได้ ใช้เป็นแฟลชไดรฟ์เก็บไฟล์ต่อได้
 
 สเปกสินค้า
 • ความจุ: ${x.capacity}
-• จำนวนเพลง: ${songs}
+• จำนวน${x.content.unit}: ${songs}
 • คุณภาพเสียง: MP3 320kbps
-• แนวเพลง: ${x.genre.name}${x.era ? ` ยุค ${x.era}` : ''}
+• ประเภท: ${x.genre.name}${x.era ? ` ยุค ${x.era}` : ''}
 
-ในกล่องประกอบด้วย: แฟลชไดรฟ์ USB ${x.capacity} พร้อมเพลง x1
+ในกล่องประกอบด้วย: แฟลชไดรฟ์ USB ${x.capacity} พร้อม${x.content.noun} x1
 
 การจัดส่ง: ส่งจากไทย พร้อมส่งทันที แพ็กกันกระแทกอย่างดี ได้รับภายใน 1-3 วันทำการ
 รับประกัน: สินค้ามีปัญหาเปลี่ยนใหม่ภายใน 7 วัน สแกนไวรัสทุกชิ้นก่อนส่ง`;
@@ -155,10 +163,10 @@ function tiktokDesc(x) {
   if (x.accessory) {
     return `${x.name} — ตัวช่วยที่คนใช้ USB เพลงต้องมี! คุณภาพดี ทนทาน เสียบใช้ได้เลยไม่ต้องตั้งค่า ส่งไวจากไทย กดสั่งเลย 🛒`;
   }
-  const songs = x.songs ? `${x.songs} เพลง` : 'เพลงฮิตจัดเต็ม';
-  return `เบื่อไหม? อยากฟังเพลงในรถแต่เน็ตหมด สัญญาณหาย โฆษณาคั่นตลอด 😩
+  const songs = x.songs ? `${x.songs} ${x.content.unit}` : `${x.content.noun}จัดเต็ม`;
+  return `เบื่อไหม? อยาก${x.content.listen}ในรถแต่เน็ตหมด สัญญาณหาย โฆษณาคั่นตลอด 😩
 
-USB เพลงตัวนี้จบทุกปัญหา — ${x.genre.name}${x.era ? ` ยุค ${x.era}` : ''} ${songs} อัดแน่นในแฟลชไดรฟ์ ${x.capacity} เสียบปุ๊บเพลงมาปั๊บ!
+USB ${x.content.noun}ตัวนี้จบทุกปัญหา — ${x.genre.name}${x.era ? ` ยุค ${x.era}` : ''} ${songs} อัดแน่นในแฟลชไดรฟ์ ${x.capacity} เสียบปุ๊บฟังได้ปั๊บ!
 
 ✅ ${songs} คัดมาแล้ว ไม่ต้องหาเอง
 ✅ เสียงชัด MP3 320kbps เบสแน่น
@@ -171,7 +179,7 @@ USB เพลงตัวนี้จบทุกปัญหา — ${x.genre.n
 }
 
 function webSeo(x) {
-  const songs = x.songs ? `${x.songs} เพลง` : 'เพลงฮิต';
+  const songs = x.songs ? `${x.songs} ${x.content.unit}` : x.content.noun;
   if (x.accessory) {
     return {
       title: clip(`${x.name} | btmusicdrive`, LIMIT.web.title),
@@ -180,9 +188,9 @@ function webSeo(x) {
     };
   }
   return {
-    title: clip(`USB เพลง${x.genre.name} ${songs} ฟังในรถไม่ต้องเน็ต | btmusicdrive`, LIMIT.web.title),
-    meta: clip(`USB เพลง${x.genre.name}พร้อมฟัง ${songs} เสียงชัด MP3 320kbps ใช้ได้ในรถ คอม เครื่องเสียง ไม่ต้องต่อเน็ต ไม่มีรายเดือน สั่งวันนี้ส่งไว`, LIMIT.web.meta),
-    h1: `USB เพลง${x.genre.name}พร้อมฟัง ${songs} — เสียบปุ๊บ ฟังได้ทุกที่ ไม่ต้องเน็ต`,
+    title: clip(`USB ${x.content.noun}${x.genre.name} ${songs} ฟังในรถไม่ต้องเน็ต | btmusicdrive`, LIMIT.web.title),
+    meta: clip(`USB ${x.content.noun}${x.genre.name}พร้อมฟัง ${songs} เสียงชัด MP3 320kbps ใช้ได้ในรถ คอม เครื่องเสียง ไม่ต้องต่อเน็ต ไม่มีรายเดือน สั่งวันนี้ส่งไว`, LIMIT.web.meta),
+    h1: `USB ${x.content.noun}${x.genre.name}พร้อมฟัง ${songs} — เสียบปุ๊บ ฟังได้ทุกที่ ไม่ต้องเน็ต`,
   };
 }
 
@@ -238,6 +246,7 @@ const tiktokHashtags = (x) => ['#USBเพลง', '#เพลงในรถ', 
       era: detectEra(full),
       capacity: detectCapacity(full),
       songs: songCount(matched, full),
+      content: contentFromName(full),
     };
 
     const price = CONFIG.price != null ? CONFIG.price : (matched?.price ?? '');

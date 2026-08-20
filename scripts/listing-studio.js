@@ -169,7 +169,9 @@ function genFile(platform, code) {
 
 /** สร้าง xlsx ครบทุกแพลตฟอร์มรวดเดียว — คืนรายการที่สำเร็จ/พลาด */
 function genAll(code) {
-  try { runScript('generate-marketplace-listings.js', ['--apply']); } catch { }
+  // ขั้นนี้ล้ม = xlsx ได้ข้อมูลเก่าของสินค้าตัวอื่น ห้ามกลืน error เงียบ ๆ
+  try { runScript('generate-marketplace-listings.js', ['--apply']); }
+  catch (e) { log('⚠ สร้าง marketplace-listings ไม่สำเร็จ: ' + String(e.stderr || e.message).slice(0, 300)); }
   const out = [];
   for (const platform of ['shopee', 'tiktok', 'lazada']) {
     try { out.push({ platform, file: path.basename(genFile(platform, code)), ok: true }); }

@@ -260,4 +260,21 @@ function validateSeo(seo, others = []) {
   return out;
 }
 
-module.exports = { buildSeo, validateSeo, detectGenre, extractArtists, CATEGORIES, GENRES };
+/**
+ * เดา "คำนามเนื้อหา" จากชื่อสินค้าที่ประกอบเสร็จแล้ว
+ * ใช้ตอนที่มีแต่ชื่อ ไม่มี contentType (เช่น generate-marketplace-listings อ่านจาก catalog.json)
+ * คืนออบเจ็กต์เดียวกับ CONTENT_NOUNS เพื่อไม่ให้มีตารางคำซ้ำหลายที่
+ */
+function contentFromName(name) {
+  const n = String(name || '');
+  if (/เรื่องเล่า|เล่าเรื่อง|นิทาน|เรื่องผี|ลี้ลับ/.test(n)) return CONTENT_NOUNS['เรื่องเล่า'];
+  if (/นิยายเสียง|หนังสือเสียง/.test(n)) return CONTENT_NOUNS['นิยายเสียง'];
+  if (/ธรรมะ|เทศน์|สวดมนต์|คาถา/.test(n)) return CONTENT_NOUNS['ธรรมะ'];
+  if (/\d+\s*ตอน/.test(n)) return CONTENT_NOUNS['เรื่องเล่า'];
+  return DEFAULT_CONTENT;
+}
+
+module.exports = {
+  buildSeo, validateSeo, detectGenre, extractArtists, contentFromName,
+  CATEGORIES, GENRES, CONTENT_NOUNS, DEFAULT_CONTENT,
+};
