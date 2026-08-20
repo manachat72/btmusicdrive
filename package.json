@@ -22,6 +22,11 @@
     "mkt:studio": "node scripts/listing-studio.js",
     "mkt:originals": "node scripts/backfill-originals.js",
     "mkt:qr-all": "node scripts/generate-tracklist-qrs.js --apply",
+    "seo:artists": "node scripts/artists-cli.js todo",
+    "seo:artists:prompt": "node scripts/artists-cli.js prompt",
+    "seo:artists:save": "node scripts/artists-cli.js save",
+    "seo:artists:stats": "node scripts/artists-cli.js stats",
+    "seo:artists:test": "node scripts/artists-cli.js selftest",
     "build": "npm run build:css && npm run combine:css && npm run inline:products && npm run inline:categories && npm run inline:product-jsonld && npm run build:sitemap && npm run hash:assets",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

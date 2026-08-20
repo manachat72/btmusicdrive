@@ -226,6 +226,13 @@ GA4_PROPERTY_ID="533617757"       # GOOGLE_CLIENT_SECRET ไม่จำเป�
   - studio **commit + push ให้อัตโนมัติ** — ลำดับสำคัญ: rename/สร้างรูป → build → push → ค่อยเขียน DB (DB ชี้มาก่อนไฟล์ขึ้น = รูป 404)
   - ⚠ `marketplace-images/` `templates/` `qr/` อยู่ใน .gitignore — ห้ามใส่ใน `git add` ของ studio จะล้ม
 
+- **SEO artist research** (2026-08-20): agent `seo-artist-research` (`.claude/agents/`) วิจัยคีย์เวิร์ดรายศิลปินแล้วเก็บลง `scripts/data/artists.json`
+  - **agent คืนแค่วัตถุดิบ** (`type/genre/aliases/keywords/hook/notes`) — **ห้ามให้มันเขียนชื่อสินค้า/description/meta/slug เอง** เพราะ `buildSeo()` คุมความยาว meta 155 ตัว + slug + validate อยู่
+  - `unknown:true` = ไม่รู้จัก → `getArtist()` คืน null → ตกกลับ rule-based เดิม (แต่ยังนับว่า "วิจัยแล้ว" จะได้ไม่ยิงซ้ำ)
+  - cache key = ชื่อที่พิมพ์ผ่าน `normalizeKey()` (ตัดช่องว่าง + lowercase) ใน `scripts/lib/artists.js`
+  - ผลกระทบต่อ `buildSeo()`: เติม tags long-tail (ต่อท้าย BASE_KW เพดานขยับ 12→14), ช่วยเดาแนวเพลงเมื่อ regex เดาไม่ออก, ใส่ hook ศิลปินใน description **หลัง** 155 ตัวแรก, คืน `artistsMissing[]` ให้ studio เตือน
+  - คำสั่ง: `npm run seo:artists` (ดูชื่อที่ยังไม่วิจัย) · `seo:artists:prompt` (ได้ข้อความไปสั่ง agent) · `seo:artists:save <file.json>` · `seo:artists:stats` · `seo:artists:test` (smoke test ว่าไม่พังของเดิม)
+
 ## 12. Agent skills
 
 - **Issue tracker**: GitHub Issues ของ `manachat72/btmusicdrive` ผ่าน `gh` CLI — ดู `docs/agents/issue-tracker.md`

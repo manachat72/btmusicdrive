@@ -109,7 +109,11 @@ function runScript(script, args = []) {
 }
 
 function runCmd(cmd, args, opts = {}) {
-  return execFileSync(cmd, args, { cwd: ROOT, stdio: 'pipe', shell: process.platform === 'win32', ...opts }).toString();
+  // ห้ามใช้ shell:true — บน Windows มันเอา args มาต่อสตริงโดยไม่ escape
+  // ข้อความ commit ที่มีช่องว่าง (ชื่อสินค้าไทย) เลยแตกเป็นหลาย pathspec แล้ว git ล้ม
+  // npm/npx บน Windows เป็น .cmd → เรียกชื่อเต็มแทนการพึ่ง shell
+  const exe = process.platform === 'win32' && /^(npm|npx|yarn|pnpm)$/.test(cmd) ? `${cmd}.cmd` : cmd;
+  return execFileSync(exe, args, { cwd: ROOT, stdio: 'pipe', shell: false, ...opts }).toString();
 }
 
 // ── build + git ──────────────────────────────────────────────────────────────
@@ -396,7 +400,7 @@ http.createServer(async (req, res) => {
 
       // 3) sync products.json → build → push (สินค้าใหม่เข้า sitemap/JSON-LD/fallback)
       try { runScript('sync-products-json.js'); log('✔ sync products.json'); }
-      catch { log('⚠ sync products.json ไม่สำเร็จ (ต้องมี DATABASE_URL ใน server/.env.local)'); }
+      catch (e) { log('⚠ sync products.json ไม่สำเร็จ: ' + String(e.stderr || e.message).slice(0, 300)); }
       try {
         runBuild();
         const g2 = gitPush(`feat(product): ${product.name}`);
@@ -443,7 +447,7 @@ http.createServer(async (req, res) => {
       log(`✔ อัปเดตสินค้า: ${out.name || b.name}`);
 
       try { runScript('sync-products-json.js'); log('✔ sync products.json'); }
-      catch { log('⚠ sync products.json ไม่สำเร็จ (ต้องมี DATABASE_URL)'); }
+      catch (e) { log('⚠ sync products.json ไม่สำเร็จ: ' + String(e.stderr || e.message).slice(0, 300)); }
       try {
         runBuild();
         const g = gitPush(`content(product): แก้ไข ${b.name}`);

@@ -4,8 +4,11 @@ const fs = require('fs');
 const path = require('path');
 const { PrismaClient } = require(path.join(__dirname, '..', 'server', 'node_modules', '@prisma', 'client'));
 
-const dotenvPath = path.join(__dirname, '..', 'server', '.env');
-if (fs.existsSync(dotenvPath)) {
+// .env.local ต้องมาก่อน — DATABASE_URL ที่ใช้รันในเครื่องอยู่ไฟล์นั้น ไม่ใช่ .env
+// (อ่าน .env.local ก่อน แล้วค่อย .env เพราะกฎ "ไม่ทับค่าที่ตั้งแล้ว" ทำให้ตัวแรกชนะ)
+for (const f of ['.env.local', '.env']) {
+  const dotenvPath = path.join(__dirname, '..', 'server', f);
+  if (!fs.existsSync(dotenvPath)) continue;
   for (const line of fs.readFileSync(dotenvPath, 'utf8').split(/\r?\n/)) {
     const m = line.match(/^([A-Z0-9_]+)=(.*)$/);
     if (m && !process.env[m[1]]) {
