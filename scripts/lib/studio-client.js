@@ -6,7 +6,7 @@ var WEB = [];        // สินค้าบนเว็บ (products.json)
 var MKT = [];        // catalog marketplace
 var draft = null;    // ร่างสินค้าใหม่หลังเตรียมรูป
 var editing = null;  // สินค้าที่กำลังแก้
-var upImages = [], trackList = [], editTrack = null;
+var upImages = [], trackList = [], editTrack = null, addImgs = [];
 var view = 'new';
 
 function esc(s) {
@@ -356,7 +356,7 @@ function filesHtml(files) {
 
 /* ═════════ 2. แก้ไขสินค้าเดิม ═════════ */
 function renderEdit() {
-  editing = null; editTrack = null;
+  editing = null; editTrack = null; addImgs = [];
   html(
     '<div class="split">' +
     '<div><div class="card" style="padding:14px 16px"><input type="text" id="q" placeholder="ค้นหาสินค้าบนเว็บ… (ชื่อ / slug / SKU)" ' +
@@ -387,7 +387,7 @@ function filterWeb(q) {
 function pickWeb(id) {
   editing = WEB.filter(function (p) { return p.id === id; })[0];
   if (!editing) return;
-  editTrack = null;
+  editTrack = null; addImgs = [];
   [].forEach.call(document.querySelectorAll('.item'), function (i) { i.classList.toggle('active', i.dataset.id === id); });
   // code ของชุดรูป marketplace — เดาจาก SKU แบบ BT-NN ถ้ามี ไม่งั้นให้เลือกเอง
   var guess = /^BT-(\d+)$/.test(editing.sku || '') ? editing.sku.replace(/^BT-/, '') : '';
@@ -410,6 +410,11 @@ function pickWeb(id) {
     '<div class="f"><label>เปลี่ยนรายชื่อเพลง (.txt — ไม่แนบ = ใช้ของเดิม ' + (editing.tracklist || []).length + ' เพลง)</label>' +
     '<input type="file" accept=".txt" onchange="readEditTxt(this)"><div class="hint" id="eTxtInfo"></div></div>' +
     '<hr style="border:0;border-top:1px solid #e2ded8;margin:16px 0">' +
+    '<h2 style="font-size:15px">🖼 เพิ่มรูปสินค้า</h2>' +
+    '<div class="sub">รูปใหม่จะต่อท้ายรูปเดิม (รวมได้ 9 ใบ) — ระบบดึงต้นฉบับเดิมจาก R2/NAS มาทำรูปใหม่ครบทั้ง 3 ชั้น แล้ว push ให้เอง<br>ต้องเลือก "ชุดรูป marketplace" ด้านล่างก่อน</div>' +
+    '<div class="f"><input type="file" accept="image/*" multiple onchange="pickAddImgs(this)"><div class="hint" id="eAddInfo"></div></div>' +
+    '<button class="ghost" onclick="addImages(this)">➕ เพิ่มรูป + อัปเดตเว็บ</button>' +
+    '<hr style="border:0;border-top:1px solid #e2ded8;margin:16px 0">' +
     '<h2 style="font-size:15px">🔁 ทำ SEO ใหม่ทั้งชุด</h2>' +
     '<div class="sub">พิมพ์ชื่อสั้นแบบที่ลูกค้าค้น แล้วให้ระบบเขียนชื่อ/รายละเอียด/tags/meta ใหม่ทับของเดิม</div>' +
     '<div class="row"><div class="f"><input type="text" id="eShort" placeholder="เช่น ลูกทุ่งอมตะ"></div>' +
@@ -424,6 +429,39 @@ function pickWeb(id) {
     '<button class="btn tiktok" onclick="genFor(this)">📦 สร้าง xlsx ทุกแพลตฟอร์ม</button>' +
     '<button class="primary" onclick="saveEdit(this)">💾 บันทึก + อัปเดตเว็บ</button></div>' +
     '<div class="st" id="eStatus"></div></div>';
+}
+
+function pickAddImgs(inp) {
+  addImgs = [].slice.call(inp.files);
+  $('eAddInfo').textContent = addImgs.length ? '✔ เลือก ' + addImgs.length + ' ใบ — จะต่อท้ายรูปเดิม ' + (editing.images || []).length + ' ใบ' : '';
+}
+
+async function addImages(btn) {
+  if (!addImgs.length) { status('eStatus', 'เลือกไฟล์รูปก่อนครับ', 'err'); return; }
+  if (!$('eCode').value) { status('eStatus', 'เลือกชุดรูป marketplace ก่อน — ต้องรู้เลขชุดถึงจะเก็บต้นฉบับถูกที่', 'err'); return; }
+  btn.disabled = true;
+  try {
+    await ensureLogin('eStatus');
+    status('eStatus', '⏳ กำลังอ่านรูป…');
+    var imgs = [];
+    for (var i = 0; i < addImgs.length; i++) imgs.push({ name: addImgs[i].name, data: await fileToB64(addImgs[i]) });
+    status('eStatus', '⏳ ดึงต้นฉบับเดิม → ทำรูปใหม่ 3 ชั้น → build → push → อัปเดต DB… ใช้เวลาสักครู่');
+    var out = await jpost('/api/add-images', {
+      id: editing.id, code: $('eCode').value, imgSlug: editing.imgSlug,
+      name: $('eName').value, folder: mktFolder($('eCode').value), images: imgs
+    });
+    editing.images = out.images;
+    status('eStatus', '<span class="ok">✔ เพิ่มรูปแล้ว รวม ' + out.images.length + ' ใบ</span><br>' + esc(out.logs.join('\n')));
+    addImgs = [];
+    WEB = await jget('/api/web-products');
+  } catch (e) { status('eStatus', '✖ ' + esc(e.message).slice(0, 800), 'err'); }
+  btn.disabled = false;
+}
+
+/** ชื่อโฟลเดอร์ NAS ของชุดรูป code นี้ (จาก catalog) — ไม่มีก็ปล่อยว่าง */
+function mktFolder(code) {
+  var m = MKT.filter(function (x) { return x.code === code; })[0];
+  return m ? (m.dirName || null) : null;
 }
 
 function readEditTxt(inp) {

@@ -27,7 +27,7 @@ const { tracklistHtml } = require('./lib/tracklist-page');
 const { buildSeo, validateSeo, CATEGORIES } = require('./lib/seo');
 const { slugify, imageSlug, uniqueImageSlug } = require('./lib/product-slug');
 const webImg = require('./lib/web-images');
-const { processProductImages } = require('./lib/product-images');
+const { processProductImages, fetchOriginals } = require('./lib/product-images');
 const { PAGE, CLIENT_JS } = require('./lib/studio-page');
 
 const ROOT = path.resolve(__dirname, '..');
@@ -85,7 +85,7 @@ function loadProducts() {
       meta[String(r.Code).padStart(2, '0')] = { price: r['ราคา'], stock: r['สต็อก'], sku: r['SKU'], note: r['หมายเหตุ'] };
     }
   }
-  return catalog.map(p => ({ code: p.code, title: p.title, images: p.images, count: p.images.length, ...(meta[p.code] || {}) }));
+  return catalog.map(p => ({ code: p.code, title: p.title, dirName: p.dirName || '', images: p.images, count: p.images.length, ...(meta[p.code] || {}) }));
 }
 
 function nasFolders() {
@@ -112,6 +112,12 @@ function runCmd(cmd, args, opts = {}) {
   // ห้ามใช้ shell:true — บน Windows มันเอา args มาต่อสตริงโดยไม่ escape
   // ข้อความ commit ที่มีช่องว่าง (ชื่อสินค้าไทย) เลยแตกเป็นหลาย pathspec แล้ว git ล้ม
   // npm/npx บน Windows เป็น .cmd → เรียกชื่อเต็มแทนการพึ่ง shell
+  // Node 20+ บน Windows ไม่ยอม spawn ไฟล์ .cmd ตรง ๆ อีกแล้ว (spawnSync npm.cmd EINVAL)
+  // → เรียก npm-cli.js ด้วย node แทน ได้ทั้งความปลอดภัยของ args และไม่ต้องพึ่ง shell
+  if (process.platform === 'win32' && /^(npm|npx)$/.test(cmd)) {
+    const cli = path.join(path.dirname(process.execPath), 'node_modules', 'npm', 'bin', cmd === 'npx' ? 'npx-cli.js' : 'npm-cli.js');
+    if (fs.existsSync(cli)) return execFileSync(process.execPath, [cli, ...args], { cwd: ROOT, stdio: 'pipe', shell: false, ...opts }).toString();
+  }
   const exe = process.platform === 'win32' && /^(npm|npx|yarn|pnpm)$/.test(cmd) ? `${cmd}.cmd` : cmd;
   return execFileSync(exe, args, { cwd: ROOT, stdio: 'pipe', shell: false, ...opts }).toString();
 }
@@ -417,6 +423,62 @@ http.createServer(async (req, res) => {
         ok: true, slug: product.slug, id: product.id,
         url: `https://btmusicdrive.com/product/${product.slug}`, files, logs,
       });
+    }
+
+    // ── เพิ่มรูปให้สินค้าเดิม ──
+    // ดึงต้นฉบับเดิมจาก R2 (หรือ NAS ถ้าต่ออยู่) + รูปใหม่ที่อัปมา → ทำรูปใหม่ครบ 3 ชั้น
+    // แล้ว push รูปก่อน ค่อย PATCH images ใน DB (DB ชี้มาก่อนไฟล์ขึ้น = รูป 404)
+    if (url.pathname === '/api/add-images' && req.method === 'POST') {
+      if (!isAuthed()) throw new Error('ยังไม่ได้เข้าสู่ระบบแอดมิน — ล็อกอินก่อนเพิ่มรูป');
+      const b = JSON.parse(await readBody(req));
+      if (!b.id) throw new Error('ไม่มี id สินค้า');
+      const code = String(b.code || '').padStart(2, '0');
+      if (!/^\d{2,}$/.test(code)) throw new Error('เลือก "ชุดรูป marketplace" ก่อน — ต้องรู้เลขชุดรูปถึงจะเก็บต้นฉบับถูกที่');
+      const slug = b.imgSlug;
+      if (!slug) throw new Error('ไม่รู้โฟลเดอร์รูปของสินค้านี้');
+      const incoming = (Array.isArray(b.images) ? b.images : [])
+        .map(im => ({ name: im.name || 'image.jpg', body: Buffer.from(im.data, 'base64') }));
+      if (!incoming.length) throw new Error('ไม่มีรูปใหม่');
+
+      // ต้นฉบับเดิม: NAS ก่อน (ไฟล์ดิบอยู่ใกล้กว่า) ไม่งั้นดึงกลับจาก R2
+      let old = [];
+      const nasDir = b.folder && nasReady() ? path.join(NAS_DIR, b.folder) : null;
+      if (nasDir && fs.existsSync(nasDir)) {
+        old = webImg.listSourceImages(nasDir).map(f => ({ name: path.basename(f), body: fs.readFileSync(f) }));
+        log(`✔ ต้นฉบับเดิมจาก NAS ${old.length} ใบ`);
+      } else {
+        old = await fetchOriginals(code, slug);
+        log(old.length ? `✔ ดึงต้นฉบับเดิมจาก R2 ${old.length} ใบ` : '⚠ ไม่พบต้นฉบับเดิมบน R2 — จะได้เฉพาะรูปใหม่');
+      }
+
+      const sources = old.concat(incoming);
+      if (sources.length > 9) log(`⚠ รวมแล้ว ${sources.length} ใบ — เก็บ 9 ใบแรก (เพดานของ Shopee/TikTok)`);
+      log('⏳ ทำรูปใหม่ครบ 3 ชั้น (ต้นฉบับ R2 · รูปกลาง 1200 · รูปเว็บ webp+avif) …');
+      const img = await processProductImages({ code, slug, title: b.name || slug, sources, dirName: b.folder, log });
+
+      // เขียนต้นฉบับ "ทั้งชุด" ลง NAS ใหม่ ถ้าไดรฟ์ต่ออยู่ — ชื่อไฟล์ หลัก_NN ต้องเรียงตรงกับลำดับรูปเว็บ
+      // (ส่ง incoming อย่างเดียวไม่ได้ จะทับ หลัก_01 ของเดิม)
+      if (b.folder) saveToNas(b.folder, sources.slice(0, 9), log);
+
+      runBuild();
+      const g = gitPush(`feat(images): เพิ่มรูป ${slug} (${img.web.length} ใบ)`, ['images/products']);
+      log(g.pushed ? `✔ push รูปแล้ว (${g.count} ไฟล์)` : `⚠ ไม่ได้ push: ${g.reason} — อย่าเพิ่งเปิดหน้าสินค้า รูปจะ 404`);
+
+      const out = await api(`/products/${b.id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ images: img.web, imageUrl: img.web[0] }),
+      });
+      log(`✔ อัปเดตรูปในฐานข้อมูล: ${out.name || b.name} (${img.web.length} ใบ)`);
+
+      try { runScript('sync-products-json.js'); log('✔ sync products.json'); }
+      catch (e) { log('⚠ sync products.json ไม่สำเร็จ: ' + String(e.stderr || e.message).slice(0, 300)); }
+      try {
+        runBuild();
+        const g2 = gitPush(`feat(images): products.json รูปใหม่ ${slug}`);
+        log(g2.pushed ? `✔ push products.json แล้ว (${g2.count} ไฟล์)` : `⚠ ไม่ได้ push: ${g2.reason}`);
+      } catch (e) { log('⚠ build ไม่สำเร็จ: ' + String(e.message).slice(0, 150)); }
+
+      return json(200, { ok: true, images: img.web, mid: img.mid, logs });
     }
 
     // ── แก้ไขสินค้าเดิม ──
