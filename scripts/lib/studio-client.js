@@ -414,6 +414,7 @@ function pickWeb(id) {
     '<div class="sub">รูปใหม่จะต่อท้ายรูปเดิม (รวมได้ 9 ใบ) — ระบบดึงต้นฉบับเดิมจาก R2/NAS มาทำรูปใหม่ครบทั้ง 3 ชั้น แล้ว push ให้เอง<br>ต้องเลือก "ชุดรูป marketplace" ด้านล่างก่อน</div>' +
     '<div class="f"><input type="file" accept="image/*" multiple onchange="pickAddImgs(this)"><div class="hint" id="eAddInfo"></div></div>' +
     '<button class="ghost" onclick="addImages(this)">➕ เพิ่มรูป + อัปเดตเว็บ</button>' +
+    '<button class="ghost" onclick="syncImages(this)" style="margin-left:8px">♻ ซิงก์รูปในโฟลเดอร์เข้าเว็บ</button>' +
     '<hr style="border:0;border-top:1px solid #e2ded8;margin:16px 0">' +
     '<h2 style="font-size:15px">🔁 ทำ SEO ใหม่ทั้งชุด</h2>' +
     '<div class="sub">พิมพ์ชื่อสั้นแบบที่ลูกค้าค้น แล้วให้ระบบเขียนชื่อ/รายละเอียด/tags/meta ใหม่ทับของเดิม</div>' +
@@ -434,6 +435,19 @@ function pickWeb(id) {
 function pickAddImgs(inp) {
   addImgs = [].slice.call(inp.files);
   $('eAddInfo').textContent = addImgs.length ? '✔ เลือก ' + addImgs.length + ' ใบ — จะต่อท้ายรูปเดิม ' + (editing.images || []).length + ' ใบ' : '';
+}
+
+async function syncImages(btn) {
+  btn.disabled = true;
+  try {
+    await ensureLogin('eStatus');
+    status('eStatus', '⏳ push รูปในโฟลเดอร์ → อัปเดต DB → sync products.json…');
+    var out = await jpost('/api/sync-images', { id: editing.id, imgSlug: editing.imgSlug });
+    editing.images = out.images;
+    status('eStatus', '<span class="ok">✔ ซิงก์แล้ว รวม ' + out.images.length + ' ใบ</span><br>' + esc(out.logs.join('\n')));
+    WEB = await jget('/api/web-products');
+  } catch (e) { status('eStatus', '✖ ' + esc(e.message).slice(0, 800), 'err'); }
+  btn.disabled = false;
 }
 
 async function addImages(btn) {

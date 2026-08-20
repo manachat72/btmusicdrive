@@ -481,6 +481,34 @@ http.createServer(async (req, res) => {
       return json(200, { ok: true, images: img.web, mid: img.mid, logs });
     }
 
+    // ── ซิงก์รูปในโฟลเดอร์เว็บเข้า DB ──
+    // กู้กรณีทำรูปเสร็จแล้วแต่ขั้น build/push/DB ล้มกลางทาง (ไฟล์รูปมีครบแล้ว ไม่ต้องทำใหม่)
+    if (url.pathname === '/api/sync-images' && req.method === 'POST') {
+      if (!isAuthed()) throw new Error('ยังไม่ได้เข้าสู่ระบบแอดมิน');
+      const b = JSON.parse(await readBody(req));
+      if (!b.id || !b.imgSlug) throw new Error('ไม่มี id หรือโฟลเดอร์รูป');
+      const urls = webImg.readWebUrls(b.imgSlug);
+      if (!urls.length) throw new Error(`ไม่พบรูปใน images/products/${b.imgSlug}/`);
+      log(`✔ เจอรูปในโฟลเดอร์ ${urls.length} ใบ`);
+
+      runBuild();
+      const g = gitPush(`feat(images): sync รูป ${b.imgSlug}`, ['images/products']);
+      log(g.pushed ? `✔ push รูปแล้ว (${g.count} ไฟล์)` : `⚠ ไม่ได้ push: ${g.reason}`);
+
+      const out = await api(`/products/${b.id}`, { method: 'PATCH', body: JSON.stringify({ images: urls, imageUrl: urls[0] }) });
+      log(`✔ DB ชี้มาที่รูป ${urls.length} ใบแล้ว: ${out.name || b.id}`);
+
+      try { runScript('sync-products-json.js'); log('✔ sync products.json'); }
+      catch (e) { log('⚠ sync products.json ไม่สำเร็จ: ' + String(e.stderr || e.message).slice(0, 300)); }
+      try {
+        runBuild();
+        const g2 = gitPush(`feat(images): products.json ${b.imgSlug}`);
+        log(g2.pushed ? `✔ push products.json แล้ว (${g2.count} ไฟล์)` : `⚠ ไม่ได้ push: ${g2.reason}`);
+      } catch (e) { log('⚠ build ไม่สำเร็จ: ' + String(e.message).slice(0, 150)); }
+
+      return json(200, { ok: true, images: urls, logs });
+    }
+
     // ── แก้ไขสินค้าเดิม ──
     if (url.pathname === '/api/update' && req.method === 'POST') {
       // isAuthed() ไม่ใช่ ADMIN_TOKEN — ล็อกอินด้วย ADMIN_PASSWORD ก็ยิง API ได้ (ดู api() ส่ง x-admin-password)
