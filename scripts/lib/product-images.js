@@ -44,10 +44,16 @@ function loadCatalog() {
   catch { return { cdnBase: r2.CDN, generatedAt: null, products: [] }; }
 }
 
-/** เขียน catalog.json ใหม่โดยแทนที่/เพิ่มสินค้า code นี้ (เรียงตาม code) */
+/**
+ * เขียน catalog.json ใหม่โดย merge ทับสินค้า code นี้ (เรียงตาม code)
+ * merge ไม่ใช่ replace — field ที่ไม่ได้ส่งมา (undefined) ต้องคงของเดิมไว้
+ * ไม่งั้นเรียกด้วย title/dirName ว่าง ชื่อสินค้าเดิมใน catalog จะหายหรือถูกเขียนทับด้วยชื่อสินค้าตัวอื่น
+ */
 function upsertCatalog(entry) {
   const cat = loadCatalog();
-  cat.products = cat.products.filter(p => p.code !== entry.code).concat([entry])
+  const prev = cat.products.find(p => p.code === entry.code) || {};
+  const clean = Object.fromEntries(Object.entries(entry).filter(([, v]) => v !== undefined && v !== null && v !== ''));
+  cat.products = cat.products.filter(p => p.code !== entry.code).concat([{ ...prev, ...clean }])
     .sort((a, b) => String(a.code).localeCompare(String(b.code)));
   cat.cdnBase = r2.CDN;
   cat.generatedAt = new Date().toISOString();
@@ -71,7 +77,7 @@ async function toMid(buf) {
  * @param {object} o
  * @param {string} o.code        เลขสินค้า 2 หลัก เช่น "57"
  * @param {string} o.slug        slug SEO (ใช้ตั้งชื่อโฟลเดอร์รูปเว็บ + originals)
- * @param {string} o.title       ชื่อที่เก็บใน catalog
+ * @param {string} o.title       ชื่อที่เก็บใน catalog (ต้องเป็นชื่อของสินค้า code นี้เท่านั้น)
  * @param {string} [o.srcDir]    โฟลเดอร์ต้นฉบับบน NAS
  * @param {{name:string,body:Buffer}[]} [o.sources] หรือส่งไฟล์มาตรง ๆ (อัปโหลดผ่านเว็บ)
  * @param {string} [o.dirName]   ชื่อโฟลเดอร์ NAS (เก็บใน catalog)
@@ -107,7 +113,7 @@ async function processProductImages({ code, slug, title, srcDir, sources, dirNam
   const midUrls = mids.map(m => m.url);
   log(`✔ รูปกลาง 1200×1200 ${midUrls.length} ใบขึ้น R2 → products/${code}/`);
 
-  upsertCatalog({ code, title: title || dirName || code, dirName: dirName || `${code}-${title || ''}`.trim(), count: midUrls.length, images: midUrls });
+  upsertCatalog({ code, slug, title: title || dirName || code, dirName, count: midUrls.length, images: midUrls });
 
   // ── 3. รูปเว็บ ≤800 webp+avif ชื่อ SEO ──
   const web = await webImg.buildWebImages({ buffers: files.map(f => f.body), slug });

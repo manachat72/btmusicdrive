@@ -60,6 +60,19 @@ function loadCatalog() {
   catch { return []; }
 }
 
+/**
+ * กันเลือก "ชุดรูป marketplace" ผิดตัว — code เดียวกันมีได้สินค้าเดียว
+ * ถ้าเลือกผิด รูปกลาง products/<code>/ บน R2 (ลิงก์ที่ xlsx ทุกแพลตฟอร์มใช้) จะถูกทับด้วยรูปสินค้าอื่น
+ * และชื่อใน catalog จะเพี้ยน (เคยทำ tracklist QR ยิงทับ URL ของสินค้าตัวอื่นมาแล้ว)
+ */
+function assertCodeFree(code, slug, name) {
+  const e = loadCatalog().find(p => p.code === code);
+  if (!e || !e.slug || e.slug === slug) return;
+  throw new Error(`ชุดรูป code ${code} เป็นของสินค้าอื่นอยู่แล้ว: "${(e.title || e.dirName || '').slice(0, 60)}" (โฟลเดอร์รูป ${e.slug})
+` +
+    `ถ้า "${String(name || slug).slice(0, 40)}" เป็นสินค้าคนละตัว ให้เลือก code ว่างตัวอื่น — ทำต่อจะทับรูปกลางบน R2 ของสินค้าเดิม`);
+}
+
 /** สินค้าที่อยู่บนเว็บจริง (จาก products.json — เร็ว ไม่ต้องยิง API) */
 function loadWebProducts() {
   try {
@@ -372,6 +385,8 @@ http.createServer(async (req, res) => {
         try { fs.writeFileSync(path.join(NAS_DIR, folderName, 'รายชื่อเพลง.txt'), tracklist.join('\r\n'), 'utf8'); } catch { }
       }
 
+      assertCodeFree(code, slug, seo.name);
+
       log('⏳ ต้นฉบับ → R2 · รูปกลาง 1200 → R2 · รูปเว็บ webp+avif …');
       const img = await processProductImages({ code, slug, title: seo.name, srcDir, sources, dirName: folderName, log });
 
@@ -436,6 +451,7 @@ http.createServer(async (req, res) => {
       if (!/^\d{2,}$/.test(code)) throw new Error('เลือก "ชุดรูป marketplace" ก่อน — ต้องรู้เลขชุดรูปถึงจะเก็บต้นฉบับถูกที่');
       const slug = b.imgSlug;
       if (!slug) throw new Error('ไม่รู้โฟลเดอร์รูปของสินค้านี้');
+      assertCodeFree(code, slug, b.name);
       const incoming = (Array.isArray(b.images) ? b.images : [])
         .map(im => ({ name: im.name || 'image.jpg', body: Buffer.from(im.data, 'base64') }));
       if (!incoming.length) throw new Error('ไม่มีรูปใหม่');
