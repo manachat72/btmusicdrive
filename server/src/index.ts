@@ -190,7 +190,7 @@ app.get('/product/:slug', async (req, res) => {
   const nextSlug = legacyProductSlugRedirects[req.params.slug];
   if (nextSlug) return res.redirect(301, `/product/${nextSlug}`);
 
-  // Social scraper (FB/LINE/Twitter ฯลฯ) ไม่รัน JS — ต้องได้ OG meta จาก server
+  // Social/search crawler อาจไม่รัน JS — ต้องได้ title, canonical, OG และ Product JSON-LD จาก server
   if (isSocialBot(req.headers['user-agent'])) {
     try {
       const rendered = await renderProductOgPage(req.params.slug, res);

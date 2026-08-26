@@ -1,13 +1,14 @@
 import { Response } from 'express';
 import prisma from './prisma';
 
-// Social scrapers ไม่รัน JS — ต้อง render OG meta ฝั่ง server ให้ /product/:slug
+// Social scrapers และ search crawlers อาจไม่รัน JS หรือเห็น meta เริ่มต้นก่อน
+// product data โหลดเสร็จ จึงต้อง render metadata ฝั่ง server ให้ /product/:slug
 // (LINE ใช้ UA facebookexternalhit;line-poker)
-const SOCIAL_BOT_RE =
-  /facebookexternalhit|Facebot|Twitterbot|LinkedInBot|Slackbot|TelegramBot|WhatsApp|Discordbot|Pinterestbot|SkypeUriPreview|line-poker/i;
+const PREVIEW_OR_SEARCH_BOT_RE =
+  /facebookexternalhit|Facebot|Twitterbot|LinkedInBot|Slackbot|TelegramBot|WhatsApp|Discordbot|Pinterestbot|SkypeUriPreview|line-poker|Googlebot|Google-InspectionTool|bingbot|DuckDuckBot|YandexBot|Baiduspider|Applebot|OAI-SearchBot|ChatGPT-User|PerplexityBot/i;
 
 export function isSocialBot(userAgent: string | undefined): boolean {
-  return !!userAgent && SOCIAL_BOT_RE.test(userAgent);
+  return !!userAgent && PREVIEW_OR_SEARCH_BOT_RE.test(userAgent);
 }
 
 const SITE_URL = 'https://btmusicdrive.com';
@@ -20,6 +21,16 @@ const esc = (value: unknown): string =>
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
+
+function truncateAtWord(value: string, maxLength: number): string {
+  const normalized = value.replace(/\s+/g, ' ').trim();
+  if (normalized.length <= maxLength) return normalized;
+  const slice = normalized.slice(0, maxLength + 1);
+  const lastSpace = slice.lastIndexOf(' ');
+  return (lastSpace >= Math.floor(maxLength * 0.6)
+    ? slice.slice(0, lastSpace)
+    : slice.slice(0, maxLength)).trim();
+}
 
 function absoluteImageUrl(imageUrl: string | null | undefined): string | null {
   if (!imageUrl) return null;
@@ -46,11 +57,23 @@ export async function renderProductOgPage(slug: string, res: Response): Promise<
   if (!product) return false;
 
   const pageUrl = `${SITE_URL}/product/${encodeURIComponent(product.slug || slug)}`;
-  const title = `${product.name} — Bt music drive`;
-  const description = (product.description || '').trim().slice(0, 200)
+  const title = `${truncateAtWord(product.name, 47)} | Bt music drive`;
+  const descriptionSource = (product.description || '').trim()
     || `${product.name} แฟลชไดร์ฟเพลง MP3 เสียบปุ๊บฟังปั๊บ ไม่ต้องใช้เน็ต จัดส่งทั่วไทย`;
+  const description = truncateAtWord(descriptionSource, 155);
   const productImage = absoluteImageUrl(product.imageUrl);
   const ogImages = [productImage, FALLBACK_OG_IMAGE].filter(Boolean) as string[];
+
+  // โครงเดียวกับ breadcrumb ฝั่ง client (product.html) — อย่าให้สองที่นี้ต่างกัน
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'หน้าหลัก', item: `${SITE_URL}/` },
+      { '@type': 'ListItem', position: 2, name: 'ร้านค้า', item: `${SITE_URL}/shop` },
+      { '@type': 'ListItem', position: 3, name: product.name, item: pageUrl },
+    ],
+  };
 
   const ld = {
     '@context': 'https://schema.org',
@@ -77,12 +100,14 @@ export async function renderProductOgPage(slug: string, res: Response): Promise<
 <meta charset="UTF-8">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(description)}">
+<meta name="robots" content="index, follow">
 <link rel="canonical" href="${esc(pageUrl)}">
 <meta property="og:type" content="product">
 <meta property="og:site_name" content="Bt music drive">
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(description)}">
 ${ogImages.map((img) => `<meta property="og:image" content="${esc(img)}">`).join('\n')}
+<meta property="og:image:alt" content="${esc(product.name)}">
 <meta property="og:url" content="${esc(pageUrl)}">
 <meta property="og:locale" content="th_TH">
 <meta property="product:price:amount" content="${esc(product.price)}">
@@ -92,6 +117,7 @@ ${ogImages.map((img) => `<meta property="og:image" content="${esc(img)}">`).join
 <meta name="twitter:description" content="${esc(description)}">
 <meta name="twitter:image" content="${esc(ogImages[0])}">
 <script type="application/ld+json">${JSON.stringify(ld)}</script>
+<script type="application/ld+json">${JSON.stringify(breadcrumbLd)}</script>
 </head>
 <body>
 <h1>${esc(product.name)}</h1>

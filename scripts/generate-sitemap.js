@@ -3,7 +3,9 @@ const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..');
 const SITE_URL = (process.env.SITEMAP_SITE_URL || 'https://btmusicdrive.com').replace(/\/+$/, '');
-const LASTMOD = process.env.SITEMAP_LASTMOD || new Date().toISOString().slice(0, 10);
+// Only emit lastmod when the caller knows the real content-modification date.
+// Using the build date makes every URL look freshly changed on every deploy.
+const LASTMOD = process.env.SITEMAP_LASTMOD || '';
 
 function readJson(fileName) {
   return JSON.parse(fs.readFileSync(path.join(ROOT, fileName), 'utf8'));
@@ -23,7 +25,7 @@ function urlEntry(pathname, changefreq, priority) {
   return [
     '  <url>',
     `    <loc>${xmlEscape(`${SITE_URL}${normalizedPath === '/' ? '/' : normalizedPath}`)}</loc>`,
-    `    <lastmod>${LASTMOD}</lastmod>`,
+    ...(LASTMOD ? [`    <lastmod>${xmlEscape(LASTMOD)}</lastmod>`] : []),
     `    <changefreq>${changefreq}</changefreq>`,
     `    <priority>${priority}</priority>`,
     '  </url>',

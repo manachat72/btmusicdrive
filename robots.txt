@@ -3,14 +3,9 @@
 
 User-agent: *
 
-# Block private / user-specific pages
-Disallow: /admin
-Disallow: /cart
-Disallow: /checkout
-Disallow: /orders
-Disallow: /profile
-Disallow: /address
-Disallow: /wishlist
+# Private / user-specific HTML pages carry a noindex meta tag. They are not
+# blocked here because a crawler must be allowed to read that directive;
+# robots.txt Disallow + noindex can leave URL-only results in search indexes.
 
 # Block API and server internals
 Disallow: /api/

@@ -189,7 +189,7 @@
     },
     {
       "src": "/product/([^/]+)",
-      "has": [{ "type": "header", "key": "user-agent", "value": ".*(facebookexternalhit|Facebot|Twitterbot|LinkedInBot|Slackbot|TelegramBot|WhatsApp|Discordbot|Pinterestbot|SkypeUriPreview|line-poker).*" }],
+      "has": [{ "type": "header", "key": "user-agent", "value": ".*(facebookexternalhit|Facebot|Twitterbot|LinkedInBot|Slackbot|TelegramBot|WhatsApp|Discordbot|Pinterestbot|SkypeUriPreview|line-poker|Googlebot|Google-InspectionTool|bingbot|DuckDuckBot|YandexBot|Baiduspider|Applebot|OAI-SearchBot|ChatGPT-User|PerplexityBot).*" }],
       "dest": "/server/src/index.ts"
     },
     {
@@ -207,6 +207,21 @@
     {
       "src": "/blog/([^/]+)",
       "dest": "/blog/$1.html"
+    },
+    {
+      "src": "/index\\.html",
+      "headers": { "Location": "https://btmusicdrive.com/" },
+      "status": 301
+    },
+    {
+      "src": "/blog\\.html",
+      "headers": { "Location": "https://btmusicdrive.com/blog" },
+      "status": 301
+    },
+    {
+      "src": "/(shop|cart|checkout|orders|profile|wishlist|address|track-order|shipping|about|contact|faq|terms|privacy|refund|returns|exchange|warranty|admin|category|product)\\.html",
+      "headers": { "Location": "https://btmusicdrive.com/$1" },
+      "status": 301
     },
     {
       "src": "/(shop|cart|checkout|orders|profile|wishlist|address|track-order|shipping|about|contact|faq|terms|privacy|refund|returns|exchange|warranty|admin|category|product)",
