@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>BT AI Image Studio — สร้างภาพสินค้า + ตั้งชื่อ 2 เวอร์ชัน</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#8B7355; --secondary:#0F172A; --bg:#0B1120; --card:#111C33;
+    --border:#22304d; --text:#E2E8F0; --muted:#94A3B8; --ok:#34D399; --bad:#F87171;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Kanit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+  header{background:var(--secondary);border-bottom:1px solid var(--border);padding:16px 24px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:20}
+  header .logo{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#fbbf24,#f59e0b);display:flex;align-items:center;justify-content:center;font-weight:700;color:#0F172A;font-size:18px}
+  header h1{font-size:18px;font-weight:600}
+  header p{font-size:12px;color:var(--muted)}
+  main{max-width:1100px;margin:0 auto;padding:24px 16px;display:grid;gap:20px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px}
+  .card h2{font-size:15px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  .step{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--primary);color:#fff;font-size:12px;font-weight:600}
+  input[type=text],input[type=password],textarea,select{width:100%;background:#0d1730;border:1px solid var(--border);border-radius:10px;padding:10px 12px;color:var(--text);font-family:inherit;font-size:14px;outline:none}
+  input:focus,textarea:focus,select:focus{border-color:var(--primary)}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .row>*{flex:1;min-width:180px}
+  button{font-family:inherit;cursor:pointer;border:none;border-radius:10px;font-size:14px}
+  .btn{background:#1e293b;color:var(--text);padding:10px 16px;border:1px solid var(--border)}
+  .btn:hover{border-color:var(--primary)}
+  .btn-gold{background:linear-gradient(90deg,#fbbf24,#facc15,#f59e0b);color:#0F172A;font-weight:600;padding:12px 20px}
+  .btn-gold:disabled{opacity:.45;cursor:not-allowed}
+  .hint{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.6}
+  /* product picker */
+  #results{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;margin-top:12px;max-height:320px;overflow:auto}
+  .prod{display:flex;gap:10px;align-items:center;background:#0d1730;border:1px solid var(--border);border-radius:10px;padding:8px;cursor:pointer;text-align:left}
+  .prod:hover{border-color:var(--primary)}
+  .prod.sel{border-color:#fbbf24;background:#1a2440}
+  .prod img{width:44px;height:44px;object-fit:cover;border-radius:8px;background:#fff}
+  .prod span{font-size:12px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  /* scenes */
+  .scenes{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+  .scene{background:#0d1730;border:1px solid var(--border);border-radius:10px;padding:12px;cursor:pointer;text-align:center}
+  .scene:hover{border-color:var(--primary)}
+  .scene.sel{border-color:#fbbf24;background:#1a2440}
+  .scene .em{font-size:24px}
+  .scene .nm{font-size:13px;margin-top:6px}
+  .scene .ds{font-size:10.5px;color:var(--muted);margin-top:4px;line-height:1.5}
+  details{margin-top:12px}
+  summary{font-size:12px;color:var(--muted);cursor:pointer}
+  pre.lock{background:#0d1730;border:1px dashed var(--border);border-radius:10px;padding:12px;font-size:11px;color:#7d8db0;white-space:pre-wrap;margin-top:8px;font-family:inherit}
+  /* preview / result */
+  .imgs{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:700px){.imgs{grid-template-columns:1fr}}
+  .imgbox{background:#0d1730;border:1px solid var(--border);border-radius:12px;min-height:240px;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+  .imgbox img{max-width:100%;max-height:420px;display:block}
+  .imgbox .ph{color:#3d4d70;font-size:13px;padding:20px;text-align:center}
+  .lbl{font-size:12px;color:var(--muted);margin-bottom:6px}
+  /* names */
+  .names{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:700px){.names{grid-template-columns:1fr}}
+  .namecol{background:#0d1730;border-radius:12px;padding:14px;border:1px solid var(--border)}
+  .namecol.ok{border-color:#14532d}
+  .namecol.bad{border-color:#7f1d1d}
+  .namecol h3{font-size:13px;margin-bottom:4px}
+  .namecol h3 .tag{font-size:11px;padding:2px 8px;border-radius:99px;margin-left:6px}
+  .ok .tag{background:#052e16;color:var(--ok)}
+  .bad .tag{background:#450a0a;color:var(--bad)}
+  .namecol .sub{font-size:11px;color:var(--muted);margin-bottom:10px}
+  .nameitem{background:#111C33;border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:13px;margin-bottom:8px;display:flex;gap:8px;align-items:flex-start;justify-content:space-between}
+  .nameitem button{background:none;border:1px solid var(--border);color:var(--muted);font-size:11px;padding:3px 8px;border-radius:6px;flex-shrink:0}
+  .nameitem button:hover{color:#fbbf24;border-color:#fbbf24}
+  .spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(15,23,42,.3);border-top-color:#0F172A;border-radius:50%;animation:sp 0.7s linear infinite;vertical-align:-2px;margin-right:6px}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  #toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1e293b;border:1px solid var(--border);color:var(--text);padding:10px 18px;border-radius:10px;font-size:13px;opacity:0;transition:.3s;pointer-events:none;z-index:50;max-width:90vw}
+  #toast.show{opacity:1}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">BT</div>
+  <div>
+    <h1>BT AI Image Studio</h1>
+    <p>สร้างภาพสินค้าจากรูปพื้นหลังขาว (ล็อค prompt) + ตั้งชื่อสินค้า 2 เวอร์ชัน</p>
+  </div>
+</header>
+<main>
+
+  <!-- STEP 1: API KEY -->
+  <section class="card">
+    <h2><span class="step">1</span> OpenAI API Key</h2>
+    <div class="row">
+      <input type="password" id="apiKey" placeholder="วาง API Key จาก platform.openai.com (sk-...)">
+      <button class="btn" style="flex:0 0 auto" onclick="saveKey()">บันทึก Key</button>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <div>
+        <p class="lbl">โมเดลสร้างภาพ</p>
+        <select id="imgModelSel" onchange="saveModels()">
+          <option value="gpt-image-2">gpt-image-2 (ใหม่สุด เม.ย. 2026)</option>
+          <option value="gpt-image-1.5">gpt-image-1.5 (คุ้มราคา แนะนำ)</option>
+          <option value="gpt-image-1">gpt-image-1 (จะปิดตัว ต.ค. 2026)</option>
+          <option value="gpt-image-1-mini">gpt-image-1-mini (ถูกสุด/เร็ว)</option>
+        </select>
+      </div>
+      <div>
+        <p class="lbl">โมเดลตั้งชื่อ + คำอธิบาย</p>
+        <select id="txtModelSel" onchange="saveModels()">
+          <option value="gpt-4o-mini">gpt-4o-mini (ถูก/เร็ว)</option>
+          <option value="gpt-4.1-mini">gpt-4.1-mini</option>
+          <option value="gpt-5-mini">gpt-5-mini</option>
+          <option value="gpt-5">gpt-5 (แพงสุด/ฉลาดสุด)</option>
+        </select>
+      </div>
+    </div>
+    <p class="hint">Key ถูกเก็บใน localStorage เครื่องนี้เท่านั้น ไม่ถูกส่งไปที่อื่นนอกจาก OpenAI API — รุ่นภาพ gpt-image-1 ต้องเป็นบัญชีที่ verify องค์กรแล้ว</p>
+  </section>
+
+  <!-- STEP 2: PRODUCT -->
+  <section class="card">
+    <h2><span class="step">2</span> เลือกสินค้า (รูปพื้นหลังขาวจากร้าน)</h2>
+    <div class="row">
+      <input type="text" id="search" placeholder="ค้นหาชื่อสินค้า เช่น ลูกทุ่ง, เพื่อชีวิต, สตริง..." oninput="renderResults()">
+      <label class="btn" style="flex:0 0 auto;display:inline-flex;align-items:center">
+        หรืออัปโหลดรูปเอง <input type="file" accept="image/*" hidden onchange="uploadImage(this)">
+      </label>
+    </div>
+    <div id="results"></div>
+    <p class="hint" id="loadStatus">กำลังโหลด products.json ...</p>
+  </section>
+
+  <!-- STEP 3: SCENE -->
+  <section class="card">
+    <h2><span class="step">3</span> เลือกฉาก — มี prompt ค่าเริ่มต้นให้ แก้ไขเองได้</h2>
+    <div class="scenes" id="scenes"></div>
+    <details>
+      <summary>ดู / แก้ไข prompt (บันทึกไว้ในเครื่องนี้ กดรีเซ็ตเพื่อกลับค่าเดิม)</summary>
+      <p class="lbl" style="margin-top:10px">Prompt ภาพ — ของฉากที่เลือกอยู่ <span id="ovBadge" style="color:#fbbf24"></span></p>
+      <textarea id="promptEdit" rows="12" style="font-size:12px"></textarea>
+      <div class="row" style="margin-top:8px">
+        <button class="btn" style="flex:0 0 auto" onclick="savePromptOverride()">💾 บันทึก prompt ฉากนี้</button>
+        <button class="btn" style="flex:0 0 auto" onclick="resetPromptOverride()">↩ รีเซ็ตค่าเริ่มต้น</button>
+      </div>
+      <p class="lbl" style="margin-top:14px">Prompt ตั้งชื่อ + คำอธิบาย <span id="ovBadgeN" style="color:#fbbf24"></span></p>
+      <textarea id="namingEdit" rows="10" style="font-size:12px"></textarea>
+      <div class="row" style="margin-top:8px">
+        <button class="btn" style="flex:0 0 auto" onclick="saveNamingOverride()">💾 บันทึก prompt ตั้งชื่อ</button>
+        <button class="btn" style="flex:0 0 auto" onclick="resetNamingOverride()">↩ รีเซ็ตค่าเริ่มต้น</button>
+      </div>
+    </details>
+  </section>
+
+  <!-- STEP 4: GENERATE IMAGE -->
+  <section class="card">
+    <h2><span class="step">4</span> สร้างภาพ</h2>
+    <div class="imgs">
+      <div>
+        <p class="lbl">รูปต้นทาง (พื้นหลังขาว)</p>
+        <div class="imgbox" id="srcBox"><div class="ph">ยังไม่ได้เลือกสินค้า</div></div>
+      </div>
+      <div>
+        <p class="lbl">ผลลัพธ์จาก AI</p>
+        <div class="imgbox" id="outBox"><div class="ph">กด "สร้างภาพ" เพื่อ gen</div></div>
+      </div>
+    </div>
+    <div class="row" style="margin-top:14px">
+      <button class="btn-gold" id="genBtn" onclick="generateImage()">✨ สร้างภาพ</button>
+      <button class="btn" id="dlBtn" onclick="downloadImage()" disabled>⬇ ดาวน์โหลดภาพ</button>
+    </div>
+  </section>
+
+  <!-- STEP 5: NAMES -->
+  <section class="card">
+    <h2><span class="step">5</span> ตั้งชื่อ + คำอธิบายสินค้า 2 เวอร์ชัน</h2>
+    <button class="btn-gold" id="nameBtn" onclick="generateNames()">📝 ตั้งชื่อ + คำอธิบาย</button>
+    <div class="names" style="margin-top:14px">
+      <div class="namecol ok">
+        <h3>เวอร์ชันถูกกฎ <span class="tag">ลง Shopee / Lazada / TikTok ได้</span></h3>
+        <p class="sub">ไม่มีชื่อศิลปิน/เครื่องหมายการค้า ไม่มีคำต้องห้าม ≤120 ตัวอักษร</p>
+        <div id="okNames"><p class="hint">—</p></div>
+        <p class="lbl" style="margin-top:10px">คำอธิบายสินค้า</p>
+        <div id="okDesc"><p class="hint">—</p></div>
+      </div>
+      <div class="namecol bad">
+        <h3>เวอร์ชันผิดกฎ <span class="tag">ห้ามลง marketplace</span></h3>
+        <p class="sub">มีชื่อศิลปินเพื่อ SEO — ใช้เฉพาะเว็บ btmusicdrive.com เท่านั้น</p>
+        <div id="badNames"><p class="hint">—</p></div>
+        <p class="lbl" style="margin-top:10px">คำอธิบายสินค้า</p>
+        <div id="badDesc"><p class="hint">—</p></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+<div id="toast"></div>
+
+<script>
+/* ================= CONFIG (ล็อคไว้ — ห้ามให้ผู้ใช้แก้ผ่าน UI) ================= */
+const API_ROOT    = 'https://api.openai.com/v1';
+const KEY_STORE   = 'btAiStudioOpenaiKey';
+const MODEL_STORE = 'btAiStudioModels';
+function imgModel(){ return document.getElementById('imgModelSel').value; }
+function txtModel(){ return document.getElementById('txtModelSel').value; }
+function saveModels(){
+  localStorage.setItem(MODEL_STORE, JSON.stringify({ img: imgModel(), txt: txtModel() }));
+  toast('เปลี่ยนโมเดลแล้ว: ' + imgModel() + ' / ' + txtModel());
+}
+function loadModels(){
+  try{
+    const m = JSON.parse(localStorage.getItem(MODEL_STORE) || '{}');
+    if(m.img) document.getElementById('imgModelSel').value = m.img;
+    if(m.txt) document.getElementById('txtModelSel').value = m.txt;
+  }catch(e){}
+}
+
+const LOCKED_BASE = `You are given a reference product photo of a music USB flash drive on a white background.
+Create ONE photorealistic e-commerce marketing image.
+CRITICAL RULES (must always follow):
+1) The product must stay 100% IDENTICAL to the reference photo — same shape, colors, label, cover artwork and every character of text printed on it. NEVER redraw, translate, distort, blur or invent any text or artwork.
+2) The product is the hero of the image: sharp, centered or rule-of-thirds, well lit.
+3) Square 1:1 composition, suitable for a 1000x1000 marketplace image.
+4) No watermarks, no extra logos, no human faces, no third-party brand names, no added text overlays. Hands are allowed. Text shown on device screens inside the scene (e.g. "USB MODE") is allowed when the scene requires it.`;
+
+const LOCKED_PRODUCT_ID = `PRODUCT IDENTITY (locked): The main subject is a USB MP3 music package in a transparent blister pack. The uploaded reference image defines the exact product identity. Keep the original packaging structure as close as possible: clear blister packaging, top hanging strip, black USB flash drive inside, BT logo, large album/band title, premium product label, USB/MP3 icons, speaker/car/computer icons, and the price label exactly as shown in the reference. The product must look like the actual item photographed professionally, not an illustration. Realistic packaging proportions, believable transparent plastic material, natural glossy reflections, subtle surface imperfections, precise edges. The USB drive should look solid, crisp, seated in the blister tray (unless the scene says it was removed).`;
+
+const SCENES = [
+  { id:'studio',  em:'📷', nm:'สตูดิโอพื้นขาว',
+    ds:'ภาพสินค้าพื้นขาวสะอาด เงาสะท้อนนุ่ม สำหรับรูปหลัก marketplace',
+    p:'Scene: premium clean studio shot on a pure white seamless background with a soft natural shadow and subtle reflection under the product, gentle top-light gradient.' },
+  { id:'carpov',  em:'🚗', nm:'ในรถ (POV คนขับ)',
+    ds:'มุมมองคนขับรถพวงมาลัยขวาในไทย มือซ้ายถือแพ็ค มือขวาถือแฟลชไดรฟ์ จอวิทยุขึ้น USB MODE ถนนไทยพลุกพล่าน',
+    p:`Scene: photorealistic first-person POV shot from the driver's perspective in a right-hand-drive (RHD) vehicle in Thailand, daytime. Through the windshield: a busy sun-bathed Thai street with tuk-tuks, scooters, cars and Thai-language storefront signs. The driver's LEFT hand holds the blister pack upright, centered, large, sharp and clearly visible. The driver's RIGHT hand holds the loose black-and-gold USB flash drive, just removed from the pack, moving it toward the car's USB port. The infotainment screen reads "USB MODE" or "MEDIA CONNECTING". Warm natural sunlight from the right side. Focus locked on the hands and the product (sharp), background softly blurred.` },
+  { id:'radio',   em:'📻', nm:'วิทยุพกพา',
+    ds:'มือเสียบแฟลชไดรฟ์เข้าวิทยุสไตล์เรโทร จอขึ้น USB MODE บนโต๊ะใช้งานจริง มีแพ็คเกจวางข้าง ๆ',
+    p:`Scene: a hand inserting the black USB flash drive into a retro-style portable radio whose small screen displays "USB MODE". The original blister packaging lies beside the radio on a slightly cluttered, lived-in desk to enhance realism. Warm indoor lighting, sharp focus on the hand, flash drive and radio port, background softly blurred.` },
+  { id:'laptop',  em:'💻', nm:'โน้ตบุ๊ก',
+    ds:'มือเสียบแฟลชไดรฟ์เข้าพอร์ตโน้ตบุ๊ก หน้าจอเปิดโปรแกรมเล่นเพลง แพ็คเกจ (ช่องพลาสติกว่าง) วางบนโต๊ะ',
+    p:`Scene: a hand plugging the black USB flash drive into the USB port of a modern notebook computer whose screen shows a music media player playing songs. The original blister packaging lies on the busy desk nearby — its clear plastic tray is EMPTY with the plastic edges looking opened, because the drive has been removed and plugged in. Natural daylight, sharp focus on the hand, drive and port, soft depth of field.` },
+  { id:'desk',    em:'🎧', nm:'โต๊ะไม้ + หูฟัง',
+    ds:'วางบนโต๊ะไม้ข้างหูฟัง แสงเช้านุ่ม ๆ อารมณ์คนรักเพลง',
+    p:'Scene: on a warm wooden desk next to over-ear headphones, soft morning window light, cozy music-lover lifestyle mood.' },
+  { id:'banner',  em:'🌟', nm:'แบนเนอร์พรีเมียม',
+    ds:'พื้นหลังเข้ม + แสงทองหรู เว้นที่ด้านบนไว้ใส่ headline',
+    p:'Scene: promotional hero-banner style on an elegant dark slate (#0F172A) background with luxurious golden light streaks and bokeh (amber-gold gradient tones), leaving clean empty space at the top, premium luxury look.' },
+];
+
+const LOCKED_NAMING = `คุณคือผู้เชี่ยวชาญตั้งชื่อและเขียนคำอธิบายสินค้า e-commerce ของร้านขาย USB แฟลชไดรฟ์รวมเพลง MP3
+จากข้อมูลสินค้าที่ให้ ให้ทำ 2 เวอร์ชัน: ชื่อเวอร์ชันละ 3 ชื่อ + คำอธิบายสินค้าเวอร์ชันละ 1 ชิ้น ตอบเป็น JSON เท่านั้น รูปแบบ:
+{"marketplace":{"names":["ชื่อ1","ชื่อ2","ชื่อ3"],"description":"คำอธิบาย"},"seo":{"names":["ชื่อ1","ชื่อ2","ชื่อ3"],"description":"คำอธิบาย"}}
+
+กติกาเวอร์ชัน "marketplace" (ถูกกฎ Shopee/Lazada/TikTok Shop):
+- ชื่อยาวไม่เกิน 120 ตัวอักษร
+- ห้ามมีชื่อศิลปิน วงดนตรี ค่ายเพลง หรือเครื่องหมายการค้าใด ๆ เด็ดขาด (ทั้งชื่อและคำอธิบาย)
+- ห้ามคำต้องห้าม เช่น ของแท้ 100%, ถูกที่สุด, อันดับ 1, ฟรี, ลดล้างสต๊อก, รับประกันเกินจริง
+- ห้าม emoji และอักขระพิเศษ ห้ามซ้ำคีย์เวิร์ดเดิมเกิน 1 ครั้ง
+- โครงสร้างชื่อ: ประเภทสินค้า + แนวเพลง + จุดเด่น + สเปค (จำนวนเพลง/การใช้งาน)
+- คำอธิบาย: 4-6 ประโยค เน้นแนวเพลง จำนวนเพลง การใช้งาน (รถยนต์/คอม/เครื่องเล่น) และคุณภาพเสียง โดยไม่เอ่ยชื่อศิลปิน
+
+กติกาเวอร์ชัน "seo" (ผิดกฎ marketplace — ใช้เฉพาะบนเว็บไซต์ของร้านเองเท่านั้น):
+- ชื่อใส่ศิลปิน/วงดนตรีเด่น ๆ จาก tracklist ได้ เพื่อให้ติดผลค้นหา Google ยาวได้ถึงประมาณ 150 ตัวอักษร
+- คำอธิบาย: 5-8 ประโยค ใส่ชื่อศิลปินเด่นและคีย์เวิร์ดที่คนไทยค้นหาจริง (เช่น "รวมเพลง...", "usb เพลง...") ได้เต็มที่
+- ทั้งหมดต้องอ่านเป็นภาษาคนรู้เรื่อง ไม่ยัดคีย์เวิร์ดจน spam`;
+
+/* ================= STATE ================= */
+let products = [], selected = null, uploaded = null, sceneId = 'studio';
+let resultB64 = null, resultMime = 'image/png';
+let IMG_PREFIX = ''; // '' เมื่อ serve จาก root, '../' เมื่อ fallback
+
+/* ================= INIT ================= */
+document.getElementById('apiKey').value = localStorage.getItem(KEY_STORE) || '';
+loadModels(); renderScenes(); updateLockedView(); loadProducts();
+
+function saveKey(){
+  localStorage.setItem(KEY_STORE, document.getElementById('apiKey').value.trim());
+  toast('บันทึก API Key แล้ว');
+}
+function getKey(){
+  const k = (document.getElementById('apiKey').value || '').trim();
+  if(!k){ toast('กรุณาใส่ Gemini API Key ก่อน (ขั้นตอนที่ 1)'); throw new Error('no key'); }
+  return k;
+}
+
+async function loadProducts(){
+  const st = document.getElementById('loadStatus');
+  for(const [url, prefix] of [['/products.json',''], ['../products.json','../']]){
+    try{
+      const r = await fetch(url);
+      if(!r.ok) continue;
+      products = await r.json();
+      IMG_PREFIX = prefix;
+      st.textContent = `โหลดสินค้าแล้ว ${products.length} รายการ — พิมพ์ค้นหาด้านบน`;
+      renderResults();
+      return;
+    }catch(e){ /* try next */ }
+  }
+  st.innerHTML = 'โหลด products.json ไม่ได้ — ให้เปิดหน้านี้ผ่าน Live Server ที่ root ของโปรเจกต์ btmusicdrive หรือใช้ปุ่ม "อัปโหลดรูปเอง"';
+}
+
+function imgUrl(p){
+  const u = p.imageUrl || (p.images && p.images[0]) || '';
+  return IMG_PREFIX ? IMG_PREFIX + u.replace(/^\//,'') : u;
+}
+
+function renderResults(){
+  const q = (document.getElementById('search').value || '').toLowerCase().trim();
+  const box = document.getElementById('results');
+  const list = products
+    .filter(p => p.isActive !== false)
+    .filter(p => !q || (p.name||'').toLowerCase().includes(q) || (p.tags||[]).join(' ').toLowerCase().includes(q))
+    .slice(0, 30);
+  box.innerHTML = list.map((p,i) =>
+    `<button class="prod ${selected && selected.id===p.id ? 'sel':''}" onclick="selectProduct('${p.id}')">
+       <img src="${imgUrl(p)}" loading="lazy" alt=""><span>${esc(p.name)}</span>
+     </button>`).join('') || '<p class="hint">ไม่พบสินค้า</p>';
+}
+
+function selectProduct(id){
+  selected = products.find(p => p.id === id) || null;
+  uploaded = null;
+  if(selected){
+    document.getElementById('srcBox').innerHTML = `<img src="${imgUrl(selected)}" alt="">`;
+    toast('เลือก: ' + selected.name.slice(0,60));
+  }
+  renderResults();
+}
+
+function uploadImage(input){
+  const f = input.files[0]; if(!f) return;
+  const rd = new FileReader();
+  rd.onload = e => {
+    uploaded = { dataUrl: e.target.result, mime: f.type || 'image/png' };
+    selected = null;
+    document.getElementById('srcBox').innerHTML = `<img src="${uploaded.dataUrl}" alt="">`;
+    renderResults();
+    toast('ใช้รูปที่อัปโหลด');
+  };
+  rd.readAsDataURL(f);
+}
+
+/* ================= SCENES ================= */
+function renderScenes(){
+  document.getElementById('scenes').innerHTML = SCENES.map(s =>
+    `<button class="scene ${s.id===sceneId?'sel':''}" onclick="pickScene('${s.id}')">
+       <div class="em">${s.em}</div><div class="nm">${s.nm}</div>
+       <div class="ds">${s.ds || ''}</div>
+     </button>`).join('');
+}
+function pickScene(id){ sceneId = id; renderScenes(); updateLockedView(); }
+
+/* prompt overrides — แก้ไขได้ เก็บ localStorage */
+const PROMPT_STORE = 'btAiStudioPromptOverrides';
+const NAMING_STORE = 'btAiStudioNamingOverride';
+function getOverrides(){ try{ return JSON.parse(localStorage.getItem(PROMPT_STORE) || '{}'); }catch(e){ return {}; } }
+function defaultPrompt(id){
+  const s = SCENES.find(x => x.id === id);
+  return LOCKED_BASE + '\n\n' + LOCKED_PRODUCT_ID + '\n\n' + s.p;
+}
+function currentPrompt(){
+  return getOverrides()[sceneId] || defaultPrompt(sceneId);
+}
+function namingPrompt(){
+  return localStorage.getItem(NAMING_STORE) || LOCKED_NAMING;
+}
+function savePromptOverride(){
+  const ov = getOverrides();
+  ov[sceneId] = document.getElementById('promptEdit').value;
+  localStorage.setItem(PROMPT_STORE, JSON.stringify(ov));
+  updateLockedView(); toast('บันทึก prompt ฉากนี้แล้ว');
+}
+function resetPromptOverride(){
+  const ov = getOverrides(); delete ov[sceneId];
+  localStorage.setItem(PROMPT_STORE, JSON.stringify(ov));
+  updateLockedView(); toast('รีเซ็ต prompt ฉากนี้เป็นค่าเริ่มต้นแล้ว');
+}
+function saveNamingOverride(){
+  localStorage.setItem(NAMING_STORE, document.getElementById('namingEdit').value);
+  updateLockedView(); toast('บันทึก prompt ตั้งชื่อแล้ว');
+}
+function resetNamingOverride(){
+  localStorage.removeItem(NAMING_STORE);
+  updateLockedView(); toast('รีเซ็ต prompt ตั้งชื่อเป็นค่าเริ่มต้นแล้ว');
+}
+function updateLockedView(){
+  document.getElementById('promptEdit').value = currentPrompt();
+  document.getElementById('namingEdit').value = namingPrompt();
+  document.getElementById('ovBadge').textContent  = getOverrides()[sceneId] ? '(แก้ไขแล้ว)' : '';
+  document.getElementById('ovBadgeN').textContent = localStorage.getItem(NAMING_STORE) ? '(แก้ไขแล้ว)' : '';
+}
+
+/* ================= IMAGE GEN ================= */
+async function getSourceBlob(){
+  if(uploaded){
+    const blob = await (await fetch(uploaded.dataUrl)).blob();
+    return { blob, mime: uploaded.mime };
+  }
+  if(!selected){ toast('เลือกสินค้าหรืออัปโหลดรูปก่อน (ขั้นตอนที่ 2)'); throw new Error('no image'); }
+  const r = await fetch(imgUrl(selected));
+  if(!r.ok) throw new Error('โหลดรูปสินค้าไม่ได้');
+  const blob = await r.blob();
+  return { blob, mime: blob.type || 'image/webp' };
+}
+
+async function generateImage(){
+  const btn = document.getElementById('genBtn');
+  try{
+    const key = getKey();
+    const src = await getSourceBlob();
+    btn.disabled = true; btn.innerHTML = '<span class="spin"></span>กำลังสร้างภาพ...';
+    const ext = (src.mime.split('/')[1] || 'png').replace('jpeg','jpg');
+    const fd = new FormData();
+    fd.append('model', imgModel());
+    fd.append('image', src.blob, 'product.' + ext);
+    fd.append('prompt', currentPrompt());
+    fd.append('size', '1024x1024');
+    fd.append('input_fidelity', 'high'); // รักษารายละเอียดปก/ตัวหนังสือบนสินค้า
+    let resp = await fetch(API_ROOT + '/images/edits', {
+      method:'POST',
+      headers:{ 'Authorization': 'Bearer ' + key },
+      body: fd
+    });
+    let data = await resp.json();
+    if(!resp.ok && /input_fidelity/i.test(data.error?.message || '')){
+      fd.delete('input_fidelity'); // โมเดลนี้ไม่รองรับ — ลองใหม่โดยไม่ใส่
+      resp = await fetch(API_ROOT + '/images/edits', {
+        method:'POST', headers:{ 'Authorization': 'Bearer ' + key }, body: fd
+      });
+      data = await resp.json();
+    }
+    if(!resp.ok) throw new Error(data.error?.message || 'API error ' + resp.status);
+    const b64 = data.data?.[0]?.b64_json;
+    if(!b64) throw new Error('AI ไม่ได้ส่งภาพกลับมา');
+    resultB64 = b64; resultMime = 'image/png';
+    document.getElementById('outBox').innerHTML = `<img src="data:${resultMime};base64,${resultB64}" alt="">`;
+    document.getElementById('dlBtn').disabled = false;
+    toast('สร้างภาพสำเร็จ');
+  }catch(e){
+    if(e.message !== 'no key' && e.message !== 'no image') toast('ผิดพลาด: ' + e.message);
+  }finally{
+    btn.disabled = false; btn.innerHTML = '✨ สร้างภาพ';
+  }
+}
+
+function downloadImage(){
+  if(!resultB64) return;
+  const a = document.createElement('a');
+  a.href = 'data:' + resultMime + ';base64,' + resultB64;
+  const slug = selected ? selected.slug : 'product';
+  a.download = 'ai-' + sceneId + '-' + slug + '.png';
+  a.click();
+}
+
+/* ================= NAMES ================= */
+function productInfoText(){
+  if(selected){
+    const tl = (selected.tracklist || []).slice(0, 12).join('\n');
+    return `ชื่อเดิม: ${selected.name}\nแท็ก: ${(selected.tags||[]).join(', ')}\nจำนวนเพลง: ${(selected.tracklist||[]).length}\nตัวอย่างเพลง:\n${tl}`;
+  }
+  return prompt('ไม่ได้เลือกสินค้าจากรายการ — พิมพ์ข้อมูลสินค้าสั้น ๆ (แนวเพลง/ศิลปินเด่น/จำนวนเพลง):') || '';
+}
+
+async function generateNames(){
+  const btn = document.getElementById('nameBtn');
+  try{
+    const key = getKey();
+    const info = productInfoText();
+    if(!info.trim()){ toast('ไม่มีข้อมูลสินค้า'); return; }
+    btn.disabled = true; btn.innerHTML = '<span class="spin"></span>กำลังตั้งชื่อ...';
+    const resp = await fetch(API_ROOT + '/chat/completions', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'Authorization': 'Bearer ' + key },
+      body: JSON.stringify({
+        model: txtModel(),
+        messages: [{ role:'user', content: namingPrompt() + '\n\n===== ข้อมูลสินค้า =====\n' + info }],
+        response_format: { type: 'json_object' }
+      })
+    });
+    const data = await resp.json();
+    if(!resp.ok) throw new Error(data.error?.message || 'API error ' + resp.status);
+    let txt = data.choices?.[0]?.message?.content || '';
+    txt = txt.replace(/```json|```/g,'').trim();
+    const j = JSON.parse(txt);
+    const mp = Array.isArray(j.marketplace) ? { names: j.marketplace } : (j.marketplace || {});
+    const se = Array.isArray(j.seo) ? { names: j.seo } : (j.seo || {});
+    renderNames('okNames', mp.names || []);
+    renderNames('badNames', se.names || []);
+    renderDesc('okDesc', mp.description || '');
+    renderDesc('badDesc', se.description || '');
+    toast('ตั้งชื่อ + คำอธิบายสำเร็จ');
+  }catch(e){
+    if(e.message !== 'no key') toast('ผิดพลาด: ' + e.message);
+  }finally{
+    btn.disabled = false; btn.innerHTML = '📝 ตั้งชื่อสินค้า';
+  }
+}
+
+function renderNames(elId, arr){
+  document.getElementById(elId).innerHTML = arr.map(n =>
+    `<div class="nameitem"><span>${esc(n)} <em style="color:var(--muted);font-size:11px">(${n.length} ตัวอักษร)</em></span>
+      <button onclick="copyText(this)" data-t="${esc(n)}">คัดลอก</button></div>`).join('')
+    || '<p class="hint">ไม่มีผลลัพธ์</p>';
+}
+
+function renderDesc(elId, d){
+  document.getElementById(elId).innerHTML = d
+    ? `<div class="nameitem"><span style="white-space:pre-wrap">${esc(d)}</span>
+        <button onclick="copyText(this)" data-t="${esc(d)}">คัดลอก</button></div>`
+    : '<p class="hint">—</p>';
+}
+
+function copyText(btn){
+  navigator.clipboard.writeText(btn.dataset.t).then(()=>toast('คัดลอกแล้ว'));
+}
+
+/* ================= UTIL ================= */
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+let toastTimer;
+function toast(m){
+  const t = document.getElementById('toast');
+  t.textContent = m; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(()=>t.classList.remove('show'), 3500);
+}
+</script>
+</body>
+</html>

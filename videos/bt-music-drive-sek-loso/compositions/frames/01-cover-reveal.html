@@ -1,0 +1,329 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Kanit";
+      src: url("assets/fonts/Kanit-400.ttf") format("truetype");
+      font-weight: 400;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: "Kanit";
+      src: url("assets/fonts/Kanit-700.ttf") format("truetype");
+      font-weight: 700;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: "Kanit";
+      src: url("assets/fonts/Kanit-900.ttf") format("truetype");
+      font-weight: 900;
+      font-style: normal;
+    }
+
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Kanit";
+    }
+
+    #root > .clip {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    [class~="01-cover-reveal-ground"] {
+      z-index: 0;
+      background: #080604;
+    }
+
+    [class~="01-cover-reveal-stage"] {
+      z-index: 1;
+      color: #f4e6c3;
+      isolation: isolate;
+    }
+
+    [id="f01-cover-reveal-streak"] {
+      position: absolute;
+      inset: 5cqh 0 auto 0;
+      z-index: 1;
+      width: 100cqw;
+      height: 58cqh;
+      overflow: visible;
+      transform-origin: 50% 86%;
+      will-change: transform, opacity;
+    }
+
+    [id="f01-cover-reveal-streak"] path {
+      fill: none;
+      stroke: #f05a1a;
+      stroke-width: 7;
+      stroke-linecap: square;
+      stroke-linejoin: miter;
+    }
+
+    [id="f01-cover-reveal-particle-field"] {
+      position: absolute;
+      left: 50cqw;
+      top: 38cqh;
+      z-index: 2;
+      width: 0;
+      height: 0;
+      pointer-events: none;
+    }
+
+    [class~="01-cover-reveal-particle"] {
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      background: #f05a1a;
+      border-radius: 0;
+      will-change: transform, opacity;
+    }
+
+    [id="f01-cover-reveal-cover-outer"] {
+      position: absolute;
+      left: 7cqw;
+      top: 29cqh;
+      z-index: 3;
+      width: 86cqw;
+      height: 86cqw;
+      transform-origin: 50% 50%;
+      will-change: transform, opacity;
+    }
+
+    [id="f01-cover-reveal-cover-inner"] {
+      width: 100%;
+      height: 100%;
+      will-change: transform;
+    }
+
+    [id="f01-cover-reveal-cover-card"] {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      border: 1px solid #282726;
+      background: #1a1918;
+    }
+
+    [id="f01-cover-reveal-cover-card"] img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    [id="f01-cover-reveal-headline"] {
+      position: absolute;
+      left: 5.5cqw;
+      top: 5.2cqh;
+      z-index: 4;
+      width: 89cqw;
+      color: #f4e6c3;
+      font-size: 7.1cqw;
+      font-weight: 900;
+      line-height: 0.96;
+      letter-spacing: -0.035em;
+      text-align: center;
+    }
+
+    [class~="01-cover-reveal-headline-line"] {
+      display: block;
+      min-height: 1em;
+      white-space: nowrap;
+    }
+
+    [class~="01-cover-reveal-headline-chunk"] {
+      display: inline-block;
+      will-change: transform, opacity;
+    }
+
+    [id="f01-cover-reveal-legend-word"] {
+      color: #f05a1a;
+    }
+
+    [id="f01-cover-reveal-question"] {
+      display: inline-block;
+      color: #f4e6c3;
+      transform-origin: 50% 68%;
+      will-change: transform, opacity;
+    }
+  </style>
+
+  <div data-hf-id="hf-ov9k" id="root" data-composition-id="01-cover-reveal" data-width="1080" data-height="1920" data-duration="2.594" data-fps="30">
+    <div data-hf-id="hf-18y2" class="clip 01-cover-reveal-ground" data-start="0" data-duration="2.594" data-track-index="0" aria-hidden="true"></div>
+
+    <div data-hf-id="hf-ud7v" class="clip 01-cover-reveal-stage" data-start="0" data-duration="2.594" data-track-index="1">
+      <svg data-hf-id="hf-wf9p" id="f01-cover-reveal-streak" viewBox="0 0 1080 1100" preserveAspectRatio="none" aria-hidden="true">
+        <path data-hf-id="hf-o2m7" d="M 164 980 C 306 858, 441 680, 538 517 C 649 330, 722 205, 842 90" />
+      </svg>
+
+      <div data-hf-id="hf-01xt" id="f01-cover-reveal-particle-field" aria-hidden="true"></div>
+
+      <div data-hf-id="hf-cw7w" id="f01-cover-reveal-cover-outer">
+        <div data-hf-id="hf-8zv1" id="f01-cover-reveal-cover-inner">
+          <div data-hf-id="hf-5blp" id="f01-cover-reveal-cover-card">
+            <img data-hf-id="hf-tu78" src="assets/sek-loso-cover.png" alt="ปกชุดเพลงร็อก เสก โลโซ" draggable="false">
+          </div>
+        </div>
+      </div>
+
+      <div data-hf-id="hf-aebs" id="f01-cover-reveal-headline" aria-label="คิดถึงเพลงร็อกในตำนานไหม?">
+        <span data-hf-id="hf-l2xg" class="01-cover-reveal-headline-line">
+          <span data-hf-id="hf-0j0b" id="f01-cover-reveal-chunk-memory" class="01-cover-reveal-headline-chunk">คิดถึง</span>
+        </span>
+        <span data-hf-id="hf-w0mk" class="01-cover-reveal-headline-line">
+          <span data-hf-id="hf-o7de" id="f01-cover-reveal-chunk-rock" class="01-cover-reveal-headline-chunk">เพลงร็อกใน</span>
+        </span>
+        <span data-hf-id="hf-utph" class="01-cover-reveal-headline-line">
+          <span data-hf-id="hf-q6a5" id="f01-cover-reveal-legend-word" class="01-cover-reveal-headline-chunk">ตำนาน</span><span data-hf-id="hf-235g" id="f01-cover-reveal-chunk-question-word" class="01-cover-reveal-headline-chunk">ไหม</span><span data-hf-id="hf-jz3l" id="f01-cover-reveal-question">?</span>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      const compositionId = "01-cover-reveal";
+      const tl = gsap.timeline({ paused: true });
+      window.__timelines = window.__timelines || {};
+      window.__timelines[compositionId] = tl;
+
+      const particleField = document.getElementById("f01-cover-reveal-particle-field");
+      const particleCount = 18;
+      const particles = [];
+      const prand = (n) => {
+        const x = Math.sin(n * 127.1 + 311.7) * 43758.5453;
+        return x - Math.floor(x);
+      };
+
+      for (let i = 0; i < particleCount; i += 1) {
+        const particle = document.createElement("span");
+        particle.className = "01-cover-reveal-particle";
+        const size = 5 + prand(i * 3 + 1) * 8;
+        particle.style.width = `${size}px`;
+        particle.style.height = `${Math.max(3, size * 0.42)}px`;
+        particleField.appendChild(particle);
+
+        const angle = -Math.PI / 2 + (prand(i * 5 + 2) * 2 - 1) * 0.68;
+        const speed = 270 + prand(i * 7 + 3) * 350;
+        particles.push({
+          el: particle,
+          group: i % 3 === 0 ? "tail" : "main",
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          spin: (prand(i * 11 + 4) * 2 - 1) * 520,
+          phaseX: (prand(i * 13 + 5) - 0.5) * 140,
+          phaseY: (prand(i * 17 + 6) - 0.5) * 70
+        });
+      }
+
+      const runParticles = (group, progress, flightDuration) => {
+        const seconds = progress * flightDuration;
+        const fade = Math.min(1, (1 - progress) / 0.28);
+        particles.forEach((particle) => {
+          if (particle.group !== group) return;
+          const x = particle.phaseX + particle.vx * seconds;
+          const y = particle.phaseY + particle.vy * seconds + 0.5 * 430 * seconds * seconds;
+          particle.el.style.transform =
+            `translate(${x}px, ${y}px) rotate(${particle.spin * seconds}deg)`;
+          particle.el.style.opacity = String(progress === 0 ? 0 : fade);
+        });
+      };
+
+      const mainBurst = { T: 0 };
+      const tailBurst = { T: 0 };
+
+      tl.fromTo(
+        "#f01-cover-reveal-streak",
+        { opacity: 0, scaleY: 0.08, y: 180 },
+        { opacity: 1, scaleY: 1, y: 0, duration: 0.38, ease: "power4.out" },
+        0.04
+      );
+
+      tl.fromTo(
+        mainBurst,
+        { T: 0 },
+        {
+          T: 1,
+          duration: 1.25,
+          ease: "none",
+          onUpdate: () => runParticles("main", mainBurst.T, 1.25)
+        },
+        0.08
+      );
+
+      tl.fromTo(
+        tailBurst,
+        { T: 0 },
+        {
+          T: 1,
+          duration: 1.45,
+          ease: "none",
+          onUpdate: () => runParticles("tail", tailBurst.T, 1.45)
+        },
+        0.32
+      );
+
+      tl.fromTo(
+        "#f01-cover-reveal-cover-outer",
+        { opacity: 0, scale: 1.85 },
+        { opacity: 1, scale: 1, duration: 0.86, ease: "power3.inOut" },
+        0.60
+      );
+
+      tl.fromTo(
+        "#f01-cover-reveal-cover-inner",
+        { x: 0, y: 178 },
+        { x: 0, y: 0, duration: 0.86, ease: "power3.inOut" },
+        0.60
+      );
+
+      const headlineChunks = [
+        { selector: "#f01-cover-reveal-chunk-memory", text: "คิดถึง" },
+        { selector: "#f01-cover-reveal-chunk-rock", text: "เพลงร็อกใน" },
+        { selector: "#f01-cover-reveal-legend-word", text: "ตำนาน" },
+        { selector: "#f01-cover-reveal-chunk-question-word", text: "ไหม" }
+      ];
+      const totalCharacters = headlineChunks.reduce(
+        (sum, entry) => sum + entry.text.length,
+        0
+      );
+      const sequenceStart = 0.78;
+      const sequenceSpan = 0.78;
+      let cumulativeCharacters = 0;
+
+      headlineChunks.forEach((entry) => {
+        const start =
+          sequenceStart + (cumulativeCharacters / totalCharacters) * sequenceSpan;
+        tl.fromTo(
+          entry.selector,
+          { opacity: 0, y: 24 },
+          { opacity: 1, y: 0, duration: 0.22, ease: "power3.out" },
+          start
+        );
+        cumulativeCharacters += entry.text.length;
+      });
+
+      tl.fromTo(
+        "#f01-cover-reveal-question",
+        { opacity: 0, scale: 0.58 },
+        { opacity: 1, scale: 1.08, duration: 0.18, ease: "power2.out" },
+        1.70
+      );
+      tl.to(
+        "#f01-cover-reveal-question",
+        { scale: 1, duration: 0.12, ease: "power2.inOut" },
+        1.88
+      );
+    })();
+  </script>
+</template>

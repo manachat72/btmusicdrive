@@ -1,0 +1,389 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Kanit";
+      src: url("assets/fonts/Kanit-600.ttf") format("truetype");
+      font-weight: 600;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "Kanit";
+      src: url("assets/fonts/Kanit-900.ttf") format("truetype");
+      font-weight: 900;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    #root {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Kanit";
+      color: #F4E6C3;
+    }
+
+    #root,
+    #root * {
+      box-sizing: border-box;
+    }
+
+    [class~="02-three-eras-ground"] {
+      position: absolute;
+      inset: 0;
+      background: #080604;
+    }
+
+    [class~="02-three-eras-scene"] {
+      position: absolute;
+      inset: 0 auto auto 0;
+      width: 100cqw;
+      height: 83cqh;
+      overflow: hidden;
+      background: #080604;
+    }
+
+    [class~="02-three-eras-world"] {
+      position: absolute;
+      inset: 0 auto auto 0;
+      width: 300cqw;
+      height: 83cqh;
+      transform-origin: 50% 50%;
+      will-change: transform;
+    }
+
+    [class~="02-three-eras-station"] {
+      position: absolute;
+      top: 0;
+      width: 100cqw;
+      height: 83cqh;
+      overflow: hidden;
+      background: #080604;
+      border-right: 1px solid #282726;
+    }
+
+    [class~="02-three-eras-station-early"] {
+      left: 0;
+    }
+
+    [class~="02-three-eras-station-classic"] {
+      left: 100cqw;
+    }
+
+    [class~="02-three-eras-station-present"] {
+      left: 200cqw;
+    }
+
+    [class~="02-three-eras-art"] {
+      position: absolute;
+      top: -13.3cqh;
+      width: 177.78cqw;
+      height: 100cqh;
+      max-width: none;
+      object-fit: fill;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    [class~="02-three-eras-art-early"] {
+      left: 0;
+    }
+
+    [class~="02-three-eras-art-classic"] {
+      left: -38.89cqw;
+    }
+
+    [class~="02-three-eras-art-present"] {
+      left: -77.78cqw;
+    }
+
+    [class~="02-three-eras-veil"] {
+      position: absolute;
+      inset: 0;
+      background: rgba(8, 6, 4, 0.16);
+      pointer-events: none;
+    }
+
+    [class~="02-three-eras-lower-field"] {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 12.4cqh;
+      background: rgba(8, 6, 4, 0.76);
+      border-top: 1px solid rgba(244, 230, 195, 0.18);
+      pointer-events: none;
+    }
+
+    [class~="02-three-eras-spot"] {
+      position: absolute;
+      inset: -18cqh -30cqw;
+      z-index: 1;
+      background: radial-gradient(circle at 30% 34%, rgba(200, 151, 56, 0.38) 0%, rgba(200, 151, 56, 0.12) 30%, rgba(200, 151, 56, 0) 66%);
+      mix-blend-mode: screen;
+      pointer-events: none;
+    }
+
+    [class~="02-three-eras-sweep"] {
+      position: absolute;
+      z-index: 2;
+      top: -6cqh;
+      bottom: -6cqh;
+      left: -34cqw;
+      width: 24cqw;
+      background: linear-gradient(105deg, rgba(240, 90, 26, 0) 0%, rgba(240, 90, 26, 0.48) 52%, rgba(240, 90, 26, 0) 100%);
+      mix-blend-mode: screen;
+      pointer-events: none;
+    }
+
+    [class~="02-three-eras-label"],
+    [class~="02-three-eras-final-line"] {
+      position: absolute;
+      z-index: 4;
+      margin: 0;
+      background: rgba(8, 6, 4, 0.82);
+      color: #F4E6C3;
+      border-top: 2px solid #F05A1A;
+    }
+
+    [class~="02-three-eras-label"] {
+      padding: 1.15cqw 1.7cqw 1.35cqw;
+      font-size: 7.5cqw;
+      font-weight: 900;
+      line-height: 0.9;
+      letter-spacing: -0.04em;
+      white-space: nowrap;
+    }
+
+    [class~="02-three-eras-label-early"] {
+      top: 9.5cqh;
+      right: 5.5cqw;
+    }
+
+    [class~="02-three-eras-label-classic"] {
+      top: 8.5cqh;
+      left: 5.5cqw;
+      font-size: 6.7cqw;
+    }
+
+    [class~="02-three-eras-label-present"] {
+      top: 5.7cqh;
+      left: 5.5cqw;
+    }
+
+    [class~="02-three-eras-final-line"] {
+      top: 13.6cqh;
+      left: 5.5cqw;
+      width: 47cqw;
+      padding: 1.4cqw 1.7cqw 1.65cqw;
+      font-size: 4.5cqw;
+      font-weight: 900;
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+    }
+
+    [class~="02-three-eras-timeline"] {
+      position: absolute;
+      z-index: 5;
+      left: 8cqw;
+      top: 73.1cqh;
+      width: 284cqw;
+      height: 1px;
+      background: #F05A1A;
+      transform-origin: 0 50%;
+      will-change: transform;
+    }
+
+    [class~="02-three-eras-tick"] {
+      position: absolute;
+      z-index: 6;
+      top: 71.8cqh;
+      width: 2px;
+      height: 2.7cqh;
+      background: #F05A1A;
+    }
+
+    [class~="02-three-eras-tick-one"] {
+      left: 50cqw;
+    }
+
+    [class~="02-three-eras-tick-two"] {
+      left: 150cqw;
+    }
+
+    [class~="02-three-eras-tick-three"] {
+      left: 250cqw;
+    }
+  </style>
+
+  <div data-hf-id="hf-93zg" id="root" data-composition-id="02-three-eras" data-width="1080" data-height="1920" data-duration="2.851" data-fps="30">
+    <div data-hf-id="hf-g4gt" class="clip 02-three-eras-ground" data-start="0" data-duration="2.851" data-track-index="0"></div>
+
+    <div data-hf-id="hf-pqyx" class="clip 02-three-eras-scene" data-start="0" data-duration="2.851" data-track-index="1">
+      <div data-hf-id="hf-s2v0" id="f02-three-eras-world" class="02-three-eras-world">
+        <section data-hf-id="hf-s5ee" class="02-three-eras-station 02-three-eras-station-early">
+          <img data-hf-id="hf-wkxe" class="02-three-eras-art 02-three-eras-art-early" src="assets/sek-loso-cover.png" alt="" draggable="false">
+          <div data-hf-id="hf-lld8" id="f02-three-eras-spot" class="02-three-eras-spot"></div>
+          <div data-hf-id="hf-j2h8" class="02-three-eras-veil"></div>
+          <div data-hf-id="hf-11vc" class="02-three-eras-lower-field"></div>
+          <div data-hf-id="hf-sjzv" id="f02-three-eras-label-early" class="02-three-eras-label 02-three-eras-label-early">ยุคแรก</div>
+        </section>
+
+        <section data-hf-id="hf-f5af" class="02-three-eras-station 02-three-eras-station-classic">
+          <img data-hf-id="hf-rswf" class="02-three-eras-art 02-three-eras-art-classic" src="assets/sek-loso-cover.png" alt="" draggable="false">
+          <div data-hf-id="hf-o8bw" id="f02-three-eras-sweep" class="02-three-eras-sweep"></div>
+          <div data-hf-id="hf-ciuc" class="02-three-eras-veil"></div>
+          <div data-hf-id="hf-22z4" class="02-three-eras-lower-field"></div>
+          <div data-hf-id="hf-jfbo" id="f02-three-eras-label-classic" class="02-three-eras-label 02-three-eras-label-classic">ยุคคลาสสิก</div>
+        </section>
+
+        <section data-hf-id="hf-1p7i" class="02-three-eras-station 02-three-eras-station-present">
+          <img data-hf-id="hf-8ngq" class="02-three-eras-art 02-three-eras-art-present" src="assets/sek-loso-cover.png" alt="" draggable="false">
+          <div data-hf-id="hf-bbx9" class="02-three-eras-veil"></div>
+          <div data-hf-id="hf-0w21" class="02-three-eras-lower-field"></div>
+          <div data-hf-id="hf-89u2" id="f02-three-eras-label-present" class="02-three-eras-label 02-three-eras-label-present">ปัจจุบัน</div>
+          <div data-hf-id="hf-yu6h" id="f02-three-eras-final-line" class="02-three-eras-final-line">เส้นทางดนตรี จากอัลบั้มแรกสู่ปัจจุบัน</div>
+        </section>
+
+        <div data-hf-id="hf-ihma" id="f02-three-eras-timeline" class="02-three-eras-timeline"></div>
+        <div data-hf-id="hf-b9jd" class="02-three-eras-tick 02-three-eras-tick-one"></div>
+        <div data-hf-id="hf-q1kf" class="02-three-eras-tick 02-three-eras-tick-two"></div>
+        <div data-hf-id="hf-n03x" class="02-three-eras-tick 02-three-eras-tick-three"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script>
+    (() => {
+      const root = document.querySelector('[data-composition-id="02-three-eras"]');
+      const world = root.querySelector('[id="f02-three-eras-world"]');
+      const cam = { scale: 1, x: 0, y: 0 };
+
+      function applyCamera() {
+        world.style.transform = `translate(${cam.x}px, ${cam.y}px) scale(${cam.scale})`;
+      }
+
+      applyCamera();
+
+      const tl = gsap.timeline({ paused: true });
+      window.__timelines = window.__timelines || {};
+      window.__timelines["02-three-eras"] = tl;
+
+      tl.fromTo(
+        root.querySelector('[id="f02-three-eras-spot"]'),
+        { opacity: 0, scale: 0.88 },
+        { opacity: 0.28, scale: 1, duration: 0.58, ease: "power2.out" },
+        0.02
+      );
+
+      tl.fromTo(
+        root.querySelector('[id="f02-three-eras-label-early"]'),
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 0.34, ease: "power3.out" },
+        0.04
+      );
+
+      tl.fromTo(
+        root.querySelector('[id="f02-three-eras-timeline"]'),
+        { scaleX: 0 },
+        { scaleX: 0.34, duration: 0.56, ease: "power2.out" },
+        0.08
+      );
+
+      tl.to(
+        cam,
+        {
+          x: -1080,
+          duration: 0.67,
+          ease: "power3.inOut",
+          onUpdate: applyCamera
+        },
+        0.73
+      );
+
+      tl.to(
+        root.querySelector('[id="f02-three-eras-timeline"]'),
+        { scaleX: 0.67, duration: 0.67, ease: "power3.inOut" },
+        0.73
+      );
+
+      tl.fromTo(
+        root.querySelector('[id="f02-three-eras-label-classic"]'),
+        { opacity: 0, y: 28 },
+        { opacity: 1, y: 0, duration: 0.33, ease: "power3.out" },
+        1.04
+      );
+
+      tl.fromTo(
+        root.querySelector('[id="f02-three-eras-sweep"]'),
+        { x: -420, opacity: 0 },
+        { x: 1150, opacity: 0.25, duration: 0.47, ease: "none" },
+        1.03
+      );
+
+      tl.to(
+        root.querySelector('[id="f02-three-eras-sweep"]'),
+        { opacity: 0, duration: 0.06, ease: "power1.in" },
+        1.50
+      );
+
+      tl.to(
+        cam,
+        {
+          x: -2160,
+          duration: 0.53,
+          ease: "power3.inOut",
+          onUpdate: applyCamera
+        },
+        1.56
+      );
+
+      tl.to(
+        root.querySelector('[id="f02-three-eras-timeline"]'),
+        { scaleX: 1, duration: 0.53, ease: "power3.inOut" },
+        1.56
+      );
+
+      const sequenceStart = 1.61;
+      const sequenceEnd = 2.08;
+      const sequence = [
+        {
+          element: root.querySelector('[id="f02-three-eras-label-present"]'),
+          text: "ปัจจุบัน",
+          hold: 0.08
+        },
+        {
+          element: root.querySelector('[id="f02-three-eras-final-line"]'),
+          text: "เส้นทางดนตรี จากอัลบั้มแรกสู่ปัจจุบัน",
+          hold: 0.14
+        }
+      ];
+      const secPerCharacter = 0.005;
+      const baseDuration = 0.08;
+      const weights = sequence.map((entry) => baseDuration + entry.text.length * secPerCharacter + entry.hold);
+      const totalWeight = weights.reduce((sum, value) => sum + value, 0);
+      let cursor = sequenceStart;
+
+      sequence.forEach((entry, index) => {
+        const slot = (sequenceEnd - sequenceStart) * (weights[index] / totalWeight);
+        tl.fromTo(
+          entry.element,
+          { opacity: 0, y: 24, clipPath: "inset(0 0 100% 0)" },
+          {
+            opacity: 1,
+            y: 0,
+            clipPath: "inset(0 0 0% 0)",
+            duration: Math.max(0.16, slot * 0.86),
+            ease: "power3.out"
+          },
+          cursor
+        );
+        cursor += slot;
+      });
+    })();
+  </script>
+</template>
