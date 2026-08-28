@@ -32,6 +32,30 @@ function truncateAtWord(value: string, maxLength: number): string {
     : slice.slice(0, maxLength)).trim();
 }
 
+/**
+ * สร้าง <title>/og:title ให้เหมือนฝั่ง client เป๊ะ ๆ
+ * (ตัวเดียวกับ window.__BTSEO_TITLE__ ใน scripts/inline-product-jsonld.js — แก้ที่ไหนต้องแก้อีกที่ด้วย)
+ * เก็บคีย์เวิร์ดท้ายชื่อ (จำนวนเพลง/ความจุ/ฟังในรถ) ไว้ก่อน แล้วค่อยต่อ brand ถ้ายังมีที่เหลือ
+ */
+function buildSeoTitle(rawName: string): string {
+  const BRAND = ' | Bt music drive';
+  const MAX = 65;
+  const name = String(rawName || '').replace(/\s+/g, ' ').trim();
+  const clean = (v: string) => v.replace(/[\s|/,.!:;(\-–—]+$/, '').trim();
+
+  if (name.length + BRAND.length <= MAX) return name + BRAND;
+
+  let title = name;
+  if (title.length > MAX) {
+    const slice = name.slice(0, MAX + 1);
+    const lastSpace = slice.lastIndexOf(' ');
+    title = clean(lastSpace > 20 ? name.slice(0, lastSpace) : name.slice(0, MAX));
+  } else {
+    title = clean(title);
+  }
+  return title.length + BRAND.length <= MAX ? title + BRAND : title;
+}
+
 function absoluteImageUrl(imageUrl: string | null | undefined): string | null {
   if (!imageUrl) return null;
   if (/^https?:\/\//i.test(imageUrl)) return imageUrl;
@@ -57,7 +81,7 @@ export async function renderProductOgPage(slug: string, res: Response): Promise<
   if (!product) return false;
 
   const pageUrl = `${SITE_URL}/product/${encodeURIComponent(product.slug || slug)}`;
-  const title = `${truncateAtWord(product.name, 47)} | Bt music drive`;
+  const title = buildSeoTitle(product.name);
   const descriptionSource = (product.description || '').trim()
     || `${product.name} แฟลชไดร์ฟเพลง MP3 เสียบปุ๊บฟังปั๊บ ไม่ต้องใช้เน็ต จัดส่งทั่วไทย`;
   const description = truncateAtWord(descriptionSource, 155);
