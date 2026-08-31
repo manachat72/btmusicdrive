@@ -336,12 +336,20 @@ async function publish(btn) {
     });
     status('pStatus',
       '<span class="ok">🎉 ลงเว็บสำเร็จ — <a href="' + out.url + '" target="_blank">' + out.url + '</a></span><br>' +
-      esc(out.logs.join('\n')) + filesHtml(out.files));
+      esc(out.logs.join('\n')) + filesHtml(out.files) + qrHtml(out.qr));
     jget('/api/web-products').then(function (w) { WEB = w; });
   } catch (e) {
     status('pStatus', '✖ ' + esc(e.message).slice(0, 800), 'err');
     btn.disabled = false;
   }
+}
+
+/** ลิงก์ QR รายชื่อเพลงที่ studio สร้างให้อัตโนมัติตอนลงสินค้า (ไฟล์อยู่ใน qr/) */
+function qrHtml(qr) {
+  if (!qr || !qr.file) return '';
+  return '<div class="files"><a class="btn" style="background:#8B7355" href="/qr/' + encodeURIComponent(qr.file) +
+    '" download="' + esc(qr.file) + '">🔗 QR รายชื่อเพลง<span style="font-weight:400;opacity:.85;font-size:11px"> ' +
+    esc(qr.file) + '</span></a></div>';
 }
 
 function filesHtml(files) {

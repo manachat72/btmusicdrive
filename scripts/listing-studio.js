@@ -24,6 +24,7 @@ const { execFileSync } = require('child_process');
 const XLSX = require('xlsx');
 const QRCode = require('qrcode');
 const { tracklistHtml } = require('./lib/tracklist-page');
+const { makeTracklistQr } = require('./lib/tracklist-qr');
 const { buildSeo, validateSeo, CATEGORIES } = require('./lib/seo');
 const { slugify, imageSlug, uniqueImageSlug } = require('./lib/product-slug');
 const webImg = require('./lib/web-images');
@@ -430,13 +431,22 @@ http.createServer(async (req, res) => {
         log(g2.pushed ? `✔ push products.json + sitemap แล้ว (${g2.count} ไฟล์)` : `⚠ ไม่ได้ push: ${g2.reason}`);
       } catch (e) { log('⚠ build ไม่สำเร็จ: ' + String(e.message).slice(0, 150)); }
 
-      // 4) xlsx ทุกแพลตฟอร์ม พร้อมดาวน์โหลด
+      // 4) QR รายชื่อเพลง — หน้าเว็บบน R2 + QR พร้อมพิมพ์ (URL ผูกกับ code ยิงซ้ำทับได้)
+      let qr = null;
+      if (Array.isArray(b.tracklist) && b.tracklist.length) {
+        try {
+          qr = await makeTracklistQr({ code: b.code, name: product.name, tracklist: b.tracklist });
+          log(`✔ QR รายชื่อเพลง: qr/${qr.file}`);
+        } catch (e) { log('⚠ สร้าง QR รายชื่อเพลงไม่สำเร็จ: ' + String(e.message).slice(0, 150)); }
+      }
+
+      // 5) xlsx ทุกแพลตฟอร์ม พร้อมดาวน์โหลด
       const files = genAll(b.code);
       log(`✔ สร้าง xlsx: ${files.filter(f => f.ok).map(f => f.platform).join(', ') || '—'}`);
 
       return json(200, {
         ok: true, slug: product.slug, id: product.id,
-        url: `https://btmusicdrive.com/product/${product.slug}`, files, logs,
+        url: `https://btmusicdrive.com/product/${product.slug}`, files, qr, logs,
       });
     }
 

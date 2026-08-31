@@ -224,6 +224,7 @@ GA4_PROPERTY_ID="533617757"       # GOOGLE_CLIENT_SECRET ไม่จำเป�
   - ทำงานได้แม้ NAS ไม่ได้ต่อ (อัปโหลดรูปผ่านหน้าเว็บ → ต้นฉบับขึ้น R2 อย่างเดียว)
   - `npm run mkt:originals -- --apply` = backfill ต้นฉบับเก่าจาก NAS ขึ้น R2 (รันตอน NAS ต่ออยู่)
   - studio **commit + push ให้อัตโนมัติ** — ลำดับสำคัญ: rename/สร้างรูป → build → push → ค่อยเขียน DB (DB ชี้มาก่อนไฟล์ขึ้น = รูป 404)
+  - **QR รายชื่อเพลงอัตโนมัติ** (2026-08-31): ลงสินค้าใหม่ที่มี tracklist → studio สร้างหน้ารายชื่อเพลงบน R2 `docs/tracklist-<code>.html` + QR `qr/qr-tracklist-<code> <ชื่อสินค้า>.png` + ลงคลัง QR ให้เอง ไม่ต้องรันมือ · โค้ดกลาง `scripts/lib/tracklist-qr.js` ใช้ร่วมกับ `npm run mkt:qr-all` (ทำย้อนหลังครบทุกตัว / `--code NN` ทีละตัว) — URL ผูกกับ code เท่านั้น รันซ้ำได้ QR ที่พิมพ์ไปแล้วไม่เสีย
   - ⚠ `marketplace-images/` `templates/` `qr/` อยู่ใน .gitignore — ห้ามใส่ใน `git add` ของ studio จะล้ม
 
 - **SEO artist research** (2026-08-20): agent `seo-artist-research` (`.claude/agents/`) วิจัยคีย์เวิร์ดรายศิลปินแล้วเก็บลง `scripts/data/artists.json`

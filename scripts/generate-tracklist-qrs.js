@@ -16,15 +16,9 @@
  */
 const fs = require('fs');
 const path = require('path');
-const { execFileSync } = require('child_process');
-const QRCode = require('qrcode');
-const { tracklistHtml } = require('./lib/tracklist-page');
+const { makeTracklistQr, loadQrReg, saveQrReg } = require('./lib/tracklist-qr');
 
 const ROOT = path.resolve(__dirname, '..');
-const DOCS_DIR = path.join(ROOT, 'marketplace-docs');
-const QR_DIR = path.join(ROOT, 'qr');
-const QR_REG = path.join(QR_DIR, 'qr-registry.json');
-const CDN = 'https://img.btmusicdrive.com';
 
 const argv = process.argv.slice(2);
 const APPLY = argv.includes('--apply');
@@ -68,52 +62,20 @@ function similarity(a, b) {
     return;
   }
 
-  fs.mkdirSync(DOCS_DIR, { recursive: true });
-  fs.mkdirSync(QR_DIR, { recursive: true });
-  const reg = (() => { try { return JSON.parse(fs.readFileSync(QR_REG, 'utf8')); } catch { return []; } })();
   let totalKb = 0;
 
   for (const j of list) {
     const p = j.product;
-    // บาง tracklist มีเลขนำหน้าอยู่แล้ว (เช่น "001. ลุงขี้เมา") — ตัดออกก่อน ไม่ให้เลขซ้อนกัน
-    const txt = p.tracklist.map((t, i) => `${i + 1}. ${String(t).replace(/^\s*\d+\s*[.)\-]*\s*/, '').trim()}`).join('\n');
-    const html = tracklistHtml(p.name, txt);
-    const htmlFile = path.join(DOCS_DIR, `tracklist-${j.code}.html`);
-    fs.writeFileSync(htmlFile, html, 'utf8');
-    totalKb += html.length / 1024;
-
-    // อัปขึ้น R2 (key คงที่ตาม code)
-    const out = execFileSync(process.execPath,
-      [path.join(__dirname, 'upload-r2-file.js'), htmlFile, `docs/tracklist-${j.code}.html`, '--force'],
-      { cwd: ROOT, stdio: 'pipe' }).toString();
-    const url = (out.match(/https:\/\/\S+/) || [])[0];
-    if (!url) { console.error(`  ✖ ${j.code} อัป R2 ไม่สำเร็จ`); continue; }
-
-    // QR — ตั้งชื่อไฟล์เป็น code + ชื่อสินค้า (ตัดคำนำหน้าซ้ำ ๆ ออก) ให้ดูออกในโฟลเดอร์
-    const shortName = p.name
-      .replace(/^usb[\s\-–—]*(แฟลชไดร์?ฟ์?|flash\s*drive)?(พร้อมเพลง)?[\s\-–—]*(mp3)?[\s\-–—]*/i, '')
-      .replace(/[\\/:*?"<>|]+/g, ' ').replace(/\s{2,}/g, ' ').trim().slice(0, 40).trim();
-    const qrFile = `qr-tracklist-${j.code} ${shortName}.png`;
-    // ลบไฟล์ชื่อแบบเก่า (ไม่มีชื่อสินค้า) ทิ้ง ไม่ให้ซ้ำซ้อน
-    try { fs.unlinkSync(path.join(QR_DIR, `qr-tracklist-${j.code}.png`)); } catch { }
-    await QRCode.toFile(path.join(QR_DIR, qrFile), url, {
-      errorCorrectionLevel: 'H', width: 1200, margin: 3,
-      color: { dark: '#000000', light: '#FFFFFF' },
-    });
-
-    // ลงทะเบียนในคลัง QR ของ studio (ล้างรายการเดิมของ code นี้ทุกชื่อไฟล์ก่อน)
-    const name = `${j.code} รายชื่อเพลง — ${p.name.slice(0, 45)}`;
-    for (let i = reg.length - 1; i >= 0; i--) {
-      const f = String(reg[i].file || '');
-      if (f === qrFile || f === `qr-tracklist-${j.code}.png` || f.startsWith(`qr-tracklist-${j.code} `)) reg.splice(i, 1);
+    try {
+      const r = await makeTracklistQr({ code: j.code, name: p.name, tracklist: p.tracklist });
+      totalKb += r.kb;
+      console.log(`  ✔ ${j.code}  ${String(p.tracklist.length).padStart(3)} เพลง  ${r.kb.toFixed(0)} KB  ${p.name.slice(0, 45)}`);
+    } catch (e) {
+      console.error(`  ✖ ${j.code} ${String(e.message).slice(0, 120)}`);
     }
-    reg.push({ name, url, file: qrFile, createdAt: new Date().toISOString() });
-
-    console.log(`  ✔ ${j.code}  ${String(p.tracklist.length).padStart(3)} เพลง  ${(html.length / 1024).toFixed(0)} KB  ${p.name.slice(0, 45)}`);
   }
 
-  reg.sort((a, b) => String(a.name).localeCompare(String(b.name), 'th'));
-  fs.writeFileSync(QR_REG, JSON.stringify(reg, null, 2), 'utf8');
+  saveQrReg(loadQrReg().sort((a, b) => String(a.name).localeCompare(String(b.name), 'th')));
 
   console.log(`\n✔ เสร็จ ${list.length} สินค้า · หน้าเว็บรวม ${(totalKb / 1024).toFixed(2)} MB บน R2 (โควตาฟรี 10 GB)`);
   console.log('✔ QR ทั้งหมดอยู่ใน qr/ และในคลัง QR ของ npm run mkt:studio');
