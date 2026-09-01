@@ -548,14 +548,27 @@ http.createServer(async (req, res) => {
       };
       if (b.specs) patch.specs = b.specs;
       if (Array.isArray(b.tracklist) && b.tracklist.length) patch.tracklist = b.tracklist;
+      // Product Studio ส่งลำดับรูปมาโดยตรง; รูปแรกเป็นรูปปกสินค้า
+      if (Array.isArray(b.images) && b.images.length) {
+        patch.images = b.images;
+        patch.imageUrl = b.imageUrl || b.images[0];
+      }
 
-      // เปลี่ยนชื่อไฟล์รูปให้ตรง slug ใหม่ (SEO) — push ก่อน แล้วค่อยชี้ DB มา
-      if (b.renameImages && b.oldImgSlug && b.newImgSlug && b.oldImgSlug !== b.newImgSlug) {
-        const newSlug = uniqueImageSlug(b.newImgSlug, webImg.listWebDirs(), b.oldImgSlug);
+      // เมื่อเปลี่ยนชื่อสินค้า ให้เปลี่ยนชื่อโฟลเดอร์/ไฟล์รูปตามอัตโนมัติ
+      // (ไม่ต้องสร้าง SEO ก่อน) แล้ว push ก่อนค่อยชี้ DB มาที่ URL ใหม่
+      const requestedImageSlug = imageSlug(b.name || 'product');
+      if (b.renameImages && b.oldImgSlug && b.oldImgSlug !== requestedImageSlug) {
+        const newSlug = uniqueImageSlug(requestedImageSlug, webImg.listWebDirs(), b.oldImgSlug);
         const r = webImg.renameWebImages(b.oldImgSlug, newSlug);
         log(`✔ เปลี่ยนชื่อรูป: ${b.oldImgSlug} → ${newSlug} (${r.urls.length} ใบ)`);
-        patch.images = r.urls;
-        patch.imageUrl = r.urls[0];
+        // ถ้าสลับตำแหน่งรูปในหน้าสตูดิโอ ให้รักษาลำดับที่เลือกไว้หลัง rename ด้วย
+        const oldPrefix = `/images/products/${b.oldImgSlug}/`;
+        const newPrefix = `/images/products/${newSlug}/`;
+        const reordered = Array.isArray(b.images) && b.images.length
+          ? b.images.map((u) => String(u).replace(oldPrefix, newPrefix))
+          : r.urls;
+        patch.images = reordered;
+        patch.imageUrl = reordered[0];
         runBuild();
         const g = gitPush(`refactor(images): rename ${b.oldImgSlug} → ${newSlug}`, ['images/products']);
         log(g.pushed ? '✔ push รูปชื่อใหม่แล้ว' : `⚠ ไม่ได้ push: ${g.reason} — อย่าเพิ่งเปิดหน้าสินค้า รูปจะ 404 จนกว่าจะ push`);

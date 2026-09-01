@@ -6,7 +6,7 @@ var WEB = [];        // สินค้าบนเว็บ (products.json)
 var MKT = [];        // catalog marketplace
 var draft = null;    // ร่างสินค้าใหม่หลังเตรียมรูป
 var editing = null;  // สินค้าที่กำลังแก้
-var upImages = [], trackList = [], editTrack = null, addImgs = [];
+var upImages = [], trackList = [], editTrack = null, addImgs = [], editImages = [];
 var view = 'new';
 
 function esc(s) {
@@ -395,7 +395,7 @@ function filterWeb(q) {
 function pickWeb(id) {
   editing = WEB.filter(function (p) { return p.id === id; })[0];
   if (!editing) return;
-  editTrack = null; addImgs = [];
+  editTrack = null; addImgs = []; editImages = (editing.images || []).slice();
   [].forEach.call(document.querySelectorAll('.item'), function (i) { i.classList.toggle('active', i.dataset.id === id); });
   // code ของชุดรูป marketplace — เดาจาก SKU แบบ BT-NN ถ้ามี ไม่งั้นให้เลือกเอง
   var guess = /^BT-(\d+)$/.test(editing.sku || '') ? editing.sku.replace(/^BT-/, '') : '';
@@ -403,9 +403,7 @@ function pickWeb(id) {
     loginBoxHtml() +
     '<div class="card"><h2>✏ ' + esc(editing.name) + '</h2>' +
     '<div class="sub">slug ' + esc(editing.slug) + ' · SKU ' + esc(editing.sku || '-') + ' · โฟลเดอร์รูป <b>' + esc(editing.imgSlug) + '</b></div>' +
-    '<div class="imgs">' + (editing.images || []).map(function (u, i) {
-      return '<a href="' + esc(u) + '" target="_blank" class="' + (i === 0 ? 'cover' : '') + '"><img src="' + esc(u) + '"></a>';
-    }).join('') + '</div>' +
+    '<div id="eImages" class="imgs"></div>' +
     '<div class="f"><label>ชื่อสินค้า</label><input type="text" id="eName" value="' + esc(editing.name) + '"></div>' +
     '<div class="row">' +
     '<div class="f"><label>ราคา</label><input type="number" id="ePrice" value="' + editing.price + '"></div>' +
@@ -429,7 +427,7 @@ function pickWeb(id) {
     '<div class="row"><div class="f"><input type="text" id="eShort" placeholder="เช่น ลูกทุ่งอมตะ"></div>' +
     '<div class="f" style="flex:0 0 auto"><button class="ghost" onclick="regenSeo(this)">สร้าง SEO ใหม่ ✨</button></div></div>' +
     '<div id="eSeoBox"></div>' +
-    '<label class="chk"><input type="checkbox" id="eRename"> เปลี่ยนชื่อไฟล์รูปให้ตรงชื่อใหม่ (SEO) — จะ push รูปขึ้น production ก่อนอัปเดตฐานข้อมูล</label>' +
+    '<div class="hint">ชื่อไฟล์รูปจะเปลี่ยนตามชื่อสินค้าใหม่โดยอัตโนมัติเมื่อกดบันทึก</div>' +
     '<div class="f"><label>ชุดรูป marketplace (ใช้ทำ xlsx)</label><select id="eCode"><option value="">— ไม่สร้าง xlsx —</option>' +
     MKT.map(function (m) {
       return '<option value="' + esc(m.code) + '"' + (m.code === guess ? ' selected' : '') + '>code ' + esc(m.code) + ' · ' + esc(m.title.slice(0, 60)) + '</option>';
@@ -438,6 +436,32 @@ function pickWeb(id) {
     '<button class="btn tiktok" onclick="genFor(this)">📦 สร้าง xlsx ทุกแพลตฟอร์ม</button>' +
     '<button class="primary" onclick="saveEdit(this)">💾 บันทึก + อัปเดตเว็บ</button></div>' +
     '<div class="st" id="eStatus"></div></div>';
+  renderEditImages();
+}
+
+// ลำดับนี้คือแกลเลอรีสินค้า และรูปแรกคือรูปปกที่แสดงบนการ์ดสินค้า
+function renderEditImages() {
+  var el = $('eImages');
+  if (!el) return;
+  if (!editImages.length) { el.innerHTML = '<div class="hint">ยังไม่มีรูปสินค้า</div>'; return; }
+  el.innerHTML = editImages.map(function (u, i) {
+    return '<div style="position:relative;min-width:112px">' +
+      '<a href="' + esc(u) + '" target="_blank" class="' + (i === 0 ? 'cover' : '') + '"><img src="' + esc(u) + '"></a>' +
+      '<div style="display:flex;gap:4px;margin-top:4px;align-items:center">' +
+        '<button type="button" class="ghost" style="padding:3px 7px" onclick="moveEditImage(' + i + ', -1)" ' + (i === 0 ? 'disabled title="เป็นรูปปกอยู่แล้ว"' : 'title="เลื่อนขึ้น"') + '>←</button>' +
+        '<span class="hint" style="margin:0;white-space:nowrap">' + (i === 0 ? 'รูปปก' : 'รูป ' + (i + 1)) + '</span>' +
+        '<button type="button" class="ghost" style="padding:3px 7px" onclick="moveEditImage(' + i + ', 1)" ' + (i === editImages.length - 1 ? 'disabled title="รูปสุดท้าย"' : 'title="เลื่อนลง"') + '>→</button>' +
+      '</div></div>';
+  }).join('');
+}
+
+function moveEditImage(index, direction) {
+  var next = index + direction;
+  if (next < 0 || next >= editImages.length) return;
+  var current = editImages[index];
+  editImages[index] = editImages[next];
+  editImages[next] = current;
+  renderEditImages();
 }
 
 function pickAddImgs(inp) {
@@ -452,6 +476,8 @@ async function syncImages(btn) {
     status('eStatus', '⏳ push รูปในโฟลเดอร์ → อัปเดต DB → sync products.json…');
     var out = await jpost('/api/sync-images', { id: editing.id, imgSlug: editing.imgSlug });
     editing.images = out.images;
+    editImages = out.images.slice();
+    renderEditImages();
     status('eStatus', '<span class="ok">✔ ซิงก์แล้ว รวม ' + out.images.length + ' ใบ</span><br>' + esc(out.logs.join('\n')));
     WEB = await jget('/api/web-products');
   } catch (e) { status('eStatus', '✖ ' + esc(e.message).slice(0, 800), 'err'); }
@@ -473,6 +499,8 @@ async function addImages(btn) {
       name: $('eName').value, folder: mktFolder($('eCode').value), images: imgs
     });
     editing.images = out.images;
+    editImages = out.images.slice();
+    renderEditImages();
     status('eStatus', '<span class="ok">✔ เพิ่มรูปแล้ว รวม ' + out.images.length + ' ใบ</span><br>' + esc(out.logs.join('\n')));
     addImgs = [];
     WEB = await jget('/api/web-products');
@@ -512,7 +540,6 @@ async function regenSeo(btn) {
     $('eTags').value = (seo.tags || []).join(', ');
     editing.newSeo = seo;
     $('eSeoBox').innerHTML = serpHtml(seo) + issuesHtml(seo.issues) + '<div style="margin-top:6px">' + tagsHtml(seo.tags) + '</div>';
-    $('eRename').checked = true;
   } catch (e) { status('eStatus', '✖ ' + esc(e.message).slice(0, 400), 'err'); }
   btn.disabled = false;
 }
@@ -530,10 +557,13 @@ async function saveEdit(btn) {
       tags: $('eTags').value.split(',').map(function (s) { return s.trim(); }).filter(Boolean),
       slug: seo ? seo.slug : editing.slug,
       specs: seo ? seo.specs : undefined,
+      images: editImages,
+      imageUrl: editImages[0] || undefined,
       tracklist: editTrack || undefined,
-      renameImages: $('eRename').checked,
+      // เปลี่ยนชื่อโฟลเดอร์/ไฟล์รูปอัตโนมัติ เฉพาะเมื่อชื่อสินค้าเปลี่ยนจริง
+      renameImages: $('eName').value.trim() !== editing.name,
       oldImgSlug: editing.imgSlug,
-      newImgSlug: seo ? seo.imageSlug : null
+      newImgSlug: null
     };
     var out = await jpost('/api/update', body);
     status('eStatus', '<span class="ok">✔ อัปเดตแล้ว — <a href="' + out.url + '" target="_blank">' + out.url + '</a></span><br>' +
