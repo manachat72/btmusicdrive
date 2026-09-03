@@ -7,6 +7,7 @@
 const fs = require('fs');
 
 const CANDIDATES = [
+  'Z:\\photos\\Product',
   'Z:\\photos\\รูปสินค้า',
   'Z:\\รูป\\รูปสินค้า',
 ];
