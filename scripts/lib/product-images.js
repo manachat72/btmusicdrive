@@ -96,9 +96,12 @@ async function pruneR2(prefix, keepKeys, log = () => { }) {
  * @param {string} [o.srcDir]    โฟลเดอร์ต้นฉบับบน NAS
  * @param {{name:string,body:Buffer}[]} [o.sources] หรือส่งไฟล์มาตรง ๆ (อัปโหลดผ่านเว็บ)
  * @param {string} [o.dirName]   ชื่อโฟลเดอร์ NAS (เก็บใน catalog)
+ * @param {boolean} [o.prune]    ลบไฟล์ค้างบน R2 ที่เกินชุดใหม่ (default true)
+ *   ส่ง false เมื่อ "ไม่มั่นใจว่า sources คือชุดเต็ม" — เช่นกู้รูปจากที่อื่นมาบางส่วน
+ *   ถ้า prune ทั้งที่ชุดไม่ครบ รูปกลาง products/<code>/ จะถูกลบ = ลิงก์ในลิสต์ Shopee/TikTok/Lazada พังหมด
  * @param {(m:string)=>void} [o.log]
  */
-async function processProductImages({ code, slug, title, srcDir, sources, dirName, log = () => { } }) {
+async function processProductImages({ code, slug, title, srcDir, sources, dirName, prune = true, log = () => { } }) {
   code = String(code).padStart(2, '0');
   let files = sources && sources.length ? sources.slice(0, MAX_IMAGES) : null;
   if (!files && srcDir && fs.existsSync(srcDir)) files = readSourceDir(srcDir);
@@ -113,7 +116,7 @@ async function processProductImages({ code, slug, title, srcDir, sources, dirNam
   const origBytes = origItems.reduce((n, o) => n + o.body.length, 0);
   const origs = await r2.putMany(origItems);
   log(`✔ ต้นฉบับขึ้น R2 ${origs.length} ไฟล์ (${(origBytes / 1024 / 1024).toFixed(1)} MB) → ${origPrefix}/`);
-  await pruneR2(`${origPrefix}/`, origItems.map(o => o.key), log);
+  if (prune) await pruneR2(`${origPrefix}/`, origItems.map(o => o.key), log);
 
   // ── 2. รูปกลาง 1200 → เก็บในเครื่อง + ขึ้น R2 (ลิงก์สำหรับ xlsx) ──
   const outDir = path.join(MKT_PRODUCTS, code);
@@ -128,10 +131,14 @@ async function processProductImages({ code, slug, title, srcDir, sources, dirNam
   const mids = await r2.putMany(midItems);
   const midUrls = mids.map(m => m.url);
   log(`✔ รูปกลาง 1200×1200 ${midUrls.length} ใบขึ้น R2 → products/${code}/`);
-  await pruneR2(`products/${code}/`, midItems.map(m => m.key), log);
-  // ไฟล์รูปกลางในเครื่องก็ต้องตัดตาม ไม่งั้น build-marketplace-images เจอใบที่ลบไปแล้ว
-  for (const f of fs.readdirSync(outDir)) {
-    if (!midItems.some(m => path.basename(m.key) === f)) fs.unlinkSync(path.join(outDir, f));
+  if (prune) {
+    await pruneR2(`products/${code}/`, midItems.map(m => m.key), log);
+    // ไฟล์รูปกลางในเครื่องก็ต้องตัดตาม ไม่งั้น build-marketplace-images เจอใบที่ลบไปแล้ว
+    for (const f of fs.readdirSync(outDir)) {
+      if (!midItems.some(m => path.basename(m.key) === f)) fs.unlinkSync(path.join(outDir, f));
+    }
+  } else {
+    log(`⚠ ข้ามการลบไฟล์ค้าง — ชุดต้นฉบับไม่ครบ ถ้าลบจะทำลายรูปกลางที่ลิสต์ marketplace ใช้อยู่`);
   }
 
   upsertCatalog({ code, slug, title: title || dirName || code, dirName, count: midUrls.length, images: midUrls });
@@ -148,11 +155,9 @@ async function processProductImages({ code, slug, title, srcDir, sources, dirNam
   };
 }
 
-/** ดึงต้นฉบับกลับจาก R2 (ใช้ตอน NAS ไม่ได้ต่อแต่อยากทำรูปใหม่) */
-async function fetchOriginals(code, slug) {
-  const keys = await r2.listKeys(`originals/${code}-${slug}/`);
+async function download(keys) {
   const out = [];
-  for (const k of keys.sort((a, b) => a.key.localeCompare(b.key))) {
+  for (const k of keys) {
     const res = await fetch(r2.urlOf(k.key));
     if (!res.ok) continue;
     out.push({ name: path.basename(k.key), body: Buffer.from(await res.arrayBuffer()) });
@@ -160,4 +165,23 @@ async function fetchOriginals(code, slug) {
   return out;
 }
 
-module.exports = { processProductImages, fetchOriginals, loadCatalog, upsertCatalog, MID_SIZE, MAX_IMAGES };
+/**
+ * ดึงต้นฉบับกลับจาก R2 (ใช้ตอน NAS ไม่ได้ต่อแต่อยากทำรูปใหม่)
+ * list ด้วย prefix `originals/<code>-` เฉย ๆ ไม่ผูกกับ slug — สินค้าที่เคยเปลี่ยนชื่อ
+ * โฟลเดอร์ originals ยังเป็น slug เดิม ถ้าใส่ slug ปัจจุบันเข้าไปจะหาไม่เจอทั้งที่มีของอยู่
+ */
+async function fetchOriginals(code) {
+  const keys = (await r2.listKeys(`originals/${code}-`)).filter(k => IMG_EXT.test(k.key));
+  return download(keys.sort((a, b) => webImg.byNaturalName(a.key, b.key)));
+}
+
+/**
+ * ทางถอยสุดท้าย: ดึง "รูปกลาง 1200" กลับมาใช้แทนต้นฉบับ
+ * สำหรับสินค้าเก่าที่ลงไว้ก่อนมีชั้น originals/ (NAS ก็ไม่ได้ต่อ) — คุณภาพพอทำรูปเว็บ ≤800 ได้สบาย
+ */
+async function fetchMids(code) {
+  const keys = (await r2.listKeys(`products/${code}/`)).filter(k => IMG_EXT.test(k.key));
+  return download(keys.sort((a, b) => webImg.byNaturalName(a.key, b.key)));
+}
+
+module.exports = { processProductImages, fetchOriginals, fetchMids, loadCatalog, upsertCatalog, MID_SIZE, MAX_IMAGES };

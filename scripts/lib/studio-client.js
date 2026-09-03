@@ -577,7 +577,8 @@ async function addImages(btn) {
     status('eStatus', '⏳ ดึงต้นฉบับเดิม → ทำรูปใหม่ 3 ชั้น → build → push → อัปเดต DB… ใช้เวลาสักครู่');
     var out = await jpost('/api/add-images', {
       id: editing.id, code: $('eCode').value, imgSlug: editing.imgSlug,
-      name: $('eName').value, folder: mktFolder($('eCode').value), images: imgs, keep: keep
+      name: $('eName').value, folder: mktFolder($('eCode').value), images: imgs, keep: keep,
+      existingCount: (editing.images || []).length
     });
     editing.images = out.images;
     setEditImages(out.images);

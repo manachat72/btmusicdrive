@@ -28,7 +28,7 @@ const { makeTracklistQr } = require('./lib/tracklist-qr');
 const { buildSeo, validateSeo, CATEGORIES } = require('./lib/seo');
 const { slugify, imageSlug, uniqueImageSlug } = require('./lib/product-slug');
 const webImg = require('./lib/web-images');
-const { processProductImages, fetchOriginals } = require('./lib/product-images');
+const { processProductImages, fetchOriginals, fetchMids } = require('./lib/product-images');
 const { PAGE, CLIENT_JS } = require('./lib/studio-page');
 
 const ROOT = path.resolve(__dirname, '..');
@@ -481,31 +481,57 @@ http.createServer(async (req, res) => {
       const incoming = (Array.isArray(b.images) ? b.images : [])
         .map(im => ({ name: im.name || 'image.jpg', body: Buffer.from(im.data, 'base64') }));
 
-      // ต้นฉบับเดิม: NAS ก่อน (ไฟล์ดิบอยู่ใกล้กว่า) ไม่งั้นดึงกลับจาก R2
+      // ต้นฉบับเดิม 3 ทาง เรียงตามความ "ดิบ" ของไฟล์:
+      //   NAS → R2 originals/ → R2 รูปกลาง products/<code>/ (สินค้าเก่าที่ลงก่อนมีชั้น originals)
+      // ทางที่ 3 ไม่ใช่ชุดต้นฉบับจริง → ห้าม prune ไม่งั้นรูปกลางที่ลิสต์ marketplace ใช้อยู่จะถูกลบ
       let old = [];
+      let fullSet = true;
       const nasDir = b.folder && nasReady() ? path.join(NAS_DIR, b.folder) : null;
       if (nasDir && fs.existsSync(nasDir)) {
         old = webImg.listSourceImages(nasDir).map(f => ({ name: path.basename(f), body: fs.readFileSync(f) }));
         log(`✔ ต้นฉบับเดิมจาก NAS ${old.length} ใบ`);
       } else {
-        old = await fetchOriginals(code, slug);
-        log(old.length ? `✔ ดึงต้นฉบับเดิมจาก R2 ${old.length} ใบ` : '⚠ ไม่พบต้นฉบับเดิมบน R2 — จะได้เฉพาะรูปใหม่');
+        old = await fetchOriginals(code);
+        if (old.length) {
+          log(`✔ ดึงต้นฉบับเดิมจาก R2 ${old.length} ใบ`);
+        } else {
+          old = await fetchMids(code);
+          fullSet = false;
+          log(old.length
+            ? `⚠ ไม่มีต้นฉบับบน R2 — กู้จากรูปกลาง products/${code}/ ${old.length} ใบแทน (คุณภาพพอทำรูปเว็บ)`
+            : `⚠ ไม่พบรูปเดิมที่ไหนเลย — จะได้เฉพาะรูปใหม่ที่อัป`);
+        }
+      }
+
+      // กันเคสร้ายสุด: หาของเดิมไม่เจอเลยทั้งที่สินค้ามีรูปอยู่บนเว็บ
+      // ถ้าปล่อยผ่าน รูปเดิมจะถูกแทนที่ด้วยรูปใหม่ที่เพิ่งอัปทั้งชุด
+      if (!old.length && Number(b.existingCount) > 0) {
+        throw new Error(`หารูปเดิมของ code ${code} ไม่เจอเลย (ทั้ง NAS, originals/ และ products/${code}/)
+ทำต่อจะเอารูปที่เพิ่งอัปไปแทนรูปเดิมทั้งหมด — ถ้าตั้งใจเช่นนั้นให้ต่อ NAS ก่อน หรือเลือก code ให้ถูกตัว`);
       }
 
       // keep = index ของรูปเดิมที่เก็บไว้ เรียงตามลำดับใหม่ที่ผู้ใช้ลากไว้ (ไม่ส่งมา = เก็บทั้งหมดตามเดิม)
+      //
+      // ใช้ keep ได้ต่อเมื่อชุดที่กู้มา "จำนวนตรงกับ" ที่หน้าเว็บเห็นอยู่เท่านั้น
+      // สินค้าเก่าที่เคยอัปผ่านหน้า admin เว็บมีรูป 4 ใบ แต่บน R2 มีรูปกลาง 9 ใบ (คนละชุดกัน)
+      // ถ้าเอา index จากหน้าเว็บไปคัดชุด 9 ใบ รูปที่เกินมาจะหายเงียบ ๆ ทั้งที่ผู้ใช้อยากได้
+      const shown = Number(b.existingCount);
       let kept = old;
-      if (Array.isArray(b.keep)) {
+      if (Array.isArray(b.keep) && Number.isInteger(shown) && shown === old.length) {
         const valid = b.keep.map(Number).filter(i => Number.isInteger(i) && i >= 0 && i < old.length);
         if (new Set(valid).size !== valid.length) throw new Error('ลำดับรูปซ้ำกัน — รีเฟรชหน้าแล้วลองใหม่');
         kept = valid.map(i => old[i]);
         const dropped = old.length - kept.length;
         if (dropped > 0) log(`✔ ลบรูปเดิมออก ${dropped} ใบ · เหลือ ${kept.length} ใบ`);
+      } else if (Array.isArray(b.keep)) {
+        log(`⚠ ชุดรูปที่กู้มาได้ ${old.length} ใบ ไม่ตรงกับ ${shown} ใบที่แสดงอยู่ — ข้ามการลบ/สลับรอบนี้`);
+        log(`   ใช้ทั้ง ${old.length} ใบตามลำดับบน R2 ก่อน แล้วค่อยจัดลำดับ/ลบอีกรอบหลังรีเฟรชหน้า`);
       }
       const sources = kept.concat(incoming);
       if (!sources.length) throw new Error('ต้องเหลือรูปอย่างน้อย 1 ใบ');
       if (sources.length > 9) log(`⚠ รวมแล้ว ${sources.length} ใบ — เก็บ 9 ใบแรก (เพดานของ Shopee/TikTok)`);
       log('⏳ ทำรูปใหม่ครบ 3 ชั้น (ต้นฉบับ R2 · รูปกลาง 1200 · รูปเว็บ webp+avif) …');
-      const img = await processProductImages({ code, slug, title: b.name || slug, sources, dirName: b.folder, log });
+      const img = await processProductImages({ code, slug, title: b.name || slug, sources, dirName: b.folder, prune: fullSet, log });
 
       // เขียนต้นฉบับ "ทั้งชุด" ลง NAS ใหม่ ถ้าไดรฟ์ต่ออยู่ — ชื่อไฟล์ หลัก_NN ต้องเรียงตรงกับลำดับรูปเว็บ
       // (ส่ง incoming อย่างเดียวไม่ได้ จะทับ หลัก_01 ของเดิม)
