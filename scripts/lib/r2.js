@@ -4,7 +4,7 @@
  */
 const fs = require('fs');
 const path = require('path');
-const { S3Client, PutObjectCommand, HeadObjectCommand, ListObjectsV2Command } = require('@aws-sdk/client-s3');
+const { S3Client, PutObjectCommand, HeadObjectCommand, ListObjectsV2Command, DeleteObjectsCommand } = require('@aws-sdk/client-s3');
 
 const ROOT = path.resolve(__dirname, '..', '..');
 const CDN = 'https://img.btmusicdrive.com';
@@ -84,6 +84,22 @@ async function putMany(items, { concurrency = 6, onProgress } = {}) {
   return out;
 }
 
+/**
+ * ลบ key ทิ้ง (ใช้ตอนจำนวนรูปลดลง — ไฟล์ orig-05 ที่ค้างจะถูก fetchOriginals ดึงกลับมา
+ * ทำให้รูปที่เพิ่งลบโผล่กลับมาในรอบถัดไป)
+ */
+async function deleteKeys(keys) {
+  const list = keys.map(k => (typeof k === 'string' ? k : k.key)).filter(Boolean);
+  if (!list.length) return 0;
+  for (let i = 0; i < list.length; i += 1000) {
+    await client().send(new DeleteObjectsCommand({
+      Bucket: bucket(),
+      Delete: { Objects: list.slice(i, i + 1000).map(Key => ({ Key })), Quiet: true },
+    }));
+  }
+  return list.length;
+}
+
 /** list key ทั้งหมดใต้ prefix */
 async function listKeys(prefix) {
   const keys = [];
@@ -96,4 +112,4 @@ async function listKeys(prefix) {
   return keys;
 }
 
-module.exports = { putObject, putMany, listKeys, exists, urlOf, CDN };
+module.exports = { putObject, putMany, listKeys, deleteKeys, exists, urlOf, CDN };

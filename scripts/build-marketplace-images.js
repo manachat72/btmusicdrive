@@ -20,6 +20,7 @@
 const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
+const { byNaturalName } = require('./lib/web-images');
 
 const ROOT = path.resolve(__dirname, '..');
 const OUT_DIR = path.join(ROOT, 'marketplace-images');
@@ -60,12 +61,8 @@ function listImages(dir) {
   return fs.readdirSync(dir, { withFileTypes: true })
     .filter(f => f.isFile() && IMG_EXT.test(f.name))
     .map(f => f.name)
-    // เรียงตามเลขท้ายชื่อ (หลัก_01, หลัก_02, ... หลัก_10)
-    .sort((a, b) => {
-      const na = parseInt((a.match(/(\d+)(?=\.[^.]+$)/) || [])[1] || '0', 10);
-      const nb = parseInt((b.match(/(\d+)(?=\.[^.]+$)/) || [])[1] || '0', 10);
-      return na - nb || a.localeCompare(b);
-    });
+    // เรียงชื่อเต็มแบบ Explorer — ต้องตรงกับ web-images.js ไม่งั้นรูป 3 ชั้นเรียงคนละแบบ
+    .sort(byNaturalName);
 }
 
 async function convertOne(srcPath, outPath) {

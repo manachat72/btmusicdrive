@@ -40,6 +40,20 @@ main { padding:18px 22px; max-width:1180px; margin:0 auto; }
 .imgs a { position:relative; }
 .imgs img { width:100%; aspect-ratio:1; object-fit:cover; border-radius:10px; border:1px solid var(--line); background:#eee; }
 .imgs .cover::after { content:'ภาพปก'; position:absolute; top:6px; left:6px; background:var(--dark); color:#fff; font-size:10px; padding:2px 8px; border-radius:99px; }
+/* การ์ดรูปที่ลากสลับลำดับได้ — รูปแรกคือรูปปกที่ขึ้นบนการ์ดสินค้าในเว็บ */
+.tile { position:relative; cursor:grab; }
+.tile:active { cursor:grabbing; }
+.tile.cover img { border-color:var(--primary); box-shadow:0 0 0 2px var(--primary); }
+.tile .x, .tile .star { position:absolute; top:4px; border:0; border-radius:99px; width:22px; height:22px; line-height:1; font-size:13px; cursor:pointer; padding:0; opacity:0; transition:opacity .12s; }
+.tile .x { right:4px; background:rgba(185,28,28,.92); color:#fff; }
+.tile .star { left:4px; background:rgba(255,255,255,.94); }
+.tile:hover .x, .tile:hover .star { opacity:1; }
+.tile .badge { position:absolute; top:5px; left:5px; background:var(--dark); color:#fff; font-size:10px; padding:2px 8px; border-radius:99px; }
+.tile .n { position:absolute; bottom:5px; right:5px; background:rgba(15,23,42,.75); color:#fff; font-size:10px; min-width:17px; text-align:center; padding:1px 5px; border-radius:99px; }
+.tile.new img { border-color:#15803d; border-style:dashed; }
+.drop { border:2px dashed var(--line); border-radius:12px; padding:20px; text-align:center; color:#94a3b8; font-size:13px; margin:6px 0 10px; }
+.drop.on { border-color:var(--primary); background:#faf7f2; color:var(--primary); }
+.drop .pick { color:var(--primary); text-decoration:underline; cursor:pointer; }
 .st { margin-top:12px; font-size:13px; color:#475569; white-space:pre-wrap; line-height:1.7; }
 .ok { color:#15803d; } .err { color:#b91c1c; } .warnc { color:#b45309; }
 .issues { border-radius:10px; padding:10px 14px; font-size:13px; line-height:1.8; margin:10px 0; }

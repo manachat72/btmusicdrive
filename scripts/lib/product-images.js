@@ -25,16 +25,12 @@ const MID_QUALITY = 88;
 const MAX_IMAGES = 9;       // Shopee/TikTok รับ 9 · Lazada 8
 const IMG_EXT = /\.(jpe?g|png|webp|avif|tiff?|bmp)$/i;
 
-/** อ่านต้นฉบับจากโฟลเดอร์ (NAS) เรียงตามเลขท้ายชื่อ */
+/** อ่านต้นฉบับจากโฟลเดอร์ (NAS) เรียงชื่อแบบเดียวกับที่เห็นใน Explorer */
 function readSourceDir(dir) {
   return fs.readdirSync(dir, { withFileTypes: true })
     .filter(f => f.isFile() && IMG_EXT.test(f.name))
     .map(f => f.name)
-    .sort((a, b) => {
-      const na = parseInt((a.match(/(\d+)(?=\.[^.]+$)/) || [])[1] || '0', 10);
-      const nb = parseInt((b.match(/(\d+)(?=\.[^.]+$)/) || [])[1] || '0', 10);
-      return na - nb || a.localeCompare(b);
-    })
+    .sort(webImg.byNaturalName)
     .slice(0, MAX_IMAGES)
     .map(name => ({ name, body: fs.readFileSync(path.join(dir, name)) }));
 }
@@ -73,6 +69,25 @@ async function toMid(buf) {
 }
 
 /**
+ * ลบไฟล์ใต้ prefix ที่ไม่ได้อยู่ในชุดที่เพิ่งอัปไป
+ * จำเป็นเมื่อจำนวนรูปลดลง (ลบรูปทิ้ง) — ถ้าไม่ลบ orig-05 ที่ค้างจะถูก fetchOriginals
+ * ดึงกลับมาในรอบถัดไป รูปที่ลบไปแล้วก็โผล่กลับมาเอง
+ */
+async function pruneR2(prefix, keepKeys, log = () => { }) {
+  try {
+    const keep = new Set(keepKeys);
+    const stale = (await r2.listKeys(prefix)).filter(k => !keep.has(k.key));
+    if (!stale.length) return 0;
+    await r2.deleteKeys(stale);
+    log(`✔ ลบไฟล์ค้างบน R2 ${stale.length} ไฟล์ → ${prefix}`);
+    return stale.length;
+  } catch (e) {
+    log(`⚠ ลบไฟล์ค้างบน R2 ไม่สำเร็จ (${prefix}): ${String(e.message).slice(0, 120)}`);
+    return 0;
+  }
+}
+
+/**
  * ทำรูปครบ 3 ชั้นจากต้นฉบับชุดเดียว
  * @param {object} o
  * @param {string} o.code        เลขสินค้า 2 หลัก เช่น "57"
@@ -98,6 +113,7 @@ async function processProductImages({ code, slug, title, srcDir, sources, dirNam
   const origBytes = origItems.reduce((n, o) => n + o.body.length, 0);
   const origs = await r2.putMany(origItems);
   log(`✔ ต้นฉบับขึ้น R2 ${origs.length} ไฟล์ (${(origBytes / 1024 / 1024).toFixed(1)} MB) → ${origPrefix}/`);
+  await pruneR2(`${origPrefix}/`, origItems.map(o => o.key), log);
 
   // ── 2. รูปกลาง 1200 → เก็บในเครื่อง + ขึ้น R2 (ลิงก์สำหรับ xlsx) ──
   const outDir = path.join(MKT_PRODUCTS, code);
@@ -112,6 +128,11 @@ async function processProductImages({ code, slug, title, srcDir, sources, dirNam
   const mids = await r2.putMany(midItems);
   const midUrls = mids.map(m => m.url);
   log(`✔ รูปกลาง 1200×1200 ${midUrls.length} ใบขึ้น R2 → products/${code}/`);
+  await pruneR2(`products/${code}/`, midItems.map(m => m.key), log);
+  // ไฟล์รูปกลางในเครื่องก็ต้องตัดตาม ไม่งั้น build-marketplace-images เจอใบที่ลบไปแล้ว
+  for (const f of fs.readdirSync(outDir)) {
+    if (!midItems.some(m => path.basename(m.key) === f)) fs.unlinkSync(path.join(outDir, f));
+  }
 
   upsertCatalog({ code, slug, title: title || dirName || code, dirName, count: midUrls.length, images: midUrls });
 

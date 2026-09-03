@@ -74,6 +74,13 @@ function assertCodeFree(code, slug, name) {
     `ถ้า "${String(name || slug).slice(0, 40)}" เป็นสินค้าคนละตัว ให้เลือก code ว่างตัวอื่น — ทำต่อจะทับรูปกลางบน R2 ของสินค้าเดิม`);
 }
 
+/** เลขชุดรูป marketplace ของโฟลเดอร์รูปนี้ — ให้หน้าเว็บไม่ต้องเลือก code เองทุกครั้ง */
+function codeForSlug(imgSlug) {
+  if (!imgSlug) return null;
+  const e = loadCatalog().find(p => p.slug === imgSlug);
+  return e ? e.code : null;
+}
+
 /** สินค้าที่อยู่บนเว็บจริง (จาก products.json — เร็ว ไม่ต้องยิง API) */
 function loadWebProducts() {
   try {
@@ -99,7 +106,7 @@ function loadProducts() {
       meta[String(r.Code).padStart(2, '0')] = { price: r['ราคา'], stock: r['สต็อก'], sku: r['SKU'], note: r['หมายเหตุ'] };
     }
   }
-  return catalog.map(p => ({ code: p.code, title: p.title, dirName: p.dirName || '', images: p.images, count: p.images.length, ...(meta[p.code] || {}) }));
+  return catalog.map(p => ({ code: p.code, title: p.title, slug: p.slug || '', dirName: p.dirName || '', images: p.images, count: p.images.length, ...(meta[p.code] || {}) }));
 }
 
 function nasFolders() {
@@ -264,10 +271,18 @@ function saveToNas(folderName, files, log) {
   try {
     const dir = path.join(NAS_DIR, folderName);
     fs.mkdirSync(dir, { recursive: true });
+    const written = new Set();
     files.forEach((f, i) => {
       const ext = (path.extname(f.name) || '.jpg').toLowerCase();
-      fs.writeFileSync(path.join(dir, `หลัก_${String(i + 1).padStart(2, '0')}${ext}`), f.body);
+      const name = `หลัก_${String(i + 1).padStart(2, '0')}${ext}`;
+      fs.writeFileSync(path.join(dir, name), f.body);
+      written.add(name);
     });
+    // รูปเก่าที่เกินจำนวนใหม่ต้องลบ (ลบรูปทิ้งแล้ว หลัก_05 ค้าง = รอบหน้าอ่านกลับมาใหม่)
+    // แตะเฉพาะไฟล์รูป — รายชื่อเพลง.txt ในโฟลเดอร์เดียวกันต้องอยู่ครบ
+    for (const f of fs.readdirSync(dir)) {
+      if (/\.(jpe?g|png|webp|avif|tiff?|bmp)$/i.test(f) && !written.has(f)) fs.unlinkSync(path.join(dir, f));
+    }
     log(`✔ เก็บต้นฉบับลง NAS: ${folderName} (${files.length} รูป)`);
     return folderName;
   } catch (e) {
@@ -450,21 +465,21 @@ http.createServer(async (req, res) => {
       });
     }
 
-    // ── เพิ่มรูปให้สินค้าเดิม ──
-    // ดึงต้นฉบับเดิมจาก R2 (หรือ NAS ถ้าต่ออยู่) + รูปใหม่ที่อัปมา → ทำรูปใหม่ครบ 3 ชั้น
-    // แล้ว push รูปก่อน ค่อย PATCH images ใน DB (DB ชี้มาก่อนไฟล์ขึ้น = รูป 404)
+    // ── จัดการรูปสินค้าเดิม: เพิ่ม / ลบ / สลับลำดับ ในครั้งเดียว ──
+    // ดึงต้นฉบับเดิมจาก R2 (หรือ NAS ถ้าต่ออยู่) → คัด+เรียงตาม keep → ต่อรูปใหม่ →
+    // ทำรูปใหม่ครบ 3 ชั้น แล้ว push รูปก่อน ค่อย PATCH images ใน DB (DB ชี้มาก่อนไฟล์ขึ้น = รูป 404)
     if (url.pathname === '/api/add-images' && req.method === 'POST') {
       if (!isAuthed()) throw new Error('ยังไม่ได้เข้าสู่ระบบแอดมิน — ล็อกอินก่อนเพิ่มรูป');
       const b = JSON.parse(await readBody(req));
       if (!b.id) throw new Error('ไม่มี id สินค้า');
-      const code = String(b.code || '').padStart(2, '0');
-      if (!/^\d{2,}$/.test(code)) throw new Error('เลือก "ชุดรูป marketplace" ก่อน — ต้องรู้เลขชุดรูปถึงจะเก็บต้นฉบับถูกที่');
       const slug = b.imgSlug;
       if (!slug) throw new Error('ไม่รู้โฟลเดอร์รูปของสินค้านี้');
+      // เดาเลขชุดรูปจาก catalog ให้เอง ถ้าหน้าเว็บไม่ได้ส่งมา
+      const code = String(b.code || codeForSlug(slug) || '').padStart(2, '0');
+      if (!/^\d{2,}$/.test(code)) throw new Error('ไม่รู้เลขชุดรูป marketplace ของสินค้านี้ — เลือกจากรายการด้านล่างก่อน');
       assertCodeFree(code, slug, b.name);
       const incoming = (Array.isArray(b.images) ? b.images : [])
         .map(im => ({ name: im.name || 'image.jpg', body: Buffer.from(im.data, 'base64') }));
-      if (!incoming.length) throw new Error('ไม่มีรูปใหม่');
 
       // ต้นฉบับเดิม: NAS ก่อน (ไฟล์ดิบอยู่ใกล้กว่า) ไม่งั้นดึงกลับจาก R2
       let old = [];
@@ -477,7 +492,17 @@ http.createServer(async (req, res) => {
         log(old.length ? `✔ ดึงต้นฉบับเดิมจาก R2 ${old.length} ใบ` : '⚠ ไม่พบต้นฉบับเดิมบน R2 — จะได้เฉพาะรูปใหม่');
       }
 
-      const sources = old.concat(incoming);
+      // keep = index ของรูปเดิมที่เก็บไว้ เรียงตามลำดับใหม่ที่ผู้ใช้ลากไว้ (ไม่ส่งมา = เก็บทั้งหมดตามเดิม)
+      let kept = old;
+      if (Array.isArray(b.keep)) {
+        const valid = b.keep.map(Number).filter(i => Number.isInteger(i) && i >= 0 && i < old.length);
+        if (new Set(valid).size !== valid.length) throw new Error('ลำดับรูปซ้ำกัน — รีเฟรชหน้าแล้วลองใหม่');
+        kept = valid.map(i => old[i]);
+        const dropped = old.length - kept.length;
+        if (dropped > 0) log(`✔ ลบรูปเดิมออก ${dropped} ใบ · เหลือ ${kept.length} ใบ`);
+      }
+      const sources = kept.concat(incoming);
+      if (!sources.length) throw new Error('ต้องเหลือรูปอย่างน้อย 1 ใบ');
       if (sources.length > 9) log(`⚠ รวมแล้ว ${sources.length} ใบ — เก็บ 9 ใบแรก (เพดานของ Shopee/TikTok)`);
       log('⏳ ทำรูปใหม่ครบ 3 ชั้น (ต้นฉบับ R2 · รูปกลาง 1200 · รูปเว็บ webp+avif) …');
       const img = await processProductImages({ code, slug, title: b.name || slug, sources, dirName: b.folder, log });
@@ -487,7 +512,7 @@ http.createServer(async (req, res) => {
       if (b.folder) saveToNas(b.folder, sources.slice(0, 9), log);
 
       runBuild();
-      const g = gitPush(`feat(images): เพิ่มรูป ${slug} (${img.web.length} ใบ)`, ['images/products']);
+      const g = gitPush(`feat(images): จัดรูป ${slug} (${img.web.length} ใบ)`, ['images/products']);
       log(g.pushed ? `✔ push รูปแล้ว (${g.count} ไฟล์)` : `⚠ ไม่ได้ push: ${g.reason} — อย่าเพิ่งเปิดหน้าสินค้า รูปจะ 404`);
 
       const out = await api(`/products/${b.id}`, {

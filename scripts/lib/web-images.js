@@ -22,16 +22,22 @@ function listWebDirs() {
   catch { return []; }
 }
 
-/** ไฟล์รูปในโฟลเดอร์ NAS เรียงตามเลขท้ายชื่อ (หลัก_01, หลัก_02, ...) */
+/**
+ * เรียงชื่อไฟล์ให้ตรงกับที่เห็นใน Windows Explorer (natural sort ชื่อเต็ม)
+ * locale 'en' = ตัวเลข → ละติน → ไทย เหมือน Explorer · numeric ทำให้ _2 มาก่อน _10
+ *
+ * ห้ามกลับไปเรียงด้วย "เลขท้ายชื่อไฟล์" อย่างเดียว: โฟลเดอร์ที่ชื่อไฟล์ปนกัน
+ * (หลัก_02.jpg + watermarked_img_1849171711.jpg) จะได้ลำดับมั่วจนรูปปกผิดใบ
+ */
+const NAME_COLLATOR = new Intl.Collator('en', { numeric: true, sensitivity: 'base' });
+const byNaturalName = (a, b) => NAME_COLLATOR.compare(String(a), String(b));
+
+/** ไฟล์รูปในโฟลเดอร์ NAS เรียงตามชื่อแบบเดียวกับ Explorer */
 function listSourceImages(dir) {
   return fs.readdirSync(dir, { withFileTypes: true })
     .filter(f => f.isFile() && IMG_EXT.test(f.name))
     .map(f => f.name)
-    .sort((a, b) => {
-      const na = parseInt((a.match(/(\d+)(?=\.[^.]+$)/) || [])[1] || '0', 10);
-      const nb = parseInt((b.match(/(\d+)(?=\.[^.]+$)/) || [])[1] || '0', 10);
-      return na - nb || a.localeCompare(b);
-    })
+    .sort(byNaturalName)
     .map(n => path.join(dir, n));
 }
 
@@ -121,4 +127,4 @@ function readWebUrls(slug) {
     .map(f => `/images/products/${slug}/${f}`);
 }
 
-module.exports = { buildWebImages, renameWebImages, readWebUrls, listWebDirs, listSourceImages, WEB_DIR };
+module.exports = { buildWebImages, renameWebImages, readWebUrls, listWebDirs, listSourceImages, byNaturalName, WEB_DIR };

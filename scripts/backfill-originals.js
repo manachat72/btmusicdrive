@@ -16,6 +16,7 @@ const fs = require('fs');
 const path = require('path');
 const r2 = require('./lib/r2');
 const { imageSlug } = require('./lib/product-slug');
+const { byNaturalName } = require('./lib/web-images');
 
 const argv = process.argv.slice(2);
 const APPLY = argv.includes('--apply');
@@ -36,11 +37,7 @@ function listImages(dir) {
   return fs.readdirSync(dir, { withFileTypes: true })
     .filter(f => f.isFile() && IMG_EXT.test(f.name))
     .map(f => f.name)
-    .sort((a, b) => {
-      const na = parseInt((a.match(/(\d+)(?=\.[^.]+$)/) || [])[1] || '0', 10);
-      const nb = parseInt((b.match(/(\d+)(?=\.[^.]+$)/) || [])[1] || '0', 10);
-      return na - nb || a.localeCompare(b);
-    })
+    .sort(byNaturalName)
     .slice(0, MAX_IMAGES);
 }
 

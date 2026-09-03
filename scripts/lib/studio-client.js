@@ -395,10 +395,12 @@ function filterWeb(q) {
 function pickWeb(id) {
   editing = WEB.filter(function (p) { return p.id === id; })[0];
   if (!editing) return;
-  editTrack = null; addImgs = []; editImages = (editing.images || []).slice();
+  editTrack = null; addImgs = []; setEditImages(editing.images);
   [].forEach.call(document.querySelectorAll('.item'), function (i) { i.classList.toggle('active', i.dataset.id === id); });
-  // code ของชุดรูป marketplace — เดาจาก SKU แบบ BT-NN ถ้ามี ไม่งั้นให้เลือกเอง
-  var guess = /^BT-(\d+)$/.test(editing.sku || '') ? editing.sku.replace(/^BT-/, '') : '';
+  // code ของชุดรูป marketplace — จับคู่จากโฟลเดอร์รูปก่อน (แม่นสุด) ไม่งั้นเดาจาก SKU แบบ BT-NN
+  var bySlug = MKT.filter(function (m) { return m.slug && m.slug === editing.imgSlug; })[0];
+  var guess = bySlug ? bySlug.code
+    : (/^BT-(\d+)$/.test(editing.sku || '') ? editing.sku.replace(/^BT-/, '') : '');
   $('epane').innerHTML =
     loginBoxHtml() +
     '<div class="card"><h2>✏ ' + esc(editing.name) + '</h2>' +
@@ -416,10 +418,11 @@ function pickWeb(id) {
     '<div class="f"><label>เปลี่ยนรายชื่อเพลง (.txt — ไม่แนบ = ใช้ของเดิม ' + (editing.tracklist || []).length + ' เพลง)</label>' +
     '<input type="file" accept=".txt" onchange="readEditTxt(this)"><div class="hint" id="eTxtInfo"></div></div>' +
     '<hr style="border:0;border-top:1px solid #e2ded8;margin:16px 0">' +
-    '<h2 style="font-size:15px">🖼 เพิ่มรูปสินค้า</h2>' +
-    '<div class="sub">รูปใหม่จะต่อท้ายรูปเดิม (รวมได้ 9 ใบ) — ระบบดึงต้นฉบับเดิมจาก R2/NAS มาทำรูปใหม่ครบทั้ง 3 ชั้น แล้ว push ให้เอง<br>ต้องเลือก "ชุดรูป marketplace" ด้านล่างก่อน</div>' +
-    '<div class="f"><input type="file" accept="image/*" multiple onchange="pickAddImgs(this)"><div class="hint" id="eAddInfo"></div></div>' +
-    '<button class="ghost" onclick="addImages(this)">➕ เพิ่มรูป + อัปเดตเว็บ</button>' +
+    '<h2 style="font-size:15px">🖼 จัดการรูปสินค้า</h2>' +
+    '<div class="sub">ลากรูปด้านบนเพื่อสลับลำดับ · กด × ลบ · กด ⭐ ตั้งเป็นรูปปก — แล้วกด "บันทึกรูป" ทีเดียว<br>ระบบดึงต้นฉบับจาก R2/NAS มาทำรูปใหม่ครบทั้ง 3 ชั้น + push ให้เอง</div>' +
+    '<div id="eDrop" class="drop">ลากไฟล์รูปมาวางตรงนี้ หรือ<label class="pick"> เลือกไฟล์<input type="file" accept="image/*" multiple hidden onchange="pickAddImgs(this)"></label></div>' +
+    '<div id="eAddPrev" class="imgs"></div><div class="hint" id="eAddInfo"></div>' +
+    '<button class="primary" onclick="addImages(this)">💾 บันทึกรูป + อัปเดตเว็บ</button>' +
     '<button class="ghost" onclick="syncImages(this)" style="margin-left:8px">♻ ซิงก์รูปในโฟลเดอร์เข้าเว็บ</button>' +
     '<hr style="border:0;border-top:1px solid #e2ded8;margin:16px 0">' +
     '<h2 style="font-size:15px">🔁 ทำ SEO ใหม่ทั้งชุด</h2>' +
@@ -431,42 +434,115 @@ function pickWeb(id) {
     '<div class="f"><label>ชุดรูป marketplace (ใช้ทำ xlsx)</label><select id="eCode"><option value="">— ไม่สร้าง xlsx —</option>' +
     MKT.map(function (m) {
       return '<option value="' + esc(m.code) + '"' + (m.code === guess ? ' selected' : '') + '>code ' + esc(m.code) + ' · ' + esc(m.title.slice(0, 60)) + '</option>';
-    }).join('') + '</select><div class="hint">สินค้าเก่าที่ SKU ไม่ใช่ BT-NN ต้องเลือกเอง</div></div>' +
+    }).join('') + '</select><div class="hint">' + (guess
+      ? '✔ จับคู่ให้อัตโนมัติแล้วจากโฟลเดอร์รูป' + (bySlug ? '' : ' (SKU)')
+      : '⚠ จับคู่อัตโนมัติไม่ได้ — สินค้าเก่าที่ catalog ยังไม่มี slug ต้องเลือกเอง 1 ครั้ง หลังบันทึกรูปแล้วครั้งหน้าจะจำได้เอง'
+    ) + '</div></div>' +
     '<div class="actions">' +
     '<button class="btn tiktok" onclick="genFor(this)">📦 สร้าง xlsx ทุกแพลตฟอร์ม</button>' +
     '<button class="primary" onclick="saveEdit(this)">💾 บันทึก + อัปเดตเว็บ</button></div>' +
     '<div class="st" id="eStatus"></div></div>';
   renderEditImages();
+  renderAddPreview();
+  bindDropZone();
 }
 
 // ลำดับนี้คือแกลเลอรีสินค้า และรูปแรกคือรูปปกที่แสดงบนการ์ดสินค้า
+// editImages[i].k = index ของ "ต้นฉบับ" ใบนี้ตอนโหลดหน้า — server ใช้คัด/เรียงต้นฉบับตามนี้
+// (ห้ามส่งแค่ URL รูปเว็บ ต้นฉบับบน R2 คนละชื่อกัน จับคู่กลับไม่ได้)
+var dragFrom = -1;
+
+// k อ่านจากเลขท้ายชื่อไฟล์ (<slug>-3.webp → ต้นฉบับใบที่ 3) ไม่ใช่ตำแหน่งในลิสต์
+// เพราะลำดับใน DB อาจถูกสลับไว้ก่อนหน้าโดยที่ชื่อไฟล์ยังเรียงเหมือนเดิม
+function setEditImages(urls) {
+  var list = urls || [];
+  var nums = list.map(function (u) {
+    var m = String(u).match(/-(\d+)\.(webp|avif|jpe?g|png)$/i);
+    return m ? parseInt(m[1], 10) - 1 : -1;
+  });
+  var ok = nums.every(function (n) { return n >= 0; }) && new Set(nums).size === nums.length;
+  editImages = list.map(function (u, i) { return { url: u, k: ok ? nums[i] : i }; });
+}
+
+function editImageUrls() {
+  return editImages.map(function (x) { return x.url; });
+}
+
 function renderEditImages() {
   var el = $('eImages');
   if (!el) return;
   if (!editImages.length) { el.innerHTML = '<div class="hint">ยังไม่มีรูปสินค้า</div>'; return; }
-  el.innerHTML = editImages.map(function (u, i) {
-    return '<div style="position:relative;min-width:112px">' +
-      '<a href="' + esc(u) + '" target="_blank" class="' + (i === 0 ? 'cover' : '') + '"><img src="' + esc(u) + '"></a>' +
-      '<div style="display:flex;gap:4px;margin-top:4px;align-items:center">' +
-        '<button type="button" class="ghost" style="padding:3px 7px" onclick="moveEditImage(' + i + ', -1)" ' + (i === 0 ? 'disabled title="เป็นรูปปกอยู่แล้ว"' : 'title="เลื่อนขึ้น"') + '>←</button>' +
-        '<span class="hint" style="margin:0;white-space:nowrap">' + (i === 0 ? 'รูปปก' : 'รูป ' + (i + 1)) + '</span>' +
-        '<button type="button" class="ghost" style="padding:3px 7px" onclick="moveEditImage(' + i + ', 1)" ' + (i === editImages.length - 1 ? 'disabled title="รูปสุดท้าย"' : 'title="เลื่อนลง"') + '>→</button>' +
-      '</div></div>';
+  el.innerHTML = editImages.map(function (x, i) {
+    return '<div class="tile' + (i === 0 ? ' cover' : '') + '" draggable="true" data-i="' + i + '"' +
+      ' ondragstart="imgDragStart(event,' + i + ')" ondragover="imgDragOver(event,' + i + ')"' +
+      ' ondrop="imgDrop(event,' + i + ')" ondragend="imgDragEnd()">' +
+      '<img src="' + esc(x.url) + '" alt="">' +
+      '<button type="button" class="x" title="ลบรูปนี้" onclick="removeEditImage(' + i + ')">×</button>' +
+      (i === 0 ? '<span class="badge">รูปปก</span>'
+        : '<button type="button" class="star" title="ตั้งเป็นรูปปก" onclick="makeCover(' + i + ')">⭐</button>') +
+      '<span class="n">' + (i + 1) + '</span></div>';
   }).join('');
 }
 
-function moveEditImage(index, direction) {
-  var next = index + direction;
-  if (next < 0 || next >= editImages.length) return;
-  var current = editImages[index];
-  editImages[index] = editImages[next];
-  editImages[next] = current;
+function imgDragStart(e, i) { dragFrom = i; e.dataTransfer.effectAllowed = 'move'; }
+function imgDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }
+function imgDragEnd() { dragFrom = -1; }
+function imgDrop(e, to) {
+  e.preventDefault();
+  if (dragFrom < 0 || dragFrom === to) return;
+  var moved = editImages.splice(dragFrom, 1)[0];
+  editImages.splice(to, 0, moved);
+  dragFrom = -1;
   renderEditImages();
 }
 
-function pickAddImgs(inp) {
-  addImgs = [].slice.call(inp.files);
-  $('eAddInfo').textContent = addImgs.length ? '✔ เลือก ' + addImgs.length + ' ใบ — จะต่อท้ายรูปเดิม ' + (editing.images || []).length + ' ใบ' : '';
+function makeCover(i) {
+  if (i <= 0) return;
+  editImages.unshift(editImages.splice(i, 1)[0]);
+  renderEditImages();
+}
+
+function removeEditImage(i) {
+  if (editImages.length + addImgs.length <= 1) { alert('ต้องเหลือรูปอย่างน้อย 1 ใบ'); return; }
+  editImages.splice(i, 1);
+  renderEditImages();
+  status('eStatus', 'ลบออกจากรายการแล้ว — กด "บันทึกรูป" เพื่อให้มีผลจริงบนเว็บ');
+}
+
+/** รูปใหม่ที่รออัป — โชว์พรีวิว + ลบทีละใบก่อนกดบันทึกได้ */
+function renderAddPreview() {
+  var el = $('eAddPrev'); if (!el) return;
+  el.innerHTML = addImgs.map(function (f, i) {
+    return '<div class="tile new"><img src="' + URL.createObjectURL(f) + '" alt="">' +
+      '<button type="button" class="x" title="เอาออก" onclick="dropAddImg(' + i + ')">×</button>' +
+      '<span class="badge">ใหม่</span></div>';
+  }).join('');
+  $('eAddInfo').textContent = addImgs.length
+    ? '✔ รูปใหม่ ' + addImgs.length + ' ใบ — จะต่อท้ายรูปเดิม ' + editImages.length + ' ใบ (รวม ' + (addImgs.length + editImages.length) + ')'
+    : '';
+}
+
+function dropAddImg(i) { addImgs.splice(i, 1); renderAddPreview(); }
+
+function pickAddImgs(inp) { queueAddImgs(inp.files); inp.value = ''; }
+
+function queueAddImgs(files) {
+  var picked = [].slice.call(files).filter(function (f) { return /^image\//.test(f.type); });
+  // เรียงชื่อไฟล์แบบเดียวกับ Explorer เพื่อให้ลำดับที่ได้ตรงกับที่เห็นในโฟลเดอร์
+  picked.sort(function (a, b) { return a.name.localeCompare(b.name, 'en', { numeric: true, sensitivity: 'base' }); });
+  addImgs = addImgs.concat(picked);
+  renderAddPreview();
+}
+
+function bindDropZone() {
+  var z = $('eDrop'); if (!z) return;
+  ['dragenter', 'dragover'].forEach(function (t) {
+    z.addEventListener(t, function (e) { e.preventDefault(); z.classList.add('on'); });
+  });
+  ['dragleave', 'drop'].forEach(function (t) {
+    z.addEventListener(t, function (e) { e.preventDefault(); z.classList.remove('on'); });
+  });
+  z.addEventListener('drop', function (e) { queueAddImgs(e.dataTransfer.files); });
 }
 
 async function syncImages(btn) {
@@ -476,7 +552,7 @@ async function syncImages(btn) {
     status('eStatus', '⏳ push รูปในโฟลเดอร์ → อัปเดต DB → sync products.json…');
     var out = await jpost('/api/sync-images', { id: editing.id, imgSlug: editing.imgSlug });
     editing.images = out.images;
-    editImages = out.images.slice();
+    setEditImages(out.images);
     renderEditImages();
     status('eStatus', '<span class="ok">✔ ซิงก์แล้ว รวม ' + out.images.length + ' ใบ</span><br>' + esc(out.logs.join('\n')));
     WEB = await jget('/api/web-products');
@@ -484,8 +560,13 @@ async function syncImages(btn) {
   btn.disabled = false;
 }
 
+/** บันทึกรูป: ลบ + สลับลำดับ + เพิ่มรูปใหม่ ในรอบเดียว */
 async function addImages(btn) {
-  if (!addImgs.length) { status('eStatus', 'เลือกไฟล์รูปก่อนครับ', 'err'); return; }
+  var keep = editImages.map(function (x) { return x.k; });
+  var changed = addImgs.length || keep.length !== (editing.images || []).length ||
+    keep.some(function (k, i) { return k !== i; });
+  if (!changed) { status('eStatus', 'รูปยังไม่มีอะไรเปลี่ยน — ลากสลับลำดับ ลบ หรือเพิ่มรูปใหม่ก่อน', 'err'); return; }
+  if (!keep.length && !addImgs.length) { status('eStatus', 'ต้องเหลือรูปอย่างน้อย 1 ใบ', 'err'); return; }
   if (!$('eCode').value) { status('eStatus', 'เลือกชุดรูป marketplace ก่อน — ต้องรู้เลขชุดถึงจะเก็บต้นฉบับถูกที่', 'err'); return; }
   btn.disabled = true;
   try {
@@ -496,13 +577,14 @@ async function addImages(btn) {
     status('eStatus', '⏳ ดึงต้นฉบับเดิม → ทำรูปใหม่ 3 ชั้น → build → push → อัปเดต DB… ใช้เวลาสักครู่');
     var out = await jpost('/api/add-images', {
       id: editing.id, code: $('eCode').value, imgSlug: editing.imgSlug,
-      name: $('eName').value, folder: mktFolder($('eCode').value), images: imgs
+      name: $('eName').value, folder: mktFolder($('eCode').value), images: imgs, keep: keep
     });
     editing.images = out.images;
-    editImages = out.images.slice();
+    setEditImages(out.images);
     renderEditImages();
-    status('eStatus', '<span class="ok">✔ เพิ่มรูปแล้ว รวม ' + out.images.length + ' ใบ</span><br>' + esc(out.logs.join('\n')));
     addImgs = [];
+    renderAddPreview();
+    status('eStatus', '<span class="ok">✔ บันทึกรูปแล้ว รวม ' + out.images.length + ' ใบ</span><br>' + esc(out.logs.join('\n')));
     WEB = await jget('/api/web-products');
   } catch (e) { status('eStatus', '✖ ' + esc(e.message).slice(0, 800), 'err'); }
   btn.disabled = false;
@@ -557,8 +639,8 @@ async function saveEdit(btn) {
       tags: $('eTags').value.split(',').map(function (s) { return s.trim(); }).filter(Boolean),
       slug: seo ? seo.slug : editing.slug,
       specs: seo ? seo.specs : undefined,
-      images: editImages,
-      imageUrl: editImages[0] || undefined,
+      images: editImageUrls(),
+      imageUrl: editImageUrls()[0] || undefined,
       tracklist: editTrack || undefined,
       // เปลี่ยนชื่อโฟลเดอร์/ไฟล์รูปอัตโนมัติ เฉพาะเมื่อชื่อสินค้าเปลี่ยนจริง
       renameImages: $('eName').value.trim() !== editing.name,
