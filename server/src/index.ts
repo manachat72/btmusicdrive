@@ -20,6 +20,7 @@ import feedRoutes from './routes/feed';
 import lineRoutes from './routes/line';
 import { sendOrderConfirmationEmail } from './services/emailService';
 import { isSocialBot, renderProductOgPage } from './lib/socialOg';
+import { renderCategoryOgPage } from './lib/categoryOg';
 
 dotenv.config();
 
@@ -169,7 +170,17 @@ const _pages = ['shop','cart','checkout','orders','profile','wishlist','address'
 _pages.forEach(p => {
   app.get(`/${p}`, (req, res) => res.sendFile(path.join(__dirname, `../../${p}.html`)));
 });
-app.get('/category/:slug', (req, res) => {
+app.get('/category/:slug', async (req, res) => {
+  // Social/search crawler อาจไม่รัน JS — ต้องได้ title, canonical, OG และ ItemList/Breadcrumb
+  // JSON-LD พร้อมรายการสินค้าจริงจาก server (เหมือนกับที่ทำให้ /product/:slug)
+  if (isSocialBot(req.headers['user-agent'])) {
+    try {
+      const rendered = await renderCategoryOgPage(req.params.slug, res);
+      if (rendered) return;
+    } catch (err) {
+      console.error('[categoryOg]', err);
+    }
+  }
   res.sendFile(path.join(__dirname, '../../category.html'));
 });
 app.get('/blog', (req, res) => {

@@ -198,6 +198,11 @@
     },
     {
       "src": "/category/([^/]+)",
+      "has": [{ "type": "header", "key": "user-agent", "value": ".*(facebookexternalhit|Facebot|Twitterbot|LinkedInBot|Slackbot|TelegramBot|WhatsApp|Discordbot|Pinterestbot|SkypeUriPreview|line-poker|Googlebot|Google-InspectionTool|bingbot|DuckDuckBot|YandexBot|Baiduspider|Applebot|OAI-SearchBot|ChatGPT-User|PerplexityBot).*" }],
+      "dest": "/server/src/index.ts"
+    },
+    {
+      "src": "/category/([^/]+)",
       "dest": "/category.html"
     },
     {

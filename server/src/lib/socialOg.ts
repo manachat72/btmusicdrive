@@ -62,6 +62,24 @@ function absoluteImageUrl(imageUrl: string | null | undefined): string | null {
   return `${SITE_URL}/${imageUrl.replace(/^\/+/, '')}`;
 }
 
+// เอาไว้ทำ meta description จาก field description ที่อาจมี HTML ปนอยู่ (rich text จาก admin)
+function stripHtml(value: string): string {
+  return value
+    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+const MAX_TRACKLIST_PREVIEW = 30;
+
 /**
  * Render หน้า HTML เบาๆ ที่มี OG/Twitter meta ครบสำหรับ social scraper
  * คืน true ถ้า render สำเร็จ, false ถ้าไม่พบสินค้า (ให้ caller ตอบแบบเดิมต่อ)
@@ -73,30 +91,68 @@ export async function renderProductOgPage(slug: string, res: Response): Promise<
       name: true,
       description: true,
       price: true,
+      originalPrice: true,
       imageUrl: true,
+      images: true,
       stock: true,
       slug: true,
+      sku: true,
+      brand: true,
+      tags: true,
+      tracklist: true,
+      specs: true,
+      category: { select: { name: true, slug: true } },
     },
   });
   if (!product) return false;
 
   const pageUrl = `${SITE_URL}/product/${encodeURIComponent(product.slug || slug)}`;
   const title = buildSeoTitle(product.name);
-  const descriptionSource = (product.description || '').trim()
+  const plainDescription = stripHtml(product.description || '');
+  const descriptionSource = plainDescription
     || `${product.name} แฟลชไดร์ฟเพลง MP3 เสียบปุ๊บฟังปั๊บ ไม่ต้องใช้เน็ต จัดส่งทั่วไทย`;
   const description = truncateAtWord(descriptionSource, 155);
   const productImage = absoluteImageUrl(product.imageUrl);
-  const ogImages = [productImage, FALLBACK_OG_IMAGE].filter(Boolean) as string[];
+  const galleryImages = (Array.isArray(product.images) ? product.images : [])
+    .map((img) => absoluteImageUrl(img))
+    .filter((img): img is string => !!img);
+  const ogImages = [productImage, ...galleryImages, FALLBACK_OG_IMAGE]
+    .filter((img, index, arr): img is string => !!img && arr.indexOf(img) === index)
+    .slice(0, 6);
+
+  const categoryName = product.category?.name || null;
+  const categorySlug = product.category?.slug || null;
+  const categoryUrl = categorySlug ? `${SITE_URL}/category/${categorySlug}` : `${SITE_URL}/shop`;
+
+  const specsEntries = product.specs && typeof product.specs === 'object'
+    ? Object.entries(product.specs as Record<string, unknown>)
+    : [];
+
+  const tracklist = Array.isArray(product.tracklist) ? product.tracklist : [];
+  const tracklistPreview = tracklist.slice(0, MAX_TRACKLIST_PREVIEW);
+  const tracklistRemaining = Math.max(0, tracklist.length - tracklistPreview.length);
+
+  const inStock = product.stock > 0;
+  const hasDiscount = !!product.originalPrice && product.originalPrice > product.price;
 
   // โครงเดียวกับ breadcrumb ฝั่ง client (product.html) — อย่าให้สองที่นี้ต่างกัน
+  const breadcrumbItems: Array<{ '@type': string; position: number; name: string; item: string }> = [
+    { '@type': 'ListItem', position: 1, name: 'หน้าหลัก', item: `${SITE_URL}/` },
+    { '@type': 'ListItem', position: 2, name: 'ร้านค้า', item: `${SITE_URL}/shop` },
+  ];
+  if (categoryName && categorySlug) {
+    breadcrumbItems.push({ '@type': 'ListItem', position: 3, name: categoryName, item: categoryUrl });
+  }
+  breadcrumbItems.push({
+    '@type': 'ListItem',
+    position: breadcrumbItems.length + 1,
+    name: product.name,
+    item: pageUrl,
+  });
   const breadcrumbLd = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'หน้าหลัก', item: `${SITE_URL}/` },
-      { '@type': 'ListItem', position: 2, name: 'ร้านค้า', item: `${SITE_URL}/shop` },
-      { '@type': 'ListItem', position: 3, name: product.name, item: pageUrl },
-    ],
+    itemListElement: breadcrumbItems,
   };
 
   const ld = {
@@ -106,17 +162,39 @@ export async function renderProductOgPage(slug: string, res: Response): Promise<
     description,
     image: ogImages,
     url: pageUrl,
-    brand: { '@type': 'Brand', name: 'Bt music drive' },
+    sku: product.sku || undefined,
+    brand: { '@type': 'Brand', name: product.brand || 'Bt music drive' },
+    category: categoryName || undefined,
     offers: {
       '@type': 'Offer',
       priceCurrency: 'THB',
       price: product.price,
-      availability: product.stock > 0
+      availability: inStock
         ? 'https://schema.org/InStock'
         : 'https://schema.org/OutOfStock',
       url: pageUrl,
     },
   };
+
+  const specsHtml = specsEntries.length
+    ? `<h2>คุณสมบัติสินค้า</h2><table><tbody>${specsEntries
+        .map(([key, value]) => `<tr><th>${esc(key)}</th><td>${esc(String(value))}</td></tr>`)
+        .join('')}</tbody></table>`
+    : '';
+
+  const tracklistHtml = tracklistPreview.length
+    ? `<h2>รายชื่อเพลง (${tracklist.length} เพลง)</h2><ol>${tracklistPreview
+        .map((track) => `<li>${esc(track)}</li>`)
+        .join('')}</ol>${tracklistRemaining > 0 ? `<p>และอีก ${tracklistRemaining} เพลง ดูรายชื่อเพลงทั้งหมดได้ที่หน้าสินค้า</p>` : ''}`
+    : '';
+
+  const tagsHtml = Array.isArray(product.tags) && product.tags.length
+    ? `<p>แท็ก: ${product.tags.map((t) => esc(t)).join(', ')}</p>`
+    : '';
+
+  const priceHtml = hasDiscount
+    ? `<p>ราคา ${esc(product.price)} บาท (ปกติ ${esc(product.originalPrice)} บาท)</p>`
+    : `<p>ราคา ${esc(product.price)} บาท</p>`;
 
   const html = `<!DOCTYPE html>
 <html lang="th">
@@ -144,9 +222,20 @@ ${ogImages.map((img) => `<meta property="og:image" content="${esc(img)}">`).join
 <script type="application/ld+json">${JSON.stringify(breadcrumbLd)}</script>
 </head>
 <body>
+<nav>
+<a href="${esc(SITE_URL)}/">หน้าหลัก</a> &raquo;
+<a href="${esc(SITE_URL)}/shop">ร้านค้า</a>${categoryName && categorySlug ? ` &raquo; <a href="${esc(categoryUrl)}">${esc(categoryName)}</a>` : ''} &raquo;
+<span>${esc(product.name)}</span>
+</nav>
 <h1>${esc(product.name)}</h1>
-<p>${esc(description)}</p>
-<a href="${esc(pageUrl)}">ดูสินค้า ${esc(product.name)}</a>
+${priceHtml}
+<p>สถานะสินค้า: ${inStock ? 'มีสินค้า พร้อมส่ง' : 'สินค้าหมดชั่วคราว'}</p>
+<p>${esc(plainDescription || description)}</p>
+${tagsHtml}
+${specsHtml}
+${tracklistHtml}
+<p>รับประกันสินค้า 7 วัน · จัดส่งทั่วไทย · เก็บเงินปลายทางได้ · <a href="${esc(SITE_URL)}/shipping">ดูรายละเอียดการจัดส่งและการรับประกัน</a></p>
+<p><a href="${esc(pageUrl)}">ดูสินค้า ${esc(product.name)}</a> ที่ <a href="${esc(SITE_URL)}/shop">ร้าน Bt music drive</a></p>
 </body>
 </html>`;
 
