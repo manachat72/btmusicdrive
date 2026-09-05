@@ -2790,44 +2790,57 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div style="display:flex;gap:10px;">
           <div class="settings-row" style="flex:1;">
             <label class="settings-label">ราคา (฿) <span style="color:#d63638;">*</span></label>
-            <input type="number" id="pm-price" class="settings-input" placeholder="0" min="0" step="1">
-          </div>
-          <div class="settings-row" style="flex:1;">
-            <label class="settings-label">ราคาเดิม (฿)</label>
-            <input type="number" id="pm-original-price" class="settings-input" placeholder="ราคาเดิม (ถ้ามี)" min="0" step="1">
-          </div>
-        </div>
-        <div style="display:flex;gap:10px;">
-          <div class="settings-row" style="flex:1;">
-            <label class="settings-label">แบรนด์</label>
-            <input type="text" id="pm-brand" class="settings-input" placeholder="e.g. KZZI">
-          </div>
-          <div class="settings-row" style="flex:1;">
-            <label class="settings-label">SKU</label>
-            <input type="text" id="pm-sku" class="settings-input" placeholder="e.g. SKU-11968">
-          </div>
-        </div>
-        <div class="settings-row">
-          <label class="settings-label">URL Slug <span style="color:var(--muted);font-weight:400;">(สำหรับลิงก์สินค้า)</span></label>
-          <div style="display:flex;gap:8px;align-items:center;">
-            <span style="color:var(--muted);font-size:12px;white-space:nowrap;">/product/</span>
-            <input type="text" id="pm-slug" class="settings-input" placeholder="e.g. usb-flash-drive-mp3" style="font-family:monospace;font-size:13px;" oninput="handleProductSlugInput(this)">
-          </div>
-          <p class="settings-hint">ระบบจะแปลงชื่อสินค้าเป็นอังกฤษให้อัตโนมัติ เช่น /product/usb-flash-drive-mp3</p>
-        </div>
-        <div style="display:flex;gap:10px;">
-          <div class="settings-row" style="flex:1;">
-            <label class="settings-label">หมวดหมู่</label>
-            <select id="pm-category" class="settings-input">
-              <option value="">— เลือกหมวดหมู่ —</option>
-            </select>
+            <input type="number" id="pm-price" class="settings-input" placeholder="0" min="0" step="1" inputmode="decimal">
           </div>
           <div class="settings-row" style="flex:1;">
             <label class="settings-label">คลัง</label>
-            <input type="number" id="pm-stock" class="settings-input" placeholder="0" min="0">
+            <input type="number" id="pm-stock" class="settings-input" value="1" min="0" step="1" inputmode="numeric">
           </div>
         </div>
+        <div class="settings-row">
+          <label class="settings-label">หมวดหมู่</label>
+          <select id="pm-category" class="settings-input">
+            <option value="">— เลือกหมวดหมู่ —</option>
+          </select>
+          <p class="settings-hint">ถ้ายังไม่มีหมวดที่ต้องการ ระบบจะจัดไว้ใน “Uncategorized” ก่อน</p>
+        </div>
+        <!-- ── รูปภาพ ───────────────────────────────────────────────────── -->
+        <div class="settings-row">
+          <label class="settings-label">รูปหลัก</label>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input type="text" id="pm-image-url" class="settings-input" placeholder="เลือกจากคลังรูป หรือวาง URL" oninput="previewMainImage()" style="flex:1;">
+            <button type="button" onclick="openImagePicker('pm-image-url')" class="wp-btn" title="เลือกรูปจากคลัง" style="flex-shrink:0;padding:6px 8px;"><i class="fa-solid fa-folder-open"></i></button>
+            <div id="pm-main-preview" style="width:48px;height:48px;border-radius:4px;border:1px solid var(--card-border);background:#f6f7f7;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#c3c4c7;font-size:18px;">
+              <i class="fa-solid fa-image"></i>
+            </div>
+            <button type="button" onclick="clearMainImage()" title="ลบรูปหลัก" style="background:none;border:none;cursor:pointer;color:#d63638;font-size:16px;padding:6px 4px;flex-shrink:0;"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+          <p class="settings-hint">กดไอคอนโฟลเดอร์เพื่อเลือกรูปจากคลัง หรือวาง URL ได้ทันที</p>
+        </div>
 
+        <details id="pm-advanced" style="border-top:1px solid var(--card-border);padding-top:12px;">
+          <summary style="cursor:pointer;font-size:13px;font-weight:600;color:var(--muted);">รายละเอียดเพิ่มเติม (ไม่จำเป็น)</summary>
+          <div style="padding-top:14px;">
+            <div style="display:flex;gap:10px;">
+              <div class="settings-row" style="flex:1;">
+                <label class="settings-label">ราคาเดิม (฿)</label>
+                <input type="number" id="pm-original-price" class="settings-input" placeholder="ราคาเดิม (ถ้ามี)" min="0" step="1" inputmode="decimal">
+              </div>
+              <div class="settings-row" style="flex:1;">
+                <label class="settings-label">แบรนด์</label>
+                <input type="text" id="pm-brand" class="settings-input" placeholder="เช่น BT Music Drive">
+              </div>
+            </div>
+            <div style="display:flex;gap:10px;">
+              <div class="settings-row" style="flex:1;">
+                <label class="settings-label">SKU</label>
+                <input type="text" id="pm-sku" class="settings-input" placeholder="เช่น SKU-001">
+              </div>
+              <div class="settings-row" style="flex:1;">
+                <label class="settings-label">URL Slug</label>
+                <input type="text" id="pm-slug" class="settings-input" placeholder="เว้นว่างให้ระบบสร้างอัตโนมัติ" style="font-family:monospace;font-size:13px;">
+              </div>
+            </div>
         <div class="settings-row">
           <label class="settings-label">แท็ก <span style="color:var(--muted);font-weight:400;">(คั่นด้วยจุลภาค)</span></label>
           <input type="text" id="pm-tags" class="settings-input" placeholder="e.g. KEYBOARD, KZZI, MECHANICAL">
@@ -2847,25 +2860,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <p class="settings-hint">กรอกชื่อเพลงบรรทัดละ 1 เพลง (ไม่ต้องใส่ลำดับ)</p>
         </div>
 
-        <!-- ── รูปภาพ ───────────────────────────────────────────────────── -->
-        <div class="settings-row">
-          <label class="settings-label">รูปหลัก (URL) <span style="color:#d63638;">*</span></label>
-          <div style="display:flex;gap:8px;align-items:center;">
-            <input type="text" id="pm-image-url" class="settings-input" placeholder="https://example.com/image.webp" oninput="previewMainImage()" style="flex:1;">
-            <button type="button" onclick="openImagePicker('pm-image-url')" class="wp-btn" title="เลือกรูปจากคลัง" style="flex-shrink:0;padding:6px 8px;"><i class="fa-solid fa-folder-open"></i></button>
-            <div id="pm-main-preview" style="width:48px;height:48px;border-radius:4px;border:1px solid var(--card-border);background:#f6f7f7;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#c3c4c7;font-size:18px;">
-              <i class="fa-solid fa-image"></i>
-            </div>
-            <button type="button" onclick="clearMainImage()" title="ลบรูปหลัก" style="background:none;border:none;cursor:pointer;color:#d63638;font-size:16px;padding:6px 4px;flex-shrink:0;"><i class="fa-solid fa-xmark"></i></button>
-          </div>
-          <p class="settings-hint">URL รูปภาพหลักของสินค้า (แสดงในการ์ดสินค้า)</p>
-        </div>
-
         <div class="settings-row">
           <label class="settings-label">รูปภาพเพิ่มเติม <span style="color:var(--muted);font-weight:400;">(สลับดูในหน้า product)</span></label>
           <div id="pm-images-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:6px;"></div>
           <button type="button" onclick="addExtraImageRow('')" class="wp-btn" style="width:100%;justify-content:center;"><i class="fa-solid fa-plus"></i> เพิ่มรูป</button>
         </div>
+          </div>
+        </details>
       </div>
       <div id="pm-error" style="display:none;color:#d63638;font-size:12px;margin-top:10px;padding:8px 12px;background:#fcf0f1;border-radius:3px;border-left:3px solid #d63638;"></div>
       <div style="margin-top:16px;display:flex;gap:8px;justify-content:flex-end;">
@@ -3823,7 +3824,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     document.getElementById('pm-sku').value     = product?.sku || '';
     document.getElementById('pm-slug').value    = product?.slug || '';
     document.getElementById('pm-category').value= product?.category?.name || product?.categoryName || '';
-    document.getElementById('pm-stock').value   = product?.stock ?? '';
+    document.getElementById('pm-stock').value   = product?.stock ?? 1;
     document.getElementById('pm-tags').value    = Array.isArray(product?.tags) ? product.tags.join(', ') : '';
     document.getElementById('pm-description').value = cleanProductDescription(product?.description);
     // Specs: convert object/array to key=value lines
@@ -3850,7 +3851,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     extraImgs.forEach(url => addExtraImageRow(url));
 
     document.getElementById('modal-title').textContent = product ? 'แก้ไขสินค้า' : 'เพิ่มสินค้า';
+    document.getElementById('pm-advanced').open = Boolean(product && (
+      product.originalPrice || product.brand || product.sku || product.slug ||
+      product.tags?.length || product.description || product.specs || product.tracklist?.length || product.images?.length > 1
+    ));
     document.getElementById('product-modal').style.display = 'flex';
+    if (!product) requestAnimationFrame(() => document.getElementById('pm-name').focus());
   }
 
   function closeProductModal() {
