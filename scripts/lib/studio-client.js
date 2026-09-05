@@ -81,10 +81,10 @@ function renderNew() {
     '<div class="f"><label>📄 รายชื่อเพลง (.txt — 1 เพลงต่อบรรทัด)</label>' +
     '<input type="file" id="nTxt" accept=".txt" onchange="readTxt(this)">' +
     '<div id="txtInfo">ไม่บังคับ แต่แนะนำมาก — ใช้ดึงชื่อศิลปินไปทำคีย์เวิร์ด และโชว์รายชื่อเพลงบนหน้าสินค้า</div></div>' +
-    '<div class="f" style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap"><div class="chk" style="margin:0;padding:6px 12px;border:1px solid #d6d3ce;border-radius:10px;background:#fff"><label style="font-weight:400"><input type="radio" name="seomode" value="rule" checked style="margin-right:6px">แบบธรรมดา (rule-based)</label></div>' +
-    '<div class="chk" style="margin:0;padding:6px 12px;border:1px solid var(--primary);border-radius:10px;background:#f8f5ef"><label style="font-weight:400"><input type="radio" name="seomode" value="ai" style="margin-right:6px">ใช้เอเจน (claude Max)</label></div>' +
-    '<button class="ghost" style="padding:6px 12px;font-size:12px" title="ให้ claude CLI (Max) วิจัยศิลปินที่ยังไม่รู้จัก" onclick="researchArtists(this,event)">✨ AI วิจัยศิลปิน</button></div>' +
-    '<div class="hint" style="margin-top:4px">โหมดแบบธรรมดา = rule-based ทันที · โหมดใช้เอเจน = กดปุ่ม ✨ เพื่อสั่ง AI ค้นเว็บหาว่าชื่อนี้คือใครก่อน (ไม่เสียเงิน API ใช้ Max) · กด Shift ค้างตอนคลิก = วิจัยซ้ำทับของเดิม</div>' +
+    '<div class="f" style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap"><div class="chk" style="margin:0;padding:6px 12px;border:1px solid var(--primary);border-radius:10px;background:#f8f5ef"><label style="font-weight:400"><input type="radio" name="seomode" value="hermes" checked style="margin-right:6px">ใช้ Hermes Agent เขียน SEO</label></div>' +
+    '<div class="chk" style="margin:0;padding:6px 12px;border:1px solid #d6d3ce;border-radius:10px;background:#fff"><label style="font-weight:400"><input type="radio" name="seomode" value="rule" style="margin-right:6px">ใช้แบบ rule-based</label></div>' +
+    '<button class="ghost" style="padding:6px 12px;font-size:12px" title="วิจัยเฉพาะชื่อศิลปินที่ดึงได้จากรายชื่อเพลง" onclick="researchArtists(this,event)">✨ วิจัยศิลปินจากรายชื่อเพลง</button></div>' +
+    '<div class="hint" style="margin-top:4px">Hermes Agent เป็นค่าเริ่มต้น: เขียนชื่อ, meta และคีย์เวิร์ดจากข้อมูลที่กรอกเท่านั้น แล้วระบบตรวจคำซ้ำ/คำเคลมก่อนให้รีวิว · โหมด rule-based ใช้เมื่อไม่ต้องการเรียกเอเจน</div>' +
     '<div class="f"><label>รูปสินค้า</label>' +
     '<div class="src"><input type="radio" name="src" id="srcNas" value="nas"' + (folders ? ' checked' : ' disabled') + '>' +
     '<label for="srcNas" style="display:inline">ใช้โฟลเดอร์ที่มีอยู่บน NAS</label>' +
@@ -165,28 +165,12 @@ function readTxt(inp) {
 async function createDraft(btn) {
   var name = $('nName').value.trim();
   if (!name) { status('nStatus', 'ใส่ชื่อสินค้าก่อนครับ', 'err'); return; }
-  // โหมดใช้เอเจน: ต้องบังคับว่า cache วิจัยจบก่อน ไม่งั้นยังไม่รู้ชื่อศิลปิน
   var mode = document.querySelector('input[name=seomode]:checked') ?
     document.querySelector('input[name=seomode]:checked').value : 'rule';
-  if (mode === 'ai' && draft && draft.artistsMissing && draft.artistsMissing.length) {
-    status('nStatus', '⚠ โหมดเอเจนแต่ยังไม่วิจัยศิลปิน: ' + draft.artistsMissing.slice(0, 3).join(', ') + ' — กด "✨ AI วิจัยศิลปิน" ก่อน', 'err');
-    return;
-  }
-  if (mode === 'ai') {
-    var prev = await jpost('/api/seo', {
-      shortName: name, tracklist: trackList,
-      capacity: $('nCap').value, price: +$('nPrice').value || 279,
-      categoryName: $('nCat').value || undefined
-    });
-    if (prev.artistsMissing && prev.artistsMissing.length) {
-      status('nStatus', '⚠ โหมดเอเจนแต่ยังไม่วิจัย: ' + prev.artistsMissing.slice(0, 3).join(', ') + ' — กด "✨ AI วิจัยศิลปิน" ก่อน', 'err');
-      return;
-    }
-  }
   var useNas = $('srcNas') && $('srcNas').checked;
   var body = {
     name: name, price: +$('nPrice').value || 279, capacity: $('nCap').value,
-    categoryName: $('nCat').value || undefined, tracklist: trackList
+    categoryName: $('nCat').value || undefined, tracklist: trackList, seoMode: mode
   };
   if (useNas) body.folder = $('nFolder').value;
   else {

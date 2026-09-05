@@ -28,7 +28,7 @@
     "seo:artists:stats": "node scripts/artists-cli.js stats",
     "seo:artists:test": "node scripts/artists-cli.js selftest",
     "build": "npm run build:css && npm run combine:css && npm run inline:products && npm run inline:categories && npm run inline:product-jsonld && npm run build:sitemap && npm run hash:assets",
-    "test": "node scripts/test-seo.js"
+    "test": "node scripts/test-seo.js && node scripts/test-studio-agent-seo.js"
   },
   "repository": {
     "type": "git",

@@ -124,8 +124,9 @@ function buildSeo({ shortName, tracklist = [], capacity = '4GB', price = 279, ca
   // ── วัตถุดิบจาก artists.json (subagent seo-artist-research วิจัยไว้) ──
   // ใช้เติม alias/คีย์เวิร์ดที่คนไทยพิมพ์จริง + ช่วยเดาแนวเพลงตอน regex เดาไม่ออก
   // ถ้าไม่มี cache หรือ entry เป็น unknown:true → ทุกอย่างว่าง = พฤติกรรม rule-based เดิมเป๊ะ
-  // ค้น cache ด้วยชื่อสั้นที่ผู้ใช้พิมพ์ด้วย — สินค้าหลายตัวชื่อ = ชื่อคนทำคอนเทนต์ (เช่น "อาจารย์ยอด")
-  const research = collectArtistResearch([short, ...artists]);
+  // ชื่อสั้นเป็นคำค้นหรือชื่อสินค้าได้ (เช่น "เพลงใต้" / "หัวแปลง OTG")
+  // จึงใช้เฉพาะศิลปินที่ดึงได้จากรายชื่อเพลงเป็นวัตถุดิบ AI เพื่อไม่ให้เกิด false missing
+  const research = collectArtistResearch(artists);
 
   const hay = `${short} ${(tracklist || []).slice(0, 40).join(' ')} ${research.aliases.join(' ')}`;
   let g = detectGenre(hay);

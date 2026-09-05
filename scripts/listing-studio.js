@@ -26,6 +26,7 @@ const QRCode = require('qrcode');
 const { tracklistHtml } = require('./lib/tracklist-page');
 const { makeTracklistQr } = require('./lib/tracklist-qr');
 const { buildSeo, validateSeo, CATEGORIES } = require('./lib/seo');
+const { runHermesSeo } = require('./lib/hermes-seo-agent');
 const { slugify, imageSlug, uniqueImageSlug } = require('./lib/product-slug');
 const webImg = require('./lib/web-images');
 const { processProductImages, fetchOriginals, fetchMids } = require('./lib/product-images');
@@ -319,11 +320,10 @@ http.createServer(async (req, res) => {
       const { extractArtists } = require('./lib/seo');
       const { researchArtists } = require('./lib/ai-artist-spawn');
       const b = JSON.parse(await readBody(req));
-      // ชื่อสั้นที่ผู้ใช้พิมพ์ต้องถูกวิจัยด้วยเสมอ — สินค้าหลายตัวชื่อ = ชื่อคนทำคอนเทนต์
-      // (เช่น "อาจารย์ยอด") ซึ่ง extractArtists() ดึงจาก tracklist ไม่เจอ
-      const fromTrack = b.tracklist ? extractArtists(b.tracklist, 15) : (b.artists || []);
-      const names = [...new Set([String(b.shortName || '').trim(), ...fromTrack].filter(Boolean))];
-      if (!names.length) return json(200, { ok: [], skipped: [], errors: [], msg: 'ยังไม่มีชื่อให้วิจัย — พิมพ์ชื่อสินค้าก่อน' });
+      // วิจัยเฉพาะชื่อที่ extract จากรายชื่อเพลงเท่านั้น: ชื่อสั้นอาจเป็นคำค้นหรือชื่อสินค้า
+      // เช่น "เพลงใต้" / "หัวแปลง OTG" ไม่ใช่ศิลปิน และไม่ควรส่งให้ agent เดา
+      const names = [...new Set(b.tracklist ? extractArtists(b.tracklist, 15) : (b.artists || []))];
+      if (!names.length) return json(200, { ok: [], skipped: [], errors: [], msg: 'ยังไม่พบชื่อศิลปินจากรายชื่อเพลง' });
       log(`⏳ วิจัย ${names.length} ชื่อ: ${names.join(', ')}`);
       const out = require('./lib/ai-artist-spawn').researchArtists(names.slice(0, 10), { force: !!b.force });
       return json(200, out);
@@ -378,7 +378,20 @@ http.createServer(async (req, res) => {
       if (!isAuthed()) throw new Error('ยังไม่ได้เข้าสู่ระบบแอดมิน — ล็อกอินก่อนเริ่มเตรียมรูป');
 
       const tracklist = Array.isArray(b.tracklist) ? b.tracklist : [];
-      const seo = buildSeo({ shortName, tracklist, capacity: b.capacity || '4GB', price: b.price || 279, categoryName: b.categoryName });
+      let seo = buildSeo({ shortName, tracklist, capacity: b.capacity || '4GB', price: b.price || 279, categoryName: b.categoryName });
+      if (b.seoMode === 'hermes') {
+        log('⏳ ให้ Hermes Agent เขียนชื่อ, meta และคีย์เวิร์ดจากข้อมูลสินค้าที่ตรวจสอบได้…');
+        const agentDraft = runHermesSeo({
+          shortName,
+          categoryName: seo.categoryName,
+          capacity: b.capacity || '4GB',
+          price: b.price || 279,
+          tracklist,
+          artists: seo.artists,
+          contentType: seo.categoryName === 'อุปกรณ์เสริม' ? 'accessory' : 'audio',
+        });
+        seo = { ...seo, ...agentDraft };
+      }
       const slug = uniqueImageSlug(seo.imageSlug, webImg.listWebDirs());
 
       let code, folderName, sources = null, srcDir = null;
