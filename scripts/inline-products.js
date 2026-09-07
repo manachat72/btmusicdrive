@@ -4,6 +4,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { resolveLocalFile } = require('./lib/r2-web-images');
 
 const ROOT = path.join(__dirname, '..');
 const PRODUCTS_JSON = path.join(ROOT, 'products.json');
@@ -69,7 +70,7 @@ function renderCard(product, index) {
   let avifSource = '';
   if (product.imageUrl && /\.webp$/i.test(product.imageUrl)) {
     const avifUrl = product.imageUrl.replace(/\.webp$/i, '.avif');
-    if (fs.existsSync(path.join(ROOT, avifUrl))) {
+    if (resolveLocalFile(avifUrl, ROOT)) {
       avifSource = `<source srcset="${escapeHtml(avifUrl)}" type="image/avif">`;
     }
   }

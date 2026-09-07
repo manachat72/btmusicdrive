@@ -14,6 +14,7 @@ const path = require('path');
 const sharp = require('sharp');
 const r2 = require('./r2');
 const webImg = require('./web-images');
+const r2WebImg = require('./r2-web-images');
 
 const ROOT = path.resolve(__dirname, '..', '..');
 const MKT_DIR = path.join(ROOT, 'marketplace-images');
@@ -147,10 +148,20 @@ async function processProductImages({ code, slug, title, srcDir, sources, dirNam
   const web = await webImg.buildWebImages({ buffers: files.map(f => f.body), slug });
   log(`✔ รูปเว็บ ${web.urls.length} ใบ (${(web.bytes / 1024).toFixed(0)} KB) → images/products/${slug}/`);
 
+  // รูปเว็บเป็นไฟล์ย่อ WebP/AVIF คนละชั้นกับ originals/ และ products/
+  // อัปขึ้น prefix web/products/ เพื่อให้เว็บใช้ CDN โดยไม่แตะต้นฉบับ
+  const webPlan = r2WebImg.planProductWebImages({
+    slug,
+    imageUrl: web.urls[0],
+    images: web.urls,
+  }, ROOT);
+  await r2.putMany(webPlan.uploads);
+  log(`✔ รูปเว็บ WebP/AVIF ${webPlan.uploads.length} ไฟล์ขึ้น R2 → web/products/${slug}/`);
+
   return {
     originals: origs.map(o => o.url),
     mid: midUrls,
-    web: web.urls,
+    web: webPlan.product.images,
     code, slug,
   };
 }
