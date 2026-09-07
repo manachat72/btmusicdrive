@@ -2,8 +2,10 @@
 
 const assert = require('assert');
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 const { imageSlugFromUrl } = require('./lib/product-image-path');
+const { previewNasImages } = require('./lib/nas-image-selection');
 
 const root = path.resolve(__dirname, '..');
 const studioSource = fs.readFileSync(path.join(root, 'scripts', 'listing-studio.js'), 'utf8');
@@ -26,14 +28,32 @@ assert.strictEqual(
 );
 assert.strictEqual(imageSlugFromUrl('https://example.com/not-a-product.jpg'), '', 'Unknown URLs should not guess a folder');
 
-assert.match(studioSource, /createNasImageWatcher\(/,
-  'Product Studio should watch linked NAS folders automatically');
-assert.match(studioSource, /async function publishNasFolderUpdate\(/,
-  'Product Studio needs one complete NAS-to-web publish transaction');
+const tempNas = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-nas-selection-'));
+const folder = '09-demo';
+fs.mkdirSync(path.join(tempNas, folder));
+['1.jpg', '2.1.jpg', '2.2.jpg', '2.jpg', '3.jpg', '4.jpg', 'หลัก_01.jpg', 'หลัก_02.jpg', 'หลัก_05.jpg', 'หลัก_06.jpg']
+  .forEach((name) => fs.writeFileSync(path.join(tempNas, folder, name), name));
+fs.writeFileSync(path.join(tempNas, folder, 'รายชื่อเพลง.txt'), 'ignore');
+const preview = previewNasImages(tempNas, folder);
+assert.strictEqual(preview.total, 10);
+assert.deepStrictEqual(preview.files, [
+  '1.jpg', '2.1.jpg', '2.2.jpg', '2.jpg', '3.jpg', '4.jpg', 'หลัก_01.jpg', 'หลัก_02.jpg', 'หลัก_05.jpg',
+]);
+assert.throws(() => previewNasImages(tempNas, '../outside'), /ชื่อโฟลเดอร์ไม่ถูกต้อง/);
+fs.rmSync(tempNas, { recursive: true, force: true });
+
+assert.doesNotMatch(studioSource, /createNasImageWatcher\(/,
+  'Changing NAS files must not publish before the user presses the explicit button');
+assert.match(studioSource, /url\.pathname === '\/api\/nas-preview'/,
+  'Product Studio should expose the exact first-nine NAS preview');
+assert.match(studioSource, /url\.pathname === '\/api\/replace-images-from-nas'/,
+  'Product Studio should expose an explicit NAS-to-web action');
 assert.match(studioSource, /const verified = await api\(`\/products\/\$\{product\.id\}`\)/,
-  'Automatic publication must read the product back from the API');
+  'NAS publication must read the product back from the API');
 assert.match(studioSource, /String\(verified\.imageUrl \|\| ''\)\.split\('\?'\)\[0\] !== img\.web\[0\]/,
-  'Automatic publication must verify the exact new image URL');
+  'NAS publication must verify the exact new image URL');
+assert.match(studioSource, /processProductImages\(\{[\s\S]*srcDir[\s\S]*prune: true/,
+  'The selected NAS folder must rebuild all image layers from its first nine images');
 assert.doesNotMatch(resyncSource, /imageUrl \|\| ''\)\.split\('\/'\)\[3\]/,
   'The manual recovery script must not use the broken fixed-position URL parser');
 

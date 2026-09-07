@@ -25,7 +25,10 @@ assert.match(client, /function restoreNewProductDraft\(/, 'New product form shou
 assert.match(client, /function clearNewProductDraft\(/, 'New product form should let users clear saved drafts');
 assert.match(client, /localStorage\.setItem\(NEW_PRODUCT_DRAFT_KEY/, 'Draft data must stay in local browser storage');
 assert.match(client, /id="clearDraftBtn"/, 'New product page should expose a clear-draft control');
-assert.match(client, /ระบบเฝ้าดูโฟลเดอร์นี้อัตโนมัติ/, 'Edit view should explain that linked NAS images publish automatically');
-assert.doesNotMatch(client, /onclick="syncImages\(this\)"/, 'Edit view should not ask users to manually sync watched NAS folders');
+assert.match(client, /id="eNasFolder"/, 'Edit view should let the user choose a NAS source folder');
+assert.match(client, /function loadNasPreview\(/, 'Edit view should preview the exact files before publishing');
+assert.match(client, /function replaceImagesFromNas\(/, 'Edit view should have an explicit NAS-to-web action');
+assert.match(client, /ใช้ 9 รูปแรกขึ้นเว็บ/, 'The NAS action should clearly describe its result');
+assert.doesNotMatch(client, /ระบบเฝ้าดูโฟลเดอร์นี้อัตโนมัติ/, 'Edit view must not claim that merely changing files publishes them');
 
 console.log('Product Studio admin UI contract passed.');
