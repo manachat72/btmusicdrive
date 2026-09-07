@@ -19,5 +19,11 @@ assert.match(client, />ข้อมูลสินค้า</, 'New product form
 assert.match(client, />รูปและรายชื่อเพลง</, 'New product form needs a media section');
 assert.match(client, />การสร้าง SEO</, 'New product form needs an SEO section');
 assert.match(client, /class="actions form-actions"/, 'Primary action should sit in a standard form footer');
+assert.match(client, /NEW_PRODUCT_DRAFT_KEY/, 'New product drafts need a dedicated local storage key');
+assert.match(client, /function saveNewProductDraft\(/, 'New product form should save drafts automatically');
+assert.match(client, /function restoreNewProductDraft\(/, 'New product form should restore saved drafts');
+assert.match(client, /function clearNewProductDraft\(/, 'New product form should let users clear saved drafts');
+assert.match(client, /localStorage\.setItem\(NEW_PRODUCT_DRAFT_KEY/, 'Draft data must stay in local browser storage');
+assert.match(client, /id="clearDraftBtn"/, 'New product page should expose a clear-draft control');
 
 console.log('Product Studio admin UI contract passed.');

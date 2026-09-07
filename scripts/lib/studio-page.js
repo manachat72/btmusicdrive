@@ -42,6 +42,8 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .store-link:hover { color:var(--primary); text-decoration:underline; }
 .content { width:100%; max-width:1160px; margin:0 auto; padding:30px 32px 48px; }
 .page-heading { display:flex; justify-content:space-between; align-items:flex-start; gap:20px; margin-bottom:20px; }
+.page-heading-actions { display:flex; align-items:center; justify-content:flex-end; gap:8px; flex-wrap:wrap; }
+.draft-info { color:var(--muted); font-size:12px; white-space:nowrap; }
 .page-heading h1 { font-size:24px; line-height:1.25; letter-spacing:-.35px; font-weight:650; }
 .page-heading p { margin-top:6px; color:var(--muted); line-height:1.5; }
 .page-meta { flex:none; padding:6px 10px; border:1px solid var(--line); border-radius:999px; background:#fff; color:var(--muted); font-size:12px; }

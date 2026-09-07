@@ -8,6 +8,7 @@ var draft = null;    // ร่างสินค้าใหม่หลัง�
 var editing = null;  // สินค้าที่กำลังแก้
 var upImages = [], trackList = [], editTrack = null, addImgs = [], editImages = [];
 var view = 'new';
+var NEW_PRODUCT_DRAFT_KEY = 'btmusicdrive.product-studio.new-product.v1';
 
 function esc(s) {
   return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
@@ -51,6 +52,87 @@ function tagsHtml(tags) {
   return (tags || []).map(function (t) { return '<span class="tag">' + esc(t) + '</span>'; }).join('');
 }
 
+/* ───────── ร่างสินค้าใหม่ (เก็บเฉพาะใน browser เครื่องนี้) ───────── */
+function newProductDraftValue(name) {
+  var el = $(name);
+  return el ? el.value : '';
+}
+function selectedNewProductValue(name) {
+  var el = document.querySelector('input[name=' + name + ']:checked');
+  return el ? el.value : '';
+}
+function setNewProductDraftInfo(message) {
+  var el = $('draftInfo');
+  if (el) el.textContent = message || '';
+}
+function readNewProductDraft() {
+  try {
+    var saved = localStorage.getItem(NEW_PRODUCT_DRAFT_KEY);
+    var data = saved ? JSON.parse(saved) : null;
+    return data && typeof data === 'object' ? data : null;
+  } catch (e) { return null; }
+}
+function saveNewProductDraft() {
+  if (!$('nName')) return;
+  var data = {
+    name: newProductDraftValue('nName'), price: newProductDraftValue('nPrice'),
+    capacity: newProductDraftValue('nCap'), category: newProductDraftValue('nCat'),
+    stock: newProductDraftValue('nStock'), folder: newProductDraftValue('nFolder'),
+    source: selectedNewProductValue('src'), seoMode: selectedNewProductValue('seomode'),
+    trackList: trackList.slice(0, 1000)
+  };
+  try {
+    if (!data.name && !data.category && !data.trackList.length && data.source !== 'upload') {
+      localStorage.removeItem(NEW_PRODUCT_DRAFT_KEY);
+      setNewProductDraftInfo('');
+      return;
+    }
+    localStorage.setItem(NEW_PRODUCT_DRAFT_KEY, JSON.stringify(data));
+    setNewProductDraftInfo('บันทึกร่างแล้วในเครื่องนี้');
+  } catch (e) { setNewProductDraftInfo('บันทึกร่างไม่สำเร็จ'); }
+}
+function setNewProductSelect(id, value) {
+  var el = $(id);
+  if (!el || value == null) return;
+  var valid = [].some.call(el.options, function (option) { return option.value === String(value); });
+  if (valid) el.value = value;
+}
+function restoreNewProductDraft() {
+  var data = readNewProductDraft();
+  if (!data) return;
+  $('nName').value = data.name || '';
+  $('nPrice').value = data.price || '279';
+  $('nStock').value = data.stock || '100';
+  setNewProductSelect('nCap', data.capacity);
+  setNewProductSelect('nCat', data.category);
+  setNewProductSelect('nFolder', data.folder);
+  var source = data.source === 'upload' ? 'srcUp' : 'srcNas';
+  if ($(source) && !$(source).disabled) $(source).checked = true;
+  var seoMode = data.seoMode === 'rule' ? 'rule' : 'hermes';
+  var seo = document.querySelector('input[name=seomode][value=' + seoMode + ']');
+  if (seo) seo.checked = true;
+  trackList = Array.isArray(data.trackList) ? data.trackList.filter(Boolean).slice(0, 1000) : [];
+  if (trackList.length) $('txtInfo').textContent = 'กู้รายชื่อเพลง ' + trackList.length + ' เพลงแล้ว · หากต้องการเปลี่ยนให้เลือกไฟล์ .txt ใหม่';
+  setNewProductDraftInfo(data.source === 'upload'
+    ? 'กู้ร่างแล้ว · เลือกไฟล์รูปใหม่อีกครั้ง'
+    : 'กู้ร่างล่าสุดแล้ว');
+  if (data.name) previewSeo();
+}
+function bindNewProductDraft() {
+  ['nName', 'nPrice', 'nCap', 'nCat', 'nStock', 'nFolder'].forEach(function (id) {
+    var el = $(id);
+    if (el) { el.addEventListener('input', saveNewProductDraft); el.addEventListener('change', saveNewProductDraft); }
+  });
+  [].forEach.call(document.querySelectorAll('input[name=src],input[name=seomode]'), function (el) {
+    el.addEventListener('change', saveNewProductDraft);
+  });
+}
+function clearNewProductDraft(redraw) {
+  try { localStorage.removeItem(NEW_PRODUCT_DRAFT_KEY); } catch (e) { }
+  trackList = []; upImages = [];
+  if (redraw !== false) renderNew();
+}
+
 /* ───────── nav ───────── */
 function go(v) {
   view = v;
@@ -67,7 +149,9 @@ function renderNew() {
   html(
     '<div class="page-heading"><div><h1>ลงสินค้าใหม่</h1>' +
     '<p>กรอกข้อมูลสินค้า เลือกรูป แล้วให้ระบบเตรียม SEO ก่อนตรวจทาน</p></div>' +
-    '<span class="page-meta">รหัสถัดไป ' + esc(META.nextCode) + '</span></div>' +
+    '<div class="page-heading-actions"><span class="draft-info" id="draftInfo" role="status"></span>' +
+    '<span class="page-meta">รหัสถัดไป ' + esc(META.nextCode) + '</span>' +
+    '<button type="button" class="ghost compact" id="clearDraftBtn" onclick="clearNewProductDraft()">ล้างร่าง</button></div></div>' +
     '<div class="card">' +
     '<section class="form-section">' +
     '<div class="section-heading"><span class="section-number">1</span><div><h2>ข้อมูลสินค้า</h2>' +
@@ -114,6 +198,8 @@ function renderNew() {
     '<div class="st" id="nStatus"></div>' +
     '<div class="actions form-actions"><button class="primary" id="goBtn" onclick="createDraft(this)">เตรียมรูปและ SEO</button></div></div>'
   );
+  restoreNewProductDraft();
+  bindNewProductDraft();
 }
 
 var seoTimer = null;
@@ -162,6 +248,7 @@ function previewFiles(inp) {
     img.src = URL.createObjectURL(f);
     t.appendChild(img);
   });
+  saveNewProductDraft();
 }
 
 function parseTracks(txt) {
@@ -172,6 +259,7 @@ function readTxt(inp) {
   f.text().then(function (txt) {
     trackList = parseTracks(txt);
     $('txtInfo').textContent = '✔ อ่านได้ ' + trackList.length + ' เพลง — ' + trackList.slice(0, 3).join(' / ') + (trackList.length > 3 ? ' …' : '');
+    saveNewProductDraft();
     previewSeo();
   });
 }
@@ -335,6 +423,7 @@ async function publish(btn) {
     status('pStatus',
       '<span class="ok">🎉 ลงเว็บสำเร็จ — <a href="' + out.url + '" target="_blank">' + out.url + '</a></span><br>' +
       esc(out.logs.join('\n')) + filesHtml(out.files) + qrHtml(out.qr));
+    clearNewProductDraft(false);
     jget('/api/web-products').then(function (w) { WEB = w; });
   } catch (e) {
     status('pStatus', '✖ ' + esc(e.message).slice(0, 800), 'err');
