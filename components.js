@@ -20,13 +20,8 @@ function _loadMarketingPixels() {
       f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-T3F9WD5P');
   }
 
-  // Google Analytics 4
-  var gaScript = document.createElement('script');
-  gaScript.async = true;
-  gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-1QVJ5HDNZ5';
-  document.head.appendChild(gaScript);
-  gtag('js', new Date());
-  gtag('config', 'G-1QVJ5HDNZ5');
+  // GA4 is configured inside GTM. Do not inject gtag.js again here: doing so
+  // downloads and initializes the same measurement ID twice.
 
   // Meta Pixel
   !function(f,b,e,v,n,t,s){if(f.fbq&&f.fbq.loaded)return;n=f.fbq=function(){n.callMethod?
@@ -40,9 +35,9 @@ function _loadMarketingPixels() {
   // TikTok Pixel
   !function(w,d,t){w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script");n.type="text/javascript",n.async=!0,n.src=r+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};ttq.load('D7E0Q1RC77U88C4ADOSG');ttq.page()}(window,document,'ttq');
 }
-// โหลด marketing pixels ทันทีเมื่อเข้าเว็บ ยกเว้นคนที่กด "เฉพาะจำเป็น"
-// (เดิมโหลดเฉพาะตอนกด "ยอมรับทั้งหมด" ทำให้ Meta/TikTok ไม่ได้รับ event เลยถ้าผู้ใช้ไม่กดยอมรับ)
-if (localStorage.getItem('btmusicdrive_cookie_consent') !== 'essential') {
+// Load optional marketing pixels only after explicit full consent.
+// GTM itself is loaded in <head> with Consent Mode defaults set to denied.
+if (localStorage.getItem('btmusicdrive_cookie_consent') === 'all') {
   _loadMarketingPixels();
 }
 

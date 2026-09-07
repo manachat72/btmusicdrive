@@ -27,6 +27,11 @@
     "seo:artists:save": "node scripts/artists-cli.js save",
     "seo:artists:stats": "node scripts/artists-cli.js stats",
     "seo:artists:test": "node scripts/artists-cli.js selftest",
+    "perf:baseline": "bash scripts/run-lighthouse-baseline.sh",
+    "perf:summary": "node scripts/summarize-lighthouse.js reports/pagespeed",
+    "seo:descriptions": "node scripts/improve-product-descriptions.js",
+    "seo:descriptions:apply": "node scripts/improve-product-descriptions.js --apply",
+    "images:optimize-product": "node scripts/optimize-product-images.js",
     "build": "npm run build:css && npm run combine:css && npm run inline:products && npm run inline:categories && npm run inline:product-jsonld && npm run build:sitemap && npm run hash:assets",
     "test": "node scripts/test-seo.js && node scripts/test-studio-agent-seo.js"
   },

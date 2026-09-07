@@ -36,6 +36,10 @@ images/products1/original/
 marketplace-images/
 .env.r2
 
+# Lighthouse raw reports (large, reproducible; keep Markdown summaries)
+reports/pagespeed/*.json
+reports/pagespeed-local/*.json
+
 # Generated marketplace upload files (มีข้อมูลร้าน — ไม่เข้า git)
 templates/
 

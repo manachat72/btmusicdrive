@@ -16,8 +16,11 @@ import menuRoutes from './routes/menu';
 import imageRoutes from './routes/images';
 import contactRoutes from './routes/contact';
 import analyticsRoutes from './routes/analytics';
+import searchConsoleRoutes from './routes/search-console';
 import feedRoutes from './routes/feed';
 import lineRoutes from './routes/line';
+import tiktokRoutes from './routes/tiktok';
+import tiktokShopRoutes from './routes/tiktok-shop';
 import { sendOrderConfirmationEmail } from './services/emailService';
 import { isSocialBot, renderProductOgPage } from './lib/socialOg';
 import { renderCategoryOgPage } from './lib/categoryOg';
@@ -93,8 +96,11 @@ app.use('/api/menus', menuRoutes);
 app.use('/api/images', imageRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/search-console', searchConsoleRoutes);
 app.use('/api/feed', feedRoutes);
 app.use('/api/line', lineRoutes);
+app.use('/api/tiktok', tiktokRoutes);
+app.use('/api/tiktok-shop', tiktokShopRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
