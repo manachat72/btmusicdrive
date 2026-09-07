@@ -65,40 +65,54 @@ function renderNew() {
   draft = null; upImages = []; trackList = [];
   var folders = META.folders;
   html(
-    '<div class="card"><h2>➕ ลงสินค้าใหม่</h2>' +
-    '<div class="sub">ต้นฉบับเก็บ R2 + NAS · รูปกลาง 1200 สำหรับ xlsx · รูปเว็บ webp+avif ชื่อ SEO · ลงเว็บเสร็จได้ xlsx ทุกแพลตฟอร์มทันที (code ถัดไป: ' + esc(META.nextCode) + ')</div>' +
-    '<div class="f"><label>ชื่อสินค้าแบบสั้น — พิมพ์แบบที่ลูกค้าค้นหา (เช่น ฮิตยุค90, ลูกทุ่งอมตะ, เพื่อชีวิตคาราบาว)</label>' +
-    '<input type="text" id="nName" placeholder="ฮิตยุค90" oninput="debouncedSeo()"></div>' +
+    '<div class="page-heading"><div><h1>ลงสินค้าใหม่</h1>' +
+    '<p>กรอกข้อมูลสินค้า เลือกรูป แล้วให้ระบบเตรียม SEO ก่อนตรวจทาน</p></div>' +
+    '<span class="page-meta">รหัสถัดไป ' + esc(META.nextCode) + '</span></div>' +
+    '<div class="card">' +
+    '<section class="form-section">' +
+    '<div class="section-heading"><span class="section-number">1</span><div><h2>ข้อมูลสินค้า</h2>' +
+    '<p>ข้อมูลหลักที่ลูกค้าจะเห็นบนเว็บไซต์และ marketplace</p></div></div>' +
+    '<div class="f"><label for="nName">ชื่อสินค้าแบบสั้น</label>' +
+    '<input type="text" id="nName" placeholder="เช่น ฮิตยุค 90" oninput="debouncedSeo()">' +
+    '<div class="hint">ใช้คำที่ลูกค้ามักพิมพ์ค้นหา ระบบจะนำไปสร้างชื่อสินค้าแบบเต็มให้</div></div>' +
     '<div class="row">' +
-    '<div class="f"><label>ราคา (บาท)</label><input type="number" id="nPrice" value="279" oninput="debouncedSeo()"></div>' +
-    '<div class="f"><label>ความจุ</label><select id="nCap" onchange="previewSeo()">' +
+    '<div class="f"><label for="nPrice">ราคา (บาท)</label><input type="number" id="nPrice" value="279" oninput="debouncedSeo()"></div>' +
+    '<div class="f"><label for="nCap">ความจุ</label><select id="nCap" onchange="previewSeo()">' +
     ['512MB', '1GB', '2GB', '4GB', '8GB', '16GB', '32GB'].map(function (c) { return '<option' + (c === '4GB' ? ' selected' : '') + '>' + c + '</option>'; }).join('') +
     '</select></div>' +
-    '<div class="f"><label>หมวดหมู่</label><select id="nCat" onchange="previewSeo()"><option value="">— เดาจากชื่อให้อัตโนมัติ —</option>' +
+    '<div class="f"><label for="nCat">หมวดหมู่</label><select id="nCat" onchange="previewSeo()"><option value="">ให้ระบบเลือกอัตโนมัติ</option>' +
     META.categories.map(function (c) { return '<option>' + esc(c) + '</option>'; }).join('') + '</select></div>' +
-    '<div class="f"><label>สต็อก</label><input type="number" id="nStock" value="100"></div>' +
-    '</div>' +
-    '<div class="f"><label>📄 รายชื่อเพลง (.txt — 1 เพลงต่อบรรทัด)</label>' +
-    '<input type="file" id="nTxt" accept=".txt" onchange="readTxt(this)">' +
-    '<div id="txtInfo">ไม่บังคับ แต่แนะนำมาก — ใช้ดึงชื่อศิลปินไปทำคีย์เวิร์ด และโชว์รายชื่อเพลงบนหน้าสินค้า</div></div>' +
-    '<div class="f" style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap"><div class="chk" style="margin:0;padding:6px 12px;border:1px solid var(--primary);border-radius:10px;background:#f8f5ef"><label style="font-weight:400"><input type="radio" name="seomode" value="hermes" checked style="margin-right:6px">ใช้ Hermes Agent เขียน SEO</label></div>' +
-    '<div class="chk" style="margin:0;padding:6px 12px;border:1px solid #d6d3ce;border-radius:10px;background:#fff"><label style="font-weight:400"><input type="radio" name="seomode" value="rule" style="margin-right:6px">ใช้แบบ rule-based</label></div>' +
-    '<button class="ghost" style="padding:6px 12px;font-size:12px" title="วิจัยเฉพาะชื่อศิลปินที่ดึงได้จากรายชื่อเพลง" onclick="researchArtists(this,event)">✨ วิจัยศิลปินจากรายชื่อเพลง</button></div>' +
-    '<div class="hint" style="margin-top:4px">Hermes Agent เป็นค่าเริ่มต้น: เขียนชื่อ, meta และคีย์เวิร์ดจากข้อมูลที่กรอกเท่านั้น แล้วระบบตรวจคำซ้ำ/คำเคลมก่อนให้รีวิว · โหมด rule-based ใช้เมื่อไม่ต้องการเรียกเอเจน</div>' +
-    '<div class="f"><label>รูปสินค้า</label>' +
+    '<div class="f"><label for="nStock">จำนวนสต็อก</label><input type="number" id="nStock" value="100"></div>' +
+    '</div></section>' +
+    '<section class="form-section">' +
+    '<div class="section-heading"><span class="section-number">2</span><div><h2>รูปและรายชื่อเพลง</h2>' +
+    '<p>เลือกรูปจาก NAS หรืออัปโหลดใหม่ พร้อมแนบรายชื่อเพลงถ้ามี</p></div></div>' +
+    '<div class="upload-row">' +
     '<div class="src"><input type="radio" name="src" id="srcNas" value="nas"' + (folders ? ' checked' : ' disabled') + '>' +
-    '<label for="srcNas" style="display:inline">ใช้โฟลเดอร์ที่มีอยู่บน NAS</label>' +
-    '<select id="nFolder" style="width:100%;margin-top:8px;border:1px solid #d6d3ce;border-radius:8px;padding:8px">' +
+    '<label for="srcNas">ใช้รูปจากโฟลเดอร์ NAS</label>' +
+    '<select id="nFolder">' +
     (folders ? folders.map(function (f) { return '<option value="' + esc(f.name) + '">' + esc(f.name) + ' (' + f.count + ' รูป)</option>'; }).join('') : '<option>เข้าถึง NAS ไม่ได้</option>') +
     '</select></div>' +
     '<div class="src"><input type="radio" name="src" id="srcUp" value="upload"' + (folders ? '' : ' checked') + '>' +
-    '<label for="srcUp" style="display:inline">อัปโหลดรูปใหม่' + (folders ? ' (เก็บลง NAS ให้เอง)' : ' — NAS ไม่ได้ต่อ ต้นฉบับจะเก็บบน R2 อย่างเดียว') + '</label>' +
-    '<input type="file" id="nFiles" accept="image/*" multiple style="margin-top:8px" onchange="previewFiles(this)">' +
-    '<div class="hint">รูปแรก = ภาพปก · สูงสุด 9 รูป · ต้นฉบับขึ้น R2 originals/ ไม่ย่อไม่บีบ ทำรูปใหม่ได้ตลอด</div>' +
+    '<label for="srcUp">อัปโหลดรูปใหม่</label>' +
+    '<input class="file-input" type="file" id="nFiles" accept="image/*" multiple onchange="previewFiles(this)">' +
+    '<div class="hint">สูงสุด 9 รูป · รูปแรกเป็นภาพปก' + (folders ? ' · ระบบเก็บต้นฉบับลง NAS ให้' : ' · ต้นฉบับเก็บบน R2') + '</div>' +
     '<div class="thumbs" id="thumbs"></div></div></div>' +
-    '<div id="seoBox"></div>' +
-    '<div class="actions"><button class="primary" id="goBtn" onclick="createDraft(this)">เตรียมรูป + SEO ✨</button></div>' +
-    '<div class="st" id="nStatus"></div></div>'
+    '<div class="f track-file"><label for="nTxt">รายชื่อเพลง (.txt)</label>' +
+    '<input class="file-input" type="file" id="nTxt" accept=".txt" onchange="readTxt(this)">' +
+    '<div class="hint" id="txtInfo">ไม่บังคับ · 1 เพลงต่อบรรทัด เพื่อแสดงรายชื่อเพลงและช่วยสร้างคีย์เวิร์ด</div></div>' +
+    '</section>' +
+    '<section class="form-section">' +
+    '<div class="section-heading"><span class="section-number">3</span><div><h2>การสร้าง SEO</h2>' +
+    '<p>เลือกวิธีเขียนชื่อ รายละเอียด และคีย์เวิร์ดสินค้า</p></div></div>' +
+    '<div class="mode-options">' +
+    '<label class="mode-option"><input type="radio" name="seomode" value="hermes" checked>ใช้ Hermes Agent</label>' +
+    '<label class="mode-option"><input type="radio" name="seomode" value="rule">ใช้แบบอัตโนมัติพื้นฐาน</label>' +
+    '<button class="ghost compact" title="วิจัยเฉพาะชื่อศิลปินที่ดึงได้จากรายชื่อเพลง" onclick="researchArtists(this,event)">วิจัยศิลปินจากรายชื่อเพลง</button></div>' +
+    '<div class="hint">แนะนำ Hermes Agent เพื่อช่วยเขียนเนื้อหา จากนั้นระบบจะตรวจคำซ้ำและคำกล่าวอ้างก่อนให้ตรวจทาน</div>' +
+    '<div id="seoBox"></div></section>' +
+    '<div class="st" id="nStatus"></div>' +
+    '<div class="actions form-actions"><button class="primary" id="goBtn" onclick="createDraft(this)">เตรียมรูปและ SEO</button></div></div>'
   );
 }
 

@@ -69,7 +69,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .src { position:relative; border:1px solid var(--line); border-radius:8px; padding:14px; margin-bottom:10px; background:#fff; }
 .src:has(input[type=radio]:checked) { border-color:var(--primary); background:#fcfaf7; box-shadow:0 0 0 1px var(--primary); }
 .src input[type=radio] { margin-right:8px; accent-color:var(--primary); }
-.src select { min-height:40px; }
+.src > label { font-size:13px; font-weight:600; color:#374151; cursor:pointer; }
+.src select { width:100%; min-height:40px; margin-top:10px; border:1px solid #d1d5db; border-radius:7px; padding:8px 10px; color:#111827; background:#fff; }
+.file-input { display:block; width:100%; margin-top:10px; color:var(--muted); font-size:12px; }
+.file-input::file-selector-button { margin-right:10px; border:1px solid #d1d5db; border-radius:6px; padding:7px 10px; background:#fff; color:#374151; font-weight:600; cursor:pointer; }
+.file-input::file-selector-button:hover { background:#f9fafb; }
+.track-file { margin:7px 0 0; padding-top:16px; border-top:1px solid var(--line); }
 .mode-options { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
 .mode-option { display:flex; align-items:center; min-height:38px; padding:8px 11px; border:1px solid var(--line); border-radius:7px; background:#fff; color:#374151; }
 .mode-option:has(input:checked) { border-color:var(--primary); background:var(--primary-soft); color:#493925; }
@@ -80,6 +85,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .primary:disabled,.btn:disabled { opacity:.55; cursor:wait; }
 .ghost { background:#fff; color:#374151; border:1px solid #d1d5db; }
 .ghost:hover { background:#f9fafb; border-color:#9ca3af; }
+.ghost.compact { min-height:38px; padding:8px 11px; font-size:12px; }
 .actions { display:flex; gap:10px; justify-content:flex-end; align-items:center; margin-top:20px; flex-wrap:wrap; }
 .form-actions { margin:0 -24px -22px; padding:18px 24px; background:#fafafa; border-top:1px solid var(--line); border-radius:0 0 10px 10px; }
 .thumbs { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
