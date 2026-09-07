@@ -22,6 +22,7 @@ const fs = require('fs');
 const path = require('path');
 const { execFileSync } = require('child_process');
 const webImg = require('./lib/web-images');
+const { imageSlugFromUrl } = require('./lib/product-image-path');
 const { processProductImages } = require('./lib/product-images');
 
 const ROOT = path.resolve(__dirname, '..');
@@ -103,7 +104,7 @@ function findNasDir(code) {
     console.error('✖ ไม่รู้โฟลเดอร์รูปของสินค้านี้ — ระบุ --slug <imgSlug> (ชื่อโฟลเดอร์ใน images/products/)');
     process.exit(1);
   }
-  const product = products.find(p => (p.imageUrl || '').split('/')[3] === imgSlug);
+  const product = products.find(p => imageSlugFromUrl(p.imageUrl) === imgSlug);
   if (!product) {
     console.error(`✖ ไม่พบสินค้าที่ใช้โฟลเดอร์รูป ${imgSlug} ใน products.json`);
     process.exit(1);

@@ -28,6 +28,8 @@ const { makeTracklistQr } = require('./lib/tracklist-qr');
 const { buildSeo, validateSeo, CATEGORIES } = require('./lib/seo');
 const { runHermesSeo } = require('./lib/hermes-seo-agent');
 const { slugify, imageSlug, uniqueImageSlug } = require('./lib/product-slug');
+const { imageSlugFromUrl } = require('./lib/product-image-path');
+const { createNasImageWatcher } = require('./lib/nas-image-watcher');
 const webImg = require('./lib/web-images');
 const { processProductImages, fetchOriginals, fetchMids } = require('./lib/product-images');
 const { PAGE, CLIENT_JS } = require('./lib/studio-page');
@@ -91,7 +93,9 @@ function loadWebProducts() {
       sku: p.sku, category: p.category?.name || p.category || '', imageUrl: p.imageUrl,
       images: p.images || [], tags: p.tags || [], tracklist: p.tracklist || [],
       description: p.description || '', specs: p.specs || null,
-      imgSlug: (p.imageUrl || '').split('/')[3] || '',
+      // รองรับทั้ง URL รูปเว็บเดิม (/images/products/<slug>/...) และ R2
+      // (https://img.../web/products/<slug>/...) — index ตายตัวจะได้ "web" จาก R2
+      imgSlug: imageSlugFromUrl(p.imageUrl),
     }));
   } catch { return []; }
 }
@@ -292,8 +296,76 @@ function saveToNas(folderName, files, log) {
   }
 }
 
+/** เฝ้าเฉพาะโฟลเดอร์ NAS ที่ catalog ผูกกับสินค้าบนเว็บแล้ว */
+function linkedNasMappings() {
+  if (!nasReady()) return [];
+  const products = loadWebProducts();
+  return loadCatalog().map((entry) => {
+    if (!entry.code || !entry.dirName) return null;
+    try { if (!fs.statSync(path.join(NAS_DIR, entry.dirName)).isDirectory()) return null; }
+    catch { return null; }
+
+    let product = entry.slug ? products.find(item => item.imgSlug === entry.slug) : null;
+    if (!product) {
+      product = products.find((item) => {
+        const match = String(item.sku || '').match(/(?:BT-)?(\d+)$/i);
+        return match && Number(match[1]) === Number(entry.code);
+      });
+    }
+    if (!product || !product.imgSlug) return null;
+    return { ...entry, slug: product.imgSlug };
+  }).filter(Boolean);
+}
+
+function trackedWorktreeClean() {
+  try {
+    runCmd('git', ['diff', '--quiet']);
+    runCmd('git', ['diff', '--cached', '--quiet']);
+    return true;
+  } catch { return false; }
+}
+
+/** NAS → รูป 3 ชั้น/R2 → DB → read-back → products.json/build/push */
+async function publishNasFolderUpdate(entry) {
+  if (!isAuthed()) throw new Error('ยังไม่ได้เข้าสู่ระบบแอดมิน — รอ login แล้วระบบจะลองรูปชุดนี้ใหม่');
+  if (!trackedWorktreeClean()) {
+    throw new Error('มีไฟล์โค้ด tracked ที่ยังไม่ได้ commit — หยุดอัปเดตรูปอัตโนมัติเพื่อไม่ให้ commit งานอื่นปน');
+  }
+  const product = loadWebProducts().find(p => p.imgSlug === entry.slug);
+  if (!product) throw new Error(`ไม่พบสินค้าบนเว็บที่ผูกกับโฟลเดอร์รูป ${entry.slug}`);
+
+  const srcDir = path.join(NAS_DIR, entry.dirName);
+  console.log(`\n👀 พบรูปเปลี่ยนใน NAS: ${entry.dirName}`);
+  console.log(`   ⏳ กำลังสร้างรูปและอัปเดตเว็บ: ${product.name}`);
+  const img = await processProductImages({
+    code: entry.code, slug: entry.slug, title: product.name,
+    srcDir, dirName: entry.dirName, prune: true,
+    log: message => console.log('   ' + message),
+  });
+
+  await api(`/products/${product.id}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ images: img.web, imageUrl: img.web[0] }),
+  });
+  const verified = await api(`/products/${product.id}`);
+  if (String(verified.imageUrl || '').split('?')[0] !== img.web[0]) {
+    throw new Error('อัปเดต DB แล้ว แต่ตรวจกลับพบว่า URL รูปใหม่ไม่ตรงกัน');
+  }
+  console.log(`   ✔ DB ใช้รูปใหม่แล้ว ${img.web.length} ใบ`);
+
+  runScript('sync-products-json.js');
+  runBuild();
+  const pushed = gitPush(`feat(images): auto-update ${entry.slug} from NAS`, ['images/products']);
+  console.log(pushed.pushed
+    ? `   ✔ อัปเดต products.json และ push แล้ว (${pushed.count} ไฟล์)`
+    : `   ⚠ DB อัปเดตแล้ว แต่ไม่ได้ push products.json: ${pushed.reason}`);
+  console.log(`   ✅ รูปใหม่พร้อมใช้: https://btmusicdrive.com/product/${product.slug}\n`);
+}
+
+let nasImageWatcher = null;
+
 // ── server ───────────────────────────────────────────────────────────────────
-http.createServer(async (req, res) => {
+const studioServer = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);
   const json = (code, obj) => { res.writeHead(code, { 'content-type': 'application/json; charset=utf-8' }); res.end(JSON.stringify(obj)); };
   const logs = [];
@@ -730,7 +802,9 @@ http.createServer(async (req, res) => {
     res.writeHead(500, { 'content-type': 'text/plain; charset=utf-8' });
     res.end(logs.length ? logs.join('\n') + '\n\n✖ ' + msg : msg);
   }
-}).listen(PORT, () => {
+});
+
+studioServer.listen(PORT, () => {
   console.log(`🎛 Product Studio เปิดแล้ว → http://localhost:${PORT}`);
   console.log(`   API เว็บ: ${API_BASE} · NAS: ${NAS_DIR}`);
   console.log('   ➕ ลงสินค้าใหม่ · ✏ แก้ไขสินค้าเดิม · 🔗 QR   (Ctrl+C เพื่อปิด)');
@@ -744,4 +818,17 @@ http.createServer(async (req, res) => {
         console.log(`   ✖ รหัสแอดมินใน server/.env ใช้ไม่ได้ (${e.message}) — ต้องล็อกอินในหน้าเว็บ`);
       });
   }
+
+  nasImageWatcher = createNasImageWatcher({
+    nasDir: NAS_DIR,
+    getMappings: linkedNasMappings,
+    onChange: publishNasFolderUpdate,
+    onError: (error, entry) => console.error(`   ✖ อัปเดตรูปอัตโนมัติ code ${entry.code} ไม่สำเร็จ: ${error.message}`),
+  });
+  console.log(`   👀 เฝ้าดูรูปอัตโนมัติ ${linkedNasMappings().length} โฟลเดอร์ — แก้รูปใน NAS แล้วขึ้นเว็บเอง`);
+});
+
+process.once('SIGINT', () => {
+  if (nasImageWatcher) nasImageWatcher.close();
+  studioServer.close(() => process.exit(0));
 });

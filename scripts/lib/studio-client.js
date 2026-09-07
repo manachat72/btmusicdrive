@@ -488,6 +488,9 @@ function pickWeb(id) {
   var bySlug = MKT.filter(function (m) { return m.slug && m.slug === editing.imgSlug; })[0];
   var guess = bySlug ? bySlug.code
     : (/^BT-(\d+)$/.test(editing.sku || '') ? editing.sku.replace(/^BT-/, '') : '');
+  var watchInfo = bySlug && bySlug.dirName
+    ? '<div class="issues good">👀 ระบบเฝ้าดูโฟลเดอร์นี้อัตโนมัติ: <b>' + esc(bySlug.dirName) + '</b><br>เปลี่ยน เพิ่ม หรือลบไฟล์รูปในโฟลเดอร์นี้ แล้วระบบจะทำรูปและอัปเดตเว็บเอง ไม่ต้องกดซิงก์</div>'
+    : '<div class="issues warn">⚠ สินค้านี้ยังไม่ได้ผูกกับโฟลเดอร์ NAS จึงยังอัปเดตรูปจากโฟลเดอร์อัตโนมัติไม่ได้</div>';
   $('epane').innerHTML =
     loginBoxHtml() +
     '<div class="card"><h2>✏ ' + esc(editing.name) + '</h2>' +
@@ -506,11 +509,11 @@ function pickWeb(id) {
     '<input type="file" accept=".txt" onchange="readEditTxt(this)"><div class="hint" id="eTxtInfo"></div></div>' +
     '<hr style="border:0;border-top:1px solid #e2ded8;margin:16px 0">' +
     '<h2 style="font-size:15px">🖼 จัดการรูปสินค้า</h2>' +
+    watchInfo +
     '<div class="sub">ลากรูปด้านบนเพื่อสลับลำดับ · กด × ลบ · กด ⭐ ตั้งเป็นรูปปก — แล้วกด "บันทึกรูป" ทีเดียว<br>ระบบดึงต้นฉบับจาก R2/NAS มาทำรูปใหม่ครบทั้ง 3 ชั้น + push ให้เอง</div>' +
     '<div id="eDrop" class="drop">ลากไฟล์รูปมาวางตรงนี้ หรือ<label class="pick"> เลือกไฟล์<input type="file" accept="image/*" multiple hidden onchange="pickAddImgs(this)"></label></div>' +
     '<div id="eAddPrev" class="imgs"></div><div class="hint" id="eAddInfo"></div>' +
     '<button class="primary" onclick="addImages(this)">💾 บันทึกรูป + อัปเดตเว็บ</button>' +
-    '<button class="ghost" onclick="syncImages(this)" style="margin-left:8px">♻ ซิงก์รูปในโฟลเดอร์เข้าเว็บ</button>' +
     '<hr style="border:0;border-top:1px solid #e2ded8;margin:16px 0">' +
     '<h2 style="font-size:15px">🔁 ทำ SEO ใหม่ทั้งชุด</h2>' +
     '<div class="sub">พิมพ์ชื่อสั้นแบบที่ลูกค้าค้น แล้วให้ระบบเขียนชื่อ/รายละเอียด/tags/meta ใหม่ทับของเดิม</div>' +

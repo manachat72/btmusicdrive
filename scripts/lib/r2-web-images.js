@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 const r2 = require('./r2');
 
 const CDN_WEB_PREFIX = `${r2.CDN}/web/products/`;
@@ -41,6 +42,12 @@ function resolveLocalFile(ref, root) {
   return localCandidates(ref, root).find(file => fs.existsSync(file)) || null;
 }
 
+function contentAddressedKey(key, body) {
+  const hash = crypto.createHash('sha1').update(body).digest('hex').slice(0, 8);
+  const clean = key.replace(/-[0-9a-f]{8}(?=\.[^.]+$)/i, '');
+  return clean.replace(/(?=\.[^.]+$)/, `-${hash}`);
+}
+
 function planProductWebImages(product, root) {
   const refs = [...new Set([product.imageUrl, ...(Array.isArray(product.images) ? product.images : [])].filter(Boolean))];
   if (!refs.length) throw new Error(`สินค้า ${product.slug || product.id || ''} ไม่มี URL รูปเว็บ`);
@@ -48,16 +55,23 @@ function planProductWebImages(product, root) {
   const replacements = new Map();
   const uploadsByKey = new Map();
   for (const ref of refs) {
-    const target = cdnWebUrl(ref);
-    replacements.set(ref, target);
-    if (normalizeRef(ref).startsWith(CDN_WEB_PREFIX)) continue;
-
     const local = resolveLocalFile(ref, root);
-    if (!local) throw new Error(`ไม่พบไฟล์รูปเว็บ: ${ref}`);
-    const webpKey = r2WebKey(ref);
+    if (!local) {
+      if (normalizeRef(ref).startsWith(CDN_WEB_PREFIX)) {
+        replacements.set(ref, ref);
+        continue;
+      }
+      throw new Error(`ไม่พบไฟล์รูปเว็บ: ${ref}`);
+    }
+
+    // R2 ตั้ง cache แบบ immutable จึงห้ามอัปทับ key เดิมเมื่อรูปเปลี่ยน
+    // ใช้ hash จาก WebP เป็น version เดียวกันของคู่ WebP/AVIF เพื่อให้ URL ใหม่ทันที
+    const webpBody = fs.readFileSync(local);
+    const webpKey = contentAddressedKey(r2WebKey(ref), webpBody);
+    replacements.set(ref, r2.urlOf(webpKey));
     uploadsByKey.set(webpKey, {
       key: webpKey,
-      body: fs.readFileSync(local),
+      body: webpBody,
       cacheControl: 'public, max-age=31536000, immutable',
       skipIfExists: true,
     });
