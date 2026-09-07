@@ -174,9 +174,11 @@ function renderNew() {
     '<div class="upload-row">' +
     '<div class="src"><input type="radio" name="src" id="srcNas" value="nas"' + (folders ? ' checked' : ' disabled') + '>' +
     '<label for="srcNas">ใช้รูปจากโฟลเดอร์ NAS</label>' +
-    '<select id="nFolder">' +
+    '<select id="nFolder" onchange="pickNasFolder()">' +
     (folders ? folders.map(function (f) { return '<option value="' + esc(f.name) + '">' + esc(f.name) + ' (' + f.count + ' รูป)</option>'; }).join('') : '<option>เข้าถึง NAS ไม่ได้</option>') +
-    '</select></div>' +
+    '</select>' +
+    '<div class="hint">ใช้ 9 รูปแรกตามลำดับชื่อไฟล์เดียวกับ Explorer · ใบที่ 1 คือภาพปกบนหน้าเว็บ · ระบบย่อรูปให้อัตโนมัติ</div>' +
+    '<div class="imgs" id="nNasPreview"></div><div class="hint" id="nNasInfo"></div></div>' +
     '<div class="src"><input type="radio" name="src" id="srcUp" value="upload"' + (folders ? '' : ' checked') + '>' +
     '<label for="srcUp">อัปโหลดรูปใหม่</label>' +
     '<input class="file-input" type="file" id="nFiles" accept="image/*" multiple onchange="previewFiles(this)">' +
@@ -200,6 +202,13 @@ function renderNew() {
   );
   restoreNewProductDraft();
   bindNewProductDraft();
+  if (folders && folders.length) loadNasPreview('nFolder', 'nNasPreview', 'nNasInfo');
+}
+
+/* เลือกโฟลเดอร์ = ตั้งใจใช้รูปจาก NAS — ติ๊ก radio ให้เลย กันกดสร้างแล้วได้รูปที่อัปโหลดค้างไว้ */
+function pickNasFolder() {
+  if ($('srcNas') && !$('srcNas').disabled) $('srcNas').checked = true;
+  loadNasPreview('nFolder', 'nNasPreview', 'nNasInfo');
 }
 
 var seoTimer = null;
@@ -488,9 +497,18 @@ function pickWeb(id) {
   var bySlug = MKT.filter(function (m) { return m.slug && m.slug === editing.imgSlug; })[0];
   var guess = bySlug ? bySlug.code
     : (/^BT-(\d+)$/.test(editing.sku || '') ? editing.sku.replace(/^BT-/, '') : '');
-  var watchInfo = bySlug && bySlug.dirName
-    ? '<div class="issues good">👀 ระบบเฝ้าดูโฟลเดอร์นี้อัตโนมัติ: <b>' + esc(bySlug.dirName) + '</b><br>เปลี่ยน เพิ่ม หรือลบไฟล์รูปในโฟลเดอร์นี้ แล้วระบบจะทำรูปและอัปเดตเว็บเอง ไม่ต้องกดซิงก์</div>'
-    : '<div class="issues warn">⚠ สินค้านี้ยังไม่ได้ผูกกับโฟลเดอร์ NAS จึงยังอัปเดตรูปจากโฟลเดอร์อัตโนมัติไม่ได้</div>';
+  var byCode = MKT.filter(function (m) { return guess && m.code === guess; })[0];
+  var currentFolder = (bySlug || byCode || {}).dirName || '';
+  var folderOptions = '<option value="">— เลือกโฟลเดอร์รูป —</option>' +
+    ((META.folders || []).map(function (folder) {
+      return '<option value="' + esc(folder.name) + '"' + (folder.name === currentFolder ? ' selected' : '') + '>' +
+        esc(folder.name) + ' (' + folder.count + ' รูป)</option>';
+    }).join(''));
+  var nasBox = '<div class="src"><label for="eNasFolder">โฟลเดอร์รูปบน NAS</label>' +
+    '<select id="eNasFolder" onchange="loadNasPreview()">' + folderOptions + '</select>' +
+    '<div class="hint">ระบบจะแสดงและใช้ 9 รูปแรกตามลำดับชื่อไฟล์เดียวกับ Explorer</div>' +
+    '<div id="eNasPreview" class="imgs"></div><div id="eNasInfo" class="hint"></div>' +
+    '<button type="button" class="primary" onclick="replaceImagesFromNas(this)">🖼 ใช้ 9 รูปแรกขึ้นเว็บ</button></div>';
   $('epane').innerHTML =
     loginBoxHtml() +
     '<div class="card"><h2>✏ ' + esc(editing.name) + '</h2>' +
@@ -509,7 +527,8 @@ function pickWeb(id) {
     '<input type="file" accept=".txt" onchange="readEditTxt(this)"><div class="hint" id="eTxtInfo"></div></div>' +
     '<hr style="border:0;border-top:1px solid #e2ded8;margin:16px 0">' +
     '<h2 style="font-size:15px">🖼 จัดการรูปสินค้า</h2>' +
-    watchInfo +
+    nasBox +
+    '<div class="sub">หรือเพิ่ม/ลบ/สลับรูปด้วยตนเองด้านล่าง</div>' +
     '<div class="sub">ลากรูปด้านบนเพื่อสลับลำดับ · กด × ลบ · กด ⭐ ตั้งเป็นรูปปก — แล้วกด "บันทึกรูป" ทีเดียว<br>ระบบดึงต้นฉบับจาก R2/NAS มาทำรูปใหม่ครบทั้ง 3 ชั้น + push ให้เอง</div>' +
     '<div id="eDrop" class="drop">ลากไฟล์รูปมาวางตรงนี้ หรือ<label class="pick"> เลือกไฟล์<input type="file" accept="image/*" multiple hidden onchange="pickAddImgs(this)"></label></div>' +
     '<div id="eAddPrev" class="imgs"></div><div class="hint" id="eAddInfo"></div>' +
@@ -535,6 +554,60 @@ function pickWeb(id) {
   renderEditImages();
   renderAddPreview();
   bindDropZone();
+  if (currentFolder) loadNasPreview();
+}
+
+/* พรีวิว 9 รูปแรกของโฟลเดอร์ NAS — ใช้ร่วมกันทั้ง "ลงสินค้าใหม่" และ "แก้ไขสินค้าเดิม"
+ * ลำดับที่เห็นตรงนี้คือลำดับรูปบนหน้าสินค้าจริง (ใบที่ 1 = ภาพปก) */
+async function loadNasPreview(selId, prevId, infoId) {
+  var folderEl = $(selId || 'eNasFolder');
+  var previewEl = $(prevId || 'eNasPreview');
+  var infoEl = $(infoId || 'eNasInfo');
+  if (!folderEl || !previewEl || !infoEl) return;
+  var folder = folderEl.value;
+  if (!folder) { previewEl.innerHTML = ''; infoEl.textContent = 'เลือกโฟลเดอร์ก่อน'; return; }
+  infoEl.textContent = 'กำลังอ่านรูปจาก NAS…';
+  try {
+    var out = await jget('/api/nas-preview?folder=' + encodeURIComponent(folder));
+    previewEl.innerHTML = out.files.map(function (file, i) {
+      var src = '/api/nas-image?folder=' + encodeURIComponent(folder) + '&file=' + encodeURIComponent(file);
+      return '<div class="tile' + (i === 0 ? ' cover' : '') + '" title="' + esc(file) + '">' +
+        '<img loading="lazy" src="' + src + '" alt="รูปที่ ' + (i + 1) + '"><span class="n">' + (i + 1) + '</span></div>';
+    }).join('');
+    infoEl.textContent = out.files.length
+      ? 'จะใช้ ' + out.files.length + ' รูปแรกจากทั้งหมด ' + out.total + ' รูป · ' + out.files.join(' · ')
+      : 'โฟลเดอร์นี้ไม่มีไฟล์รูป';
+  } catch (e) {
+    previewEl.innerHTML = '';
+    infoEl.textContent = 'อ่านโฟลเดอร์ไม่สำเร็จ: ' + e.message;
+  }
+}
+
+async function replaceImagesFromNas(btn) {
+  var folder = $('eNasFolder') ? $('eNasFolder').value : '';
+  var code = $('eCode') ? $('eCode').value : '';
+  if (!folder) { status('eStatus', 'เลือกโฟลเดอร์รูปบน NAS ก่อน', 'err'); return; }
+  if (!code) { status('eStatus', 'เลือกชุดรูป marketplace ของสินค้านี้ก่อน', 'err'); return; }
+  if (!confirm('ใช้ 9 รูปแรกจากโฟลเดอร์นี้แทนรูปสินค้าบนเว็บ?\n\n' + folder)) return;
+  btn.disabled = true;
+  try {
+    await ensureLogin('eStatus');
+    status('eStatus', '⏳ กำลังทำรูป 9 รูปแรก → อัป R2 → อัปเดต DB และเว็บไซต์…');
+    var out = await jpost('/api/replace-images-from-nas', {
+      id: editing.id, code: code, folder: folder
+    });
+    editing.images = out.images;
+    editing.imageUrl = out.images[0];
+    setEditImages(out.images);
+    renderEditImages();
+    WEB = await jget('/api/web-products');
+    MKT = await jget('/api/products');
+    status('eStatus', '<span class="ok">✔ ใช้ ' + out.files.length + ' รูปแรกขึ้นเว็บแล้ว — <a href="' + out.url +
+      '" target="_blank">เปิดหน้าสินค้า</a></span><br>' + esc(out.logs.join('\n')));
+  } catch (e) {
+    status('eStatus', '✖ ' + esc(e.message).slice(0, 1200), 'err');
+  }
+  btn.disabled = false;
 }
 
 // ลำดับนี้คือแกลเลอรีสินค้า และรูปแรกคือรูปปกที่แสดงบนการ์ดสินค้า

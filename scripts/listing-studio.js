@@ -29,7 +29,7 @@ const { buildSeo, validateSeo, CATEGORIES } = require('./lib/seo');
 const { runHermesSeo } = require('./lib/hermes-seo-agent');
 const { slugify, imageSlug, uniqueImageSlug } = require('./lib/product-slug');
 const { imageSlugFromUrl } = require('./lib/product-image-path');
-const { createNasImageWatcher } = require('./lib/nas-image-watcher');
+const { resolveNasFolder, previewNasImages } = require('./lib/nas-image-selection');
 const webImg = require('./lib/web-images');
 const { processProductImages, fetchOriginals, fetchMids } = require('./lib/product-images');
 const { PAGE, CLIENT_JS } = require('./lib/studio-page');
@@ -296,74 +296,6 @@ function saveToNas(folderName, files, log) {
   }
 }
 
-/** เฝ้าเฉพาะโฟลเดอร์ NAS ที่ catalog ผูกกับสินค้าบนเว็บแล้ว */
-function linkedNasMappings() {
-  if (!nasReady()) return [];
-  const products = loadWebProducts();
-  return loadCatalog().map((entry) => {
-    if (!entry.code || !entry.dirName) return null;
-    try { if (!fs.statSync(path.join(NAS_DIR, entry.dirName)).isDirectory()) return null; }
-    catch { return null; }
-
-    let product = entry.slug ? products.find(item => item.imgSlug === entry.slug) : null;
-    if (!product) {
-      product = products.find((item) => {
-        const match = String(item.sku || '').match(/(?:BT-)?(\d+)$/i);
-        return match && Number(match[1]) === Number(entry.code);
-      });
-    }
-    if (!product || !product.imgSlug) return null;
-    return { ...entry, slug: product.imgSlug };
-  }).filter(Boolean);
-}
-
-function trackedWorktreeClean() {
-  try {
-    runCmd('git', ['diff', '--quiet']);
-    runCmd('git', ['diff', '--cached', '--quiet']);
-    return true;
-  } catch { return false; }
-}
-
-/** NAS → รูป 3 ชั้น/R2 → DB → read-back → products.json/build/push */
-async function publishNasFolderUpdate(entry) {
-  if (!isAuthed()) throw new Error('ยังไม่ได้เข้าสู่ระบบแอดมิน — รอ login แล้วระบบจะลองรูปชุดนี้ใหม่');
-  if (!trackedWorktreeClean()) {
-    throw new Error('มีไฟล์โค้ด tracked ที่ยังไม่ได้ commit — หยุดอัปเดตรูปอัตโนมัติเพื่อไม่ให้ commit งานอื่นปน');
-  }
-  const product = loadWebProducts().find(p => p.imgSlug === entry.slug);
-  if (!product) throw new Error(`ไม่พบสินค้าบนเว็บที่ผูกกับโฟลเดอร์รูป ${entry.slug}`);
-
-  const srcDir = path.join(NAS_DIR, entry.dirName);
-  console.log(`\n👀 พบรูปเปลี่ยนใน NAS: ${entry.dirName}`);
-  console.log(`   ⏳ กำลังสร้างรูปและอัปเดตเว็บ: ${product.name}`);
-  const img = await processProductImages({
-    code: entry.code, slug: entry.slug, title: product.name,
-    srcDir, dirName: entry.dirName, prune: true,
-    log: message => console.log('   ' + message),
-  });
-
-  await api(`/products/${product.id}`, {
-    method: 'PATCH',
-    body: JSON.stringify({ images: img.web, imageUrl: img.web[0] }),
-  });
-  const verified = await api(`/products/${product.id}`);
-  if (String(verified.imageUrl || '').split('?')[0] !== img.web[0]) {
-    throw new Error('อัปเดต DB แล้ว แต่ตรวจกลับพบว่า URL รูปใหม่ไม่ตรงกัน');
-  }
-  console.log(`   ✔ DB ใช้รูปใหม่แล้ว ${img.web.length} ใบ`);
-
-  runScript('sync-products-json.js');
-  runBuild();
-  const pushed = gitPush(`feat(images): auto-update ${entry.slug} from NAS`, ['images/products']);
-  console.log(pushed.pushed
-    ? `   ✔ อัปเดต products.json และ push แล้ว (${pushed.count} ไฟล์)`
-    : `   ⚠ DB อัปเดตแล้ว แต่ไม่ได้ push products.json: ${pushed.reason}`);
-  console.log(`   ✅ รูปใหม่พร้อมใช้: https://btmusicdrive.com/product/${product.slug}\n`);
-}
-
-let nasImageWatcher = null;
-
 // ── server ───────────────────────────────────────────────────────────────────
 const studioServer = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);
@@ -380,6 +312,25 @@ const studioServer = http.createServer(async (req, res) => {
         folders: nasFolders(), categories: CATEGORIES, nextCode: nextCode(),
         loggedIn: isAuthed(), nas: NAS_DIR, apiBase: API_BASE,
       });
+    }
+    if (url.pathname === '/api/nas-preview' && req.method === 'GET') {
+      const preview = previewNasImages(NAS_DIR, url.searchParams.get('folder'));
+      return json(200, { folder: preview.folder, total: preview.total, files: preview.files });
+    }
+    if (url.pathname === '/api/nas-image' && req.method === 'GET') {
+      const folder = url.searchParams.get('folder');
+      const file = String(url.searchParams.get('file') || '');
+      const preview = previewNasImages(NAS_DIR, folder);
+      if (!file || path.basename(file) !== file || !preview.files.includes(file)) {
+        throw new Error('ไฟล์รูปไม่อยู่ใน 9 รูปแรกของโฟลเดอร์นี้');
+      }
+      const imageFile = path.join(resolveNasFolder(NAS_DIR, folder), file);
+      const ext = path.extname(imageFile).toLowerCase();
+      const contentType = ext === '.avif' ? 'image/avif'
+        : ext === '.webp' ? 'image/webp'
+          : ext === '.png' ? 'image/png' : 'image/jpeg';
+      res.writeHead(200, { 'content-type': contentType, 'cache-control': 'no-store' });
+      return res.end(fs.readFileSync(imageFile));
     }
     if (url.pathname === '/api/products') return json(200, loadProducts());
     if (url.pathname === '/api/web-products') return json(200, loadWebProducts());
@@ -643,6 +594,57 @@ const studioServer = http.createServer(async (req, res) => {
       return json(200, { ok: true, images: img.web, mid: img.mid, logs });
     }
 
+    // ── แทนรูปสินค้าด้วย 9 รูปแรกจากโฟลเดอร์ NAS ที่ผู้ใช้เลือก ──
+    if (url.pathname === '/api/replace-images-from-nas' && req.method === 'POST') {
+      if (!isAuthed()) throw new Error('ยังไม่ได้เข้าสู่ระบบแอดมิน');
+      const b = JSON.parse(await readBody(req));
+      const product = loadWebProducts().find(item => item.id === b.id);
+      if (!product) throw new Error('ไม่พบสินค้าที่กำลังแก้ใน products.json');
+      if (!product.imgSlug) throw new Error('สินค้านี้ไม่มีโฟลเดอร์รูปเว็บที่ระบุได้');
+
+      const preview = previewNasImages(NAS_DIR, b.folder);
+      if (!preview.files.length) throw new Error('โฟลเดอร์นี้ไม่มีไฟล์รูป');
+      const folderCode = String((preview.folder.match(/^(\d+)/) || [])[1] || '').padStart(2, '0');
+      const expectedCode = String(b.code || codeForSlug(product.imgSlug) || '').padStart(2, '0');
+      if (!/^\d{2,}$/.test(folderCode)) throw new Error('ชื่อโฟลเดอร์ต้องขึ้นต้นด้วยเลข code เช่น 09-ชื่อสินค้า');
+      if (!/^\d{2,}$/.test(expectedCode)) throw new Error('เลือกชุดรูป marketplace ของสินค้านี้ก่อน');
+      if (folderCode !== expectedCode) {
+        throw new Error(`โฟลเดอร์ code ${folderCode} ไม่ตรงกับสินค้า code ${expectedCode} — ยกเลิกเพื่อป้องกันรูปผิดสินค้า`);
+      }
+      assertCodeFree(folderCode, product.imgSlug, product.name);
+
+      log(`✔ เลือก ${preview.files.length} รูปแรกจากทั้งหมด ${preview.total} รูป: ${preview.files.join(', ')}`);
+      log('⏳ ทำรูปใหม่ครบ 3 ชั้นและอัป R2…');
+      const srcDir = resolveNasFolder(NAS_DIR, preview.folder);
+      const img = await processProductImages({
+        code: folderCode, slug: product.imgSlug, title: product.name,
+        srcDir, dirName: preview.folder, prune: true, log,
+      });
+
+      await api(`/products/${product.id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ images: img.web, imageUrl: img.web[0] }),
+      });
+      const verified = await api(`/products/${product.id}`);
+      if (String(verified.imageUrl || '').split('?')[0] !== img.web[0]) {
+        throw new Error('อัปเดต DB แล้ว แต่ตรวจกลับพบว่า URL รูปใหม่ไม่ตรงกัน');
+      }
+      log(`✔ ตรวจแล้ว DB ใช้รูปใหม่ ${img.web.length} ใบ`);
+
+      try { runScript('sync-products-json.js'); log('✔ sync products.json'); }
+      catch (e) { log('⚠ sync products.json ไม่สำเร็จ: ' + String(e.stderr || e.message).slice(0, 300)); }
+      try {
+        runBuild();
+        const pushed = gitPush(`feat(images): use first 9 NAS images for ${product.imgSlug}`, ['images/products']);
+        log(pushed.pushed ? `✔ push รูปและข้อมูลแล้ว (${pushed.count} ไฟล์)` : `⚠ ไม่ได้ push: ${pushed.reason}`);
+      } catch (e) { log('⚠ build ไม่สำเร็จ: ' + String(e.message).slice(0, 150)); }
+
+      return json(200, {
+        ok: true, images: img.web, files: preview.files, total: preview.total,
+        url: `https://btmusicdrive.com/product/${product.slug}`, logs,
+      });
+    }
+
     // ── ซิงก์รูปในโฟลเดอร์เว็บเข้า DB ──
     // กู้กรณีทำรูปเสร็จแล้วแต่ขั้น build/push/DB ล้มกลางทาง (ไฟล์รูปมีครบแล้ว ไม่ต้องทำใหม่)
     if (url.pathname === '/api/sync-images' && req.method === 'POST') {
@@ -819,16 +821,4 @@ studioServer.listen(PORT, () => {
       });
   }
 
-  nasImageWatcher = createNasImageWatcher({
-    nasDir: NAS_DIR,
-    getMappings: linkedNasMappings,
-    onChange: publishNasFolderUpdate,
-    onError: (error, entry) => console.error(`   ✖ อัปเดตรูปอัตโนมัติ code ${entry.code} ไม่สำเร็จ: ${error.message}`),
-  });
-  console.log(`   👀 เฝ้าดูรูปอัตโนมัติ ${linkedNasMappings().length} โฟลเดอร์ — แก้รูปใน NAS แล้วขึ้นเว็บเอง`);
-});
-
-process.once('SIGINT', () => {
-  if (nasImageWatcher) nasImageWatcher.close();
-  studioServer.close(() => process.exit(0));
 });

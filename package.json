@@ -35,7 +35,7 @@
     "images:optimize-product": "node scripts/optimize-product-images.js",
     "images:r2-web": "node scripts/migrate-web-images-to-r2.js --apply",
     "build": "npm run build:css && npm run combine:css && npm run inline:products && npm run inline:categories && npm run inline:product-jsonld && npm run build:sitemap && npm run hash:assets",
-    "test": "node scripts/test-seo.js && node scripts/test-studio-agent-seo.js && node scripts/test-studio-ui.js && node scripts/test-studio-nas-images.js && node scripts/test-nas-image-watcher.js && node scripts/test-r2-web-images.js && node scripts/test-vercel-server-install.js"
+    "test": "node scripts/test-seo.js && node scripts/test-studio-agent-seo.js && node scripts/test-studio-ui.js && node scripts/test-studio-nas-images.js && node scripts/test-r2-web-images.js && node scripts/test-vercel-server-install.js"
   },
   "repository": {
     "type": "git",
