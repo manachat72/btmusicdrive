@@ -54,7 +54,15 @@ assert.match(studioSource, /String\(verified\.imageUrl \|\| ''\)\.split\('\?'\)\
   'NAS publication must verify the exact new image URL');
 assert.match(studioSource, /processProductImages\(\{[\s\S]*srcDir[\s\S]*prune: true/,
   'The selected NAS folder must rebuild all image layers from its first nine images');
+assert.match(studioSource, /assertCodeFree\(outputCode, product\.imgSlug, product\.name\)/,
+  'Marketplace overwrite protection must use the destination code, not the NAS source-folder number');
+assert.match(studioSource, /code: outputCode, slug: product\.imgSlug/,
+  'NAS source folders and marketplace destination codes may have different numbers');
+assert.doesNotMatch(studioSource, /folderCode !== (expectedCode|outputCode)/,
+  'A NAS source-folder number must not be required to match the marketplace destination code');
 assert.doesNotMatch(resyncSource, /imageUrl \|\| ''\)\.split\('\/'\)\[3\]/,
   'The manual recovery script must not use the broken fixed-position URL parser');
+assert.match(resyncSource, /const FOLDER = argVal\('--folder', ''\)/,
+  'The recovery script must support a NAS source folder whose number differs from the destination code');
 
 console.log('Product Studio NAS image path contract passed.');

@@ -24,6 +24,7 @@ const { execFileSync } = require('child_process');
 const webImg = require('./lib/web-images');
 const { imageSlugFromUrl } = require('./lib/product-image-path');
 const { processProductImages } = require('./lib/product-images');
+const { resolveNasFolder } = require('./lib/nas-image-selection');
 
 const ROOT = path.resolve(__dirname, '..');
 const NAS_DIR = require('./lib/nas').nasDir();
@@ -33,6 +34,7 @@ const APPLY = argv.includes('--apply');
 const NO_PUSH = argv.includes('--no-push');
 const argVal = (f, d) => { const i = argv.indexOf(f); return i !== -1 && argv[i + 1] ? argv[i + 1] : d; };
 const CODE = String(argVal('--code', '')).padStart(2, '0');
+const FOLDER = argVal('--folder', '');
 
 if (!/^\d{2,}$/.test(CODE)) {
   console.error('✖ ต้องระบุ --code NN (เลขชุดรูป marketplace)');
@@ -75,7 +77,11 @@ function gitPush(message, extraPaths = []) {
   }
 }
 
-function findNasDir(code) {
+function findNasDir(code, selectedFolder) {
+  if (selectedFolder) {
+    resolveNasFolder(NAS_DIR, selectedFolder);
+    return selectedFolder;
+  }
   const dirs = fs.readdirSync(NAS_DIR, { withFileTypes: true })
     .filter(d => d.isDirectory() && new RegExp(`^0*${parseInt(code, 10)}\\s*-`).test(d.name))
     .map(d => d.name);
@@ -90,7 +96,7 @@ function findNasDir(code) {
     process.exit(1);
   }
 
-  const dirName = findNasDir(CODE);
+  const dirName = findNasDir(CODE, FOLDER);
   const srcDir = path.join(NAS_DIR, dirName);
   const files = webImg.listSourceImages(srcDir);
 

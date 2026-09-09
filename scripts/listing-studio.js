@@ -605,19 +605,19 @@ const studioServer = http.createServer(async (req, res) => {
       const preview = previewNasImages(NAS_DIR, b.folder);
       if (!preview.files.length) throw new Error('โฟลเดอร์นี้ไม่มีไฟล์รูป');
       const folderCode = String((preview.folder.match(/^(\d+)/) || [])[1] || '').padStart(2, '0');
-      const expectedCode = String(b.code || codeForSlug(product.imgSlug) || '').padStart(2, '0');
+      const outputCode = String(b.code || codeForSlug(product.imgSlug) || '').padStart(2, '0');
       if (!/^\d{2,}$/.test(folderCode)) throw new Error('ชื่อโฟลเดอร์ต้องขึ้นต้นด้วยเลข code เช่น 09-ชื่อสินค้า');
-      if (!/^\d{2,}$/.test(expectedCode)) throw new Error('เลือกชุดรูป marketplace ของสินค้านี้ก่อน');
-      if (folderCode !== expectedCode) {
-        throw new Error(`โฟลเดอร์ code ${folderCode} ไม่ตรงกับสินค้า code ${expectedCode} — ยกเลิกเพื่อป้องกันรูปผิดสินค้า`);
-      }
-      assertCodeFree(folderCode, product.imgSlug, product.name);
+      if (!/^\d{2,}$/.test(outputCode)) throw new Error('เลือกชุดรูป marketplace ของสินค้านี้ก่อน');
+
+      // เลขนำหน้าโฟลเดอร์ NAS คือลำดับคลังต้นฉบับ ไม่ใช่ code ชุดรูป marketplace
+      // สองค่านี้อาจไม่ตรงกันได้ (เช่น NAS 54 → marketplace 34) จึงต้องกันการทับด้วย outputCode
+      assertCodeFree(outputCode, product.imgSlug, product.name);
 
       log(`✔ เลือก ${preview.files.length} รูปแรกจากทั้งหมด ${preview.total} รูป: ${preview.files.join(', ')}`);
       log('⏳ ทำรูปใหม่ครบ 3 ชั้นและอัป R2…');
       const srcDir = resolveNasFolder(NAS_DIR, preview.folder);
       const img = await processProductImages({
-        code: folderCode, slug: product.imgSlug, title: product.name,
+        code: outputCode, slug: product.imgSlug, title: product.name,
         srcDir, dirName: preview.folder, prune: true, log,
       });
 
