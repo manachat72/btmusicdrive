@@ -21,6 +21,8 @@
     "mkt:listings": "node scripts/generate-marketplace-listings.js --apply",
     "mkt:tiktok": "node scripts/fill-tiktok-template.js --apply",
     "mkt:studio": "node scripts/listing-studio.js",
+    "content:studio": "node scripts/content-studio.js",
+    "content:test": "node --test scripts/test-content-studio.js",
     "mkt:originals": "node scripts/backfill-originals.js",
     "mkt:qr-all": "node scripts/generate-tracklist-qrs.js --apply",
     "seo:artists": "node scripts/artists-cli.js todo",
