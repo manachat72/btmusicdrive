@@ -302,6 +302,34 @@ async function loadUserInfo() {
 
 // ── Cart Loading ──────────────────────────────────────────────────────────────
 
+async function refreshCheckoutCartProducts(items) {
+    if (!items.length) return items;
+    try {
+        const res = await fetch(`${API_BASE}/products?limit=100&_=${Date.now()}`, { cache: 'no-store' });
+        if (!res.ok) return items;
+        const json = await res.json();
+        const products = Array.isArray(json) ? json : (json.data || []);
+        const byId = new Map(products.map(product => [String(product.id), product]));
+        return items.map(item => {
+            const product = byId.get(String(item.id));
+            const quantity = Number(item.quantity ?? item.qty ?? 1);
+            if (!product) return { ...item, quantity };
+            return {
+                ...item,
+                name: product.name,
+                price: Number(product.price || 0),
+                originalPrice: product.originalPrice == null ? null : Number(product.originalPrice),
+                image: product.imageUrl || item.image || '',
+                category: product.category?.name || product.category || item.category || '',
+                quantity
+            };
+        });
+    } catch (error) {
+        console.warn('Could not refresh checkout product images:', error);
+        return items;
+    }
+}
+
 async function loadCart() {
     const token = localStorage.getItem('btmusicdrive_token');
 
@@ -360,9 +388,8 @@ async function loadCart() {
     } catch {
         cart = [];
     }
-    if (typeof _refreshCartProductData === 'function') {
-        cart = (await _refreshCartProductData()).map(item => ({ ...item }));
-    }
+    cart = await refreshCheckoutCartProducts(cart);
+    syncCheckoutCartUI();
     renderOrderSummary();
 }
 
