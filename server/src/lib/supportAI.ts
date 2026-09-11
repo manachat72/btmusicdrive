@@ -4,19 +4,34 @@ import { SUPPORT_KNOWLEDGE } from './supportKnowledge';
 const OPENAI_KEY = process.env.OPENAI_KEY || '';
 const OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini';
 
-// Optional local Llama (Ollama) backend for dev — e.g. http://localhost:11434
-// When OLLAMA_URL is set we use it instead of OpenAI. Both speak the same
-// OpenAI-compatible /v1/chat/completions API, so only the URL/key/model differ.
-const OLLAMA_URL = process.env.OLLAMA_URL || '';
-const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'qwen3vl:8b';
+// Ollama backend (gpt-oss:20b) — used instead of OpenAI when OLLAMA_URL is set.
+//   local:        OLLAMA_URL=http://localhost:11434 (or a tunnel URL to it)
+//   Ollama Cloud: OLLAMA_URL=https://ollama.com + OLLAMA_API_KEY
+// Uses the native /api/chat (not /v1) so we can set num_ctx — the catalog +
+// KB system prompt is ~10k tokens and Ollama's 4k default would truncate it —
+// and think:'low' so gpt-oss doesn't burn the token budget on reasoning.
+const OLLAMA_URL = (process.env.OLLAMA_URL || '').replace(/\/$/, '');
+const OLLAMA_API_KEY = process.env.OLLAMA_API_KEY || '';
+const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'gpt-oss:20b';
+const OLLAMA_NUM_CTX = Number(process.env.OLLAMA_NUM_CTX) || 16384;
 
 const useOllama = !!OLLAMA_URL;
-const API_URL = useOllama
-  ? `${OLLAMA_URL.replace(/\/$/, '')}/v1/chat/completions`
-  : 'https://api.openai.com/v1/chat/completions';
-const MODEL = useOllama ? OLLAMA_MODEL : OPENAI_MODEL;
+const API_URL = useOllama ? `${OLLAMA_URL}/api/chat` : 'https://api.openai.com/v1/chat/completions';
+const PROVIDER = useOllama ? 'Ollama' : 'OpenAI';
+const TIMEOUT_MS = 45_000;
 
 const FALLBACK = 'ขออภัยค่ะ ระบบขัดข้องชั่วคราว เดี๋ยวแอดมินมาตอบนะคะ 🙏';
+
+// LINE/Messenger render plain text — strip Markdown the model slips in
+// (gpt-oss does this even when told not to) and keep the shop's "ค่ะ" voice.
+function toChatText(s: string): string {
+  return s
+    .replace(/\[([^\]]+)\]\((\S+?)\)/g, '$1 $2')
+    .replace(/\*\*(.+?)\*\*/g, '$1')
+    .replace(/^#{1,6}\s+/gm, '')
+    .replace(/ครับ/g, 'ค่ะ')
+    .trim();
+}
 
 let cachedSystemPrompt: string | null = null;
 
@@ -36,9 +51,11 @@ function buildSystemPrompt(): string {
 กฎการตอบ:
 - ตอบเป็นภาษาไทย สุภาพ เป็นมิตร เห็นอกเห็นใจ ลงท้าย "ค่ะ/นะคะ" ใช้อิโมจิได้พอประมาณ
 - ตอบสั้น กระชับ อ่านง่ายบนมือถือ (ไม่เกิน 5-6 บรรทัด) ถ้ามีหลายขั้น/หลายตัวเลือกให้ทำเป็นข้อ 1, 2, 3
+- ใช้ "ค่ะ/นะคะ" เท่านั้น ห้ามใช้ "ครับ"
+- ห้ามใช้ Markdown (**ตัวหนา**, [ข้อความ](ลิงก์), #หัวข้อ) เพราะแชทแสดงเป็นตัวอักษรดิบ — ใส่ลิงก์เป็น URL ตรงๆ เช่น https://btmusicdrive.com/product/...
 - เวลาแนะนำสินค้า ให้แนบลิงก์สินค้าจากรายการเสมอ
 - เรื่องที่ต้องเช็คข้อมูลจริง (สถานะออเดอร์, ติดตามพัสดุ, อนุมัติเคลม/คืนเงิน): อย่าเดาหรือสัญญาแทนร้าน ให้บอกว่าแอดมินจะมาดูแลต่อ
-- ห้ามแต่งเงื่อนไข/ราคา/สินค้าที่ไม่มีในข้อมูลด้านล่าง ยึดตามคลังความรู้และรายการสินค้าเท่านั้น
+- ห้ามแต่งเงื่อนไข/ราคา/สินค้า/วิธีแก้ที่ไม่มีในข้อมูลด้านล่าง ยึดตามคลังความรู้และรายการสินค้าเท่านั้น
 - จัดส่งทั่วไทยผ่าน Flash Express ปกติ 1-3 วันทำการ
 
 ${SUPPORT_KNOWLEDGE}
@@ -50,7 +67,7 @@ ${getProductContext()}`;
 
 /**
  * Shared support-bot brain used by the LINE bot.
- * Answers a customer message via OpenAI using the live catalog + KB.
+ * Answers a customer message via Ollama (gpt-oss) or OpenAI using the live catalog + KB.
  * Always resolves to a string — never throws — so callers can just reply.
  */
 export async function askSupportAI(userText: string): Promise<string> {
@@ -60,32 +77,41 @@ export async function askSupportAI(userText: string): Promise<string> {
   }
 
   const headers: Record<string, string> = { 'content-type': 'application/json' };
-  if (!useOllama) headers.authorization = `Bearer ${OPENAI_KEY}`;
+  const key = useOllama ? OLLAMA_API_KEY : OPENAI_KEY;
+  if (key) headers.authorization = `Bearer ${key}`;
+
+  const messages = [
+    { role: 'system', content: buildSystemPrompt() },
+    { role: 'user', content: userText },
+  ];
+  const body = useOllama
+    ? {
+        model: OLLAMA_MODEL,
+        stream: false,
+        think: 'low',
+        messages,
+        options: { num_ctx: OLLAMA_NUM_CTX, num_predict: 1500 },
+      }
+    : { model: OPENAI_MODEL, max_tokens: 500, messages };
 
   try {
     const resp = await fetch(API_URL, {
       method: 'POST',
       headers,
-      body: JSON.stringify({
-        model: MODEL,
-        max_tokens: 500,
-        messages: [
-          { role: 'system', content: buildSystemPrompt() },
-          { role: 'user', content: userText },
-        ],
-      }),
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(TIMEOUT_MS),
     });
 
     if (!resp.ok) {
-      console.error(`[supportAI] ${useOllama ? 'Ollama' : 'OpenAI'} API error:`, resp.status, await resp.text());
+      console.error(`[supportAI] ${PROVIDER} API error:`, resp.status, await resp.text());
       return FALLBACK;
     }
 
     const data: any = await resp.json();
-    const text = data?.choices?.[0]?.message?.content?.trim();
+    const text = toChatText((useOllama ? data?.message?.content : data?.choices?.[0]?.message?.content) || '');
     return text || 'ขออภัยค่ะ ตอบไม่ได้ในขณะนี้ เดี๋ยวแอดมินมาช่วยนะคะ 🙏';
   } catch (err: any) {
-    console.error(`[supportAI] ${useOllama ? 'Ollama' : 'OpenAI'} request failed:`, err?.message || err);
+    console.error(`[supportAI] ${PROVIDER} request failed:`, err?.message || err);
     return FALLBACK;
   }
 }
