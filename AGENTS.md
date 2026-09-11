@@ -1,7 +1,26 @@
 # AGENTS.md — BT Music Drive
 
-> คู่มือสำหรับ Codex อ่านไฟล์นี้ก่อนเริ่มงานทุกครั้ง
-> อัปเดตล่าสุด: 2026-04-17
+> คู่มือสำหรับ AI coding agent ทุกค่าย (Codex, Cursor, Copilot, Gemini, Windsurf ฯลฯ) — อ่านไฟล์นี้ก่อนเริ่มงานทุกครั้ง
+> อัปเดตล่าสุด: 2026-09-12
+> **อ่าน `CLAUDE.md` ด้วย** — ชื่อไฟล์เป็นของ Claude แต่ใช้กับทุก agent และอัปเดตกว่าไฟล์นี้ (Product Studio, รูปสินค้า, NAS, build workflow) · ถ้าข้อมูลขัดกันให้ยึด `CLAUDE.md` · ส่วนกฎความปลอดภัยให้ยึดข้อที่เข้มกว่าเสมอ
+
+---
+
+## 0. กฎความปลอดภัย (อ่านก่อนทุกอย่าง)
+
+> ⚠ repo นี้เป็น **public บน GitHub** — ทุกอย่างที่ commit ใครก็อ่านได้ และค้างอยู่ใน git history ถาวรแม้ลบทีหลัง
+
+### Cloudflare Tunnel (`cloudflared`)
+- ผูกโดเมนให้ tunnel ด้วย **ซับโดเมนใหม่ที่ยังไม่มีใครใช้เท่านั้น** เช่น `studio.btmusicdrive.com`
+- **ห้ามแตะ DNS ที่ใช้งานอยู่**: `btmusicdrive.com` และ `www.btmusicdrive.com` (หน้าเว็บบน Vercel) · `img.btmusicdrive.com` (รูปสินค้าบน R2) — ชี้ไป tunnel เมื่อไหร่ หน้าเว็บ/รูปสินค้าหายทันที
+- **ห้ามใช้ `--overwrite-dns` / `-f`** กับ `cloudflared tunnel route dns` — มันเขียนทับ record เดิมโดยไม่ถาม
+- บัญชี Cloudflare เดียวกันมีโดเมน `fangdhamma.com` ด้วย — ห้ามแตะ
+- `~/.cloudflared/cert.pem` และ `~/.cloudflared/<TUNNEL-UUID>.json` คือกุญแจคุมโดเมนและ tunnel — **ห้ามก๊อปเข้า repo · ห้าม commit · ห้ามแปะในแชต/issue/log** · ไฟล์ config ที่อยู่ใน repo ต้องอ้าง path นอก repo เท่านั้น (`.gitignore` กันไว้แล้ว แต่อย่าพึ่งอย่างเดียว)
+- **ห้ามเปิด Product Studio (`localhost:4777`) หรือเซิร์ฟเวอร์ในเครื่องผ่าน tunnel แบบโล่ง** — Studio ไม่ตรวจสิทธิ์คนที่เข้ามา ถ้าล็อกอินแอดมินไว้ ใครเปิดหน้าได้ก็เขียน DB จริง ลงสินค้า และ push git ได้ ต้องครอบด้วย Cloudflare Access (ล็อกอินก่อนเข้า) ทุกครั้ง
+- ถ้า cert หรือ credentials หลุด: หยุดงาน แจ้งเจ้าของทันที อย่าแก้เอง
+
+### Secret อื่น ๆ
+- รหัสผ่าน/คีย์/token ทุกตัวอยู่ใน env เท่านั้น (`server/.env.local`, `.env.r2`, Vercel Dashboard) — **ห้ามเขียนค่าจริงลงไฟล์ใดใน repo** รวมถึงไฟล์คู่มือนี้
 
 ---
 
@@ -197,7 +216,7 @@ const API_BASE = (window.location.hostname === '127.0.0.1' || window.location.ho
 - JWT stored in `localStorage` key: `token`
 - User data stored in `localStorage` key: `user` (JSON)
 - All authenticated requests: `Authorization: Bearer <token>` header
-- Admin dashboard uses fallback password header: `x-admin-password: btmusicdrive-admin-2025`
+- Admin dashboard uses fallback password header: `x-admin-password: <ค่า ADMIN_PASSWORD จาก env — ห้ามเขียนลงไฟล์>`
 
 ### Error Response Format (Backend)
 ```json
@@ -260,7 +279,7 @@ SERVER_URL="https://btmusicdrive.vercel.app"
 # Other
 NODE_ENV="development"
 PORT="5000"                            # local dev only
-ADMIN_PASSWORD="btmusicdrive-admin-2025"
+ADMIN_PASSWORD="..."                   # ห้ามเขียนค่าจริงลงไฟล์ (repo เป็น public)
 ```
 
 ---

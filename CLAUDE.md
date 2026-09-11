@@ -178,7 +178,13 @@ GA4_PROPERTY_ID="533617757"       # GOOGLE_CLIENT_SECRET ไม่จำเป�
 - ห้ามเปลี่ยน Tailwind brand colors (§2) และ Stripe live keys
 - ห้ามเพิ่ม frontend framework (React, Vue ฯลฯ) — vanilla JS โดยเจตนา
 - ห้ามสร้าง duplicate route files ใน path ผิด (เช่น `server/server/src/...`)
-- ห้ามใส่ hardcoded secret/password/key ใน source หรือในไฟล์ `.claude/settings*.json` (ไฟล์พวกนี้อยู่ใน git) — ใช้ env vars เสมอ
+- ห้ามใส่ hardcoded secret/password/key ใน source หรือในไฟล์ `.claude/settings*.json` (ไฟล์พวกนี้อยู่ใน git) — ใช้ env vars เสมอ · **repo นี้ public บน GitHub** ทุกอย่างที่ commit ใครก็อ่านได้
+
+### 🔐 Cloudflare Tunnel (`cloudflared`)
+- ผูกโดเมนให้ tunnel ด้วย **ซับโดเมนใหม่เท่านั้น** (เช่น `studio.btmusicdrive.com`) — ห้ามแตะ `btmusicdrive.com` / `www` (Vercel) / `img` (รูป R2) · ห้ามใช้ `--overwrite-dns` / `-f` · ห้ามแตะโซน `fangdhamma.com`
+- `~/.cloudflared/cert.pem` + `<TUNNEL-UUID>.json` = กุญแจคุมโดเมน — ห้ามก๊อปเข้า repo / commit / แปะในแชต (`.gitignore` กันไว้แล้ว)
+- ห้ามเปิด Product Studio (:4777) ผ่าน tunnel แบบโล่ง — Studio ไม่ตรวจสิทธิ์คนที่เข้ามา ต้องครอบ Cloudflare Access ก่อน
+- กฎชุดนี้อยู่ใน `AGENTS.md` §0 ด้วย (ให้ agent ค่ายอื่นอ่าน) — แก้ที่หนึ่งต้องแก้อีกที่
 
 ### ✅ ต้องทำเสมอ
 - อ่านไฟล์ก่อนแก้ทุกครั้ง (Read tool ไม่ใช่ cat)

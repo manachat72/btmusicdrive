@@ -48,3 +48,8 @@ qr/
 
 # Product PDFs/docs originals (อยู่บน R2 แล้ว)
 marketplace-docs/
+
+# Cloudflare Tunnel — cert.pem + tunnel credentials (<UUID>.json) คุมโดเมนได้ ห้ามเข้า git (repo เป็น public)
+.cloudflared/
+cert.pem
+[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]-[0-9a-f][0-9a-f][0-9a-f][0-9a-f]-*.json
