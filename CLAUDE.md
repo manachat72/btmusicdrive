@@ -183,7 +183,7 @@ GA4_PROPERTY_ID="533617757"       # GOOGLE_CLIENT_SECRET ไม่จำเป�
 ### 🔐 Cloudflare Tunnel (`cloudflared`)
 - ผูกโดเมนให้ tunnel ด้วย **ซับโดเมนใหม่เท่านั้น** (เช่น `studio.btmusicdrive.com`) — ห้ามแตะ `btmusicdrive.com` / `www` (Vercel) / `img` (รูป R2) · ห้ามใช้ `--overwrite-dns` / `-f` · ห้ามแตะโซน `fangdhamma.com`
 - `~/.cloudflared/cert.pem` + `<TUNNEL-UUID>.json` = กุญแจคุมโดเมน — ห้ามก๊อปเข้า repo / commit / แปะในแชต (`.gitignore` กันไว้แล้ว)
-- ห้ามเปิด Product Studio (:4777) ผ่าน tunnel แบบโล่ง — Studio ไม่ตรวจสิทธิ์คนที่เข้ามา ต้องครอบ Cloudflare Access ก่อน
+- เปิดเซิร์ฟเวอร์ในเครื่องผ่าน tunnel ได้เฉพาะตัวที่ตรวจสิทธิ์เอง เช่น `scripts/ollama-gateway.js` (Bearer `OLLAMA_GATEWAY_KEY`, ฟัง `127.0.0.1`) ห้ามถอดการตรวจ key · **ห้ามเปิด Product Studio (:4777) แบบโล่ง** — Studio ไม่ตรวจสิทธิ์คนที่เข้ามา ต้องครอบ Cloudflare Access ก่อน
 - กฎชุดนี้อยู่ใน `AGENTS.md` §0 ด้วย (ให้ agent ค่ายอื่นอ่าน) — แก้ที่หนึ่งต้องแก้อีกที่
 
 ### ✅ ต้องทำเสมอ

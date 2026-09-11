@@ -16,7 +16,8 @@
 - **ห้ามใช้ `--overwrite-dns` / `-f`** กับ `cloudflared tunnel route dns` — มันเขียนทับ record เดิมโดยไม่ถาม
 - บัญชี Cloudflare เดียวกันมีโดเมน `fangdhamma.com` ด้วย — ห้ามแตะ
 - `~/.cloudflared/cert.pem` และ `~/.cloudflared/<TUNNEL-UUID>.json` คือกุญแจคุมโดเมนและ tunnel — **ห้ามก๊อปเข้า repo · ห้าม commit · ห้ามแปะในแชต/issue/log** · ไฟล์ config ที่อยู่ใน repo ต้องอ้าง path นอก repo เท่านั้น (`.gitignore` กันไว้แล้ว แต่อย่าพึ่งอย่างเดียว)
-- **ห้ามเปิด Product Studio (`localhost:4777`) หรือเซิร์ฟเวอร์ในเครื่องผ่าน tunnel แบบโล่ง** — Studio ไม่ตรวจสิทธิ์คนที่เข้ามา ถ้าล็อกอินแอดมินไว้ ใครเปิดหน้าได้ก็เขียน DB จริง ลงสินค้า และ push git ได้ ต้องครอบด้วย Cloudflare Access (ล็อกอินก่อนเข้า) ทุกครั้ง
+- เปิดเซิร์ฟเวอร์ในเครื่องผ่าน tunnel ได้ **เฉพาะตัวที่ตรวจสิทธิ์เองแล้ว** เช่น `scripts/ollama-gateway.js` (ตรวจ `Authorization: Bearer <OLLAMA_GATEWAY_KEY>` และฟังแค่ `127.0.0.1`) — ห้ามถอดการตรวจ key ออก
+- **ห้ามเปิด Product Studio (`localhost:4777`) ผ่าน tunnel แบบโล่ง** — Studio ไม่ตรวจสิทธิ์คนที่เข้ามา ถ้าล็อกอินแอดมินไว้ ใครเปิดหน้าได้ก็เขียน DB จริง ลงสินค้า และ push git ได้ ต้องครอบด้วย Cloudflare Access (ล็อกอินก่อนเข้า) ทุกครั้ง
 - ถ้า cert หรือ credentials หลุด: หยุดงาน แจ้งเจ้าของทันที อย่าแก้เอง
 
 ### Secret อื่น ๆ
