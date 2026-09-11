@@ -84,9 +84,11 @@ router.post('/webhook', async (req: Request, res: Response) => {
       if (ev.type === 'message' && ev.message?.type === 'text' && ev.replyToken) {
         // Show "typing…" while the AI generates a reply (1:1 chats only).
         if (ev.source?.userId) await showLoading(ev.source.userId);
+        const started = Date.now();
         const reply = await askSupportAI(ev.message.text);
-        // Delay scaled to reply length so it feels like real typing.
-        await sleep(typingDelay(reply));
+        // Delay scaled to reply length so it feels like real typing — minus the
+        // time the model already took (local Ollama is often slower than that).
+        await sleep(Math.max(0, typingDelay(reply) - (Date.now() - started)));
         try {
           await replyToLine(ev.replyToken, reply);
         } catch (err: any) {
