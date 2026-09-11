@@ -21,6 +21,7 @@
     "mkt:listings": "node scripts/generate-marketplace-listings.js --apply",
     "mkt:tiktok": "node scripts/fill-tiktok-template.js --apply",
     "mkt:studio": "node scripts/listing-studio.js",
+    "ai:gateway": "node scripts/ollama-gateway.js",
     "content:studio": "node scripts/content-studio.js",
     "content:test": "node --test scripts/test-content-studio.js",
     "mkt:originals": "node scripts/backfill-originals.js",

@@ -5,8 +5,9 @@ const OPENAI_KEY = process.env.OPENAI_KEY || '';
 const OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini';
 
 // Ollama backend (gpt-oss:20b) — used instead of OpenAI when OLLAMA_URL is set.
-//   local:        OLLAMA_URL=http://localhost:11434 (or a tunnel URL to it)
-//   Ollama Cloud: OLLAMA_URL=https://ollama.com + OLLAMA_API_KEY
+//   production:   OLLAMA_URL=https://ai.btmusicdrive.com + OLLAMA_API_KEY
+//                 (Cloudflare Tunnel → scripts/ollama-gateway.js on the shop PC)
+//   local dev:    OLLAMA_URL=http://localhost:11434
 // Uses the native /api/chat (not /v1) so we can set num_ctx — the catalog +
 // KB system prompt is ~10k tokens and Ollama's 4k default would truncate it —
 // and think:'low' so gpt-oss doesn't burn the token budget on reasoning.
@@ -16,9 +17,8 @@ const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'gpt-oss:20b';
 const OLLAMA_NUM_CTX = Number(process.env.OLLAMA_NUM_CTX) || 16384;
 
 const useOllama = !!OLLAMA_URL;
-const API_URL = useOllama ? `${OLLAMA_URL}/api/chat` : 'https://api.openai.com/v1/chat/completions';
-const PROVIDER = useOllama ? 'Ollama' : 'OpenAI';
-const TIMEOUT_MS = 45_000;
+// 30s per provider so Ollama + OpenAI fallback still fit in one webhook call
+const TIMEOUT_MS = 30_000;
 
 const FALLBACK = 'ขออภัยค่ะ ระบบขัดข้องชั่วคราว เดี๋ยวแอดมินมาตอบนะคะ 🙏';
 
@@ -71,47 +71,61 @@ ${getProductContext()}`;
  * Always resolves to a string — never throws — so callers can just reply.
  */
 export async function askSupportAI(userText: string): Promise<string> {
-  // Ollama needs no key; OpenAI does.
   if (!useOllama && !OPENAI_KEY) {
     return 'ขออภัยค่ะ ระบบแชทอัตโนมัติยังไม่พร้อมใช้งาน กรุณาทักแอดมินโดยตรงนะคะ 🙏';
   }
-
-  const headers: Record<string, string> = { 'content-type': 'application/json' };
-  const key = useOllama ? OLLAMA_API_KEY : OPENAI_KEY;
-  if (key) headers.authorization = `Bearer ${key}`;
 
   const messages = [
     { role: 'system', content: buildSystemPrompt() },
     { role: 'user', content: userText },
   ];
-  const body = useOllama
-    ? {
-        model: OLLAMA_MODEL,
-        stream: false,
-        think: 'low',
-        messages,
-        options: { num_ctx: OLLAMA_NUM_CTX, num_predict: 1500 },
-      }
-    : { model: OPENAI_MODEL, max_tokens: 500, messages };
 
+  // Local Ollama first (free). If the PC is off / tunnel down, fall back to
+  // OpenAI so customers still get an answer — remove OPENAI_KEY to disable.
+  let text: string | null = null;
+  if (useOllama) {
+    text = await callChat('Ollama', OLLAMA_URL + '/api/chat', OLLAMA_API_KEY, {
+      model: OLLAMA_MODEL,
+      stream: false,
+      // gpt-oss only accepts effort levels; for others (qwen etc.) thinking just adds latency
+      think: OLLAMA_MODEL.startsWith('gpt-oss') ? 'low' : false,
+      messages,
+      options: { num_ctx: OLLAMA_NUM_CTX, num_predict: 1500 },
+    }, (d) => d?.message?.content);
+  }
+  if (text === null && OPENAI_KEY) {
+    text = await callChat('OpenAI', 'https://api.openai.com/v1/chat/completions', OPENAI_KEY,
+      { model: OPENAI_MODEL, max_tokens: 500, messages },
+      (d) => d?.choices?.[0]?.message?.content);
+  }
+  if (text === null) return FALLBACK;
+  return toChatText(text) || 'ขออภัยค่ะ ตอบไม่ได้ในขณะนี้ เดี๋ยวแอดมินมาช่วยนะคะ 🙏';
+}
+
+/** POST a chat request; returns the reply text ('' if empty) or null on any failure. */
+async function callChat(
+  provider: string,
+  url: string,
+  key: string,
+  body: object,
+  pick: (data: any) => string | undefined,
+): Promise<string | null> {
+  const headers: Record<string, string> = { 'content-type': 'application/json' };
+  if (key) headers.authorization = `Bearer ${key}`;
   try {
-    const resp = await fetch(API_URL, {
+    const resp = await fetch(url, {
       method: 'POST',
       headers,
       body: JSON.stringify(body),
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });
-
     if (!resp.ok) {
-      console.error(`[supportAI] ${PROVIDER} API error:`, resp.status, await resp.text());
-      return FALLBACK;
+      console.error(`[supportAI] ${provider} API error:`, resp.status, (await resp.text()).slice(0, 300));
+      return null;
     }
-
-    const data: any = await resp.json();
-    const text = toChatText((useOllama ? data?.message?.content : data?.choices?.[0]?.message?.content) || '');
-    return text || 'ขออภัยค่ะ ตอบไม่ได้ในขณะนี้ เดี๋ยวแอดมินมาช่วยนะคะ 🙏';
+    return pick(await resp.json()) || '';
   } catch (err: any) {
-    console.error(`[supportAI] ${PROVIDER} request failed:`, err?.message || err);
-    return FALLBACK;
+    console.error(`[supportAI] ${provider} request failed:`, err?.message || err);
+    return null;
   }
 }
