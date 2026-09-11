@@ -1359,7 +1359,7 @@ let _freeShipRecsLastCartKey = '';
 async function _loadFreeShipRecs() {
   if (_freeShipRecsCache) return _freeShipRecsCache;
   try {
-    const res = await fetch(`${API_BASE}/products?limit=8`);
+    const res = await fetch(`${API_BASE}/products?limit=8&_=${Date.now()}`, { cache: 'no-store' });
     if (res.ok) {
       const json = await res.json();
       _freeShipRecsCache = (json.data || json).slice(0, 6);
@@ -1367,7 +1367,7 @@ async function _loadFreeShipRecs() {
   } catch (_) {}
   if (!_freeShipRecsCache) {
     try {
-      const res = await fetch('/products.json');
+      const res = await fetch('/products.json', { cache: 'no-store' });
       if (res.ok) _freeShipRecsCache = (await res.json()).slice(0, 6);
     } catch (_) {}
   }

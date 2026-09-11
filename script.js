@@ -109,12 +109,12 @@ async function fetchProducts() {
         let response;
         try {
             // First try to fetch from API
-            response = await fetch(`${API_BASE}/products`);
+            response = await fetch(`${API_BASE}/products?_=${Date.now()}`, { cache: 'no-store' });
             if (!response.ok) throw new Error('API failed');
         } catch (apiError) {
             // Fallback to local products.json if DB is down
             console.log('Database fetch failed, falling back to local JSON', apiError);
-            response = await fetch('products.json');
+            response = await fetch('products.json', { cache: 'no-store' });
         }
         
         if (!response.ok) {

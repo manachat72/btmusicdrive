@@ -6,10 +6,14 @@ const os = require('os');
 const path = require('path');
 const { imageSlugFromUrl } = require('./lib/product-image-path');
 const { previewNasImages } = require('./lib/nas-image-selection');
+const { CANDIDATES } = require('./lib/nas');
 
 const root = path.resolve(__dirname, '..');
 const studioSource = fs.readFileSync(path.join(root, 'scripts', 'listing-studio.js'), 'utf8');
 const resyncSource = fs.readFileSync(path.join(root, 'scripts', 'resync-product-images.js'), 'utf8');
+
+assert.strictEqual(CANDIDATES[0], 'Z:\\photos\\Product',
+  'Product Studio must prefer Z:\\photos\\Product as its default image library');
 
 assert.strictEqual(
   imageSlugFromUrl('/images/products/old-product/old-product-1.webp'),
@@ -46,6 +50,8 @@ assert.doesNotMatch(studioSource, /createNasImageWatcher\(/,
   'Changing NAS files must not publish before the user presses the explicit button');
 assert.match(studioSource, /url\.pathname === '\/api\/nas-preview'/,
   'Product Studio should expose the exact first-nine NAS preview');
+assert.match(studioSource, /await loadLiveWebProducts\(\)/,
+  'Product Studio must read current products from the live database before replacing images');
 assert.match(studioSource, /url\.pathname === '\/api\/replace-images-from-nas'/,
   'Product Studio should expose an explicit NAS-to-web action');
 assert.match(studioSource, /const verified = await api\(`\/products\/\$\{product\.id\}`\)/,

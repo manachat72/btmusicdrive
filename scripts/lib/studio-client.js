@@ -170,10 +170,11 @@ function renderNew() {
     '</div></section>' +
     '<section class="form-section">' +
     '<div class="section-heading"><span class="section-number">2</span><div><h2>รูปและรายชื่อเพลง</h2>' +
-    '<p>เลือกรูปจาก NAS หรืออัปโหลดใหม่ พร้อมแนบรายชื่อเพลงถ้ามี</p></div></div>' +
+    '<p>ต้นทาง <b>' + esc(META.nas || 'Z:\\photos\\Product') + '</b> · โฟลเดอร์ที่แก้ล่าสุดอยู่บนสุด</p></div></div>' +
     '<div class="upload-row">' +
     '<div class="src"><input type="radio" name="src" id="srcNas" value="nas"' + (folders ? ' checked' : ' disabled') + '>' +
-    '<label for="srcNas">ใช้รูปจากโฟลเดอร์ NAS</label>' +
+    '<label for="srcNas">ใช้รูปจาก Z:\\photos\\Product</label>' +
+    '<button type="button" class="ghost compact" onclick="refreshNasFolders(this)" style="margin-bottom:6px">↻ โหลดโฟลเดอร์ล่าสุด</button>' +
     '<select id="nFolder" onchange="pickNasFolder()">' +
     (folders ? folders.map(function (f) { return '<option value="' + esc(f.name) + '">' + esc(f.name) + ' (' + f.count + ' รูป)</option>'; }).join('') : '<option>เข้าถึง NAS ไม่ได้</option>') +
     '</select>' +
@@ -203,6 +204,29 @@ function renderNew() {
   restoreNewProductDraft();
   bindNewProductDraft();
   if (folders && folders.length) loadNasPreview('nFolder', 'nNasPreview', 'nNasInfo');
+}
+
+async function refreshNasFolders(btn) {
+  if (btn) btn.disabled = true;
+  try {
+    var latest = await jget('/api/meta?_=' + Date.now());
+    META.folders = latest.folders;
+    META.nextCode = latest.nextCode;
+    META.nas = latest.nas;
+    var select = $('nFolder');
+    if (!select) return;
+    select.innerHTML = (META.folders && META.folders.length)
+      ? META.folders.map(function (folder) {
+        return '<option value="' + esc(folder.name) + '">' + esc(folder.name) + ' (' + folder.count + ' รูป)</option>';
+      }).join('')
+      : '<option value="">เข้าถึง Z:\\photos\\Product ไม่ได้</option>';
+    if ($('srcNas')) { $('srcNas').disabled = !(META.folders && META.folders.length); $('srcNas').checked = ! $('srcNas').disabled; }
+    loadNasPreview('nFolder', 'nNasPreview', 'nNasInfo');
+  } catch (e) {
+    status('nStatus', '✖ โหลดโฟลเดอร์ล่าสุดไม่สำเร็จ: ' + esc(e.message).slice(0, 300), 'err');
+  } finally {
+    if (btn) btn.disabled = false;
+  }
 }
 
 /* เลือกโฟลเดอร์ = ตั้งใจใช้รูปจาก NAS — ติ๊ก radio ให้เลย กันกดสร้างแล้วได้รูปที่อัปโหลดค้างไว้ */

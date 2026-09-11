@@ -10,7 +10,7 @@
  *   3. QR             อัปไฟล์ (PDF/รูป/.txt รายชื่อเพลง) ขึ้น R2 + สร้าง QR พร้อมพิมพ์
  *
  * รูปแบ่ง 3 ชั้น (ต้นฉบับไม่ถูกลบ/แก้ และเก็บ 2 ที่ กัน NAS ไม่ได้ต่อ):
- *   ต้นฉบับ      R2 originals/<NN>-<slug>/  (ไฟล์ดิบ) + NAS Z:\photos\รูปสินค้า\<NN>-<ชื่อ>\ ถ้าต่ออยู่
+ *   ต้นฉบับ      R2 originals/<NN>-<slug>/  (ไฟล์ดิบ) + NAS Z:\photos\Product\<NN>-<ชื่อ>\ ถ้าต่ออยู่
  *   รูปกลาง      R2 products/<NN>/<NN>-01.jpg  1200×1200 ← ลิงก์ชุดนี้ที่ xlsx ทุกแพลตฟอร์มใช้
  *   เว็บ (เร็ว)   images/products/<slug>/<slug>-1.webp + .avif  ≤800px ← หน้าเว็บใช้ตัวนี้
  *
@@ -84,20 +84,33 @@ function codeForSlug(imgSlug) {
   return e ? e.code : null;
 }
 
-/** สินค้าที่อยู่บนเว็บจริง (จาก products.json — เร็ว ไม่ต้องยิง API) */
-function loadWebProducts() {
+/** แปลงข้อมูลสินค้าจาก API/ไฟล์สำรองเป็นรูปแบบที่หน้า Studio ใช้ */
+function shapeWebProducts(items) {
+  return items.map(p => ({
+    id: p.id, name: p.name, slug: p.slug, price: p.price, stock: p.stock,
+    sku: p.sku, category: p.category?.name || p.category || '', imageUrl: p.imageUrl,
+    images: p.images || [], tags: p.tags || [], tracklist: p.tracklist || [],
+    description: p.description || '', specs: p.specs || null,
+    imgSlug: imageSlugFromUrl(p.imageUrl),
+  }));
+}
+
+function loadLocalWebProducts() {
   try {
     // อ่านสดทุกครั้ง — require() จะ cache ทำให้ไม่เห็นผลหลัง sync-products-json
-    return JSON.parse(fs.readFileSync(path.join(ROOT, 'products.json'), 'utf8')).map(p => ({
-      id: p.id, name: p.name, slug: p.slug, price: p.price, stock: p.stock,
-      sku: p.sku, category: p.category?.name || p.category || '', imageUrl: p.imageUrl,
-      images: p.images || [], tags: p.tags || [], tracklist: p.tracklist || [],
-      description: p.description || '', specs: p.specs || null,
-      // รองรับทั้ง URL รูปเว็บเดิม (/images/products/<slug>/...) และ R2
-      // (https://img.../web/products/<slug>/...) — index ตายตัวจะได้ "web" จาก R2
-      imgSlug: imageSlugFromUrl(p.imageUrl),
-    }));
+    return shapeWebProducts(JSON.parse(fs.readFileSync(path.join(ROOT, 'products.json'), 'utf8')));
   } catch { return []; }
+}
+
+/** ใช้ฐานข้อมูลจริงเป็นหลัก เพื่อให้ Studio ไม่แสดง products.json ชุดเก่าหลังเพิ่งแก้รูป */
+async function loadLiveWebProducts() {
+  try {
+    const result = await api(`/products?admin=1&limit=100&_=${Date.now()}`);
+    return shapeWebProducts(Array.isArray(result) ? result : (result.data || []));
+  } catch (e) {
+    console.log(`⚠ โหลดสินค้าสดไม่ได้ ใช้ products.json สำรอง: ${String(e.message).slice(0, 120)}`);
+    return loadLocalWebProducts();
+  }
 }
 
 /** สินค้าฝั่ง marketplace (catalog + ราคา/สต็อกจาก listings) */
@@ -119,8 +132,10 @@ function nasFolders() {
     return fs.readdirSync(NAS_DIR, { withFileTypes: true }).filter(d => d.isDirectory()).map(d => {
       let n = 0;
       try { n = fs.readdirSync(path.join(NAS_DIR, d.name)).filter(f => /\.(jpe?g|png|webp|avif)$/i.test(f)).length; } catch { }
-      return { name: d.name, count: n };
-    }).sort((a, b) => a.name.localeCompare(b.name, 'th'));
+      let modifiedAt = 0;
+      try { modifiedAt = fs.statSync(path.join(NAS_DIR, d.name)).mtimeMs; } catch { }
+      return { name: d.name, count: n, modifiedAt };
+    }).sort((a, b) => b.modifiedAt - a.modifiedAt || a.name.localeCompare(b.name, 'th'));
   } catch { return null; }   // null = เข้าถึง NAS ไม่ได้
 }
 
@@ -333,7 +348,7 @@ const studioServer = http.createServer(async (req, res) => {
       return res.end(fs.readFileSync(imageFile));
     }
     if (url.pathname === '/api/products') return json(200, loadProducts());
-    if (url.pathname === '/api/web-products') return json(200, loadWebProducts());
+    if (url.pathname === '/api/web-products') return json(200, await loadLiveWebProducts());
     if (url.pathname === '/api/auth-status') return json(200, { loggedIn: isAuthed() });
     if (url.pathname === '/api/qr-list') return json(200, loadQrReg());
 
@@ -387,7 +402,7 @@ const studioServer = http.createServer(async (req, res) => {
         shortName: b.shortName, tracklist: b.tracklist || [],
         capacity: b.capacity, price: b.price, categoryName: b.categoryName,
       });
-      const others = loadWebProducts().filter(p => p.id !== b.excludeId);
+      const others = (await loadLiveWebProducts()).filter(p => p.id !== b.excludeId);
       return json(200, { ...seo, issues: validateSeo(seo, others) });
     }
 
@@ -445,7 +460,7 @@ const studioServer = http.createServer(async (req, res) => {
       return json(200, {
         ...seo, code, folderName, tracklist, slugBase: seo.slug,
         images: img.web, r2Images: img.mid, originals: img.originals, imgSlug: slug,
-        issues: validateSeo(seo, loadWebProducts()), logs,
+        issues: validateSeo(seo, await loadLiveWebProducts()), logs,
       });
     }
 
@@ -598,8 +613,8 @@ const studioServer = http.createServer(async (req, res) => {
     if (url.pathname === '/api/replace-images-from-nas' && req.method === 'POST') {
       if (!isAuthed()) throw new Error('ยังไม่ได้เข้าสู่ระบบแอดมิน');
       const b = JSON.parse(await readBody(req));
-      const product = loadWebProducts().find(item => item.id === b.id);
-      if (!product) throw new Error('ไม่พบสินค้าที่กำลังแก้ใน products.json');
+      const product = (await loadLiveWebProducts()).find(item => item.id === b.id);
+      if (!product) throw new Error('ไม่พบสินค้าที่กำลังแก้ในฐานข้อมูลเว็บ');
       if (!product.imgSlug) throw new Error('สินค้านี้ไม่มีโฟลเดอร์รูปเว็บที่ระบุได้');
 
       const preview = previewNasImages(NAS_DIR, b.folder);

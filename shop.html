@@ -261,7 +261,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- Shared Footer -->
     <div id="site-footer"></div>
 
-    <script src="components.min.js?v=ffabdd42"></script>
+    <script src="components.min.js?v=e3d00615"></script>
     <script>
     // ── Shop Page Logic ──────────────────────────────────────────────
     // API_BASE is already defined in components.min.js
@@ -313,10 +313,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         try {
             let response;
             try {
-                response = await fetch(`${API_BASE}/products`);
+                response = await fetch(`${API_BASE}/products?_=${Date.now()}`, { cache: 'no-store' });
                 if (!response.ok) throw new Error('API failed');
             } catch {
-                response = await fetch('products.json');
+                response = await fetch('products.json', { cache: 'no-store' });
             }
             if (!response.ok) throw new Error('Failed to fetch');
             const json = await response.json();

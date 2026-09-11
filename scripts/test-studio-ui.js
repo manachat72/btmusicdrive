@@ -29,6 +29,8 @@ assert.match(client, /id="eNasFolder"/, 'Edit view should let the user choose a 
 assert.match(client, /function loadNasPreview\(/, 'Edit view should preview the exact files before publishing');
 assert.match(client, /function replaceImagesFromNas\(/, 'Edit view should have an explicit NAS-to-web action');
 assert.match(client, /ใช้ 9 รูปแรกขึ้นเว็บ/, 'The NAS action should clearly describe its result');
+assert.match(client, /function refreshNasFolders\(/, 'New-product view should refresh the NAS folder list without restarting Studio');
+assert.match(client, /โหลดโฟลเดอร์ล่าสุด/, 'New-product view should expose the latest NAS folder refresh action');
 assert.doesNotMatch(client, /ระบบเฝ้าดูโฟลเดอร์นี้อัตโนมัติ/, 'Edit view must not claim that merely changing files publishes them');
 
 console.log('Product Studio admin UI contract passed.');

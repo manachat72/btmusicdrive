@@ -86,9 +86,10 @@ router.get('/', async (req: Request, res: Response) => {
 
     const normalizedProducts = products.map(withNormalizedCategory);
     const data = isAdmin ? normalizedProducts : normalizedProducts.map(withImageVersion);
-    if (!isAdmin) {
-      res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=86400');
-    }
+    // Product images can change from Product Studio at any time. Revalidate the
+    // product document on every page load; the content-addressed image files
+    // themselves remain immutable and cache efficiently on the CDN.
+    res.setHeader('Cache-Control', 'no-cache, must-revalidate');
     return res.json({ data, total, page, limit, totalPages: Math.ceil(total / limit) });
   } catch (error) {
     console.error('Error fetching products:', error);
@@ -105,7 +106,7 @@ router.get('/slug/:slug', async (req: Request, res: Response) => {
       include: { category: { select: { name: true, slug: true } } },
     });
     if (!product) return res.status(404).json({ error: 'Product not found' });
-    res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
+    res.setHeader('Cache-Control', 'no-cache, must-revalidate');
     return res.json(withImageVersion(withNormalizedCategory(product)));
   } catch (error) {
     console.error('Error fetching product by slug:', error);
@@ -121,7 +122,7 @@ router.get('/:id', async (req: Request, res: Response) => {
       include: { category: { select: { name: true, slug: true } } },
     });
     if (!product) return res.status(404).json({ error: 'Product not found' });
-    res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
+    res.setHeader('Cache-Control', 'no-cache, must-revalidate');
     return res.json(withImageVersion(withNormalizedCategory(product)));
   } catch (error) {
     console.error('Error fetching product:', error);
