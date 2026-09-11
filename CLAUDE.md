@@ -237,6 +237,12 @@ GA4_PROPERTY_ID="533617757"       # GOOGLE_CLIENT_SECRET ไม่จำเป�
   - **QR รายชื่อเพลงอัตโนมัติ** (2026-08-31): ลงสินค้าใหม่ที่มี tracklist → studio สร้างหน้ารายชื่อเพลงบน R2 `docs/tracklist-<code>.html` + QR `qr/qr-tracklist-<code> <ชื่อสินค้า>.png` + ลงคลัง QR ให้เอง ไม่ต้องรันมือ · โค้ดกลาง `scripts/lib/tracklist-qr.js` ใช้ร่วมกับ `npm run mkt:qr-all` (ทำย้อนหลังครบทุกตัว / `--code NN` ทีละตัว) — URL ผูกกับ code เท่านั้น รันซ้ำได้ QR ที่พิมพ์ไปแล้วไม่เสีย
   - ⚠ `marketplace-images/` `templates/` `qr/` อยู่ใน .gitignore — ห้ามใส่ใน `git add` ของ studio จะล้ม
 
+- **บอท LINE ใช้โมเดลในเครื่องร้าน** (2026-09-12): Vercel → `https://ai.btmusicdrive.com` (Cloudflare Tunnel `bt-ai`, config `~/.cloudflared/config.yml`) → `scripts/ollama-gateway.js` :11435 → Ollama :11434
+  - สมอง `server/src/lib/supportAI.ts` — ลอง Ollama ก่อน (native `/api/chat`, num_ctx 16k, `think:'low'` เฉพาะ gpt-oss) · คอมปิด/ล่ม → fallback OpenAI (`OPENAI_KEY`) · เปลี่ยนโมเดล = แก้ env `OLLAMA_MODEL` ใน Vercel แล้ว redeploy
+  - env Vercel: `OLLAMA_URL`, `OLLAMA_API_KEY` (= `OLLAMA_GATEWAY_KEY` ใน `server/.env.local`), `OLLAMA_MODEL`
+  - รันซ่อนตอน login: Task Scheduler `BT AI Gateway` → `conhost --headless start-ai-gateway.bat` · log `%LOCALAPPDATA%\bt-ai\gateway.log` / `tunnel.log` · เช็ค `https://ai.btmusicdrive.com/health`
+  - Cloudflare API endpoint create/token ค้างเป็นช่วงๆ แต่สร้างสำเร็จฝั่ง server — ถ้าต้องสร้าง tunnel ใหม่ ให้ใช้ secret ที่ถือเองแล้วเช็คด้วย `tunnel list`
+
 - **SEO artist research** (2026-08-20): agent `seo-artist-research` (`.claude/agents/`) วิจัยคีย์เวิร์ดรายศิลปินแล้วเก็บลง `scripts/data/artists.json`
   - **agent คืนแค่วัตถุดิบ** (`type/genre/aliases/keywords/hook/notes`) — **ห้ามให้มันเขียนชื่อสินค้า/description/meta/slug เอง** เพราะ `buildSeo()` คุมความยาว meta 155 ตัว + slug + validate อยู่
   - `unknown:true` = ไม่รู้จัก → `getArtist()` คืน null → ตกกลับ rule-based เดิม (แต่ยังนับว่า "วิจัยแล้ว" จะได้ไม่ยิงซ้ำ)
