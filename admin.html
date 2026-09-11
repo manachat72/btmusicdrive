@@ -3672,14 +3672,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     try {
       let products = [];
-      const res = await fetch(`${API_BASE}/products?admin=1&limit=200`, { headers: adminHeaders(false) });
+      const res = await fetch(`${API_BASE}/products?admin=1&limit=200&_=${Date.now()}`, { headers: adminHeaders(false), cache: 'no-store' });
       if (res.ok) { const json = await res.json(); products = Array.isArray(json) ? json : (json.data || []); }
       else throw new Error('api_fail');
       _products = products;
     } catch {
       // Fallback to local products.json
       try {
-        const res = await fetch('products.json');
+        const res = await fetch('products.json', { cache: 'no-store' });
         _products = res.ok ? await res.json() : [];
       } catch { _products = []; }
     }

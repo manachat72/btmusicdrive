@@ -314,7 +314,7 @@ async function loadCart() {
                 if (localCart.length > 0) {
                     const itemsToSync = localCart.map(item => ({
                         productId: item.id,
-                        quantity: item.quantity
+                        quantity: Number(item.quantity ?? item.qty ?? 1)
                     }));
                     await fetch(`${API_BASE}/cart/sync`, {
                         method: 'POST',
@@ -330,7 +330,8 @@ async function loadCart() {
             }
 
             const res = await fetch(`${API_BASE}/cart`, {
-                headers: { Authorization: `Bearer ${token}` }
+                headers: { Authorization: `Bearer ${token}` },
+                cache: 'no-store'
             });
             if (res.ok) {
                 const data = await res.json();
@@ -358,6 +359,9 @@ async function loadCart() {
         cart = raw ? JSON.parse(raw) : [];
     } catch {
         cart = [];
+    }
+    if (typeof _refreshCartProductData === 'function') {
+        cart = (await _refreshCartProductData()).map(item => ({ ...item }));
     }
     renderOrderSummary();
 }

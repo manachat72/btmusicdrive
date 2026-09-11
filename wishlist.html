@@ -98,7 +98,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </main>
 
   <div id="site-footer"></div>
-  <script src="components.min.js?v=e3d00615"></script>
+  <script src="components.min.js?v=5bd8f1a1"></script>
   <script>
     const WISHLIST_API_BASE = (typeof API_BASE !== 'undefined')
       ? API_BASE
@@ -114,6 +114,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           const data = await res.json();
           document.getElementById('sidebar-user-name').textContent = data.user.name || 'ผู้ใช้';
           document.getElementById('sidebar-user-email').textContent = data.user.email || '';
+          await refreshWishlistProducts();
           renderWishlist();
         } else {
           location.href = '/';
@@ -126,6 +127,33 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
     function saveWishlist(list){
       localStorage.setItem('btmusicdrive_wishlist', JSON.stringify(list));
+    }
+
+    async function refreshWishlistProducts(){
+      const list = getWishlist();
+      if(!list.length) return;
+      try {
+        const res = await fetch(`${WISHLIST_API_BASE}/products?limit=100&_=${Date.now()}`, { cache: 'no-store' });
+        if(!res.ok) return;
+        const json = await res.json();
+        const products = Array.isArray(json) ? json : (json.data || []);
+        const byId = new Map(products.map(product => [String(product.id), product]));
+        const refreshed = list.map(item => {
+          const product = byId.get(String(item.id));
+          if(!product) return item;
+          return {
+            ...item,
+            name: product.name,
+            price: Number(product.price || 0),
+            originalPrice: product.originalPrice == null ? null : Number(product.originalPrice),
+            image: product.imageUrl || item.image || '',
+            slug: product.slug || item.slug || ''
+          };
+        });
+        saveWishlist(refreshed);
+      } catch(e) {
+        console.warn('Could not refresh wishlist product images:', e);
+      }
     }
 
     function renderWishlist(){
@@ -183,8 +211,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if(!item) return;
       const cart = JSON.parse(localStorage.getItem('btmusicdrive_cart') || '[]');
       const existing = cart.find(c => c.id === item.id);
-      if(existing){ existing.qty = (existing.qty||1)+1; }
-      else { cart.push({...item, qty:1}); }
+      if(existing){ existing.quantity = Number(existing.quantity ?? existing.qty ?? 1) + 1; }
+      else { cart.push({...item, quantity:1}); }
       localStorage.setItem('btmusicdrive_cart', JSON.stringify(cart));
       alert('เพิ่มลงตะกร้าเรียบร้อย');
     }

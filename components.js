@@ -1517,9 +1517,63 @@ function _updateQty(id, delta) {
 window._updateQty = _updateQty;
 
 function _loadCartFromStorage() {
-  try { _cart = JSON.parse(localStorage.getItem('btmusicdrive_cart') || '[]'); } catch { _cart = []; }
+  try {
+    _cart = JSON.parse(localStorage.getItem('btmusicdrive_cart') || '[]').map(item => ({
+      ...item,
+      quantity: Number(item.quantity ?? item.qty ?? 1)
+    }));
+  } catch { _cart = []; }
 }
 window._loadCartFromStorage = _loadCartFromStorage;
+
+let _cartProductRefreshPromise = null;
+
+async function _refreshCartProductData() {
+  if (!_cart.length) return _cart;
+  if (_cartProductRefreshPromise) return _cartProductRefreshPromise;
+
+  _cartProductRefreshPromise = (async () => {
+    try {
+      const res = await fetch(`${API_BASE}/products?limit=100&_=${Date.now()}`, { cache: 'no-store' });
+      if (!res.ok) return _cart;
+      const json = await res.json();
+      const products = Array.isArray(json) ? json : (json.data || []);
+      const byId = new Map(products.map(product => [String(product.id), product]));
+      let changed = false;
+
+      _cart = _cart.map(item => {
+        const product = byId.get(String(item.id));
+        const quantity = Number(item.quantity ?? item.qty ?? 1);
+        if (!product) return { ...item, quantity };
+        const refreshed = {
+          ...item,
+          name: product.name,
+          price: Number(product.price || 0),
+          originalPrice: product.originalPrice == null ? null : Number(product.originalPrice),
+          image: product.imageUrl || item.image || '',
+          category: product.category?.name || product.category || item.category || '',
+          quantity
+        };
+        delete refreshed.qty;
+        if (refreshed.name !== item.name || refreshed.price !== Number(item.price) ||
+            refreshed.image !== item.image || refreshed.quantity !== item.quantity || 'qty' in item) changed = true;
+        return refreshed;
+      });
+
+      if (changed) {
+        _saveCartToStorage();
+        _updateCartUI();
+        window.dispatchEvent(new CustomEvent('btmd:cart-products-refreshed', { detail: { cart: _cart } }));
+      }
+    } catch (error) {
+      console.warn('Could not refresh cart product images:', error);
+    }
+    return _cart;
+  })().finally(() => { _cartProductRefreshPromise = null; });
+
+  return _cartProductRefreshPromise;
+}
+window._refreshCartProductData = _refreshCartProductData;
 
 function _saveCartToStorage() {
   localStorage.setItem('btmusicdrive_cart', JSON.stringify(_cart));
@@ -1672,6 +1726,7 @@ document.addEventListener('DOMContentLoaded', () => {
   _checkAuthState();
   _loadCartFromStorage();
   _updateCartUI();
+  _refreshCartProductData();
   _initCookieConsent();
   // Google Identity SDK is deferred: loads only when auth modal opens
   // (see _toggleAuthModal → _initGoogleSignIn) to keep it off the critical path.

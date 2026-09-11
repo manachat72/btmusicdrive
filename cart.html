@@ -162,7 +162,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- Shared Footer -->
     <div id="site-footer"></div>
 
-    <script src="components.min.js?v=e3d00615"></script>
+    <script src="components.min.js?v=5bd8f1a1"></script>
     <script>
     // ── Cart Page Logic ──────────────────────────────────────────────
     let pageCart = [];
@@ -177,7 +177,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         if (token) {
             try {
                 const res = await fetch(`${API_BASE}/cart`, {
-                    headers: { Authorization: `Bearer ${token}` }
+                    headers: { Authorization: `Bearer ${token}` },
+                    cache: 'no-store'
                 });
                 if (res.ok) {
                     const data = await res.json();
@@ -203,6 +204,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             pageCart = raw ? JSON.parse(raw) : [];
         } catch {
             pageCart = [];
+        }
+        if (typeof _refreshCartProductData === 'function') {
+            pageCart = (await _refreshCartProductData()).map(item => ({ ...item }));
         }
         renderPageCart();
     }
