@@ -31,6 +31,8 @@ const { slugify, imageSlug, uniqueImageSlug } = require('./lib/product-slug');
 const { imageSlugFromUrl } = require('./lib/product-image-path');
 const { resolveNasFolder, previewNasImages } = require('./lib/nas-image-selection');
 const webImg = require('./lib/web-images');
+const r2 = require('./lib/r2');
+const r2WebImg = require('./lib/r2-web-images');
 const { processProductImages, fetchOriginals, fetchMids } = require('./lib/product-images');
 const { PAGE, CLIENT_JS } = require('./lib/studio-page');
 
@@ -75,6 +77,22 @@ function assertCodeFree(code, slug, name) {
   throw new Error(`ชุดรูป code ${code} เป็นของสินค้าอื่นอยู่แล้ว: "${(e.title || e.dirName || '').slice(0, 60)}" (โฟลเดอร์รูป ${e.slug})
 ` +
     `ถ้า "${String(name || slug).slice(0, 40)}" เป็นสินค้าคนละตัว ให้เลือก code ว่างตัวอื่น — ทำต่อจะทับรูปกลางบน R2 ของสินค้าเดิม`);
+}
+
+/**
+ * สินค้าเก่าใน catalog ไม่มี slug → assertCodeFree กันไม่ได้ เลยเทียบชื่อโฟลเดอร์ NAS (ตัดเลขนำหน้า) แทน
+ * เลขโฟลเดอร์ NAS ถูกเปลี่ยนใหม่หมดแล้ว (เช่น คำภีร์ อยู่โฟลเดอร์ 12 แต่ code 14 · code 12 = เพลงสากล)
+ * ถ้าไม่กัน เลือก code ตามเลขโฟลเดอร์จะทับรูป marketplace ของสินค้าตัวอื่น
+ */
+function assertCodeMatchesFolder(code, folder) {
+  const bare = s => String(s || '').replace(/^\d+\s*-\s*/, '').trim();
+  const catalog = loadCatalog();
+  const e = catalog.find(p => p.code === code);
+  if (!e || e.slug || !e.dirName || bare(e.dirName) === bare(folder)) return;
+  const hit = catalog.find(p => p.dirName && bare(p.dirName) === bare(folder));
+  throw new Error(`ชุดรูป code ${code} คือ "${bare(e.dirName).slice(0, 60)}" ไม่ใช่โฟลเดอร์ที่เลือก` +
+    (hit ? ` — สินค้านี้คือ code ${hit.code}` : '') +
+    `\nเลขโฟลเดอร์ NAS ไม่ใช่ code marketplace — ไม่เลือก code ก็ได้ ระบบจะเปลี่ยนเฉพาะรูปเว็บ`);
 }
 
 /** เลขชุดรูป marketplace ของโฟลเดอร์รูปนี้ — ให้หน้าเว็บไม่ต้องเลือก code เองทุกครั้ง */
@@ -619,32 +637,45 @@ const studioServer = http.createServer(async (req, res) => {
 
       const preview = previewNasImages(NAS_DIR, b.folder);
       if (!preview.files.length) throw new Error('โฟลเดอร์นี้ไม่มีไฟล์รูป');
-      const folderCode = String((preview.folder.match(/^(\d+)/) || [])[1] || '').padStart(2, '0');
-      const outputCode = String(b.code || codeForSlug(product.imgSlug) || '').padStart(2, '0');
-      if (!/^\d{2,}$/.test(folderCode)) throw new Error('ชื่อโฟลเดอร์ต้องขึ้นต้นด้วยเลข code เช่น 09-ชื่อสินค้า');
-      if (!/^\d{2,}$/.test(outputCode)) throw new Error('เลือกชุดรูป marketplace ของสินค้านี้ก่อน');
-
       // เลขนำหน้าโฟลเดอร์ NAS คือลำดับคลังต้นฉบับ ไม่ใช่ code ชุดรูป marketplace
-      // สองค่านี้อาจไม่ตรงกันได้ (เช่น NAS 54 → marketplace 34) จึงต้องกันการทับด้วย outputCode
-      assertCodeFree(outputCode, product.imgSlug, product.name);
+      // สองค่านี้อาจไม่ตรงกันได้ (เช่น NAS 12 → marketplace 14) จึงต้องกันการทับด้วย outputCode
+      // ไม่รู้ code (สินค้าเก่าที่ catalog ไม่มี slug) → ทำเฉพาะรูปเว็บ ไม่แตะ products/<code>/ ที่ xlsx ใช้
+      const rawCode = b.code || codeForSlug(product.imgSlug);
+      const outputCode = rawCode ? String(rawCode).padStart(2, '0') : null;
+      if (outputCode && !/^\d{2,}$/.test(outputCode)) throw new Error('code ชุดรูป marketplace ไม่ถูกต้อง');
+      if (outputCode) {
+        assertCodeFree(outputCode, product.imgSlug, product.name);
+        assertCodeMatchesFolder(outputCode, preview.folder);
+      }
 
       log(`✔ เลือก ${preview.files.length} รูปแรกจากทั้งหมด ${preview.total} รูป: ${preview.files.join(', ')}`);
-      log('⏳ ทำรูปใหม่ครบ 3 ชั้นและอัป R2…');
       const srcDir = resolveNasFolder(NAS_DIR, preview.folder);
-      const img = await processProductImages({
-        code: outputCode, slug: product.imgSlug, title: product.name,
-        srcDir, dirName: preview.folder, prune: true, log,
-      });
+      let web;
+      if (outputCode) {
+        log('⏳ ทำรูปใหม่ครบ 3 ชั้นและอัป R2…');
+        const img = await processProductImages({
+          code: outputCode, slug: product.imgSlug, title: product.name,
+          srcDir, dirName: preview.folder, prune: true, log,
+        });
+        web = img.web;
+      } else {
+        log('⏳ ไม่ได้เลือกชุดรูป marketplace — ทำเฉพาะรูปเว็บ (webp+avif) และอัป R2…');
+        const built = await webImg.buildWebImages({ srcDir, slug: product.imgSlug });
+        const plan = r2WebImg.planProductWebImages({ slug: product.imgSlug, imageUrl: built.urls[0], images: built.urls }, ROOT);
+        await r2.putMany(plan.uploads);
+        log(`✔ รูปเว็บ ${built.urls.length} ใบขึ้น R2 → web/products/${product.imgSlug}/`);
+        web = plan.product.images;
+      }
 
       await api(`/products/${product.id}`, {
         method: 'PATCH',
-        body: JSON.stringify({ images: img.web, imageUrl: img.web[0] }),
+        body: JSON.stringify({ images: web, imageUrl: web[0] }),
       });
       const verified = await api(`/products/${product.id}`);
-      if (String(verified.imageUrl || '').split('?')[0] !== img.web[0]) {
+      if (String(verified.imageUrl || '').split('?')[0] !== web[0]) {
         throw new Error('อัปเดต DB แล้ว แต่ตรวจกลับพบว่า URL รูปใหม่ไม่ตรงกัน');
       }
-      log(`✔ ตรวจแล้ว DB ใช้รูปใหม่ ${img.web.length} ใบ`);
+      log(`✔ ตรวจแล้ว DB ใช้รูปใหม่ ${web.length} ใบ`);
 
       try { runScript('sync-products-json.js'); log('✔ sync products.json'); }
       catch (e) { log('⚠ sync products.json ไม่สำเร็จ: ' + String(e.stderr || e.message).slice(0, 300)); }
@@ -655,7 +686,7 @@ const studioServer = http.createServer(async (req, res) => {
       } catch (e) { log('⚠ build ไม่สำเร็จ: ' + String(e.message).slice(0, 150)); }
 
       return json(200, {
-        ok: true, images: img.web, files: preview.files, total: preview.total,
+        ok: true, images: web, files: preview.files, total: preview.total,
         url: `https://btmusicdrive.com/product/${product.slug}`, logs,
       });
     }

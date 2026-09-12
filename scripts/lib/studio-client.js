@@ -611,8 +611,9 @@ async function replaceImagesFromNas(btn) {
   var folder = $('eNasFolder') ? $('eNasFolder').value : '';
   var code = $('eCode') ? $('eCode').value : '';
   if (!folder) { status('eStatus', 'เลือกโฟลเดอร์รูปบน NAS ก่อน', 'err'); return; }
-  if (!code) { status('eStatus', 'เลือกชุดรูป marketplace ของสินค้านี้ก่อน', 'err'); return; }
-  if (!confirm('ใช้ 9 รูปแรกจากโฟลเดอร์นี้แทนรูปสินค้าบนเว็บ?\n\n' + folder)) return;
+  // ไม่เลือก code = ทำเฉพาะรูปเว็บ (เลขโฟลเดอร์ NAS ไม่ใช่ code marketplace แล้ว ห้ามเดาจากเลขโฟลเดอร์)
+  if (!confirm('ใช้ 9 รูปแรกจากโฟลเดอร์นี้แทนรูปสินค้าบนเว็บ?\n\n' + folder +
+    (code ? '\n\nรูป marketplace code ' + code + ' จะถูกทำใหม่ด้วย' : '\n\n(ไม่ได้เลือกชุดรูป marketplace — เปลี่ยนเฉพาะรูปบนเว็บ)'))) return;
   btn.disabled = true;
   try {
     await ensureLogin('eStatus');
