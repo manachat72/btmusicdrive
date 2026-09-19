@@ -93,6 +93,14 @@ const API_BASE = (location.hostname === '127.0.0.1' || location.hostname === 'lo
 - **Status codes**: 200/201 ok · 400 validation · 401 no auth · 403 not admin · 404 · 409 duplicate · 500
 - **Naming**: frontend camelCase + kebab-case HTML IDs · backend camelCase, Prisma models PascalCase · constants UPPER_SNAKE_CASE · CSS ใช้ Tailwind utilities, custom class ใน style.css เป็น BEM-lite
 - **DB**: ทุก model ใช้ `uuid()` เป็น ID
+- **SKU** (2026-09-19): `BT-<หมวด>-<ความจุ>-<เลขชุด NAS>` เช่น `BT-LT-08-045` — สร้างจาก `scripts/lib/sku.js`
+  (`buildSku`) ที่เดียว ห้ามประกอบเอง · หมวด: PC เพื่อชีวิต · ST สตริง · TA ใต้ · IN สากล · LK ลูกกรุง ·
+  LT ลูกทุ่ง · DZ แดนซ์ · DM ธรรมะ · RD วิทยุ · AC อุปกรณ์เสริม (ความจุ = `00` เสมอ) · ความจุ 2 หลัก
+  (`04`=4GB, `16`=16GB, `M5`=512MB) · **เลขชุด = เลขโฟลเดอร์ NAS** (`Z:\music` = `Z:\photos\Product`
+  = ไฟล์ปกที่ปริ้น `Z:\photos\epson-print\ภาพ_named` เลขชุดเดียวกัน) **ไม่ใช่ code ใน catalog.json/R2**
+  ซึ่งเป็นเลขชุดเก่าคนละชุด · studio ลงสินค้าใหม่ได้ SKU นี้อัตโนมัติ (code ที่ studio ใช้ = เลขหน้าโฟลเดอร์ NAS อยู่แล้ว)
+  · แก้ย้อนหลัง/ตรวจการจับคู่: `node scripts/backfill-skus.js` (dry-run · จับคู่สินค้า↔โฟลเดอร์ด้วย dHash ของรูป
+  · `--set <sku|slug>=<เลข>` สั่งเลขเอง · `--fix-capacity` อัป specs ตาม NAS · `--apply` เขียน DB)
 
 ## 5. API Endpoints
 

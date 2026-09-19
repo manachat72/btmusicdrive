@@ -434,7 +434,7 @@ function renderReview() {
     '<div class="f"><label>สต็อก</label><input type="number" id="pStock" value="' + (draft.stock || 100) + '"></div>' +
     '</div>' +
     '<div class="f"><label>Tags / คีย์เวิร์ด (คั่นด้วย ,)</label><input type="text" id="pTags" value="' + esc((draft.tags || []).join(', ')) + '"></div>' +
-    '<div class="hint">รายชื่อเพลง ' + draft.tracklist.length + ' เพลง · SKU BT-' + esc(draft.code) + ' · slug <b>' + esc(draft.slug) + '</b></div>' +
+    '<div class="hint">รายชื่อเพลง ' + draft.tracklist.length + ' เพลง · SKU <b>' + esc(draft.sku || '') + '</b> (หมวด·ความจุ·ชุด ' + esc(draft.code) + ') · slug <b>' + esc(draft.slug) + '</b></div>' +
     '<div class="actions"><button class="ghost" onclick="go(\'new\')">← เริ่มใหม่</button>' +
     '<button class="primary" id="pubBtn" onclick="publish(this)">✅ ยืนยันลงเว็บ + สร้าง xlsx</button></div>' +
     '<div class="st" id="pStatus"></div></div>'

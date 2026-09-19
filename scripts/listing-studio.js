@@ -26,6 +26,7 @@ const QRCode = require('qrcode');
 const { tracklistHtml } = require('./lib/tracklist-page');
 const { makeTracklistQr } = require('./lib/tracklist-qr');
 const { buildSeo, validateSeo, CATEGORIES } = require('./lib/seo');
+const { buildSku } = require('./lib/sku');
 const { runHermesSeo } = require('./lib/hermes-seo-agent');
 const { slugify, imageSlug, uniqueImageSlug } = require('./lib/product-slug');
 const { imageSlugFromUrl } = require('./lib/product-image-path');
@@ -477,6 +478,7 @@ const studioServer = http.createServer(async (req, res) => {
 
       return json(200, {
         ...seo, code, folderName, tracklist, slugBase: seo.slug,
+        sku: buildSku({ categoryName: seo.categoryName, capacity: seo.capacity, no: code }),
         images: img.web, r2Images: img.mid, originals: img.originals, imgSlug: slug,
         issues: validateSeo(seo, await loadLiveWebProducts()), logs,
       });
@@ -499,7 +501,9 @@ const studioServer = http.createServer(async (req, res) => {
         method: 'POST',
         body: JSON.stringify({
           name: b.name, price: b.price, stock: b.stock ?? 100, categoryName: b.categoryName,
-          imageUrl: b.images[0], images: b.images, brand: 'btmusicdrive', sku: `BT-${b.code}`,
+          imageUrl: b.images[0], images: b.images, brand: 'btmusicdrive',
+          // SKU สื่อหมวด+ความจุ+เลขชุด NAS (= b.code ที่มาจากเลขหน้าโฟลเดอร์) ดู scripts/lib/sku.js
+          sku: buildSku({ categoryName: b.categoryName, capacity: b.capacity, no: b.code }),
           tags: b.tags, tracklist: b.tracklist, specs: b.specs || { capacity: b.capacity },
           description: b.description, slug: b.slug || slugify(b.name),
         }),
