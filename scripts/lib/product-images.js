@@ -195,4 +195,4 @@ async function fetchMids(code) {
   return download(keys.sort((a, b) => webImg.byNaturalName(a.key, b.key)));
 }
 
-module.exports = { processProductImages, fetchOriginals, fetchMids, loadCatalog, upsertCatalog, MID_SIZE, MAX_IMAGES };
+module.exports = { processProductImages, fetchOriginals, fetchMids, loadCatalog, upsertCatalog, toMid, MID_SIZE, MAX_IMAGES };
