@@ -69,5 +69,6 @@ console.log(`\nชีตที่แก้: ${sheetUsed || '(ไม่เจอ)
 if (missing.length) console.log(`⚠ ไม่มีข้อมูลรูปของ SKU: ${[...new Set(missing)].join(', ')}`);
 if (!APPLY) { console.log('(dry-run — ยังไม่เขียนไฟล์ · สั่ง --apply)'); process.exit(0); }
 
-XLSX.writeFile(wb, OUT, { bookType: 'xlsx' });
+// bookSST: เขียนข้อความลง sharedStrings (t="s") — ไม่งั้น SheetJS ออกเป็น t="str" ซึ่งตัวอ่านฝั่งเซิร์ฟเวอร์ (BigSeller/Shopee) อ่านไม่เห็น = "เนื้อหาไฟล์ว่างเปล่า"
+  XLSX.writeFile(wb, OUT, { bookType: 'xlsx', bookSST: true });
 console.log(`✔ บันทึก: ${OUT}`);

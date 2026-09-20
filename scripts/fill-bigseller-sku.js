@@ -113,7 +113,8 @@ function fillInventory() {
     (SHIPPING ? ` · ค่าจัดส่ง ${SHIPPING} บาท/ชิ้น` : ' · ไม่ได้ใส่ค่าจัดส่ง (--shipping)') +
     ` · ช่องแรกใช้ ${KEY === 'name' ? 'ชื่อสินค้า' : 'รหัส SKU'}`);
   if (!APPLY) { console.log('(dry-run — ยังไม่เขียนไฟล์ · สั่ง --apply)'); return; }
-  XLSX.writeFile(wb, OUT, { bookType: 'xlsx' });
+  // bookSST: เขียนข้อความลง sharedStrings (t="s") — ไม่งั้น SheetJS ออกเป็น t="str" ซึ่งตัวอ่านฝั่งเซิร์ฟเวอร์ (BigSeller/Shopee) อ่านไม่เห็น = "เนื้อหาไฟล์ว่างเปล่า"
+  XLSX.writeFile(wb, OUT, { bookType: 'xlsx', bookSST: true });
   console.log(`✔ บันทึก: ${OUT}`);
 }
 
@@ -182,5 +183,6 @@ if (Object.keys(COST).length) {
   console.log('ต้นทุนที่ใช้: ' + Object.entries(COST).map(([k, v]) => `${k}→${v}+${EXTRA}=${v + EXTRA}`).join(' · '));
 }
 if (!APPLY) { console.log('(dry-run — ยังไม่เขียนไฟล์ · สั่ง --apply)'); process.exit(0); }
-XLSX.writeFile(wb, OUT, { bookType: 'xlsx' });
+// bookSST: เขียนข้อความลง sharedStrings (t="s") — ไม่งั้น SheetJS ออกเป็น t="str" ซึ่งตัวอ่านฝั่งเซิร์ฟเวอร์ (BigSeller/Shopee) อ่านไม่เห็น = "เนื้อหาไฟล์ว่างเปล่า"
+  XLSX.writeFile(wb, OUT, { bookType: 'xlsx', bookSST: true });
 console.log(`✔ บันทึก: ${OUT}`);
