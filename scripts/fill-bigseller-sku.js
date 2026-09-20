@@ -24,6 +24,8 @@ const val = flag => (args.includes(flag) ? args[args.indexOf(flag) + 1] : '');
 const OUT = val('--out') || (SRC || '').replace(/\.xlsx$/i, '-filled.xlsx');
 const SHOPEE = val('--shopee') || '';
 const EXTRA = parseFloat(val('--extra') || '0') || 0;
+const SHIPPING = parseFloat(val('--shipping') || '0') || 0;   // ค่าส่งที่ร้านออกเอง ต่อชิ้น
+const KEY = (val('--key') || 'code').toLowerCase();            // ช่องแรกของเทมเพลตต้นทุน: code | name
 const DEFAULT_WEIGHT_G = 100;   // ค่าที่ใช้อยู่ในไฟล์ Shopee: 0.1 กก.
 const DEFAULT_BOX = { l: 10, w: 10, h: 3 };
 
@@ -71,12 +73,56 @@ if (SHOPEE && fs.existsSync(SHOPEE)) {
   }
 }
 
+/**
+ * เทมเพลต import_inventory_sku — ตั้งต้นทุน/ค่าธรรมเนียมรายตัว
+ * ช่องแรก "*ชื่อSKU" ปกติคือรหัส SKU (BT-…) ถ้าระบบฟ้องว่าหาไม่เจอ ให้รันซ้ำด้วย --key name
+ */
+function fillInventory() {
+  const ws = wb.Sheets[sheet];
+  const header = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' })[0]
+    .map(c => String(c).replace(/^\*/, '').replace(/\s*\((?:required|จำเป็น)[^)]*\)\s*$/i, '').replace(/\s+/g, '').trim());
+  const col = re => header.findIndex(h => re.test(h));
+  const C = {
+    key: col(/^ชื่อSKU$/), status: col(/^สถานะการขาย$/), cost: col(/^ต้นทุนSKU$/),
+    ship: col(/^ค่าจัดส่ง$/), note: col(/^หมายเหตุ$/), vat: col(/VAT/),
+  };
+  const set = (r, c, v) => { if (c >= 0 && v !== '' && v != null) ws[XLSX.utils.encode_cell({ r, c })] = { t: typeof v === 'number' ? 'n' : 's', v }; };
+  const range = XLSX.utils.decode_range(ws['!ref']);
+  for (let r = 1; r <= range.e.r; r++) header.forEach((_, c) => delete ws[XLSX.utils.encode_cell({ r, c })]);
+
+  let noCost = 0;
+  products.forEach((p, i) => {
+    const r = i + 1, s = parseSku(p.sku);
+    const capText = (p.specs && (p.specs['ความจุ'] || p.specs.capacity)) || '';
+    const cost = COST[s.capacity] != null ? +(COST[s.capacity] + EXTRA).toFixed(2) : '';
+    if (cost === '') noCost++;
+    set(r, C.key, KEY === 'name' ? String(p.name).slice(0, 120) : p.sku);
+    set(r, C.status, 'ขายอยู่');
+    set(r, C.cost, cost);
+    if (SHIPPING) set(r, C.ship, SHIPPING);
+    set(r, C.note, `${p.sku} · ชุด NAS ${String(s.no).padStart(3, '0')} · ${capText || '-'}`);
+  });
+  ws['!ref'] = XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: products.length, c: range.e.c } });
+
+  console.log(`เทมเพลตต้นทุน/ค่าธรรมเนียม · สินค้า ${products.length} ตัว · ใส่ต้นทุน ${products.length - noCost} ตัว` +
+    (SHIPPING ? ` · ค่าจัดส่ง ${SHIPPING} บาท/ชิ้น` : ' · ไม่ได้ใส่ค่าจัดส่ง (--shipping)') +
+    ` · ช่องแรกใช้ ${KEY === 'name' ? 'ชื่อสินค้า' : 'รหัส SKU'}`);
+  if (!APPLY) { console.log('(dry-run — ยังไม่เขียนไฟล์ · สั่ง --apply)'); return; }
+  XLSX.writeFile(wb, OUT, { bookType: 'xlsx' });
+  console.log(`✔ บันทึก: ${OUT}`);
+}
+
 const wb = XLSX.readFile(SRC, { cellStyles: true });
 const sheet = wb.SheetNames.find(n => {
   const rows = XLSX.utils.sheet_to_json(wb.Sheets[n], { header: 1, defval: '' });
-  return rows[0] && rows[0].some(c => /เลข SKU/.test(String(c)));
+  return rows[0] && rows[0].some(c => /(เลข|ชื่อ)\s*SKU/.test(String(c)));   // รองรับทั้ง 2 เทมเพลต
 });
-if (!sheet) { console.error('❌ หาหัวตาราง "เลข SKU" ในไฟล์ไม่เจอ — ไฟล์นี้ใช่เทมเพลต SKU Merchant ไหม'); process.exit(1); }
+if (!sheet) { console.error('❌ หาหัวตาราง SKU ในไฟล์ไม่เจอ — ไฟล์นี้ใช่เทมเพลตของ BigSeller ไหม'); process.exit(1); }
+
+const ws0 = wb.Sheets[sheet];
+const head0 = XLSX.utils.sheet_to_json(ws0, { header: 1, defval: '' })[0].map(c => String(c));
+// เทมเพลต "ต้นทุน/ค่าธรรมเนียมต่อ SKU" (import_inventory_sku) คนละใบกับตัวสร้าง SKU Merchant
+if (head0.some(c => /ต้นทุน\s*SKU/.test(c))) { fillInventory(); process.exit(0); }
 
 const ws = wb.Sheets[sheet];
 // หัวคอลัมน์บังคับมาในรูป "*เลข SKU (Required)" — ตัดทั้งดอกจันและวงเล็บท้ายก่อนเทียบชื่อ
@@ -120,7 +166,7 @@ products.forEach((p, i) => {
   set(r, C.tag, [s.categoryName, capText].filter(Boolean).join(','));
   set(r, C.note, `ชุด NAS ${String(s.no).padStart(3, '0')} · ${capText || '-'}`);
   set(r, C.unit, 'ชิ้น');
-  set(r, C.expiry, 'ปิด');
+  // "การจัดการวันหมดอายุ" ปล่อยว่าง = ไม่เปิดใช้ — อย่าใส่ค่าเอง ค่าที่ระบบรับมีแค่ชุดของมันเอง
 });
 
 ws['!ref'] = XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: products.length, c: range.e.c } });
