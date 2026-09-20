@@ -41,9 +41,14 @@ for (const part of (val('--cost') || '').split(',').map(s => s.trim()).filter(Bo
   COST[code] = parseFloat(m[3]);
 }
 
+// --skip "BT-..,BT-.." ข้ามตัวที่มีใน BigSeller อยู่แล้ว (เมนู "เพิ่ม" จะฟ้องซ้ำ)
+// --only "BT-..,BT-.." ทำเฉพาะที่ระบุ
+const SKIP = new Set((val('--skip') || '').split(',').map(s => s.trim()).filter(Boolean));
+const ONLY = new Set((val('--only') || '').split(',').map(s => s.trim()).filter(Boolean));
 const products = (() => {
   const j = JSON.parse(fs.readFileSync(path.join(ROOT, 'products.json'), 'utf8'));
-  return (Array.isArray(j) ? j : j.products || []).filter(p => parseSku(p.sku));
+  return (Array.isArray(j) ? j : j.products || [])
+    .filter(p => parseSku(p.sku) && !SKIP.has(p.sku) && (!ONLY.size || ONLY.has(p.sku)));
 })();
 const midMap = (() => {
   try { return JSON.parse(fs.readFileSync(path.join(ROOT, 'reports', 'mid-images.json'), 'utf8')); } catch { return {}; }
