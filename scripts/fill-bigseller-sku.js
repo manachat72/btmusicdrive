@@ -26,6 +26,25 @@ const SHOPEE = val('--shopee') || '';
 const EXTRA = parseFloat(val('--extra') || '0') || 0;
 const SHIPPING = parseFloat(val('--shipping') || '0') || 0;   // ค่าส่งที่ร้านออกเอง ต่อชิ้น
 const KEY = (val('--key') || 'code').toLowerCase();            // ช่องแรกของเทมเพลตต้นทุน: code | name
+const KEEP_TEMPLATE = args.includes('--keep-template');        // ค่าปกติ: เขียนไฟล์ใหม่สะอาด ๆ ไม่ลากสไตล์เทมเพลตมา
+
+/**
+ * เขียนไฟล์ออก — ค่าปกติสร้างเวิร์กบุ๊กใหม่จากค่าในตารางล้วน
+ * เทมเพลตของ BigSeller ทำจาก WPS มีสไตล์/drawing/namespace แปลก ๆ ติดมา พอ SheetJS เขียนทับ
+ * ตัวอ่านฝั่งเซิร์ฟเวอร์ของเขาอ่านไม่ออก (ฟ้อง "เนื้อหาไฟล์ว่างเปล่า") และไฟล์บวมเป็น MB
+ * ไฟล์ใหม่ = หัวตารางเดิม + ข้อมูล เขียนด้วย bookSST (t="s") เหมือนไฟล์ที่เขาออกให้เอง
+ */
+function writeOut(wb, sheetName) {
+  let out = wb;
+  if (!KEEP_TEMPLATE) {
+    const aoa = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { header: 1, defval: '', raw: true });
+    out = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(out, XLSX.utils.aoa_to_sheet(aoa), sheetName);
+  }
+  XLSX.writeFile(out, OUT, { bookType: 'xlsx', bookSST: true });
+  const kb = (fs.statSync(OUT).size / 1024).toFixed(0);
+  console.log(`✔ บันทึก: ${OUT} (${kb} KB)`);
+}
 const DEFAULT_WEIGHT_G = 100;   // ค่าที่ใช้อยู่ในไฟล์ Shopee: 0.1 กก.
 const DEFAULT_BOX = { l: 10, w: 10, h: 3 };
 
@@ -113,9 +132,7 @@ function fillInventory() {
     (SHIPPING ? ` · ค่าจัดส่ง ${SHIPPING} บาท/ชิ้น` : ' · ไม่ได้ใส่ค่าจัดส่ง (--shipping)') +
     ` · ช่องแรกใช้ ${KEY === 'name' ? 'ชื่อสินค้า' : 'รหัส SKU'}`);
   if (!APPLY) { console.log('(dry-run — ยังไม่เขียนไฟล์ · สั่ง --apply)'); return; }
-  // bookSST: เขียนข้อความลง sharedStrings (t="s") — ไม่งั้น SheetJS ออกเป็น t="str" ซึ่งตัวอ่านฝั่งเซิร์ฟเวอร์ (BigSeller/Shopee) อ่านไม่เห็น = "เนื้อหาไฟล์ว่างเปล่า"
-  XLSX.writeFile(wb, OUT, { bookType: 'xlsx', bookSST: true });
-  console.log(`✔ บันทึก: ${OUT}`);
+  writeOut(wb, sheet);
 }
 
 const wb = XLSX.readFile(SRC, { cellStyles: true });
@@ -183,6 +200,4 @@ if (Object.keys(COST).length) {
   console.log('ต้นทุนที่ใช้: ' + Object.entries(COST).map(([k, v]) => `${k}→${v}+${EXTRA}=${v + EXTRA}`).join(' · '));
 }
 if (!APPLY) { console.log('(dry-run — ยังไม่เขียนไฟล์ · สั่ง --apply)'); process.exit(0); }
-// bookSST: เขียนข้อความลง sharedStrings (t="s") — ไม่งั้น SheetJS ออกเป็น t="str" ซึ่งตัวอ่านฝั่งเซิร์ฟเวอร์ (BigSeller/Shopee) อ่านไม่เห็น = "เนื้อหาไฟล์ว่างเปล่า"
-  XLSX.writeFile(wb, OUT, { bookType: 'xlsx', bookSST: true });
-console.log(`✔ บันทึก: ${OUT}`);
+writeOut(wb, sheet);
