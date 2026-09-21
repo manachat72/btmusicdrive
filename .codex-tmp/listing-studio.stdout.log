@@ -1,0 +1,4 @@
+🎛 Product Studio เปิดแล้ว → http://localhost:4777
+   API เว็บ: https://btmusicdrive.com/api · NAS: Z:\photos\Product
+   ➕ ลงสินค้าใหม่ · ✏ แก้ไขสินค้าเดิม · 🔗 QR   (Ctrl+C เพื่อปิด)
+   ✔ รหัสแอดมินจาก server/.env ใช้ได้ — ไม่ต้องล็อกอินซ้ำ

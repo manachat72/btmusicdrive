@@ -1,0 +1,510 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Kanit Frame 03";
+      src: url("assets/fonts/Kanit-400.ttf") format("truetype");
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "Kanit Frame 03";
+      src: url("assets/fonts/Kanit-600.ttf") format("truetype");
+      font-style: normal;
+      font-weight: 600;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "Kanit Frame 03";
+      src: url("assets/fonts/Kanit-700.ttf") format("truetype");
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "Kanit Frame 03";
+      src: url("assets/fonts/Kanit-900.ttf") format("truetype");
+      font-style: normal;
+      font-weight: 900;
+      font-display: swap;
+    }
+
+    #root {
+      position: relative;
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Kanit Frame 03", sans-serif;
+      color: #f4e6c3;
+    }
+
+    .frame-03-tracklist-proof-ground {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: #080604;
+    }
+
+    .frame-03-tracklist-proof-evidence {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    .frame-03-tracklist-proof-kicker {
+      position: absolute;
+      top: 82px;
+      left: 60px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      color: #f05a1a;
+      font-size: 24px;
+      font-weight: 600;
+      line-height: 1;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .frame-03-tracklist-proof-kicker::before {
+      content: "";
+      display: block;
+      width: 36px;
+      height: 2px;
+      background: #f05a1a;
+    }
+
+    .frame-03-tracklist-proof-kicker-index {
+      position: absolute;
+      top: 84px;
+      right: 60px;
+      color: rgba(244, 230, 195, 0.45);
+      font-size: 22px;
+      font-weight: 600;
+      line-height: 1;
+      letter-spacing: 0.14em;
+    }
+
+    .frame-03-tracklist-proof-card-world {
+      position: absolute;
+      inset: 0;
+      transform-origin: 50% 50%;
+      will-change: transform;
+    }
+
+    .frame-03-tracklist-proof-card {
+      --dof: 0px;
+      position: absolute;
+      overflow: hidden;
+      background: #1a1918;
+      filter: blur(var(--dof));
+      will-change: transform, opacity, filter;
+    }
+
+    .frame-03-tracklist-proof-card-a {
+      top: 194px;
+      left: 54px;
+      width: 578px;
+      height: 578px;
+    }
+
+    .frame-03-tracklist-proof-card-b {
+      top: 800px;
+      left: 54px;
+      width: 578px;
+      height: 578px;
+    }
+
+    .frame-03-tracklist-proof-card-c {
+      top: 500px;
+      left: 674px;
+      width: 352px;
+      height: 352px;
+    }
+
+    .frame-03-tracklist-proof-card img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .frame-03-tracklist-proof-grid-lines {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .frame-03-tracklist-proof-hairline {
+      position: absolute;
+      background: rgba(240, 90, 26, 0.72);
+      transform-origin: 0 50%;
+      will-change: transform, opacity;
+    }
+
+    .frame-03-tracklist-proof-hairline-v {
+      top: 160px;
+      left: 650px;
+      width: 1px;
+      height: 1280px;
+    }
+
+    .frame-03-tracklist-proof-hairline-h {
+      top: 786px;
+      left: 54px;
+      width: 578px;
+      height: 1px;
+    }
+
+    .frame-03-tracklist-proof-glow {
+      position: absolute;
+      z-index: 3;
+      top: 230px;
+      left: 88px;
+      width: 904px;
+      height: 780px;
+      pointer-events: none;
+      background: radial-gradient(
+        ellipse at center,
+        rgba(240, 67, 11, 0.82) 0%,
+        rgba(240, 67, 11, 0.32) 35%,
+        rgba(240, 67, 11, 0) 72%
+      );
+      will-change: transform, opacity;
+    }
+
+    .frame-03-tracklist-proof-metric {
+      position: absolute;
+      z-index: 4;
+      top: 282px;
+      left: 60px;
+      width: 960px;
+      height: 720px;
+      pointer-events: none;
+    }
+
+    .frame-03-tracklist-proof-word {
+      position: absolute;
+      color: #f4e6c3;
+      font-weight: 700;
+      line-height: 0.9;
+      letter-spacing: -0.03em;
+      will-change: transform, opacity;
+    }
+
+    .frame-03-tracklist-proof-word-total {
+      top: 30px;
+      left: 8px;
+      font-size: 82px;
+    }
+
+    .frame-03-tracklist-proof-word-songs {
+      top: 444px;
+      right: 8px;
+      font-size: 112px;
+    }
+
+    .frame-03-tracklist-proof-counter-wrap {
+      position: absolute;
+      top: 76px;
+      left: 0;
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      width: 960px;
+      height: 420px;
+    }
+
+    .frame-03-tracklist-proof-counter {
+      display: inline-block;
+      color: #f05a1a;
+      font-size: 410px;
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: -0.055em;
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: "tnum" 1;
+      transform-origin: 50% 58%;
+      will-change: transform, opacity;
+    }
+
+    .frame-03-tracklist-proof-format {
+      position: absolute;
+      z-index: 5;
+      top: 1026px;
+      left: 681px;
+      width: 345px;
+      color: #f4e6c3;
+      will-change: transform, opacity;
+    }
+
+    .frame-03-tracklist-proof-format-rule {
+      width: 100%;
+      height: 2px;
+      margin-bottom: 22px;
+      background: #f05a1a;
+      transform-origin: 0 50%;
+      will-change: transform, opacity;
+    }
+
+    .frame-03-tracklist-proof-format-label {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      font-size: 36px;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+    }
+
+    .frame-03-tracklist-proof-format-label strong {
+      color: #f05a1a;
+      font-size: 44px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+    }
+
+    .frame-03-tracklist-proof-proof-caption {
+      position: absolute;
+      z-index: 2;
+      top: 1438px;
+      left: 54px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      color: rgba(244, 230, 195, 0.62);
+      font-size: 22px;
+      font-weight: 600;
+      line-height: 1;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      will-change: transform, opacity;
+    }
+
+    .frame-03-tracklist-proof-proof-caption::before {
+      content: "/";
+      color: #f05a1a;
+      font-size: 28px;
+      font-weight: 900;
+    }
+  </style>
+
+  <div data-hf-id="hf-r7d5" id="root" data-composition-id="03-tracklist-proof" data-duration="2.673" data-width="1080" data-height="1920">
+    <div data-hf-id="hf-3xye" class="clip frame-03-tracklist-proof-ground" data-start="0" data-duration="2.673" data-track-index="0"></div>
+
+    <div data-hf-id="hf-pemx" class="clip frame-03-tracklist-proof-evidence" data-start="0" data-duration="2.673" data-track-index="1">
+      <div data-hf-id="hf-kex1" class="frame-03-tracklist-proof-kicker">TRACKLIST / ORIGINAL PROOF</div>
+      <div data-hf-id="hf-yfnt" class="frame-03-tracklist-proof-kicker-index">NO. 03</div>
+
+      <div data-hf-id="hf-9ato" class="frame-03-tracklist-proof-card-world" id="f03-tracklist-proof-card-world">
+        <div data-hf-id="hf-3hjv" class="frame-03-tracklist-proof-card frame-03-tracklist-proof-card-a" id="f03-tracklist-proof-card-a" data-depth="1">
+          <img data-hf-id="hf-zwxq" src="assets/sek-loso-tracks-01.png" alt="รายชื่อเพลงลำดับ 001 ถึง 058">
+        </div>
+        <div data-hf-id="hf-mjhl" class="frame-03-tracklist-proof-card frame-03-tracklist-proof-card-b" id="f03-tracklist-proof-card-b" data-depth="1">
+          <img data-hf-id="hf-ztpc" src="assets/sek-loso-tracks-02.png" alt="รายชื่อเพลงลำดับ 059 ถึง 117">
+        </div>
+        <div data-hf-id="hf-n05c" class="frame-03-tracklist-proof-card frame-03-tracklist-proof-card-c" id="f03-tracklist-proof-card-c" data-depth="2">
+          <img data-hf-id="hf-9x2a" src="assets/sek-loso-tracks-03.png" alt="รายชื่อเพลงลำดับ 118 ถึง 172">
+        </div>
+      </div>
+
+      <div data-hf-id="hf-jck7" class="frame-03-tracklist-proof-grid-lines">
+        <div data-hf-id="hf-r34v" class="frame-03-tracklist-proof-hairline frame-03-tracklist-proof-hairline-v" id="f03-tracklist-proof-hairline-v"></div>
+        <div data-hf-id="hf-07kf" class="frame-03-tracklist-proof-hairline frame-03-tracklist-proof-hairline-h" id="f03-tracklist-proof-hairline-h"></div>
+      </div>
+
+      <div data-hf-id="hf-bt78" class="frame-03-tracklist-proof-glow" id="f03-tracklist-proof-glow"></div>
+
+      <div data-hf-id="hf-bmst" class="frame-03-tracklist-proof-metric">
+        <div data-hf-id="hf-z40y" class="frame-03-tracklist-proof-word frame-03-tracklist-proof-word-total" id="f03-tracklist-proof-word-total">
+          รวม
+        </div>
+        <div data-hf-id="hf-iud0" class="frame-03-tracklist-proof-counter-wrap">
+          <span data-hf-id="hf-3d9n" class="frame-03-tracklist-proof-counter" id="f03-tracklist-proof-counter">0</span>
+        </div>
+        <div data-hf-id="hf-p71b" class="frame-03-tracklist-proof-word frame-03-tracklist-proof-word-songs" id="f03-tracklist-proof-word-songs">
+          เพลง
+        </div>
+      </div>
+
+      <div data-hf-id="hf-d758" class="frame-03-tracklist-proof-format" id="f03-tracklist-proof-format">
+        <div data-hf-id="hf-3zd2" class="frame-03-tracklist-proof-format-rule" id="f03-tracklist-proof-format-rule"></div>
+        <div data-hf-id="hf-l75t" class="frame-03-tracklist-proof-format-label">
+          <span data-hf-id="hf-wqe5">MP3</span>
+          <strong data-hf-id="hf-2vhx">128 kbps</strong>
+        </div>
+      </div>
+
+      <div data-hf-id="hf-y8wu" class="frame-03-tracklist-proof-proof-caption" id="f03-tracklist-proof-proof-caption">
+        001—172 / THREE ORIGINAL LISTS
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script>
+    (() => {
+      const cardWorld = document.getElementById("f03-tracklist-proof-card-world");
+      const cardA = document.getElementById("f03-tracklist-proof-card-a");
+      const cardB = document.getElementById("f03-tracklist-proof-card-b");
+      const cardC = document.getElementById("f03-tracklist-proof-card-c");
+      const hairlineV = document.getElementById("f03-tracklist-proof-hairline-v");
+      const hairlineH = document.getElementById("f03-tracklist-proof-hairline-h");
+      const glow = document.getElementById("f03-tracklist-proof-glow");
+      const counter = document.getElementById("f03-tracklist-proof-counter");
+      const wordTotal = document.getElementById("f03-tracklist-proof-word-total");
+      const wordSongs = document.getElementById("f03-tracklist-proof-word-songs");
+      const format = document.getElementById("f03-tracklist-proof-format");
+      const formatRule = document.getElementById("f03-tracklist-proof-format-rule");
+      const proofCaption = document.getElementById("f03-tracklist-proof-proof-caption");
+      const countState = { value: 0 };
+
+      const tl = gsap.timeline({ paused: true });
+      window.__timelines = window.__timelines || {};
+      window.__timelines["03-tracklist-proof"] = tl;
+
+      tl.fromTo(
+        cardA,
+        { x: -118, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.52, ease: "power3.out" },
+        0
+      );
+      tl.fromTo(
+        cardB,
+        { x: 118, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.52, ease: "power3.out" },
+        0.08
+      );
+      tl.fromTo(
+        hairlineV,
+        { scaleY: 0, opacity: 0 },
+        { scaleY: 1, opacity: 1, duration: 0.42, ease: "power2.out" },
+        0.16
+      );
+      tl.fromTo(
+        hairlineH,
+        { scaleX: 0, opacity: 0 },
+        { scaleX: 1, opacity: 1, duration: 0.38, ease: "power2.out" },
+        0.24
+      );
+
+      tl.fromTo(
+        cardC,
+        { x: 390, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.48, ease: "power3.out" },
+        0.64
+      );
+      tl.to(
+        cardWorld,
+        { x: -18, y: -16, duration: 0.70, ease: "power2.inOut" },
+        0.64
+      );
+
+      tl.to(
+        countState,
+        {
+          value: 172,
+          duration: 0.84,
+          ease: "power3.out",
+          onUpdate: () => {
+            counter.textContent = Math.round(countState.value).toLocaleString("en-US");
+          }
+        },
+        0.64
+      );
+      tl.fromTo(
+        counter,
+        { scale: 0.44, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.84, ease: "power3.out" },
+        0.64
+      );
+
+      tl.to(
+        cardA,
+        {
+          "--dof": "7px",
+          opacity: 0.46,
+          duration: 0.54,
+          ease: "power2.inOut"
+        },
+        0.83
+      );
+      tl.to(
+        cardB,
+        {
+          "--dof": "5px",
+          opacity: 0.56,
+          duration: 0.54,
+          ease: "power2.inOut"
+        },
+        0.83
+      );
+      tl.to(
+        cardC,
+        {
+          "--dof": "10px",
+          opacity: 0.43,
+          duration: 0.54,
+          ease: "power2.inOut"
+        },
+        0.83
+      );
+
+      tl.fromTo(
+        glow,
+        { opacity: 0, scale: 0.82 },
+        { opacity: 0.28, scale: 1, duration: 0.60, ease: "power2.out" },
+        1.03
+      );
+      tl.to(
+        counter,
+        { scale: 1.035, duration: 0.06, ease: "power1.out" },
+        1.48
+      );
+      tl.to(
+        counter,
+        { scale: 1, duration: 0.09, ease: "power2.out" },
+        1.54
+      );
+
+      tl.fromTo(
+        wordTotal,
+        { x: -48, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.18, ease: "power3.out" },
+        1.63
+      );
+      tl.fromTo(
+        wordSongs,
+        { x: 48, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.18, ease: "power3.out" },
+        1.66
+      );
+      tl.fromTo(
+        formatRule,
+        { scaleX: 0, opacity: 0 },
+        { scaleX: 1, opacity: 1, duration: 0.17, ease: "power2.out" },
+        1.65
+      );
+      tl.fromTo(
+        format,
+        { y: 20, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.20, ease: "power2.out" },
+        1.65
+      );
+      tl.fromTo(
+        proofCaption,
+        { y: 18, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.18, ease: "power2.out" },
+        1.67
+      );
+    })();
+  </script>
+</template>

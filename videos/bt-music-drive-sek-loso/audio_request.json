@@ -1,0 +1,42 @@
+{
+  "lines": [
+    {
+      "id": "01",
+      "sfx": [
+        "electric-guitar-hit",
+        "fire-whoosh"
+      ]
+    },
+    {
+      "id": "02",
+      "sfx": [
+        "cinematic-whoosh",
+        "spotlight-sweep"
+      ]
+    },
+    {
+      "id": "03",
+      "sfx": [
+        "paper-card-whoosh",
+        "metal-impact"
+      ]
+    },
+    {
+      "id": "04",
+      "sfx": [
+        "mechanical-spin",
+        "usb-click"
+      ]
+    },
+    {
+      "id": "05",
+      "sfx": [
+        "price-impact-soft",
+        "logo-lock"
+      ]
+    }
+  ],
+  "bgm": {
+    "mode": "none"
+  }
+}

@@ -1,0 +1,76 @@
+<svg viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg" font-family="Kanit, 'Leelawadee UI', Tahoma, sans-serif">
+  <defs>
+    <linearGradient id="sky2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#78350f"/><stop offset="0.4" stop-color="#d97706"/>
+      <stop offset="0.7" stop-color="#fbbf24"/><stop offset="1" stop-color="#fde68a"/>
+    </linearGradient>
+    <linearGradient id="field2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#a16207"/><stop offset="1" stop-color="#713f12"/>
+    </linearGradient>
+    <linearGradient id="gold2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fef3c7"/><stop offset="0.45" stop-color="#fbbf24"/>
+      <stop offset="0.55" stop-color="#b45309"/><stop offset="1" stop-color="#fcd34d"/>
+    </linearGradient>
+    <linearGradient id="bar2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1e293b"/><stop offset="1" stop-color="#0F172A"/>
+    </linearGradient>
+  </defs>
+
+  <!-- artwork -->
+  <rect width="1000" height="1000" fill="url(#sky2)"/>
+  <circle cx="500" cy="470" r="130" fill="#fff7ed" opacity="0.95"/>
+  <circle cx="500" cy="470" r="175" fill="#fde047" opacity="0.35"/>
+  <!-- birds -->
+  <g stroke="#78350f" stroke-width="4" fill="none" stroke-linecap="round">
+    <path d="M330 330 q15 -14 30 0 q15 -14 30 0"/>
+    <path d="M640 360 q12 -11 24 0 q12 -11 24 0"/>
+  </g>
+  <!-- field -->
+  <path d="M0 640 q250 -50 500 -20 q250 30 500 -10 L1000 1000 L0 1000 Z" fill="url(#field2)"/>
+  <!-- rice stalks -->
+  <g stroke="#fde047" stroke-width="5" fill="none" stroke-linecap="round">
+    <path d="M90 700 q-6 -70 -20 -95 M90 700 q4 -60 24 -88 M90 700 q-1 -50 6 -96"/>
+    <path d="M190 720 q-6 -70 -20 -95 M190 720 q4 -60 24 -88"/>
+    <path d="M840 700 q-6 -70 -20 -95 M840 700 q4 -60 24 -88 M840 700 q-1 -50 6 -96"/>
+    <path d="M930 730 q-6 -70 -20 -95 M930 730 q4 -60 24 -88"/>
+  </g>
+  <g fill="#fde047">
+    <ellipse cx="66" cy="600" rx="7" ry="14" transform="rotate(-22 66 600)"/>
+    <ellipse cx="116" cy="608" rx="7" ry="14" transform="rotate(18 116 608)"/>
+    <ellipse cx="866" cy="600" rx="7" ry="14" transform="rotate(18 866 600)"/>
+  </g>
+  <!-- kwian + บ้านทุ่ง silhouette -->
+  <g fill="#451a03">
+    <path d="M300 655 l60 -52 l60 52 z"/><rect x="316" y="655" width="88" height="52"/>
+    <rect x="348" y="672" width="24" height="35" fill="#78350f"/>
+    <g transform="translate(620 690)">
+      <rect x="0" y="-26" width="120" height="18" rx="4"/>
+      <path d="M120 -26 l46 -30 l8 10 l-40 28 z"/>
+      <circle cx="30" cy="8" r="22" fill="none" stroke="#451a03" stroke-width="9"/>
+      <circle cx="92" cy="8" r="22" fill="none" stroke="#451a03" stroke-width="9"/>
+    </g>
+  </g>
+
+  <!-- title 3D gold -->
+  <g text-anchor="middle" font-weight="800">
+    <text x="503" y="238" font-size="104" fill="#431407" opacity="0.9">ลูกทุ่งรวมฮิต</text>
+    <text x="500" y="233" font-size="104" fill="url(#gold2)" stroke="#78350f" stroke-width="2">ลูกทุ่งรวมฮิต</text>
+    <text x="500" y="298" font-size="36" fill="#7c2d12" letter-spacing="4">ต้นฉบับเสียงทุ่งทอง อมตะตลอดกาล</text>
+  </g>
+
+  <!-- ===== mock frame BUTTHRRM (ของจริงใช้ template PNG) ===== -->
+  <g>
+    <rect x="53" y="14" width="242" height="58" rx="29" fill="#0F172A" opacity="0.85"/>
+    <text x="174" y="53" text-anchor="middle" font-size="30" font-weight="700" fill="#fbbf24">USB • MP3</text>
+    <circle cx="936" cy="62" r="44" fill="#8B7355" stroke="#fcd34d" stroke-width="4"/>
+    <text x="936" y="55" text-anchor="middle" font-size="15" font-weight="800" fill="#fff7ed">PREMIUM</text>
+    <text x="936" y="76" text-anchor="middle" font-size="13" fill="#fde68a">QUALITY</text>
+    <rect x="6" y="685" width="981" height="244" fill="url(#bar2)" opacity="0.96"/>
+    <rect x="6" y="685" width="981" height="6" fill="#fbbf24"/>
+    <text x="497" y="790" text-anchor="middle" font-size="86" font-weight="800" fill="#fbbf24" letter-spacing="10">BUTTHRRM</text>
+    <text x="497" y="840" text-anchor="middle" font-size="28" fill="#cbd5e1">แฟลชไดรฟ์เพลง MP3 คุณภาพเสียงระดับพรีเมียม</text>
+    <rect x="651" y="850" width="315" height="124" rx="18" fill="url(#gold2)"/>
+    <text x="808" y="938" text-anchor="middle" font-size="76" font-weight="800" fill="#0F172A">279.-</text>
+    <text x="180" y="925" font-size="24" fill="#64748b">*กรอบจริงใช้ template ร้าน</text>
+  </g>
+</svg>

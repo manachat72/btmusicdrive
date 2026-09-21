@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Content Studio — BT Music Drive</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/core.js" defer></script>
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <header class="studio-header">
+    <a class="studio-brand" href="/">BT<span>MUSIC DRIVE</span></a>
+    <div><strong>Content Studio</strong><small>พื้นที่ทำคลิปและคอนเทนต์ของร้าน</small></div>
+    <span class="studio-badge">ทำงานในเครื่อง</span>
+    <button id="new-project" class="studio-button">+ งานใหม่</button>
+  </header>
+  <main class="studio-shell">
+    <aside class="studio-sidebar">
+      <p class="studio-eyebrow">01 / สินค้าของเรา</p>
+      <label for="product-search">ค้นหาสินค้า</label>
+      <input id="product-search" type="search" placeholder="ชื่อสินค้า แนวเพลง หรือหมวดหมู่">
+      <p id="catalog-status" class="studio-muted" role="status">กำลังอ่านข้อมูลสินค้า…</p>
+      <button id="reload-catalog" class="studio-link">โหลดข้อมูลสินค้าใหม่</button>
+      <div id="product-list" class="studio-products"></div>
+      <details class="studio-history" open>
+        <summary>งานที่บันทึกไว้ <span id="history-count">0</span></summary>
+        <p class="studio-muted">เก็บในเบราว์เซอร์นี้เท่านั้น ควรส่งออกไฟล์สำรอง</p>
+        <div id="history-list"></div>
+        <label class="studio-button studio-import">นำเข้าไฟล์งาน JSON<input id="import-project" type="file" accept=".json,application/json" hidden></label>
+      </details>
+    </aside>
+    <section class="studio-workspace">
+      <div class="studio-heading"><div><p class="studio-eyebrow">จากสินค้า → สู่คลิปพร้อมโพสต์</p><h1 id="project-heading">เริ่มจากเลือกสินค้าของคุณ</h1></div><span id="save-status" class="studio-muted">ยังไม่ได้บันทึก</span></div>
+      <nav class="studio-steps" aria-label="ขั้นตอนทำคอนเทนต์">
+        <button data-tab="brief" aria-current="step">1. วางคลิป</button>
+        <button data-tab="scenes">2. พรอมต์สำหรับ Flow</button>
+        <button data-tab="posts">3. ชุดโพสต์</button>
+      </nav>
+      <div id="notice" class="studio-notice" role="status" aria-live="polite" hidden></div>
+      <div class="studio-panel">
+        <div class="studio-grid">
+          <label>ตัวช่วยสร้างข้อความ<select id="generator"><option value="ai">AI ในเครื่อง · GPT OSS 20B</option><option value="openai">OpenAI API · แบบเสียเงิน</option><option value="template">แม่แบบ (ไม่ใช้ AI)</option></select></label>
+          <label>ตัวอย่างคำสั่งสำหรับ AI<select id="instruction-preset"><option value="">เลือกตัวอย่าง — 40 แบบ แบ่งตามหมวด</option></select></label>
+        </div>
+        <label class="studio-check"><input id="instruction-append" type="checkbox" checked> เพิ่มต่อท้ายคำสั่งเดิม เพื่อผสมหลายตัวอย่าง</label>
+        <label>บอก AI เพิ่มเติม<textarea id="ai-instruction" rows="4" maxlength="1500" placeholder="เลือกตัวอย่างจากดรอปดาวน์ หรือพิมพ์คำสั่งของคุณเอง"></textarea></label>
+        <p id="instruction-status" class="studio-muted" role="status">เลือกแล้วแก้ข้อความได้ ใช้กับปุ่มคิดไอเดีย สร้างฉาก เปลี่ยนฉาก และสร้างชุดโพสต์ในโหมด AI</p>
+        <p id="ai-status" class="studio-muted" role="status">กำลังตรวจ Ollama…</p>
+        <button id="ai-refresh" class="studio-link">ตรวจการเชื่อมต่ออีกครั้ง</button>
+        <button id="ai-cancel" class="studio-button" hidden>ยกเลิกการสร้าง</button>
+        <div id="paid-settings" hidden>
+          <div class="studio-grid"><label>OpenAI API key<input id="paid-key" type="password" autocomplete="off" placeholder="sk-..." maxlength="510"></label><label>โมเดล<select id="paid-model"><option value="gpt-4.1-mini">GPT-4.1 mini</option><option value="gpt-4.1">GPT-4.1</option></select></label></div>
+          <p class="studio-muted">เมื่อกดสร้างในโหมดนี้ ข้อมูลสินค้ากับคำสั่งจะส่งไป OpenAI และมีค่า API ตามการใช้งาน แยกจากสมาชิก ChatGPT · คีย์อยู่ในหน่วยความจำจนปิดเซิร์ฟเวอร์</p>
+          <div class="studio-actions"><button id="paid-connect" class="studio-button">เชื่อมต่อ OpenAI</button><button id="paid-disconnect" class="studio-button">ตัดการเชื่อมต่อ / ล้างคีย์</button><a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer">สร้าง API key ↗</a></div>
+          <p id="paid-status" class="studio-muted" role="status">ยังไม่ได้ตั้งค่าคีย์</p>
+        </div>
+        <p class="studio-muted">AI อ่านข้อมูลข้อความในเครื่อง ไม่วิเคราะห์รูปหรือวิดีโอ · ภาพอ้างอิงใช้แนบใน Flow</p>
+      </div>
+      <section id="panel-brief" class="studio-panel">
+        <div id="empty-selection" class="studio-empty"><strong>วันนี้อยากทำคลิปให้สินค้าชุดไหน?</strong><p>เลือกสินค้าทางซ้าย แล้วตรวจข้อมูลที่ต้องการใช้ในคลิป</p></div>
+        <form id="brief-form" hidden>
+          <div class="studio-section-heading"><h2>ข้อมูลที่ใช้ในคลิป</h2><span class="studio-badge">แก้ได้โดยไม่เปลี่ยนข้อมูลหน้าร้าน</span></div>
+          <div class="studio-grid">
+            <label>ชื่อสำหรับพูดในคลิป<input id="short-name" required maxlength="200"></label>
+            <label>กลุ่มผู้ชม<input id="audience" maxlength="200" placeholder="เช่น คนชอบเพลงเพื่อชีวิตและฟังเพลงระหว่างเดินทาง"></label>
+          </div>
+          <label>จุดขายที่ตรวจสอบแล้ว<textarea id="facts" rows="3" maxlength="1800" placeholder="ใส่เฉพาะข้อมูลที่ต้องการให้พูดจริง เช่น แนวเพลง จำนวนเพลงที่ตรวจแล้ว"></textarea></label>
+          <p id="product-evidence" class="studio-muted"></p>
+          <div class="studio-grid"><label class="studio-check"><input id="include-price" type="checkbox"> ใส่ราคาในบทและโพสต์</label><label>ราคา (บาท)<input id="price" type="number" min="0" step="0.01"></label></div>
+          <p class="studio-muted">ตรวจราคา จำนวนเพลง และเงื่อนไขก่อนใช้ ข้อมูลชุดนี้อ่านจากไฟล์สินค้าในเครื่อง</p>
+          <h2>ภาพอ้างอิง</h2><p class="studio-muted">เลือกรูปสินค้าจริงที่ต้องการใช้กับ Flow รูปที่เลือกจะอยู่ในคำแนะนำทุกฉาก</p>
+          <div id="reference-images" class="studio-images"></div>
+          <div class="studio-grid">
+            <label>แนวคลิป<select id="style"><option value="showcase">โชว์สินค้า / แสงสตูดิโอ</option><option value="presenter">คนขายเล่า / เป็นกันเอง</option><option value="driving">ฟังเพลงในรถ / เดินทาง</option><option value="nostalgia">ย้อนความทรงจำ / อบอุ่น</option><option value="energetic">สนุกคึกคัก / สามช่า</option><option value="promotion">โปรโมชัน / ชวนดูสินค้า</option></select></label>
+            <label>สัดส่วนภาพ<select id="aspect"><option>9:16</option><option>16:9</option></select></label>
+            <label>ความยาวรวมโดยประมาณ<select id="duration"><option value="24">24 วินาที / 3 ฉาก</option><option value="16">16 วินาที / 2 ฉาก</option><option value="32">32 วินาที / 4 ฉาก</option></select></label>
+            <label>เสียงพูด<select id="voice"><option value="voiceover">เสียงบรรยายไทย</option><option value="dialogue">พรีเซนเตอร์พูดไทย</option><option value="none">ไม่มีเสียงพูด</option></select></label>
+          </div>
+          <details><summary>รายละเอียดภาพและความต่อเนื่อง</summary><label>พรีเซนเตอร์ เสื้อผ้า สถานที่ และโทนภาพ<textarea id="continuity" rows="3" maxlength="1000" placeholder="เช่น พรีเซนเตอร์คนเดิม เสื้อสีกรมท่า แสงอบอุ่น ใช้ USB และแพ็กเกจชุดเดิมทุกฉาก"></textarea></label></details>
+          <label class="studio-check"><input id="facts-confirmed" type="checkbox" required> ตรวจข้อมูลและรูปอ้างอิงที่เลือกแล้ว</label>
+          <div class="studio-actions"><button class="studio-button studio-button-primary" type="submit">คิดไอเดียคลิป →</button><span class="studio-muted">ใช้ตัวช่วยที่เลือกด้านบน</span></div>
+        </form>
+        <div id="concepts" class="studio-concepts" hidden></div>
+      </section>
+      <section id="panel-scenes" class="studio-panel" hidden>
+        <div class="studio-section-heading"><div><h2>พรอมต์ทีละฉาก</h2><p class="studio-muted">นำข้อความและรูปไปใช้ใน Flow เอง ปรับเวลาคลิปตามโมเดลที่เลือกใน Flow</p></div><a href="https://flow.google/" target="_blank" rel="noopener noreferrer" class="studio-button">เปิด Google Flow ↗</a></div>
+        <div id="scene-list" class="studio-scenes"><p class="studio-empty">เลือกสินค้าและไอเดียในขั้นตอนแรกก่อน</p></div>
+        <div class="studio-actions"><button id="copy-scenes" class="studio-button">คัดลอกทุกฉาก</button><button id="to-posts" class="studio-button studio-button-primary">ได้วิดีโอแล้ว → ทำชุดโพสต์</button></div>
+      </section>
+      <section id="panel-posts" class="studio-panel" hidden>
+        <h2>เล่าจากวิดีโอที่ได้จริง</h2>
+        <p class="studio-muted">วิดีโอใช้ดูตัวอย่างในเครื่อง ไม่มีการอัปโหลดหรือวิเคราะห์อัตโนมัติ</p>
+        <label>แนบวิดีโอเพื่อดูตัวอย่าง<input id="video-file" type="file" accept="video/*"></label>
+        <video id="video-preview" controls preload="metadata" hidden></video><p id="video-name" class="studio-muted"></p>
+        <label>สรุปสิ่งที่เห็นหรือพูดในคลิปจริง<textarea id="actual-summary" rows="3" maxlength="2000" placeholder="เช่น โชว์ USB และแพ็กเกจชุดสามช่า พร้อมชวนดูรายชื่อเพลง"></textarea></label>
+        <div class="studio-grid"><label>เป้าหมายโพสต์<select id="goal"><option value="sell">ชวนดูสินค้า / สั่งซื้อ</option><option value="engage">ชวนคอมเมนต์</option><option value="awareness">แนะนำชุดเพลง</option></select></label><label>ประโยคเปิดโพสต์<input id="post-hook" maxlength="300" placeholder="แก้ให้ตรงกับวิดีโอจริง"></label></div>
+        <fieldset><legend>ช่องทางที่ต้องการ</legend><div id="platform-options" class="studio-platforms"></div></fieldset>
+        <details open><summary>ข้อมูลร้านสำหรับชุดโพสต์</summary><div class="studio-grid"><label>ชื่อร้าน<input id="store-name" maxlength="100"></label><label>ลิงก์สินค้าบนเว็บไซต์<input id="product-link" type="url" maxlength="2000" placeholder="https://btmusicdrive.com/product/..."></label></div><div id="platform-settings" class="studio-grid"></div><button id="save-settings" class="studio-link">จำข้อมูลร้านและช่องทางซื้อไว้ใช้ครั้งต่อไป</button></details>
+        <label class="studio-check"><input id="posts-confirmed" type="checkbox"> ตรวจว่าจุดขายและราคาในขั้นตอนแรกยังตรงกับวิดีโอและวันที่จะโพสต์แล้ว</label>
+        <div class="studio-actions"><button id="generate-posts" class="studio-button studio-button-primary">สร้างชุดโพสต์</button></div>
+        <div id="post-list" class="studio-posts"></div>
+      </section>
+      <footer class="studio-footer"><span>Content Studio · ตรวจแก้ก่อนนำไปใช้</span><div class="studio-actions"><button id="save-project" class="studio-button">บันทึกงาน</button><button id="export-project" class="studio-button">สำรอง JSON</button><button id="export-text" class="studio-button">ดาวน์โหลดบท .txt</button></div></footer>
+    </section>
+  </main>
+  <dialog id="confirm-dialog"><h2 id="confirm-title">ยืนยันการเปลี่ยนแปลง</h2><p id="confirm-message"></p><div class="studio-actions"><button id="confirm-cancel" class="studio-button">ยกเลิก</button><button id="confirm-ok" class="studio-button studio-button-primary">ทำต่อ</button></div></dialog>
+</body>
+</html>

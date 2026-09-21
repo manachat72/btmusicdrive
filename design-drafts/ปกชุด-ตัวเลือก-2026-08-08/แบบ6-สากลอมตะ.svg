@@ -1,0 +1,71 @@
+<svg viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg" font-family="Kanit, 'Leelawadee UI', Tahoma, sans-serif">
+  <defs>
+    <linearGradient id="sky6" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0c0a09"/><stop offset="0.6" stop-color="#1c1917"/>
+      <stop offset="1" stop-color="#3b2f23"/>
+    </linearGradient>
+    <linearGradient id="gold6" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fef3c7"/><stop offset="0.45" stop-color="#fbbf24"/>
+      <stop offset="0.55" stop-color="#b45309"/><stop offset="1" stop-color="#fcd34d"/>
+    </linearGradient>
+    <linearGradient id="bar6" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1e293b"/><stop offset="1" stop-color="#0F172A"/>
+    </linearGradient>
+    <radialGradient id="sheen6" cx="0.3" cy="0.3" r="0.9">
+      <stop offset="0" stop-color="#fde68a" stop-opacity="0.5"/><stop offset="0.4" stop-color="#fde68a" stop-opacity="0.08"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- artwork -->
+  <rect width="1000" height="1000" fill="url(#sky6)"/>
+  <!-- warm bokeh -->
+  <g fill="#f59e0b">
+    <circle cx="130" cy="240" r="34" opacity="0.28"/><circle cx="230" cy="420" r="22" opacity="0.22"/>
+    <circle cx="90" cy="520" r="28" opacity="0.18"/><circle cx="860" cy="240" r="30" opacity="0.28"/>
+    <circle cx="910" cy="440" r="20" opacity="0.2"/><circle cx="790" cy="540" r="26" opacity="0.16"/>
+    <circle cx="680" cy="180" r="16" opacity="0.25"/><circle cx="300" cy="170" r="18" opacity="0.25"/>
+  </g>
+  <!-- vinyl record -->
+  <g transform="translate(500 470)">
+    <circle r="215" fill="#0a0a0a" stroke="#facc15" stroke-width="5"/>
+    <g stroke="#292524" stroke-width="2" fill="none">
+      <circle r="195"/><circle r="178"/><circle r="160"/><circle r="142"/><circle r="124"/><circle r="106"/>
+    </g>
+    <circle r="215" fill="url(#sheen6)"/>
+    <circle r="78" fill="#b91c1c"/>
+    <circle r="78" fill="none" stroke="#fde68a" stroke-width="2"/>
+    <circle r="9" fill="#fef3c7"/>
+    <text y="-24" text-anchor="middle" font-size="22" font-weight="700" fill="#fde68a" letter-spacing="2">GOLDEN</text>
+    <text y="42" text-anchor="middle" font-size="22" font-weight="700" fill="#fde68a" letter-spacing="2">OLDIES</text>
+  </g>
+  <!-- tonearm -->
+  <g stroke="#d6d3d1" stroke-width="9" fill="none" stroke-linecap="round">
+    <path d="M840 200 L760 340 L706 402"/>
+  </g>
+  <circle cx="840" cy="200" r="22" fill="#57534e" stroke="#d6d3d1" stroke-width="4"/>
+  <rect x="688" y="392" width="34" height="20" rx="6" fill="#d6d3d1" transform="rotate(42 705 402)"/>
+
+  <!-- title 3D gold -->
+  <g text-anchor="middle" font-weight="800">
+    <text x="503" y="188" font-size="86" fill="#0c0a09" opacity="0.95">เพลงสากลอมตะ</text>
+    <text x="500" y="183" font-size="86" fill="url(#gold6)" stroke="#78350f" stroke-width="2">เพลงสากลอมตะ</text>
+    <text x="500" y="242" font-size="32" fill="#e7e5e4" letter-spacing="8">GOLDEN OLDIES • TIMELESS HITS</text>
+  </g>
+
+  <!-- ===== mock frame BUTTHRRM (ของจริงใช้ template PNG) ===== -->
+  <g>
+    <rect x="53" y="14" width="242" height="58" rx="29" fill="#0F172A" opacity="0.85"/>
+    <text x="174" y="53" text-anchor="middle" font-size="30" font-weight="700" fill="#fbbf24">USB • MP3</text>
+    <circle cx="936" cy="62" r="44" fill="#8B7355" stroke="#fcd34d" stroke-width="4"/>
+    <text x="936" y="55" text-anchor="middle" font-size="15" font-weight="800" fill="#fff7ed">PREMIUM</text>
+    <text x="936" y="76" text-anchor="middle" font-size="13" fill="#fde68a">QUALITY</text>
+    <rect x="6" y="685" width="981" height="244" fill="url(#bar6)" opacity="0.96"/>
+    <rect x="6" y="685" width="981" height="6" fill="#fbbf24"/>
+    <text x="497" y="790" text-anchor="middle" font-size="86" font-weight="800" fill="#fbbf24" letter-spacing="10">BUTTHRRM</text>
+    <text x="497" y="840" text-anchor="middle" font-size="28" fill="#cbd5e1">แฟลชไดรฟ์เพลง MP3 คุณภาพเสียงระดับพรีเมียม</text>
+    <rect x="651" y="850" width="315" height="124" rx="18" fill="url(#gold6)"/>
+    <text x="808" y="938" text-anchor="middle" font-size="76" font-weight="800" fill="#0F172A">279.-</text>
+    <text x="180" y="925" font-size="24" fill="#64748b">*กรอบจริงใช้ template ร้าน</text>
+  </g>
+</svg>

@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "preferences": {
+    "flow": {
+      "value": "automation",
+      "confirmed_in": [
+        "bt-music-drive-sek-loso"
+      ],
+      "updated_at": "2026-07-25T17:58:12.143Z"
+    },
+    "storyboard": {
+      "value": "no",
+      "confirmed_in": [
+        "bt-music-drive-sek-loso"
+      ],
+      "updated_at": "2026-07-25T17:58:12.937Z"
+    },
+    "voice": {
+      "value": "Thai male, deep, warm, energetic",
+      "confirmed_in": [
+        "bt-music-drive-sek-loso"
+      ],
+      "updated_at": "2026-07-25T17:58:13.559Z"
+    },
+    "destination": {
+      "value": "tiktok-reels-shorts",
+      "confirmed_in": [
+        "bt-music-drive-sek-loso"
+      ],
+      "updated_at": "2026-07-25T17:58:10.460Z"
+    },
+    "style_preset.product-launch-video": {
+      "value": "broadside",
+      "confirmed_in": [
+        "bt-music-drive-sek-loso"
+      ],
+      "updated_at": "2026-07-25T17:58:14.209Z"
+    },
+    "aspect": {
+      "value": "1080x1920",
+      "confirmed_in": [
+        "bt-music-drive-sek-loso"
+      ],
+      "updated_at": "2026-07-25T17:58:10.985Z"
+    },
+    "language": {
+      "value": "th-TH",
+      "confirmed_in": [
+        "bt-music-drive-sek-loso"
+      ],
+      "updated_at": "2026-07-25T17:58:11.486Z"
+    }
+  },
+  "sightings": {}
+}

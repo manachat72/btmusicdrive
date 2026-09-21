@@ -1,0 +1,75 @@
+<svg viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg" font-family="Kanit, 'Leelawadee UI', Tahoma, sans-serif">
+  <defs>
+    <linearGradient id="sky1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1a0533"/><stop offset="0.35" stop-color="#4c1d95"/>
+      <stop offset="0.65" stop-color="#be185d"/><stop offset="1" stop-color="#f97316"/>
+    </linearGradient>
+    <linearGradient id="sun1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fde047"/><stop offset="1" stop-color="#f43f5e"/>
+    </linearGradient>
+    <linearGradient id="gold1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fef3c7"/><stop offset="0.45" stop-color="#fbbf24"/>
+      <stop offset="0.55" stop-color="#d97706"/><stop offset="1" stop-color="#fcd34d"/>
+    </linearGradient>
+    <linearGradient id="bar1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1e293b"/><stop offset="1" stop-color="#0F172A"/>
+    </linearGradient>
+    <clipPath id="sunclip1"><circle cx="500" cy="430" r="150"/></clipPath>
+  </defs>
+
+  <!-- artwork -->
+  <rect width="1000" height="1000" fill="url(#sky1)"/>
+  <g clip-path="url(#sunclip1)">
+    <circle cx="500" cy="430" r="150" fill="url(#sun1)"/>
+    <g fill="#1a0533" opacity="0.85">
+      <rect x="330" y="470" width="340" height="8"/><rect x="330" y="496" width="340" height="11"/>
+      <rect x="330" y="525" width="340" height="14"/><rect x="330" y="558" width="340" height="18"/>
+    </g>
+  </g>
+  <!-- retro grid floor -->
+  <g stroke="#f0abfc" stroke-width="2" opacity="0.65">
+    <line x1="0" y1="590" x2="1000" y2="590"/><line x1="0" y1="615" x2="1000" y2="615"/>
+    <line x1="0" y1="648" x2="1000" y2="648"/><line x1="0" y1="690" x2="1000" y2="690"/>
+    <line x1="500" y1="580" x2="500" y2="720"/><line x1="500" y1="580" x2="330" y2="720"/>
+    <line x1="500" y1="580" x2="670" y2="720"/><line x1="500" y1="580" x2="160" y2="720"/>
+    <line x1="500" y1="580" x2="840" y2="720"/><line x1="500" y1="580" x2="0" y2="700"/>
+    <line x1="500" y1="580" x2="1000" y2="700"/>
+  </g>
+  <rect x="0" y="578" width="1000" height="4" fill="#f0abfc"/>
+  <!-- palms -->
+  <g fill="#12042a">
+    <path d="M120 600 q10 -120 -18 -180 q40 45 34 90 q28 -70 70 -84 q-46 40 -52 92 q30 -34 66 -30 q-48 22 -62 62 l-8 50 z"/>
+    <path d="M880 600 q-10 -120 18 -180 q-40 45 -34 90 q-28 -70 -70 -84 q46 40 52 92 q-30 -34 -66 -30 q48 22 62 62 l8 50 z"/>
+  </g>
+  <!-- cassette -->
+  <g transform="translate(500 540)">
+    <rect x="-120" y="-42" width="240" height="84" rx="10" fill="#0f172a" stroke="#f0abfc" stroke-width="3"/>
+    <rect x="-100" y="-28" width="200" height="34" rx="8" fill="#312e81"/>
+    <circle cx="-52" cy="-11" r="12" fill="#fde047"/><circle cx="52" cy="-11" r="12" fill="#fde047"/>
+    <circle cx="-52" cy="-11" r="5" fill="#0f172a"/><circle cx="52" cy="-11" r="5" fill="#0f172a"/>
+    <rect x="-70" y="16" width="140" height="16" rx="4" fill="#be185d"/>
+  </g>
+
+  <!-- title 3D gold -->
+  <g text-anchor="middle" font-weight="800">
+    <text x="503" y="233" font-size="92" fill="#3b0764" opacity="0.9">รวมฮิตสตริง 90s</text>
+    <text x="500" y="228" font-size="92" fill="url(#gold1)" stroke="#78350f" stroke-width="1.5">รวมฮิตสตริง 90s</text>
+    <text x="500" y="292" font-size="34" fill="#fbcfe8" letter-spacing="6">THAI STRING HITS COLLECTION</text>
+  </g>
+
+  <!-- ===== mock frame BUTTHRRM (ของจริงใช้ template PNG) ===== -->
+  <g>
+    <rect x="53" y="14" width="242" height="58" rx="29" fill="#0F172A" opacity="0.85"/>
+    <text x="174" y="53" text-anchor="middle" font-size="30" font-weight="700" fill="#fbbf24">USB • MP3</text>
+    <circle cx="936" cy="62" r="44" fill="#8B7355" stroke="#fcd34d" stroke-width="4"/>
+    <text x="936" y="55" text-anchor="middle" font-size="15" font-weight="800" fill="#fff7ed">PREMIUM</text>
+    <text x="936" y="76" text-anchor="middle" font-size="13" fill="#fde68a">QUALITY</text>
+    <rect x="6" y="685" width="981" height="244" fill="url(#bar1)" opacity="0.96"/>
+    <rect x="6" y="685" width="981" height="6" fill="#fbbf24"/>
+    <text x="497" y="790" text-anchor="middle" font-size="86" font-weight="800" fill="#fbbf24" letter-spacing="10">BUTTHRRM</text>
+    <text x="497" y="840" text-anchor="middle" font-size="28" fill="#cbd5e1">แฟลชไดรฟ์เพลง MP3 คุณภาพเสียงระดับพรีเมียม</text>
+    <rect x="651" y="850" width="315" height="124" rx="18" fill="url(#gold1)"/>
+    <text x="808" y="938" text-anchor="middle" font-size="76" font-weight="800" fill="#0F172A">279.-</text>
+    <text x="180" y="925" font-size="24" fill="#64748b">*กรอบจริงใช้ template ร้าน</text>
+  </g>
+</svg>

@@ -1,0 +1,831 @@
+{
+  "bgm": {
+    "path": "assets/bgm/track.mp3",
+    "volume": 0.12,
+    "query": "original copyright-free Thai classic rock instrumental, heavy electric guitar, tight drums, energetic but under narration",
+    "duration_s": 30
+  },
+  "voices": [
+    {
+      "frame": 1,
+      "path": "assets/voice/01.wav",
+      "duration_s": 2.194,
+      "words": [
+        {
+          "id": "w0",
+          "text": "ค",
+          "start": 0.14,
+          "end": 0.199
+        },
+        {
+          "id": "w1",
+          "text": "ิ",
+          "start": 0.199,
+          "end": 0.199
+        },
+        {
+          "id": "w2",
+          "text": "ด",
+          "start": 0.259,
+          "end": 0.379
+        },
+        {
+          "id": "w3",
+          "text": "ถ",
+          "start": 0.379,
+          "end": 0.399
+        },
+        {
+          "id": "w4",
+          "text": "ึ",
+          "start": 0.399,
+          "end": 0.399
+        },
+        {
+          "id": "w5",
+          "text": "ง",
+          "start": 0.459,
+          "end": 0.519
+        },
+        {
+          "id": "w6",
+          "text": "เ",
+          "start": 0.519,
+          "end": 0.579
+        },
+        {
+          "id": "w7",
+          "text": "พ",
+          "start": 0.579,
+          "end": 0.62
+        },
+        {
+          "id": "w8",
+          "text": "ล",
+          "start": 0.62,
+          "end": 0.699
+        },
+        {
+          "id": "w9",
+          "text": "ง",
+          "start": 0.699,
+          "end": 0.879
+        },
+        {
+          "id": "w10",
+          "text": "ร",
+          "start": 0.879,
+          "end": 0.919
+        },
+        {
+          "id": "w11",
+          "text": "็",
+          "start": 0.919,
+          "end": 0.919
+        },
+        {
+          "id": "w12",
+          "text": "อ",
+          "start": 0.939,
+          "end": 0.959
+        },
+        {
+          "id": "w13",
+          "text": "ก",
+          "start": 0.959,
+          "end": 1.059
+        },
+        {
+          "id": "w14",
+          "text": "ใ",
+          "start": 1.059,
+          "end": 1.1
+        },
+        {
+          "id": "w15",
+          "text": "น",
+          "start": 1.1,
+          "end": 1.22
+        },
+        {
+          "id": "w16",
+          "text": "ต",
+          "start": 1.22,
+          "end": 1.299
+        },
+        {
+          "id": "w17",
+          "text": "ำ",
+          "start": 1.299,
+          "end": 1.419
+        },
+        {
+          "id": "w18",
+          "text": "น",
+          "start": 1.419,
+          "end": 1.48
+        },
+        {
+          "id": "w19",
+          "text": "า",
+          "start": 1.48,
+          "end": 1.559
+        },
+        {
+          "id": "w20",
+          "text": "น",
+          "start": 1.559,
+          "end": 1.659
+        },
+        {
+          "id": "w21",
+          "text": "ไ",
+          "start": 1.659,
+          "end": 1.679
+        },
+        {
+          "id": "w22",
+          "text": "ห",
+          "start": 1.679,
+          "end": 1.699
+        },
+        {
+          "id": "w23",
+          "text": "ม",
+          "start": 1.699,
+          "end": 1.919
+        },
+        {
+          "id": "w24",
+          "text": "?",
+          "start": 1.919,
+          "end": 1.919
+        }
+      ]
+    },
+    {
+      "frame": 2,
+      "path": "assets/voice/02.wav",
+      "duration_s": 2.351,
+      "words": [
+        {
+          "id": "w0",
+          "text": "ร",
+          "start": 0.179,
+          "end": 0.259
+        },
+        {
+          "id": "w1",
+          "text": "ว",
+          "start": 0.259,
+          "end": 0.319
+        },
+        {
+          "id": "w2",
+          "text": "ม",
+          "start": 0.319,
+          "end": 0.379
+        },
+        {
+          "id": "w3",
+          "text": "เ",
+          "start": 0.379,
+          "end": 0.459
+        },
+        {
+          "id": "w4",
+          "text": "ส",
+          "start": 0.459,
+          "end": 0.519
+        },
+        {
+          "id": "w5",
+          "text": "้",
+          "start": 0.519,
+          "end": 0.519
+        },
+        {
+          "id": "w6",
+          "text": "น",
+          "start": 0.579,
+          "end": 0.659
+        },
+        {
+          "id": "w7",
+          "text": "ท",
+          "start": 0.659,
+          "end": 0.74
+        },
+        {
+          "id": "w8",
+          "text": "า",
+          "start": 0.74,
+          "end": 0.759
+        },
+        {
+          "id": "w9",
+          "text": "ง",
+          "start": 0.759,
+          "end": 0.879
+        },
+        {
+          "id": "w10",
+          "text": "ด",
+          "start": 0.879,
+          "end": 0.979
+        },
+        {
+          "id": "w11",
+          "text": "น",
+          "start": 0.979,
+          "end": 1.079
+        },
+        {
+          "id": "w12",
+          "text": "ต",
+          "start": 1.079,
+          "end": 1.139
+        },
+        {
+          "id": "w13",
+          "text": "ร",
+          "start": 1.139,
+          "end": 1.159
+        },
+        {
+          "id": "w14",
+          "text": "ี",
+          "start": 1.159,
+          "end": 1.159
+        },
+        {
+          "id": "w15",
+          "text": "เ",
+          "start": 1.24,
+          "end": 1.379
+        },
+        {
+          "id": "w16",
+          "text": "ส",
+          "start": 1.379,
+          "end": 1.519
+        },
+        {
+          "id": "w17",
+          "text": "ก",
+          "start": 1.519,
+          "end": 1.599
+        },
+        {
+          "id": "w18",
+          "text": "โ",
+          "start": 1.599,
+          "end": 1.639
+        },
+        {
+          "id": "w19",
+          "text": "ล",
+          "start": 1.639,
+          "end": 1.699
+        },
+        {
+          "id": "w20",
+          "text": "โ",
+          "start": 1.699,
+          "end": 1.799
+        },
+        {
+          "id": "w21",
+          "text": "ซ",
+          "start": 1.799,
+          "end": 2.039
+        }
+      ]
+    },
+    {
+      "frame": 3,
+      "path": "assets/voice/03.wav",
+      "duration_s": 2.273,
+      "words": [
+        {
+          "id": "w0",
+          "text": "ม",
+          "start": 0.219,
+          "end": 0.299
+        },
+        {
+          "id": "w1",
+          "text": "า",
+          "start": 0.299,
+          "end": 0.359
+        },
+        {
+          "id": "w2",
+          "text": "ก",
+          "start": 0.359,
+          "end": 0.459
+        },
+        {
+          "id": "w3",
+          "text": "ถ",
+          "start": 0.459,
+          "end": 0.5
+        },
+        {
+          "id": "w4",
+          "text": "ึ",
+          "start": 0.5,
+          "end": 0.5
+        },
+        {
+          "id": "w5",
+          "text": "ง",
+          "start": 0.539,
+          "end": 0.62
+        },
+        {
+          "id": "w6",
+          "text": "1",
+          "start": 0.62,
+          "end": 0.74
+        },
+        {
+          "id": "w7",
+          "text": "7",
+          "start": 0.74,
+          "end": 0.819
+        },
+        {
+          "id": "w8",
+          "text": "2",
+          "start": 0.819,
+          "end": 1
+        },
+        {
+          "id": "w9",
+          "text": "เ",
+          "start": 1,
+          "end": 1.379
+        },
+        {
+          "id": "w10",
+          "text": "พ",
+          "start": 1.379,
+          "end": 1.539
+        },
+        {
+          "id": "w11",
+          "text": "ล",
+          "start": 1.539,
+          "end": 1.599
+        },
+        {
+          "id": "w12",
+          "text": "ง",
+          "start": 1.599,
+          "end": 1.999
+        }
+      ]
+    },
+    {
+      "frame": 4,
+      "path": "assets/voice/04.wav",
+      "duration_s": 2.038,
+      "words": [
+        {
+          "id": "w0",
+          "text": "เ",
+          "start": 0.219,
+          "end": 0.239
+        },
+        {
+          "id": "w1",
+          "text": "ส",
+          "start": 0.239,
+          "end": 0.299
+        },
+        {
+          "id": "w2",
+          "text": "ี",
+          "start": 0.299,
+          "end": 0.299
+        },
+        {
+          "id": "w3",
+          "text": "ย",
+          "start": 0.379,
+          "end": 0.439
+        },
+        {
+          "id": "w4",
+          "text": "บ",
+          "start": 0.439,
+          "end": 0.519
+        },
+        {
+          "id": "w5",
+          "text": "แ",
+          "start": 0.519,
+          "end": 0.599
+        },
+        {
+          "id": "w6",
+          "text": "ล",
+          "start": 0.599,
+          "end": 0.619
+        },
+        {
+          "id": "w7",
+          "text": "้",
+          "start": 0.619,
+          "end": 0.619
+        },
+        {
+          "id": "w8",
+          "text": "ว",
+          "start": 0.639,
+          "end": 0.819
+        },
+        {
+          "id": "w9",
+          "text": "ฟ",
+          "start": 0.819,
+          "end": 0.899
+        },
+        {
+          "id": "w10",
+          "text": "ั",
+          "start": 0.899,
+          "end": 0.899
+        },
+        {
+          "id": "w11",
+          "text": "ง",
+          "start": 0.939,
+          "end": 1.059
+        },
+        {
+          "id": "w12",
+          "text": "ไ",
+          "start": 1.059,
+          "end": 1.079
+        },
+        {
+          "id": "w13",
+          "text": "ด",
+          "start": 1.079,
+          "end": 1.24
+        },
+        {
+          "id": "w14",
+          "text": "้",
+          "start": 1.24,
+          "end": 1.24
+        },
+        {
+          "id": "w15",
+          "text": "ท",
+          "start": 1.299,
+          "end": 1.339
+        },
+        {
+          "id": "w16",
+          "text": "ั",
+          "start": 1.339,
+          "end": 1.339
+        },
+        {
+          "id": "w17",
+          "text": "น",
+          "start": 1.399,
+          "end": 1.5
+        },
+        {
+          "id": "w18",
+          "text": "ท",
+          "start": 1.5,
+          "end": 1.519
+        },
+        {
+          "id": "w19",
+          "text": "ี",
+          "start": 1.519,
+          "end": 1.519
+        }
+      ]
+    },
+    {
+      "frame": 5,
+      "path": "assets/voice/05.wav",
+      "duration_s": 4.65,
+      "words": [
+        {
+          "id": "w0",
+          "text": "ว",
+          "start": 0.179,
+          "end": 0.259
+        },
+        {
+          "id": "w1",
+          "text": "ั",
+          "start": 0.259,
+          "end": 0.259
+        },
+        {
+          "id": "w2",
+          "text": "น",
+          "start": 0.319,
+          "end": 0.34
+        },
+        {
+          "id": "w3",
+          "text": "น",
+          "start": 0.34,
+          "end": 0.419
+        },
+        {
+          "id": "w4",
+          "text": "ี",
+          "start": 0.419,
+          "end": 0.419
+        },
+        {
+          "id": "w5",
+          "text": "้",
+          "start": 0.419,
+          "end": 0.419
+        },
+        {
+          "id": "w6",
+          "text": "เ",
+          "start": 0.579,
+          "end": 0.62
+        },
+        {
+          "id": "w7",
+          "text": "พ",
+          "start": 0.62,
+          "end": 0.639
+        },
+        {
+          "id": "w8",
+          "text": "ี",
+          "start": 0.639,
+          "end": 0.639
+        },
+        {
+          "id": "w9",
+          "text": "ย",
+          "start": 0.699,
+          "end": 0.719
+        },
+        {
+          "id": "w10",
+          "text": "ง",
+          "start": 0.719,
+          "end": 0.819
+        },
+        {
+          "id": "w11",
+          "text": "1",
+          "start": 0.819,
+          "end": 0.879
+        },
+        {
+          "id": "w12",
+          "text": "9",
+          "start": 0.879,
+          "end": 0.899
+        },
+        {
+          "id": "w13",
+          "text": "9",
+          "start": 0.899,
+          "end": 1.059
+        },
+        {
+          "id": "w14",
+          "text": "บ",
+          "start": 1.059,
+          "end": 1.079
+        },
+        {
+          "id": "w15",
+          "text": "า",
+          "start": 1.079,
+          "end": 1.579
+        },
+        {
+          "id": "w16",
+          "text": "ท",
+          "start": 1.579,
+          "end": 1.599
+        },
+        {
+          "id": "w17",
+          "text": "ส",
+          "start": 1.599,
+          "end": 2.319
+        },
+        {
+          "id": "w18",
+          "text": "ั",
+          "start": 2.319,
+          "end": 2.319
+        },
+        {
+          "id": "w19",
+          "text": "่",
+          "start": 2.319,
+          "end": 2.319
+        },
+        {
+          "id": "w20",
+          "text": "ง",
+          "start": 2.379,
+          "end": 2.519
+        },
+        {
+          "id": "w21",
+          "text": "เ",
+          "start": 2.519,
+          "end": 2.539
+        },
+        {
+          "id": "w22",
+          "text": "ล",
+          "start": 2.539,
+          "end": 2.679
+        },
+        {
+          "id": "w23",
+          "text": "ย",
+          "start": 2.679,
+          "end": 2.96
+        },
+        {
+          "id": "w24",
+          "text": "ท",
+          "start": 2.96,
+          "end": 2.98
+        },
+        {
+          "id": "w25",
+          "text": "ี",
+          "start": 2.98,
+          "end": 2.98
+        },
+        {
+          "id": "w26",
+          "text": "่",
+          "start": 2.98,
+          "end": 2.98
+        },
+        {
+          "id": "w27",
+          "text": "B",
+          "start": 3.179,
+          "end": 3.379
+        },
+        {
+          "id": "w28",
+          "text": "T",
+          "start": 3.379,
+          "end": 3.639
+        },
+        {
+          "id": "w29",
+          "text": "M",
+          "start": 3.639,
+          "end": 3.659
+        },
+        {
+          "id": "w30",
+          "text": "u",
+          "start": 3.659,
+          "end": 3.699
+        },
+        {
+          "id": "w31",
+          "text": "s",
+          "start": 3.699,
+          "end": 3.799
+        },
+        {
+          "id": "w32",
+          "text": "i",
+          "start": 3.799,
+          "end": 3.919
+        },
+        {
+          "id": "w33",
+          "text": "c",
+          "start": 3.919,
+          "end": 4.019
+        },
+        {
+          "id": "w34",
+          "text": "D",
+          "start": 4.019,
+          "end": 4.039
+        },
+        {
+          "id": "w35",
+          "text": "r",
+          "start": 4.039,
+          "end": 4.079
+        },
+        {
+          "id": "w36",
+          "text": "i",
+          "start": 4.079,
+          "end": 4.239
+        },
+        {
+          "id": "w37",
+          "text": "v",
+          "start": 4.239,
+          "end": 4.259
+        },
+        {
+          "id": "w38",
+          "text": "e",
+          "start": 4.259,
+          "end": 4.439
+        }
+      ]
+    }
+  ],
+  "sfx": [
+    {
+      "frame": 1,
+      "file": "assets/sfx/electric-guitar-hit.mp3",
+      "offset_s": 0,
+      "duration_s": 2.755,
+      "volume": 0.35
+    },
+    {
+      "frame": 1,
+      "file": "assets/sfx/fire-whoosh.mp3",
+      "offset_s": 0,
+      "duration_s": 1.056,
+      "volume": 0.35
+    },
+    {
+      "frame": 2,
+      "file": "assets/sfx/cinematic-whoosh.mp3",
+      "offset_s": 0,
+      "duration_s": 3.935,
+      "volume": 0.35
+    },
+    {
+      "frame": 2,
+      "file": "assets/sfx/spotlight-sweep.mp3",
+      "offset_s": 0,
+      "duration_s": 1.79,
+      "volume": 0.35
+    },
+    {
+      "frame": 3,
+      "file": "assets/sfx/paper-card-whoosh.mp3",
+      "offset_s": 0,
+      "duration_s": 1.056,
+      "volume": 0.35
+    },
+    {
+      "frame": 3,
+      "file": "assets/sfx/metal-impact.mp3",
+      "offset_s": 0,
+      "duration_s": 3.349,
+      "volume": 0.35
+    },
+    {
+      "frame": 4,
+      "file": "assets/sfx/mechanical-spin.mp3",
+      "offset_s": 0,
+      "duration_s": 10.566,
+      "volume": 0.35
+    },
+    {
+      "frame": 4,
+      "file": "assets/sfx/usb-click.mp3",
+      "offset_s": 0,
+      "duration_s": 0.264,
+      "volume": 0.35
+    },
+    {
+      "frame": 5,
+      "file": "assets/sfx/price-impact-soft.mp3",
+      "offset_s": 0,
+      "duration_s": 2.758,
+      "volume": 0.35
+    },
+    {
+      "frame": 5,
+      "file": "assets/sfx/logo-lock.mp3",
+      "offset_s": 0,
+      "duration_s": 0.936,
+      "volume": 0.35
+    }
+  ]
+}

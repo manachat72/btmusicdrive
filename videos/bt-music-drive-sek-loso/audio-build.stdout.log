@@ -1,0 +1,5 @@
+✓ audio engine → C:\Users\may\programpython\btmusicdrive\videos\bt-music-drive-sek-loso\audio_engine_meta.json
+  heygen: yes  ·  ran: tts,bgm
+  voices: 5  ·  bgm: heygen  ·  sfx: 0
+  total voice duration: 13.506s
+✓ audio generate: 5 voice + 1 bgm → C:\Users\may\programpython\btmusicdrive\videos\bt-music-drive-sek-loso\audio_meta.json
