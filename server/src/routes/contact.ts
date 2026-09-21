@@ -93,7 +93,7 @@ router.post('/', contactLimiter, async (req: Request, res: Response) => {
     <p style="font-size:16px;color:#111;margin:0 0 8px;">สวัสดีคุณ <strong>${escHtml(name)}</strong>,</p>
     <p style="color:#6b7280;line-height:1.7;margin:0 0 20px;">เราได้รับข้อความของคุณเรียบร้อยแล้ว ทีมงานจะติดต่อกลับภายใน <strong>1 วันทำการ</strong> 🎵</p>
     <p style="color:#374151;background:#f9fafb;border-radius:8px;padding:16px;border-left:3px solid #8B7355;line-height:1.7;white-space:pre-wrap;font-size:14px;">${escHtml(message)}</p>
-    <p style="margin-top:20px;color:#6b7280;font-size:13px;">หากมีข้อสงสัยเพิ่มเติม ติดต่อเราได้ที่ LINE: <strong>@bt1992</strong> หรือโทร <strong>097-295-7663</strong></p>
+    <p style="margin-top:20px;color:#6b7280;font-size:13px;">หากมีข้อสงสัยเพิ่มเติม ติดต่อเราได้ที่ LINE: <strong>@bt1992</strong></p>
   </div>
   <div style="background:#0F172A;padding:16px 28px;text-align:center;">
     <p style="margin:0;font-size:11px;color:#6b7280;">© ${new Date().getFullYear()} Bt music drive · btmusicdrive.com</p>

@@ -5,7 +5,8 @@
       "name": "listing-studio",
       "runtimeExecutable": "node",
       "runtimeArgs": ["scripts/listing-studio.js"],
-      "port": 4777
+      "port": 4777,
+      "autoPort": false
     }
   ]
 }

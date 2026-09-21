@@ -135,6 +135,54 @@ function fillInventory() {
   writeOut(wb, sheet);
 }
 
+/** ความจุใน SKU → SKU วัตถุดิบไดรฟ์เปล่า (อุปกรณ์เสริมไม่ได้ทำจากไดรฟ์ ไม่ต้องเป็น Bundle) */
+const RAW_OF = { '01': 'RAW-1GB', '02': 'RAW-2GB', '04': 'RAW-4GB', '08': 'RAW-8GB', '16': 'RAW-16GB', '32': 'RAW-32GB', 'M5': 'RAW-512MB' };
+
+/**
+ * เทมเพลต "นำเข้าเพื่อสร้าง Bundle SKU" — สินค้า 1 ตัว = ไดรฟ์เปล่าตามความจุ 1 ชิ้น
+ * ปก/ซองไม่ใส่เป็นวัตถุดิบ (ถ้าปกหมด สต็อกสินค้าจะกลายเป็น 0 ทั้งร้าน) — 5 บาทไปอยู่ช่อง
+ * "ค่าใช้จ่ายอื่น" ในเทมเพลตต้นทุนแทน
+ */
+function fillBundle() {
+  const ws = wb.Sheets[sheet];
+  const header = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' })[0]
+    .map(c => String(c).replace(/^\*/, '').replace(/\s+/g, ' ').trim());
+  const col = label => header.findIndex(h => h === label);
+  const C = {
+    sku: col('เลข SKU'), name: col('ชื่อ SKU'), cat: col('หมวดหมู่'), brand: col('แบรนด์'),
+    tag: col('แท็ก'), priceRef: col('อ้างอิงราคาขาย'), img: col('Image URL'),
+    note: col('หมายเหตุ SKU Merchant'), sub1: col('SKU เดียว 1'), qty1: col('จำนวน SKU1'),
+  };
+  const set = (r, c, v) => { if (c >= 0 && v !== '' && v != null) ws[XLSX.utils.encode_cell({ r, c })] = { t: typeof v === 'number' ? 'n' : 's', v }; };
+  const range = XLSX.utils.decode_range(ws['!ref']);
+  for (let r = 1; r <= range.e.r; r++) header.forEach((_, c) => delete ws[XLSX.utils.encode_cell({ r, c })]);
+
+  const rows = products.map(p => ({ p, s: parseSku(p.sku) })).filter(x => RAW_OF[x.s.capacity]);
+  const skipped = products.length - rows.length;
+  rows.forEach(({ p, s }, i) => {
+    const r = i + 1;
+    const capText = (p.specs && (p.specs['ความจุ'] || p.specs.capacity)) || '';
+    set(r, C.sku, p.sku);
+    set(r, C.name, String(p.name).slice(0, 120));
+    set(r, C.cat, (p.category && (p.category.name || p.category)) || s.categoryName || '');
+    set(r, C.brand, p.brand || 'btmusicdrive');
+    set(r, C.tag, [s.categoryName, capText].filter(Boolean).join(','));
+    set(r, C.priceRef, Number(p.price) || '');
+    set(r, C.img, (midMap[p.sku] && midMap[p.sku].images[0]) || p.imageUrl || '');
+    set(r, C.note, `ชุด NAS ${String(s.no).padStart(3, '0')} · ${capText || '-'}`);
+    set(r, C.sub1, RAW_OF[s.capacity]);
+    set(r, C.qty1, 1);
+  });
+  ws['!ref'] = XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: rows.length, c: range.e.c } });
+
+  const byRaw = {};
+  rows.forEach(({ s }) => { const k = RAW_OF[s.capacity]; byRaw[k] = (byRaw[k] || 0) + 1; });
+  console.log(`เทมเพลต Bundle SKU · ${rows.length} ตัว` + (skipped ? ` · ข้าม ${skipped} ตัวที่ไม่ได้ทำจากไดรฟ์เปล่า (เก็บเป็น SKU เดี่ยว)` : ''));
+  console.log('   วัตถุดิบที่ใช้: ' + Object.entries(byRaw).map(([k, v]) => `${k} ×${v} ตัว`).join(' · '));
+  if (!APPLY) { console.log('(dry-run — ยังไม่เขียนไฟล์ · สั่ง --apply)'); return; }
+  writeOut(wb, sheet);
+}
+
 const wb = XLSX.readFile(SRC, { cellStyles: true });
 const sheet = wb.SheetNames.find(n => {
   const rows = XLSX.utils.sheet_to_json(wb.Sheets[n], { header: 1, defval: '' });
@@ -144,6 +192,8 @@ if (!sheet) { console.error('❌ หาหัวตาราง SKU ในไฟ
 
 const ws0 = wb.Sheets[sheet];
 const head0 = XLSX.utils.sheet_to_json(ws0, { header: 1, defval: '' })[0].map(c => String(c));
+// เทมเพลต Bundle SKU — เช็คก่อน เพราะมีคอลัมน์ "อัตราส่วนการแบ่งสรรต้นทุน SKU 1" ที่ไปตรงกับเงื่อนไขของอีกใบ
+if (head0.some(c => /SKU\s*เดียว\s*1/.test(c))) { fillBundle(); process.exit(0); }
 // เทมเพลต "ต้นทุน/ค่าธรรมเนียมต่อ SKU" (import_inventory_sku) คนละใบกับตัวสร้าง SKU Merchant
 if (head0.some(c => /ต้นทุน\s*SKU/.test(c))) { fillInventory(); process.exit(0); }
 
