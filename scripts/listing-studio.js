@@ -547,6 +547,46 @@ const studioServer = http.createServer(async (req, res) => {
       if (!b.id) throw new Error('ไม่มี id สินค้า');
       const slug = b.imgSlug;
       if (!slug) throw new Error('ไม่รู้โฟลเดอร์รูปของสินค้านี้');
+      // ไม่มีชุดรูป marketplace แต่เลือกโฟลเดอร์ NAS ไว้ → ทำเฉพาะรูปเว็บจากโฟลเดอร์นั้น (แบบเดียวกับ "ใช้ 9 รูปแรก")
+      // ไม่เขียนไฟล์กลับลง NAS — ไม่แตะชื่อไฟล์ในโฟลเดอร์ของผู้ใช้
+      if (!b.code && !codeForSlug(slug) && b.nasFolder) {
+        const srcDir = resolveNasFolder(NAS_DIR, b.nasFolder);
+        const old = webImg.listSourceImages(srcDir).slice(0, 9).map(f => fs.readFileSync(f));
+        log(`✔ ต้นฉบับเดิมจาก NAS ${b.nasFolder} ${old.length} ใบ`);
+        const incomingBufs = (Array.isArray(b.images) ? b.images : []).map(im => Buffer.from(im.data, 'base64'));
+        let kept = old;
+        const shown = Number(b.existingCount);
+        if (Array.isArray(b.keep) && shown === old.length) {
+          const valid = b.keep.map(Number).filter(i => Number.isInteger(i) && i >= 0 && i < old.length);
+          if (new Set(valid).size !== valid.length) throw new Error('ลำดับรูปซ้ำกัน — รีเฟรชหน้าแล้วลองใหม่');
+          kept = valid.map(i => old[i]);
+        } else if (Array.isArray(b.keep)) {
+          log(`⚠ โฟลเดอร์มี ${old.length} ใบ ไม่ตรงกับ ${shown} ใบบนเว็บ — ใช้ลำดับตามโฟลเดอร์ แล้วแทรกรูปใหม่`);
+        }
+        const bufs = kept.slice();
+        const newAt = Array.isArray(b.newAt) && b.newAt.length === incomingBufs.length ? b.newAt.map(Number) : null;
+        incomingBufs.forEach((buf, i) => {
+          const at = newAt && Number.isInteger(newAt[i]) ? Math.min(Math.max(newAt[i], 0), bufs.length) : bufs.length;
+          bufs.splice(at, 0, buf);
+        });
+        if (!bufs.length) throw new Error('ต้องเหลือรูปอย่างน้อย 1 ใบ');
+        log('⏳ ไม่ได้เลือกชุดรูป marketplace — ทำเฉพาะรูปเว็บ (webp+avif) และอัป R2…');
+        const built = await webImg.buildWebImages({ buffers: bufs, slug });
+        const plan = r2WebImg.planProductWebImages({ slug, imageUrl: built.urls[0], images: built.urls }, ROOT);
+        await r2.putMany(plan.uploads);
+        const web = plan.product.images;
+        log(`✔ รูปเว็บ ${web.length} ใบขึ้น R2 → web/products/${slug}/`);
+        await api(`/products/${b.id}`, { method: 'PATCH', body: JSON.stringify({ images: web, imageUrl: web[0] }) });
+        log(`✔ อัปเดตรูปในฐานข้อมูล (${web.length} ใบ)`);
+        try { runScript('sync-products-json.js'); log('✔ sync products.json'); }
+        catch (e) { log('⚠ sync products.json ไม่สำเร็จ: ' + String(e.stderr || e.message).slice(0, 300)); }
+        try {
+          runBuild();
+          const g = gitPush(`feat(images): จัดรูป ${slug} (${web.length} ใบ)`, ['images/products']);
+          log(g.pushed ? `✔ push รูปและข้อมูลแล้ว (${g.count} ไฟล์)` : `⚠ ไม่ได้ push: ${g.reason}`);
+        } catch (e) { log('⚠ build ไม่สำเร็จ: ' + String(e.message).slice(0, 150)); }
+        return json(200, { ok: true, images: web, logs });
+      }
       // เดาเลขชุดรูปจาก catalog ให้เอง ถ้าหน้าเว็บไม่ได้ส่งมา
       const code = String(b.code || codeForSlug(slug) || '').padStart(2, '0');
       if (!/^\d{2,}$/.test(code)) throw new Error('ไม่รู้เลขชุดรูป marketplace ของสินค้านี้ — เลือกจากรายการด้านล่างก่อน');
@@ -600,7 +640,13 @@ const studioServer = http.createServer(async (req, res) => {
         log(`⚠ ชุดรูปที่กู้มาได้ ${old.length} ใบ ไม่ตรงกับ ${shown} ใบที่แสดงอยู่ — ข้ามการลบ/สลับรอบนี้`);
         log(`   ใช้ทั้ง ${old.length} ใบตามลำดับบน R2 ก่อน แล้วค่อยจัดลำดับ/ลบอีกรอบหลังรีเฟรชหน้า`);
       }
-      const sources = kept.concat(incoming);
+      // newAt = ตำแหน่งสุดท้ายของรูปใหม่แต่ละใบที่ผู้ใช้เลื่อนไว้ (ไม่ส่งมา = ต่อท้ายเหมือนเดิม)
+      const sources = kept.slice();
+      const newAt = Array.isArray(b.newAt) && b.newAt.length === incoming.length ? b.newAt.map(Number) : null;
+      incoming.forEach((im, i) => {
+        const at = newAt && Number.isInteger(newAt[i]) ? Math.min(Math.max(newAt[i], 0), sources.length) : sources.length;
+        sources.splice(at, 0, im);
+      });
       if (!sources.length) throw new Error('ต้องเหลือรูปอย่างน้อย 1 ใบ');
       if (sources.length > 9) log(`⚠ รวมแล้ว ${sources.length} ใบ — เก็บ 9 ใบแรก (เพดานของ Shopee/TikTok)`);
       log('⏳ ทำรูปใหม่ครบ 3 ชั้น (ต้นฉบับ R2 · รูปกลาง 1200 · รูปเว็บ webp+avif) …');

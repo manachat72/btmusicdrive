@@ -17,7 +17,12 @@ function esc(s) {
 }
 function $(id) { return document.getElementById(id); }
 function html(s) { $('view').innerHTML = s; }
-function status(id, msg, cls) { var e = $(id); if (e) e.innerHTML = cls ? '<span class="' + cls + '">' + msg + '</span>' : msg; }
+function status(id, msg, cls) {
+  var html = cls ? '<span class="' + cls + '">' + msg + '</span>' : msg;
+  var e = $(id); if (e) e.innerHTML = html;
+  // หน้าแก้ไข: โชว์ซ้ำใต้ปุ่มบันทึกด้านบน (ข้อความหลักอยู่ท้ายการ์ด มองไม่เห็นตอนกดปุ่มบน)
+  if (id === 'eStatus' && $('eStatusTop')) $('eStatusTop').innerHTML = html;
+}
 
 async function jget(u) { var r = await fetch(u); if (!r.ok) throw new Error(await r.text()); return r.json(); }
 async function jpost(u, body) {
@@ -312,7 +317,9 @@ async function addSharedToNew(btn) {
 async function addSharedToEdit(btn) {
   btn.disabled = true;
   try {
-    addImgs.push(await fetchSharedImage());
+    var f = await fetchSharedImage();
+    editImages.push({ url: URL.createObjectURL(f), file: f });
+    renderEditImages();
     renderAddPreview();
   } catch (e) { alert(e.message); }
   finally { btn.disabled = false; }
@@ -576,6 +583,9 @@ function pickWeb(id) {
     '<div id="eDrop" class="drop">ลากไฟล์รูปมาวางตรงนี้ หรือ<label class="pick"> เลือกไฟล์<input type="file" accept="image/*" multiple hidden onchange="pickAddImgs(this)"></label></div>' +
     '<button type="button" class="ghost compact" onclick="addSharedToEdit(this)" style="margin-top:6px">➕ เพิ่มรูปประจำ (cover_image2)</button>' +
     '<div id="eAddPrev" class="imgs"></div><div class="hint" id="eAddInfo"></div>' +
+    '<button class="primary" style="margin-top:8px" onclick="saveEdit(this)">💾 บันทึก + อัปเดตเว็บ</button>' +
+    '<div class="st" id="eStatusTop"></div>' +
+    '<div class="hint">กดปุ่มนี้ปุ่มเดียว = บันทึกรูป (รวมรูปใหม่ตามลำดับที่เลื่อนไว้) และข้อมูลสินค้าทั้งหมด</div>' +
     '<div class="f"><label>ชื่อสินค้า</label><input type="text" id="eName" value="' + esc(editing.name) + '"></div>' +
     '<div class="row">' +
     '<div class="f"><label>ราคา</label><input type="number" id="ePrice" value="' + editing.price + '"></div>' +
@@ -699,12 +709,13 @@ function renderEditImages() {
   if (!el) return;
   if (!editImages.length) { el.innerHTML = '<div class="hint">ยังไม่มีรูปสินค้า</div>'; return; }
   el.innerHTML = editImages.map(function (x, i) {
-    return '<div class="tile' + (i === 0 ? ' cover' : '') + '" draggable="true" data-i="' + i + '"' +
+    return '<div class="tile' + (i === 0 ? ' cover' : '') + (x.file ? ' new' : '') + '" draggable="true" data-i="' + i + '"' +
       ' ondragstart="imgDragStart(event,' + i + ')" ondragover="imgDragOver(event,' + i + ')"' +
       ' ondrop="imgDrop(event,' + i + ')" ondragend="imgDragEnd()">' +
       '<img src="' + esc(x.url) + '" alt="">' +
       '<button type="button" class="x" title="ลบรูปนี้" onclick="removeEditImage(' + i + ')">×</button>' +
-      (i === 0 ? '<span class="badge">รูปปก</span>'
+      (i === 0 ? '<span class="badge">รูปปก' + (x.file ? ' · ใหม่' : '') + '</span>'
+        : x.file ? '<span class="badge">ใหม่</span>'
         : '<button type="button" class="star" title="ตั้งเป็นรูปปก" onclick="makeCover(' + i + ')">⭐</button>') +
       '<span class="mv">' +
       '<button type="button" title="เลื่อนไปซ้าย" onclick="moveEditImage(' + i + ',-1)"' + (i === 0 ? ' disabled' : '') + '>◀</button>' +
@@ -740,26 +751,25 @@ function makeCover(i) {
 }
 
 function removeEditImage(i) {
-  if (editImages.length + addImgs.length <= 1) { alert('ต้องเหลือรูปอย่างน้อย 1 ใบ'); return; }
+  if (editImages.length <= 1) { alert('ต้องเหลือรูปอย่างน้อย 1 ใบ'); return; }
   editImages.splice(i, 1);
   renderEditImages();
+  renderAddPreview();
   status('eStatus', 'ลบออกจากรายการแล้ว — กด "บันทึกรูป" เพื่อให้มีผลจริงบนเว็บ');
 }
 
-/** รูปใหม่ที่รออัป — โชว์พรีวิว + ลบทีละใบก่อนกดบันทึกได้ */
-function renderAddPreview() {
-  var el = $('eAddPrev'); if (!el) return;
-  el.innerHTML = addImgs.map(function (f, i) {
-    return '<div class="tile new"><img src="' + URL.createObjectURL(f) + '" alt="">' +
-      '<button type="button" class="x" title="เอาออก" onclick="dropAddImg(' + i + ')">×</button>' +
-      '<span class="badge">ใหม่</span></div>';
-  }).join('');
-  $('eAddInfo').textContent = addImgs.length
-    ? '✔ รูปใหม่ ' + addImgs.length + ' ใบ — จะต่อท้ายรูปเดิม ' + editImages.length + ' ใบ (รวม ' + (addImgs.length + editImages.length) + ')'
-    : '';
+/** รูปใหม่ที่รออัป อยู่ในแถวรูปเดียวกับรูปเดิม (x.file) — เลื่อน ◀ ▶ / ลบ ได้ก่อนกดบันทึก */
+function newEditImages() {
+  return editImages.filter(function (x) { return x.file; });
 }
 
-function dropAddImg(i) { addImgs.splice(i, 1); renderAddPreview(); }
+function renderAddPreview() {
+  var el = $('eAddInfo'); if (!el) return;
+  var n = newEditImages().length;
+  el.textContent = n
+    ? '✔ รูปใหม่ ' + n + ' ใบ (ป้าย "ใหม่") — เลื่อน ◀ ▶ ได้ก่อนบันทึก · รวม ' + editImages.length + ' ใบ'
+    : '';
+}
 
 function pickAddImgs(inp) { queueAddImgs(inp.files); inp.value = ''; }
 
@@ -767,7 +777,8 @@ function queueAddImgs(files) {
   var picked = [].slice.call(files).filter(function (f) { return /^image\//.test(f.type); });
   // เรียงชื่อไฟล์แบบเดียวกับ Explorer เพื่อให้ลำดับที่ได้ตรงกับที่เห็นในโฟลเดอร์
   picked.sort(function (a, b) { return a.name.localeCompare(b.name, 'en', { numeric: true, sensitivity: 'base' }); });
-  addImgs = addImgs.concat(picked);
+  editImages = editImages.concat(picked.map(function (f) { return { url: URL.createObjectURL(f), file: f }; }));
+  renderEditImages();
   renderAddPreview();
 }
 
@@ -799,7 +810,7 @@ async function syncImages(btn) {
 
 /** ลบ/เพิ่มรูป = ต้องทำรูปใหม่ผ่าน /api/add-images (prune ต้นฉบับด้วย) · สลับลำดับอย่างเดียวส่งผ่าน /api/update ได้ */
 function imagesNeedRebuild() {
-  return addImgs.length > 0 || editImages.length !== (editing.images || []).length;
+  return newEditImages().length > 0 || editImages.length !== (editing.images || []).length;
 }
 function imagesChanged() {
   return imagesNeedRebuild() || editImages.some(function (x, i) { return x.url !== (editing.images || [])[i]; });
@@ -807,23 +818,27 @@ function imagesChanged() {
 
 /** ลบ + สลับลำดับ + เพิ่มรูปใหม่ ในรอบเดียว — throw ถ้าไม่สำเร็จ คืน logs */
 async function uploadImageChanges() {
-  var keep = editImages.map(function (x) { return x.k; });
-  if (!keep.length && !addImgs.length) throw new Error('ต้องเหลือรูปอย่างน้อย 1 ใบ');
-  if (!$('eCode').value) throw new Error('เลือกชุดรูป marketplace ก่อน — ต้องรู้เลขชุดถึงจะเก็บต้นฉบับถูกที่');
+  var added = newEditImages();
+  var keep = editImages.filter(function (x) { return !x.file; }).map(function (x) { return x.k; });
+  // ตำแหน่งสุดท้ายของรูปใหม่แต่ละใบ — server แทรกตามนี้แทนการต่อท้าย
+  var newAt = [];
+  editImages.forEach(function (x, i) { if (x.file) newAt.push(i); });
+  if (!keep.length && !added.length) throw new Error('ต้องเหลือรูปอย่างน้อย 1 ใบ');
+  var nasFolder = $('eNasFolder') ? $('eNasFolder').value : '';
+  if (!$('eCode').value && !nasFolder) throw new Error('เลือก "โฟลเดอร์รูปบน NAS" หรือ "ชุดรูป marketplace" ก่อน — ต้องรู้ว่ารูปต้นฉบับอยู่ที่ไหน');
   status('eStatus', '⏳ กำลังอ่านรูป…');
   var imgs = [];
-  for (var i = 0; i < addImgs.length; i++) imgs.push({ name: addImgs[i].name, data: await fileToB64(addImgs[i]) });
+  for (var i = 0; i < added.length; i++) imgs.push({ name: added[i].file.name, data: await fileToB64(added[i].file) });
   status('eStatus', '⏳ ดึงต้นฉบับเดิม → ทำรูปใหม่ 3 ชั้น → build → push → อัปเดต DB… ใช้เวลาสักครู่');
   var out = await jpost('/api/add-images', {
     id: editing.id, code: $('eCode').value, imgSlug: editing.imgSlug,
-    name: $('eName').value, folder: mktFolder($('eCode').value), images: imgs, keep: keep,
+    name: $('eName').value, folder: mktFolder($('eCode').value), images: imgs, keep: keep, newAt: newAt, nasFolder: nasFolder,
     existingCount: (editing.images || []).length
   });
   editing.images = out.images;
   editing.imageUrl = out.images[0];
   setEditImages(out.images);
   renderEditImages();
-  addImgs = [];
   renderAddPreview();
   return out.logs;
 }
