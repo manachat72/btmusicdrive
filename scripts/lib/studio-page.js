@@ -106,6 +106,9 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .tile .badge { position:absolute; top:5px; left:5px; background:#242424; color:#fff; font-size:10px; padding:3px 7px; border-radius:999px; }
 .tile .n { position:absolute; bottom:5px; right:5px; background:rgba(17,24,39,.78); color:#fff; font-size:10px; min-width:19px; text-align:center; padding:2px 5px; border-radius:999px; }
 .tile.new img { border-color:var(--success); border-style:dashed; }
+.tile .mv { position:absolute; bottom:5px; left:5px; display:flex; gap:3px; }
+.tile .mv button { border:0; border-radius:999px; width:24px; height:22px; padding:0; font-size:11px; line-height:1; cursor:pointer; background:rgba(255,255,255,.96); color:#242424; box-shadow:0 1px 3px rgba(0,0,0,.25); }
+.tile .mv button:disabled { opacity:.35; cursor:default; }
 .drop { border:1px dashed #9ca3af; border-radius:8px; padding:24px; text-align:center; color:var(--muted); font-size:13px; margin:7px 0 10px; background:#fafafa; }
 .drop.on { border-color:var(--primary); background:var(--primary-soft); color:var(--primary); }
 .drop .pick { color:var(--primary); text-decoration:underline; cursor:pointer; }

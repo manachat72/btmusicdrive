@@ -671,8 +671,19 @@ function renderEditImages() {
       '<button type="button" class="x" title="ลบรูปนี้" onclick="removeEditImage(' + i + ')">×</button>' +
       (i === 0 ? '<span class="badge">รูปปก</span>'
         : '<button type="button" class="star" title="ตั้งเป็นรูปปก" onclick="makeCover(' + i + ')">⭐</button>') +
+      '<span class="mv">' +
+      '<button type="button" title="เลื่อนไปซ้าย" onclick="moveEditImage(' + i + ',-1)"' + (i === 0 ? ' disabled' : '') + '>◀</button>' +
+      '<button type="button" title="เลื่อนไปขวา" onclick="moveEditImage(' + i + ',1)"' + (i === editImages.length - 1 ? ' disabled' : '') + '>▶</button>' +
+      '</span>' +
       '<span class="n">' + (i + 1) + '</span></div>';
   }).join('');
+}
+
+function moveEditImage(i, d) {
+  var to = i + d;
+  if (to < 0 || to >= editImages.length) return;
+  var tmp = editImages[i]; editImages[i] = editImages[to]; editImages[to] = tmp;
+  renderEditImages();
 }
 
 function imgDragStart(e, i) { dragFrom = i; e.dataTransfer.effectAllowed = 'move'; }
