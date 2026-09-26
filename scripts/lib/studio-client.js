@@ -537,7 +537,10 @@ function pickWeb(id) {
     loginBoxHtml() +
     '<div class="card"><h2>✏ ' + esc(editing.name) + '</h2>' +
     '<div class="sub">slug ' + esc(editing.slug) + ' · SKU ' + esc(editing.sku || '-') + ' · โฟลเดอร์รูป <b>' + esc(editing.imgSlug) + '</b></div>' +
+    '<div class="sub">🖼 ลากรูปเพื่อสลับลำดับ · × ลบ · ⭐ ตั้งเป็นรูปปก · ลากไฟล์มาวางเพื่อเพิ่ม — กดบันทึกด้านล่างทีเดียวจบ</div>' +
     '<div id="eImages" class="imgs"></div>' +
+    '<div id="eDrop" class="drop">ลากไฟล์รูปมาวางตรงนี้ หรือ<label class="pick"> เลือกไฟล์<input type="file" accept="image/*" multiple hidden onchange="pickAddImgs(this)"></label></div>' +
+    '<div id="eAddPrev" class="imgs"></div><div class="hint" id="eAddInfo"></div>' +
     '<div class="f"><label>ชื่อสินค้า</label><input type="text" id="eName" value="' + esc(editing.name) + '"></div>' +
     '<div class="row">' +
     '<div class="f"><label>ราคา</label><input type="number" id="ePrice" value="' + editing.price + '"></div>' +
@@ -545,6 +548,9 @@ function pickWeb(id) {
     '<div class="f"><label>หมวดหมู่</label><select id="eCat">' + META.categories.map(function (c) {
       return '<option' + (c === editing.category ? ' selected' : '') + '>' + esc(c) + '</option>';
     }).join('') + '</select></div></div>' +
+    '<div class="row">' +
+    '<div class="f"><label>ความจุ</label><input type="text" id="eCap" value="' + esc(editSpec(['ความจุ', 'capacity']) || '') + '" placeholder="เช่น 4GB"></div>' +
+    '<div class="f"><label>จำนวนเพลง (ที่โชว์บนหน้าเว็บ)</label><input type="number" id="eSongs" min="0" value="' + editSongCount() + '"></div></div>' +
     '<div class="f"><label>รายละเอียด — 155 ตัวแรกคือ meta description</label><textarea id="eDesc">' + esc(editing.description) + '</textarea></div>' +
     '<div class="f"><label>Tags / คีย์เวิร์ด</label><input type="text" id="eTags" value="' + esc((editing.tags || []).join(', ')) + '"></div>' +
     '<div class="f"><label>เปลี่ยนรายชื่อเพลง (.txt — ไม่แนบ = ใช้ของเดิม ' + (editing.tracklist || []).length + ' เพลง)</label>' +
@@ -552,11 +558,8 @@ function pickWeb(id) {
     '<hr style="border:0;border-top:1px solid #e2ded8;margin:16px 0">' +
     '<h2 style="font-size:15px">🖼 จัดการรูปสินค้า</h2>' +
     nasBox +
-    '<div class="sub">หรือเพิ่ม/ลบ/สลับรูปด้วยตนเองด้านล่าง</div>' +
-    '<div class="sub">ลากรูปด้านบนเพื่อสลับลำดับ · กด × ลบ · กด ⭐ ตั้งเป็นรูปปก — แล้วกด "บันทึกรูป" ทีเดียว<br>ระบบดึงต้นฉบับจาก R2/NAS มาทำรูปใหม่ครบทั้ง 3 ชั้น + push ให้เอง</div>' +
-    '<div id="eDrop" class="drop">ลากไฟล์รูปมาวางตรงนี้ หรือ<label class="pick"> เลือกไฟล์<input type="file" accept="image/*" multiple hidden onchange="pickAddImgs(this)"></label></div>' +
-    '<div id="eAddPrev" class="imgs"></div><div class="hint" id="eAddInfo"></div>' +
-    '<button class="primary" onclick="addImages(this)">💾 บันทึกรูป + อัปเดตเว็บ</button>' +
+    '<div class="sub">แก้รูปทีละใบทำได้ที่ด้านบนการ์ดนี้ · ระบบดึงต้นฉบับจาก R2/NAS มาทำรูปใหม่ครบทั้ง 3 ชั้น + push ให้เอง</div>' +
+    '<button class="ghost" onclick="addImages(this)">💾 บันทึกเฉพาะรูป</button>' +
     '<hr style="border:0;border-top:1px solid #e2ded8;margin:16px 0">' +
     '<h2 style="font-size:15px">🔁 ทำ SEO ใหม่ทั้งชุด</h2>' +
     '<div class="sub">พิมพ์ชื่อสั้นแบบที่ลูกค้าค้น แล้วให้ระบบเขียนชื่อ/รายละเอียด/tags/meta ใหม่ทับของเดิม</div>' +
@@ -748,35 +751,59 @@ async function syncImages(btn) {
   btn.disabled = false;
 }
 
-/** บันทึกรูป: ลบ + สลับลำดับ + เพิ่มรูปใหม่ ในรอบเดียว */
-async function addImages(btn) {
+/** ลบ/เพิ่มรูป = ต้องทำรูปใหม่ผ่าน /api/add-images (prune ต้นฉบับด้วย) · สลับลำดับอย่างเดียวส่งผ่าน /api/update ได้ */
+function imagesNeedRebuild() {
+  return addImgs.length > 0 || editImages.length !== (editing.images || []).length;
+}
+function imagesChanged() {
+  return imagesNeedRebuild() || editImages.some(function (x, i) { return x.url !== (editing.images || [])[i]; });
+}
+
+/** ลบ + สลับลำดับ + เพิ่มรูปใหม่ ในรอบเดียว — throw ถ้าไม่สำเร็จ คืน logs */
+async function uploadImageChanges() {
   var keep = editImages.map(function (x) { return x.k; });
-  var changed = addImgs.length || keep.length !== (editing.images || []).length ||
-    keep.some(function (k, i) { return k !== i; });
-  if (!changed) { status('eStatus', 'รูปยังไม่มีอะไรเปลี่ยน — ลากสลับลำดับ ลบ หรือเพิ่มรูปใหม่ก่อน', 'err'); return; }
-  if (!keep.length && !addImgs.length) { status('eStatus', 'ต้องเหลือรูปอย่างน้อย 1 ใบ', 'err'); return; }
-  if (!$('eCode').value) { status('eStatus', 'เลือกชุดรูป marketplace ก่อน — ต้องรู้เลขชุดถึงจะเก็บต้นฉบับถูกที่', 'err'); return; }
+  if (!keep.length && !addImgs.length) throw new Error('ต้องเหลือรูปอย่างน้อย 1 ใบ');
+  if (!$('eCode').value) throw new Error('เลือกชุดรูป marketplace ก่อน — ต้องรู้เลขชุดถึงจะเก็บต้นฉบับถูกที่');
+  status('eStatus', '⏳ กำลังอ่านรูป…');
+  var imgs = [];
+  for (var i = 0; i < addImgs.length; i++) imgs.push({ name: addImgs[i].name, data: await fileToB64(addImgs[i]) });
+  status('eStatus', '⏳ ดึงต้นฉบับเดิม → ทำรูปใหม่ 3 ชั้น → build → push → อัปเดต DB… ใช้เวลาสักครู่');
+  var out = await jpost('/api/add-images', {
+    id: editing.id, code: $('eCode').value, imgSlug: editing.imgSlug,
+    name: $('eName').value, folder: mktFolder($('eCode').value), images: imgs, keep: keep,
+    existingCount: (editing.images || []).length
+  });
+  editing.images = out.images;
+  editing.imageUrl = out.images[0];
+  setEditImages(out.images);
+  renderEditImages();
+  addImgs = [];
+  renderAddPreview();
+  return out.logs;
+}
+
+async function addImages(btn) {
+  if (!imagesChanged()) { status('eStatus', 'รูปยังไม่มีอะไรเปลี่ยน — ลากสลับลำดับ ลบ หรือเพิ่มรูปใหม่ก่อน', 'err'); return; }
   btn.disabled = true;
   try {
     await ensureLogin('eStatus');
-    status('eStatus', '⏳ กำลังอ่านรูป…');
-    var imgs = [];
-    for (var i = 0; i < addImgs.length; i++) imgs.push({ name: addImgs[i].name, data: await fileToB64(addImgs[i]) });
-    status('eStatus', '⏳ ดึงต้นฉบับเดิม → ทำรูปใหม่ 3 ชั้น → build → push → อัปเดต DB… ใช้เวลาสักครู่');
-    var out = await jpost('/api/add-images', {
-      id: editing.id, code: $('eCode').value, imgSlug: editing.imgSlug,
-      name: $('eName').value, folder: mktFolder($('eCode').value), images: imgs, keep: keep,
-      existingCount: (editing.images || []).length
-    });
-    editing.images = out.images;
-    setEditImages(out.images);
-    renderEditImages();
-    addImgs = [];
-    renderAddPreview();
-    status('eStatus', '<span class="ok">✔ บันทึกรูปแล้ว รวม ' + out.images.length + ' ใบ</span><br>' + esc(out.logs.join('\n')));
+    var logs = await uploadImageChanges();
+    status('eStatus', '<span class="ok">✔ บันทึกรูปแล้ว รวม ' + editing.images.length + ' ใบ</span><br>' + esc(logs.join('\n')));
     WEB = await jget('/api/web-products');
   } catch (e) { status('eStatus', '✖ ' + esc(e.message).slice(0, 800), 'err'); }
   btn.disabled = false;
+}
+
+/** ค่าจาก specs ของสินค้าที่กำลังแก้ (ลองหลายชื่อ key) */
+function editSpec(keys) {
+  var s = (editing && editing.specs) || {};
+  for (var i = 0; i < keys.length; i++) if (s[keys[i]] && s[keys[i]] !== '-' && s[keys[i]] !== '—') return String(s[keys[i]]);
+  return '';
+}
+/** จำนวนเพลงปัจจุบัน: specs ที่ตั้งไว้ก่อน ไม่มีค่อยนับจาก tracklist */
+function editSongCount() {
+  var n = parseInt(editSpec(['จำนวนเพลง', 'trackCount', 'songs']), 10);
+  return n > 0 ? n : ((editing.tracklist || []).length || '');
 }
 
 /** ชื่อโฟลเดอร์ NAS ของชุดรูป code นี้ (จาก catalog) — ไม่มีก็ปล่อยว่าง */
@@ -790,6 +817,7 @@ function readEditTxt(inp) {
   f.text().then(function (txt) {
     editTrack = parseTracks(txt);
     $('eTxtInfo').textContent = '✔ อ่านได้ ' + editTrack.length + ' เพลง (จะทับของเดิมตอนบันทึก)';
+    if (editTrack.length) $('eSongs').value = editTrack.length;
   });
 }
 
@@ -801,7 +829,7 @@ async function regenSeo(btn) {
     var seo = await jpost('/api/seo', {
       shortName: short,
       tracklist: editTrack || editing.tracklist || [],
-      capacity: (editing.specs && (editing.specs.capacity || editing.specs['ความจุ'])) || '4GB',
+      capacity: $('eCap').value.trim() || editSpec(['ความจุ', 'capacity']) || '4GB',
       price: +$('ePrice').value || editing.price,
       categoryName: $('eCat').value,
       excludeId: editing.id
@@ -819,15 +847,23 @@ async function saveEdit(btn) {
   btn.disabled = true;
   try {
     await ensureLogin('eStatus');
+    // ลบ/เพิ่มรูปค้างอยู่ → ทำรูปใหม่ก่อน (ชื่อโฟลเดอร์รูปยังเป็นของเดิม) แล้วค่อย rename ตามชื่อใหม่ใน /api/update
+    var imgLogs = imagesNeedRebuild() ? await uploadImageChanges() : [];
     status('eStatus', '⏳ กำลังอัปเดต… (rename รูป → build → push → DB → sync → push)');
     var seo = editing.newSeo;
+    // specs: ของเดิม ← SEO ใหม่ ← ช่องความจุ/จำนวนเพลงที่พิมพ์เอง (ชนะสุด)
+    var specs = Object.assign({}, editing.specs || {}, seo ? seo.specs : {});
+    var cap = $('eCap').value.trim();
+    var songs = parseInt($('eSongs').value, 10);
+    if (cap) specs['ความจุ'] = cap;
+    if (songs > 0) specs['จำนวนเพลง'] = songs + ' เพลง';
     var body = {
       id: editing.id, code: $('eCode').value || null,
       name: $('eName').value, description: $('eDesc').value,
       price: +$('ePrice').value, stock: +$('eStock').value, categoryName: $('eCat').value,
       tags: $('eTags').value.split(',').map(function (s) { return s.trim(); }).filter(Boolean),
       slug: seo ? seo.slug : editing.slug,
-      specs: seo ? seo.specs : undefined,
+      specs: specs,
       images: editImageUrls(),
       imageUrl: editImageUrls()[0] || undefined,
       tracklist: editTrack || undefined,
@@ -838,8 +874,11 @@ async function saveEdit(btn) {
     };
     var out = await jpost('/api/update', body);
     status('eStatus', '<span class="ok">✔ อัปเดตแล้ว — <a href="' + out.url + '" target="_blank">' + out.url + '</a></span><br>' +
-      esc(out.logs.join('\n')) + filesHtml(out.files));
+      esc(imgLogs.concat(out.logs).join('\n')) + filesHtml(out.files));
     WEB = await jget('/api/web-products');
+    // ดึงค่าล่าสุด (ชื่อ/โฟลเดอร์รูปหลัง rename) ไม่งั้นกดบันทึกซ้ำจะ rename จาก slug เก่า
+    var fresh = WEB.filter(function (p) { return p.id === editing.id; })[0];
+    if (fresh) { fresh.newSeo = null; editing = fresh; editTrack = null; setEditImages(editing.images); renderEditImages(); }
   } catch (e) { status('eStatus', '✖ ' + esc(e.message).slice(0, 800), 'err'); }
   btn.disabled = false;
 }

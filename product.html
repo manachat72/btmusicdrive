@@ -1109,9 +1109,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       const capacity = productSpecValue(['ความจุ', 'capacity']);
       const quality = productSpecValue(['ไฟล์เพลง', 'quality']) || 'MP3 320kbps';
-      const trackCount = Array.isArray(product?.tracklist) && product.tracklist.length > 0
-        ? `${product.tracklist.length} เพลง`
-        : productSpecValue(['จำนวนเพลง', 'trackCount', 'songs']);
+      // จำนวนเพลงที่ตั้งใน specs ชนะ (tracklist บางตัวเป็นแค่ตัวอย่าง ไม่ครบทุกเพลง)
+      const specTrackCount = productSpecValue(['จำนวนเพลง', 'trackCount', 'songs']);
+      const trackCount = specTrackCount && specTrackCount !== '—' && specTrackCount !== '-'
+        ? specTrackCount
+        : (Array.isArray(product?.tracklist) && product.tracklist.length > 0 ? `${product.tracklist.length} เพลง` : specTrackCount);
       const details = [];
       if (capacity && capacity !== '—') details.push(`ความจุ ${capacity}`);
       if (trackCount && trackCount !== '—') details.push(`รวม ${trackCount}`);
@@ -1530,9 +1532,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const specs = product.specs || {};
       const capacity = specs['ความจุ'] || specs['capacity'] || '—';
       const quality = specs['ไฟล์เพลง'] || specs['quality'] || 'MP3 320kbps';
-      const trackCount = (product.tracklist && product.tracklist.length > 0)
-        ? `${product.tracklist.length} เพลง`
-        : (specs['จำนวนเพลง'] || '—');
+      const specTrackCount = specs['จำนวนเพลง'] && specs['จำนวนเพลง'] !== '-' ? specs['จำนวนเพลง'] : '';
+      const trackCount = specTrackCount
+        || ((product.tracklist && product.tracklist.length > 0) ? `${product.tracklist.length} เพลง` : '—');
       const capEl = document.getElementById('spec-capacity');
       const qualEl = document.getElementById('spec-quality');
       const countEl = document.getElementById('spec-track-count');
