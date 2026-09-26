@@ -17,7 +17,7 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
 <base href="/">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="app.min.css?v=706e860d">
+    <link rel="stylesheet" href="app.min.css?v=0f9dfe7f">
   <meta name="theme-color" content="#8B7355">
   <link rel="icon" type="image/webp" href="images/logo.webp">
 
@@ -478,30 +478,30 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
 
         <!-- Info -->
-        <div class="flex flex-col">
+        <div>
           <!-- Badge -->
-          <div class="order-1 sm:order-none flex items-center gap-2 mb-3">
+          <div class="flex items-center gap-2 mb-3">
             <span id="stock-badge" class="inline-block px-3 py-1 rounded-full text-xs font-bold"></span>
             <span id="low-stock-alert"
               class="hidden inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-600 animate-pulse"><i
                 class="ph ph-warning text-sm"></i> <span id="low-stock-text"></span></span>
           </div>
 
-          <h1 id="p-name" class="order-2 sm:order-none text-2xl md:text-3xl font-extrabold text-gray-900 mb-2 leading-tight">แฟลชไดร์ฟเพลง MP3 คุณภาพ HD</h1>
+          <h1 id="p-name" class="text-2xl md:text-3xl font-extrabold text-gray-900 mb-2 leading-tight">แฟลชไดร์ฟเพลง MP3 คุณภาพ HD</h1>
 
-          <div id="p-meta" class="order-7 sm:order-none text-sm text-gray-500 mb-4 flex flex-wrap gap-x-4 gap-y-1">
+          <div id="p-meta" class="text-sm text-gray-500 mb-4 flex flex-wrap gap-x-4 gap-y-1">
             <span id="p-brand-wrap" class="hidden">แบรนด์: <strong id="p-brand"></strong></span>
             <span id="p-sku-wrap" class="hidden">รหัสสินค้า: <strong id="p-sku"></strong></span>
           </div>
 
           <!-- Price -->
-          <div class="order-4 sm:order-none flex items-baseline gap-3 mb-6">
+          <div class="flex items-baseline gap-3 mb-6">
             <span id="p-price" class="text-4xl font-extrabold price-current"></span>
             <span id="p-original-price" class="text-xl text-gray-400 line-through hidden"></span>
           </div>
 
           <!-- Quantity + Add to Cart -->
-          <div class="order-5 sm:order-none flex items-center gap-3 mb-4">
+          <div class="flex items-center gap-3 mb-4">
             <span class="text-sm font-semibold text-gray-600 shrink-0">จำนวน</span>
             <div class="flex items-center border-2 border-gray-200 rounded-xl overflow-hidden">
               <button class="qty-btn" onclick="changeQty(-1)">−</button>
@@ -512,7 +512,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           </div>
 
           <!-- Buttons -->
-          <div class="order-6 sm:order-none flex flex-col sm:flex-row gap-3 mb-4">
+          <div class="flex flex-col sm:flex-row gap-3 mb-4">
             <button onclick="addToCartFromDetail()"
               class="btn-add-cart flex-1 bg-secondary text-white font-bold py-3.5 px-4 sm:px-6 rounded-xl flex items-center justify-center gap-2 text-base shadow-md">
               <i class="ph ph-shopping-cart text-xl text-[#f4ce76]"></i> เพิ่มในตะกร้า
@@ -524,7 +524,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           </div>
 
           <!-- Wishlist Button -->
-          <div class="order-3 sm:order-none mb-5">
+          <div class="mb-5">
             <button id="wishlist-btn" onclick="toggleWishlist()"
               class="flex items-center gap-2 text-gray-500 hover:text-red-500 transition-colors text-sm font-medium">
               <i id="wishlist-icon" class="ph ph-heart text-xl"></i> <span
@@ -533,7 +533,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           </div>
 
           <!-- Share Buttons -->
-          <div class="order-8 sm:order-none mb-5 flex items-center gap-2 flex-wrap">
+          <div class="mb-5 flex items-center gap-2 flex-wrap">
             <span class="text-xs text-gray-400 font-medium mr-1">แชร์:</span>
             <a id="share-facebook" href="#" target="_blank" rel="noopener" title="แชร์ Facebook"
               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-semibold text-gray-600 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700 transition-all">
