@@ -805,6 +805,20 @@ const studioServer = http.createServer(async (req, res) => {
     }
 
     // ── QR ──
+    // รูปประจำที่ใส่ทุกสินค้า (ปุ่ม "เพิ่มรูปประจำ" ใน studio) — ใช้รูปแรกในโฟลเดอร์
+    if (url.pathname === '/api/shared-image') {
+      const dir = 'Z:\\btmusicdrive images ai\\cover_image2';
+      let name = null;
+      try {
+        name = fs.readdirSync(dir).filter((n) => /\.(png|jpe?g|webp)$/i.test(n))
+          .sort((x, y) => x.localeCompare(y, 'en', { numeric: true }))[0];
+      } catch { /* เข้าถึง Z: ไม่ได้ */ }
+      if (!name) { res.writeHead(404); return res.end('not found'); }
+      const ext = path.extname(name).toLowerCase();
+      const type = ext === '.png' ? 'image/png' : ext === '.webp' ? 'image/webp' : 'image/jpeg';
+      res.writeHead(200, { 'content-type': type, 'x-file-name': encodeURIComponent(name) });
+      return res.end(fs.readFileSync(path.join(dir, name)));
+    }
     if (url.pathname.startsWith('/qr/')) {
       const f = path.join(QR_DIR, path.basename(decodeURIComponent(url.pathname)));
       if (!fs.existsSync(f)) { res.writeHead(404); return res.end('not found'); }

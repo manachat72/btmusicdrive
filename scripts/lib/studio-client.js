@@ -183,6 +183,7 @@ function renderNew() {
     '<div class="src"><input type="radio" name="src" id="srcUp" value="upload"' + (folders ? '' : ' checked') + '>' +
     '<label for="srcUp">อัปโหลดรูปใหม่</label>' +
     '<input class="file-input" type="file" id="nFiles" accept="image/*" multiple onchange="previewFiles(this)">' +
+    '<button type="button" class="ghost compact" onclick="addSharedToNew(this)" style="margin-top:6px">➕ เพิ่มรูปประจำ (cover_image2)</button>' +
     '<div class="hint">สูงสุด 9 รูป · รูปแรกเป็นภาพปก' + (folders ? ' · ระบบเก็บต้นฉบับลง NAS ให้' : ' · ต้นฉบับเก็บบน R2') + '</div>' +
     '<div class="thumbs" id="thumbs"></div></div></div>' +
     '<div class="f track-file"><label for="nTxt">รายชื่อเพลง (.txt)</label>' +
@@ -282,6 +283,39 @@ function previewFiles(inp) {
     t.appendChild(img);
   });
   saveNewProductDraft();
+}
+
+/** ดึงรูปประจำจาก Z:\btmusicdrive images ai\cover_image2 (ผ่าน studio server) เป็น File */
+async function fetchSharedImage() {
+  var r = await fetch('/api/shared-image', { cache: 'no-store' });
+  if (!r.ok) throw new Error('ไม่พบรูปใน cover_image2 หรือเข้าถึงไดรฟ์ Z: ไม่ได้');
+  var name = decodeURIComponent(r.headers.get('x-file-name') || 'shared.png');
+  var blob = await r.blob();
+  return new File([blob], name, { type: blob.type || 'image/png' });
+}
+
+async function addSharedToNew(btn) {
+  btn.disabled = true;
+  try {
+    var f = await fetchSharedImage();
+    if (upImages.length >= 9) { alert('ครบ 9 รูปแล้ว'); return; }
+    $('srcUp').checked = true;
+    upImages.push(f);
+    var img = document.createElement('img');
+    img.src = URL.createObjectURL(f);
+    $('thumbs').appendChild(img);
+    saveNewProductDraft();
+  } catch (e) { alert(e.message); }
+  finally { btn.disabled = false; }
+}
+
+async function addSharedToEdit(btn) {
+  btn.disabled = true;
+  try {
+    addImgs.push(await fetchSharedImage());
+    renderAddPreview();
+  } catch (e) { alert(e.message); }
+  finally { btn.disabled = false; }
 }
 
 function parseTracks(txt) {
@@ -540,6 +574,7 @@ function pickWeb(id) {
     '<div class="sub">🖼 ลากรูปเพื่อสลับลำดับ · × ลบ · ⭐ ตั้งเป็นรูปปก · ลากไฟล์มาวางเพื่อเพิ่ม — กดบันทึกด้านล่างทีเดียวจบ</div>' +
     '<div id="eImages" class="imgs"></div>' +
     '<div id="eDrop" class="drop">ลากไฟล์รูปมาวางตรงนี้ หรือ<label class="pick"> เลือกไฟล์<input type="file" accept="image/*" multiple hidden onchange="pickAddImgs(this)"></label></div>' +
+    '<button type="button" class="ghost compact" onclick="addSharedToEdit(this)" style="margin-top:6px">➕ เพิ่มรูปประจำ (cover_image2)</button>' +
     '<div id="eAddPrev" class="imgs"></div><div class="hint" id="eAddInfo"></div>' +
     '<div class="f"><label>ชื่อสินค้า</label><input type="text" id="eName" value="' + esc(editing.name) + '"></div>' +
     '<div class="row">' +
