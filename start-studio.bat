@@ -22,6 +22,12 @@ echo   Starting server... the browser will open automatically.
 echo   Close this window to stop Product Studio.
 echo.
 
+REM Refresh local QR labels with the current product name and SKU. This keeps
+REM legacy QR URLs intact, so printed QR codes continue to work.
+node scripts\sync-tracklist-qr-registry.js --apply
+if errorlevel 1 echo   QR registry sync skipped; Product Studio will still start.
+echo.
+
 REM Give the server a moment before opening the browser.
 REM No nested quotes here: the URL has no spaces, so "start <url>" is unambiguous.
 start "" /b cmd /c "timeout /t 3 /nobreak >nul & start http://localhost:%PORT%"

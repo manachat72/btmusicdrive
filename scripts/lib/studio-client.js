@@ -980,6 +980,7 @@ async function loadQrList() {
   $('qList').innerHTML = items.length ? '<div class="qgrid">' + items.map(function (i) {
     return '<div class="qcard"><img src="/qr/' + encodeURIComponent(i.file) + '">' +
       '<div style="font-size:12px;font-weight:600;margin:6px 0 2px">' + esc(i.name) + '</div>' +
+      (i.productSku ? '<div style="font-size:10px;color:#a16207;line-height:1.3">QR ' + esc((i.url.match(/tracklist-([^/.]+)\.html/) || [])[1] || '—') + ' · SKU ' + esc(i.productSku) + '</div>' : '') +
       '<div style="font-size:10px;color:#94a3b8;word-break:break-all;line-height:1.3">' + esc(i.url.replace('https://', '')) + '</div>' +
       '<div style="display:flex;gap:8px;justify-content:center;margin-top:4px">' +
       '<a href="' + esc(i.url) + '" target="_blank" style="font-size:12px">📄 เปิด</a>' +

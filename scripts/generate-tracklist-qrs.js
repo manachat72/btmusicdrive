@@ -67,7 +67,7 @@ function similarity(a, b) {
   for (const j of list) {
     const p = j.product;
     try {
-      const r = await makeTracklistQr({ code: j.code, name: p.name, tracklist: p.tracklist });
+      const r = await makeTracklistQr({ code: j.code, name: p.name, tracklist: p.tracklist, sku: p.sku, slug: p.slug });
       totalKb += r.kb;
       console.log(`  ✔ ${j.code}  ${String(p.tracklist.length).padStart(3)} เพลง  ${r.kb.toFixed(0)} KB  ${p.name.slice(0, 45)}`);
     } catch (e) {

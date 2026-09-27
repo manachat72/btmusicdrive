@@ -30,7 +30,7 @@ function shortProductName(name) {
  * @param {{code:string|number, name:string, tracklist:string[]}} p
  * @returns {Promise<{code:string,url:string,file:string,name:string,tracks:number,kb:number}>}
  */
-async function makeTracklistQr({ code, name, tracklist }) {
+async function makeTracklistQr({ code, name, tracklist, sku = '', slug = '' }) {
   code = String(code);
   const tracks = Array.isArray(tracklist) ? tracklist : [];
   if (!tracks.length) throw new Error('ไม่มีรายชื่อเพลง');
@@ -64,7 +64,7 @@ async function makeTracklistQr({ code, name, tracklist }) {
     const f = String(i.file || '');
     return !(f === file || f === `qr-tracklist-${code}.png` || f.startsWith(`qr-tracklist-${code} `));
   });
-  items.unshift({ name: regName, url, file, createdAt: new Date().toISOString() });
+  items.unshift({ name: regName, url, file, productSku: sku, productSlug: slug, createdAt: new Date().toISOString() });
   saveQrReg(items);
 
   return { code, url, file, name: regName, tracks: tracks.length, kb: html.length / 1024 };

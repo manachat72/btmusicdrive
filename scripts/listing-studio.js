@@ -523,7 +523,7 @@ const studioServer = http.createServer(async (req, res) => {
       let qr = null;
       if (Array.isArray(b.tracklist) && b.tracklist.length) {
         try {
-          qr = await makeTracklistQr({ code: b.code, name: product.name, tracklist: b.tracklist });
+          qr = await makeTracklistQr({ code: b.code, name: product.name, tracklist: b.tracklist, sku: product.sku, slug: product.slug });
           log(`✔ QR รายชื่อเพลง: qr/${qr.file}`);
         } catch (e) { log('⚠ สร้าง QR รายชื่อเพลงไม่สำเร็จ: ' + String(e.message).slice(0, 150)); }
       }

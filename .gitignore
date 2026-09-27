@@ -53,3 +53,7 @@ marketplace-docs/
 .cloudflared/
 cert.pem
 [0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]-[0-9a-f][0-9a-f][0-9a-f][0-9a-f]-*.json
+
+# local cover-generation outputs / scratch images
+cover-output/
+test_thai.png
