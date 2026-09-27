@@ -17,7 +17,7 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
 <base href="/">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="app.min.css?v=004916f0">
+    <link rel="stylesheet" href="app.min.css?v=b2ed229a">
   <meta name="theme-color" content="#8B7355">
   <link rel="icon" type="image/webp" href="images/logo.webp">
 
@@ -1052,7 +1052,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 
   <!-- Toast -->
-  <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+  <div id="toast-container" class="fixed bottom-[76px] left-3 right-3 md:bottom-4 md:left-auto md:right-4 z-[60] flex flex-col gap-2 pointer-events-none"></div>
 
   <script>
     const PRODUCT_API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
@@ -1995,7 +1995,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const container = document.getElementById('toast-container');
       const toast = document.createElement('div');
       toast.className = 'bg-gray-900 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 transform translate-y-10 opacity-0 transition-all duration-300';
-      toast.innerHTML = `<div class="bg-green-500 rounded-full p-1"><i class="ph ph-check text-white"></i></div><p class="text-sm font-medium">${message}</p>`;
+      toast.innerHTML = `<div class="bg-green-500 rounded-full p-1"><i class="ph ph-check text-white"></i></div><p class="text-sm font-medium line-clamp-2">${message}</p>`;
       container.appendChild(toast);
       requestAnimationFrame(() => {
         toast.classList.remove('translate-y-10', 'opacity-0');
