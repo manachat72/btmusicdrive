@@ -17,7 +17,7 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
 <base href="/">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="app.min.css?v=0f9dfe7f">
+    <link rel="stylesheet" href="app.min.css?v=004916f0">
   <meta name="theme-color" content="#8B7355">
   <link rel="icon" type="image/webp" href="images/logo.webp">
 
@@ -1479,12 +1479,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       document.getElementById('error').classList.add('hidden');
       document.getElementById('product-content').classList.remove('hidden');
 
-      // Populate mobile sticky cart bar
-      const stickyBar = document.getElementById('mobile-sticky-cart');
-      if (stickyBar) {
-        document.getElementById('sticky-product-name').textContent = product.name;
-        document.getElementById('sticky-product-price').textContent = `฿${Number(product.price).toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
-        stickyBar.classList.remove('hidden');
+      // Populate mobile product action bar (แชท | ใส่ตะกร้า | ซื้อเลย)
+      const pbar = document.getElementById('mobile-product-bar');
+      if (pbar) {
+        document.getElementById('pbar-price').textContent = `฿${Number(product.price).toLocaleString('th-TH')}`;
+        const pbarOrig = document.getElementById('pbar-original');
+        if (product.originalPrice && product.originalPrice > product.price) {
+          pbarOrig.textContent = `฿${Number(product.originalPrice).toLocaleString('th-TH')}`;
+          pbarOrig.classList.remove('hidden');
+        } else {
+          pbarOrig.classList.add('hidden');
+        }
+        pbar.classList.remove('hidden');
+        document.body.classList.add('has-product-bar');
       }
     }
 
@@ -2005,17 +2012,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     loadProduct();
   </script>
 
-  <!-- Sticky Add to Cart Bar (Mobile) -->
-  <div id="mobile-sticky-cart"
-    class="fixed bottom-14 left-0 right-0 bg-white border-t border-gray-200 z-40 md:hidden hidden">
-    <div class="flex items-center gap-3 px-4 py-2.5">
-      <div class="flex-1 min-w-0">
-        <p id="sticky-product-name" class="text-sm font-semibold text-gray-900 truncate"></p>
-        <p id="sticky-product-price" class="text-base font-bold text-red-600"></p>
-      </div>
-      <button onclick="addToCartFromDetail()"
-        class="bg-primary hover:bg-amber-700 text-white font-bold py-2.5 px-5 rounded-lg transition-colors flex items-center gap-2 whitespace-nowrap text-sm">
-        <i class="ph ph-shopping-cart text-lg"></i> เพิ่มในตะกร้า
+  <!-- Mobile Product Action Bar (แทนเมนูล่างเฉพาะหน้าสินค้า) -->
+  <div id="mobile-product-bar" class="fixed bottom-0 left-0 right-0 z-50 md:hidden hidden bg-secondary border-t border-primary/30">
+    <div class="flex items-stretch h-[60px]">
+      <button type="button" onclick="event.stopPropagation(); document.getElementById('bt-chat-toggle')?.click()"
+        class="w-[20%] flex flex-col items-center justify-center gap-0.5 text-[#C9A876] active:bg-white/5" aria-label="แชทกับเรา">
+        <i class="ph ph-chat-circle-dots text-[22px] leading-none"></i>
+        <span class="text-[10px] font-medium">แชท</span>
+      </button>
+      <button type="button" onclick="addToCartFromDetail()"
+        class="w-[20%] flex flex-col items-center justify-center gap-0.5 text-[#C9A876] border-l border-white/10 active:bg-white/5" aria-label="ใส่ตะกร้า">
+        <i class="ph ph-shopping-cart-simple text-[22px] leading-none"></i>
+        <span class="text-[10px] font-medium">ใส่ตะกร้า</span>
+      </button>
+      <button type="button" onclick="buyNow()"
+        class="flex-1 flex flex-col items-center justify-center bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-gray-900 active:brightness-95">
+        <span class="text-xs font-semibold leading-tight">ซื้อเลย</span>
+        <span class="flex items-baseline gap-1.5 leading-tight">
+          <span id="pbar-price" class="text-lg font-bold text-red-600"></span>
+          <span id="pbar-original" class="hidden text-xs text-gray-700 line-through"></span>
+        </span>
       </button>
     </div>
   </div>

@@ -641,6 +641,15 @@ body {
         padding-bottom: 56px;
     }
 
+    /* Product page: action bar (แชท | ใส่ตะกร้า | ซื้อเลย) replaces the main bottom nav + floating chat button */
+    body.has-product-bar #mobile-bottom-nav,
+    body.has-product-bar #bt-chat-toggle {
+        display: none !important;
+    }
+    #mobile-product-bar {
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+
     /* Toast above bottom nav */
     .toast-notification {
         bottom: 72px !important;

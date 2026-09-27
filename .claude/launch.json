@@ -4,9 +4,24 @@
     {
       "name": "listing-studio",
       "runtimeExecutable": "node",
-      "runtimeArgs": ["scripts/listing-studio.js"],
+      "runtimeArgs": [
+        "scripts/listing-studio.js"
+      ],
       "port": 4777,
       "autoPort": false
+    },
+    {
+      "name": "static-site",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "-y",
+        "http-server",
+        "-p",
+        "8090",
+        "-c-1",
+        "-s"
+      ],
+      "port": 8090
     }
   ]
 }
