@@ -10,6 +10,7 @@ const path = require('path');
 const { execFileSync } = require('child_process');
 const QRCode = require('qrcode');
 const { tracklistHtml } = require('./tracklist-page');
+const { nasDir } = require('./nas');
 
 const ROOT = path.resolve(__dirname, '..', '..');
 const DOCS_DIR = path.join(ROOT, 'marketplace-docs');
@@ -24,6 +25,33 @@ function shortProductName(name) {
   return String(name || '')
     .replace(/^usb[\s\-–—]*(แฟลชไดร์?ฟ์?|flash\s*drive)?(พร้อมเพลง)?[\s\-–—]*(mp3)?[\s\-–—]*/i, '')
     .replace(/[\/:*?"<>|]+/g, ' ').replace(/\s{2,}/g, ' ').trim().slice(0, 40).trim();
+}
+
+/**
+ * ชื่อไฟล์ QR ต้องตามชื่อโฟลเดอร์บน NAS เพื่อให้หาไฟล์ปริ้นท์/ต้นฉบับ
+ * ของสินค้าชุดเดียวกันได้ทันที แม้ legacy QR code จะเป็นคนละเลขชุดก็ตาม.
+ */
+function nasFolderForSku(sku) {
+  const series = String(sku || '').match(/-(\d+)$/);
+  if (!series) return '';
+  const target = Number(series[1]);
+  try {
+    return fs.readdirSync(nasDir(), { withFileTypes: true })
+      .filter((entry) => entry.isDirectory())
+      .map((entry) => entry.name)
+      .find((name) => Number((name.match(/^\s*(\d+(?:\.\d+)?)/) || [])[1]) === target) || '';
+  } catch {
+    return '';
+  }
+}
+
+function qrFileName(code, name, sku) {
+  const folder = nasFolderForSku(sku);
+  // เลขชุด NAS ต้องอยู่ต้นชื่อไฟล์ เพราะเป็นเลขที่ใช้หาโฟลเดอร์จริง.
+  // code เก่าคงไว้ท้ายชื่อ เพื่อแยก QR ที่ URL ต่างกันแต่เป็นสินค้าชุดเดียวกัน.
+  return folder
+    ? `${folder} [QR-${code}].png`
+    : `QR-${code} ${shortProductName(name)}.png`;
 }
 
 /**
@@ -49,7 +77,7 @@ async function makeTracklistQr({ code, name, tracklist, sku = '', slug = '' }) {
   const url = (out.match(/https:\/\/\S+/) || [])[0];
   if (!url) throw new Error('อัป R2 ไม่สำเร็จ: ' + out.slice(0, 300));
 
-  const file = `qr-tracklist-${code} ${shortProductName(name)}.png`;
+  const file = qrFileName(code, name, sku);
   // ลบไฟล์ชื่อแบบเก่า (ไม่มีชื่อสินค้า) ทิ้ง ไม่ให้ซ้ำซ้อน
   try { fs.unlinkSync(path.join(QR_DIR, `qr-tracklist-${code}.png`)); } catch { }
   fs.mkdirSync(QR_DIR, { recursive: true });
@@ -60,9 +88,12 @@ async function makeTracklistQr({ code, name, tracklist, sku = '', slug = '' }) {
 
   // ลงทะเบียนในคลัง QR ของ studio (ล้างรายการเดิมของ code นี้ทุกชื่อไฟล์ก่อน)
   const regName = `${code} รายชื่อเพลง — ${String(name).slice(0, 45)}`;
-  const items = loadQrReg().filter(i => {
+  const items = loadQrReg().filter((i) => {
     const f = String(i.file || '');
-    return !(f === file || f === `qr-tracklist-${code}.png` || f.startsWith(`qr-tracklist-${code} `));
+    const existingCode = (String(i.url || '').match(/tracklist-([^/.]+)\.html/) || [])[1]
+      || (f.match(/^qr-tracklist-([^ ]+)/) || [])[1]
+      || (f.match(/\[QR-([^\]]+)\]\.png$/) || [])[1];
+    return !(f === file || existingCode === code);
   });
   items.unshift({ name: regName, url, file, productSku: sku, productSlug: slug, createdAt: new Date().toISOString() });
   saveQrReg(items);
@@ -70,4 +101,7 @@ async function makeTracklistQr({ code, name, tracklist, sku = '', slug = '' }) {
   return { code, url, file, name: regName, tracks: tracks.length, kb: html.length / 1024 };
 }
 
-module.exports = { makeTracklistQr, shortProductName, loadQrReg, saveQrReg, QR_DIR, QR_REG, DOCS_DIR };
+module.exports = {
+  makeTracklistQr, shortProductName, nasFolderForSku, qrFileName,
+  loadQrReg, saveQrReg, QR_DIR, QR_REG, DOCS_DIR,
+};
