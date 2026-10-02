@@ -158,17 +158,6 @@ function _navbarHTML() {
           <button id="mobile-menu-btn" class="md:hidden text-gray-300 hover:text-primary transition-colors" aria-label="เมนู" aria-expanded="false"><i class="ph ph-list text-2xl"></i></button>
         </div>
       </div>
-      <div id="mobile-market-row" class="md:hidden flex items-center justify-between px-8 border-t border-amber-300/15" style="overflow:hidden;max-height:64px;opacity:1;padding-top:10px;padding-bottom:18px;transition:max-height 0.3s ease,opacity 0.2s ease,padding 0.3s ease;">
-        <a href="https://www.tiktok.com/@btmusicdrive" target="_blank" rel="noopener" title="TikTok Shop" class="inline-flex p-[2px] rounded-full border border-amber-300/40 hover:border-amber-300/80 transition-colors">
-          <img src="images/tiktok.webp" alt="TikTok Shop btmusicdrive" class="w-8 h-8 rounded-full" loading="lazy">
-        </a>
-        <a href="https://shopee.co.th/shop/134575937" target="_blank" rel="noopener" title="Shopee" class="inline-flex p-[2px] rounded-full border border-amber-300/40 hover:border-amber-300/80 transition-colors">
-          <img src="images/shopeer.webp" alt="Shopee btmusicdrive" class="w-8 h-8 rounded-full" loading="lazy">
-        </a>
-        <a href="https://www.lazada.co.th/shop/buythrrm1992/" target="_blank" rel="noopener" title="Lazada" class="inline-flex p-[2px] rounded-full border border-amber-300/40 hover:border-amber-300/80 transition-colors">
-          <img src="images/lazada.webp" alt="Lazada btmusicdrive" class="w-8 h-8 rounded-full" loading="lazy">
-        </a>
-      </div>
     </div>
   </nav>
   <div id="search-overlay-backdrop" class="fixed inset-0 bg-black/60 z-[100] hidden"></div>
@@ -1712,17 +1701,14 @@ function _setupSharedEvents() {
   });
 
   if (navbar) {
-    const _mRow = document.getElementById('mobile-market-row');
     window.addEventListener('scroll', () => {
       const _scrolled = window.scrollY > 10;
       if (_scrolled) {
         navbar.classList.add('shadow-lg', 'backdrop-blur-sm');
         navbar.style.background = 'rgba(18,11,6,0.94)';
-        if (_mRow) { _mRow.style.maxHeight = '0'; _mRow.style.opacity = '0'; _mRow.style.paddingTop = '0'; _mRow.style.paddingBottom = '0'; }
       } else {
         navbar.classList.remove('shadow-lg', 'backdrop-blur-sm');
         navbar.style.background = '';
-        if (_mRow) { _mRow.style.maxHeight = '64px'; _mRow.style.opacity = '1'; _mRow.style.paddingTop = '10px'; _mRow.style.paddingBottom = '18px'; }
       }
     }, { passive: true });
   }
