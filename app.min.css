@@ -243,7 +243,7 @@ body {
     #navbar > div > div { position: relative; }
     #navbar > div > div > a:first-child {
         position: absolute;
-        left: 2.75rem;
+        left: 3.25rem;
         top: 50%;
         transform: translateY(-50%);
     }
