@@ -257,6 +257,13 @@ body {
     body:has(#mobile-product-bar) #navbar > div > div > a:first-child { left: 3.25rem; }
     body:has(#mobile-product-bar) #mobile-search-form { left: 6.25rem; right: 0; }
     body:has(#mobile-product-bar) #mobile-top-actions { display: none; }
+
+    /* ซ่อนน้องแชทลอย (ใช้ปุ่มแชทบนแถบบนแทน) — ไอคอน Messenger/LINE เด้งลงมาใต้แถบบน
+       !important ทับ inline right/bottom จากตำแหน่งที่ลากไว้ (btChatPos) */
+    #bt-chat-toggle { display: none !important; }
+    body:not(:has(#mobile-product-bar)) #bt-chat-widget {
+        top: 72px; bottom: auto !important; right: 12px !important;
+    }
 }
 
 #navbar-search-bar {
