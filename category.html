@@ -81,7 +81,8 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
         .animate-fade-in-up { animation: fadeInUp 0.5s ease forwards; opacity: 0; }
         /* หมวดที่มีแบนเนอร์มือถือ (imageUrlMobile) — มือถือแสดงสัดส่วนแนวตั้งตามรูป ไม่ crop เหลือแถบบาง */
         @media (max-width: 767px) {
-            #banner-box.has-mobile-banner { aspect-ratio: 1122 / 1402; max-height: 70vh; }
+            /* width:100% กัน max-height ถูกแปลงผ่าน aspect-ratio เป็น max-width (กล่องหดเหลือครึ่งจอบนจอเตี้ย) */
+            #banner-box.has-mobile-banner { width: 100%; aspect-ratio: 1122 / 1402; max-height: 70vh; }
         }
         .cat-chip-active { background: linear-gradient(135deg, var(--gold-hi), var(--gold)); color: #1a1206; border-color: var(--gold); }
     </style>
