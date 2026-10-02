@@ -135,6 +135,10 @@ function _navbarHTML() {
           <img src="images/logo.webp" alt="" class="h-9 w-9 rounded-full mr-2">
           <span class="hidden md:inline font-bold text-xl tracking-tight text-white">btmusicdrive</span>
         </a>
+        <form id="mobile-search-form" role="search" class="md:hidden absolute top-1/2 -translate-y-1/2 left-[7.25rem] right-4 flex items-center gap-2 h-10 px-3 bg-white rounded-xl shadow-sm">
+          <i class="ph ph-magnifying-glass text-xl text-gray-500 shrink-0"></i>
+          <input type="search" id="mobile-search-input" enterkeyhint="search" placeholder="ค้นหาเพลง ศิลปิน..." autocomplete="off" aria-label="ค้นหาสินค้า" class="flex-1 min-w-0 bg-transparent text-gray-900 placeholder-gray-400 text-base outline-none">
+        </form>
         <div class="hidden md:flex flex-1 items-center justify-center gap-1 px-6" id="desktop-nav"></div>
         <div class="hidden md:flex items-center">
           <a href="/admin" id="admin-nav-link" class="hidden text-gray-300 hover:text-primary transition-colors font-medium flex items-center gap-1 text-sm mr-4">
@@ -509,10 +513,6 @@ function _mobileBottomNavHTML() {
         <i class="ph ph-storefront" style="font-size:21px;line-height:1;"></i>
         <span style="font-size:9px;letter-spacing:0.04em;font-weight:500;">ร้านค้า</span>
       </a>
-      <button id="bnav-search-btn" class="flex flex-col items-center justify-center flex-1 gap-[3px]" style="background:none;border:none;cursor:pointer;color:#7a7163;" aria-label="ค้นหาสินค้า">
-        <i class="ph ph-magnifying-glass" style="font-size:21px;line-height:1;"></i>
-        <span style="font-size:9px;letter-spacing:0.04em;font-weight:500;">ค้นหา</span>
-      </button>
       <a href="/cart" id="bnav-cart-btn" class="flex flex-col items-center justify-center flex-1 gap-[3px] relative no-underline" style="color:#7a7163;" aria-label="ตะกร้าสินค้า">
         <div class="relative flex-shrink-0" style="width:28px;height:21px;display:flex;align-items:center;justify-content:center;">
           <i class="ph ph-shopping-cart" style="font-size:21px;line-height:1;"></i>
@@ -1688,7 +1688,16 @@ function _setupSharedEvents() {
     if (_searchInput) _searchInput.value = '';
   }
   _searchBtn?.addEventListener('click', _openSearch);
-  document.getElementById('bnav-search-btn')?.addEventListener('click', _openSearch);
+  // Mobile inline search box (navbar)
+  document.getElementById('mobile-search-form')?.addEventListener('submit', e => {
+    e.preventDefault();
+    const input = document.getElementById('mobile-search-input');
+    const q = input?.value.trim();
+    if (!q) return;
+    if (typeof fbq === 'function') fbq('track', 'Search', { search_string: q });
+    input.blur();
+    window.location.href = _url(`/shop?search=${encodeURIComponent(q)}`);
+  });
   _searchClose?.addEventListener('click', _closeSearch);
   _searchBackdrop?.addEventListener('click', _closeSearch);
   _searchInput?.addEventListener('keydown', e => {
