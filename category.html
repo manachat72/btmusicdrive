@@ -16,7 +16,7 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
 <base href="/">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="app.min.css?v=08883bc4">
+    <link rel="stylesheet" href="app.min.css?v=3a1a7651">
     <meta name="theme-color" content="#8B7355">
     <link rel="icon" type="image/webp" href="images/logo.webp">
     <title>หมวดหมู่ — Bt music drive</title>
@@ -150,8 +150,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             }catch(e){}})();
             </script>
             <!-- Category Chips -->
-            <div class="flex items-center gap-3 overflow-x-auto scrollbar-hide p-1" id="cat-chips">
+            <div class="scroll-row">
+            <div class="scroll-row-track flex items-center gap-3 overflow-x-auto scrollbar-hide p-1" id="cat-chips">
                 <!-- Populated by JS -->
+            </div>
+            <button type="button" class="scroll-row-btn scroll-row-prev" data-dir="-1" aria-label="เลื่อนซ้าย"><i class="ph ph-caret-left"></i></button><button type="button" class="scroll-row-btn scroll-row-next" data-dir="1" aria-label="เลื่อนขวา"><i class="ph ph-caret-right"></i></button>
             </div>
         </div>
     </section>
@@ -192,7 +195,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- Shared Footer -->
     <div id="site-footer"></div>
 
-    <script src="components.min.js?v=ccfb41b1"></script>
+    <script src="components.min.js?v=ef9f92e3"></script>
     <script>
     // ── Category Page Logic ──────────────────────────────────────────
     const LS_CATEGORIES_KEY = 'btmusicdrive_categories';
@@ -383,6 +386,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             html += catTile(getCatUrl(cat), cat, CAT_TILE_ICONS[cat], savedCat?.icon || 'ph ph-music-notes', cat === activeCat);
         });
         container.innerHTML = html;
+        // เลื่อนให้หมวดที่เปิดอยู่มาอยู่กลางแถว (ไม่ตกขอบจอจนไม่รู้ว่าอยู่หมวดไหน)
+        const active = container.querySelector('[aria-current]');
+        if (active) container.scrollLeft = active.offsetLeft - (container.clientWidth - active.offsetWidth) / 2;
     }
 
     function getFilteredCatProducts() {

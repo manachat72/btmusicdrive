@@ -1758,8 +1758,30 @@ function _setupSharedEvents() {
   }
 }
 
+// แถวเลื่อนแนวนอน (.scroll-row > .scroll-row-track) — ขอบจาง + ปุ่ม ‹ › โผล่เฉพาะเมื่อยังเลื่อนไปทางนั้นได้
+function _initScrollRows() {
+  document.querySelectorAll('.scroll-row').forEach(row => {
+    const track = row.querySelector('.scroll-row-track');
+    if (!track || row._scrollRow) return;
+    row._scrollRow = true;
+    const update = () => {
+      const max = track.scrollWidth - track.clientWidth;
+      row.classList.toggle('can-prev', track.scrollLeft > 4);
+      row.classList.toggle('can-next', track.scrollLeft < max - 4);
+    };
+    track.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    new MutationObserver(update).observe(track, { childList: true });
+    row.querySelectorAll('.scroll-row-btn').forEach(btn => btn.addEventListener('click', () => {
+      track.scrollBy({ left: track.clientWidth * 0.7 * Number(btn.dataset.dir), behavior: 'smooth' });
+    }));
+    update();
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   if (_IS_LIVE_SERVER) _patchLinks(document);
+  _initScrollRows();
   // Don't block on nav menus — let them resolve async alongside other init.
   _loadNavMenus();
   _setupSharedEvents();

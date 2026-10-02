@@ -1094,3 +1094,14 @@ body {
 #bnav-cart-amount {
     color: #e8d8bf !important;
 }
+
+/* แถวเลื่อนแนวนอน (_initScrollRows ใน components.js) — บอกว่ายังมีรายการเหลือ */
+.scroll-row { position: relative; }
+.scroll-row::before, .scroll-row::after { content: ''; position: absolute; top: 0; bottom: 0; width: 48px; pointer-events: none; opacity: 0; transition: opacity .2s; z-index: 1; }
+.scroll-row::before { left: 0; background: linear-gradient(to right, var(--scroll-fade, #fff), transparent); }
+.scroll-row::after { right: 0; background: linear-gradient(to left, var(--scroll-fade, #fff), transparent); }
+.scroll-row.can-prev::before, .scroll-row.can-next::after { opacity: 1; }
+.scroll-row-btn { position: absolute; top: 50%; transform: translateY(-50%); z-index: 2; width: 32px; height: 32px; border-radius: 9999px; background: #fff; color: #0F172A; box-shadow: 0 2px 8px rgba(15,23,42,.2); display: flex; align-items: center; justify-content: center; font-size: 16px; opacity: 0; pointer-events: none; transition: opacity .2s; }
+.scroll-row-prev { left: 0; }
+.scroll-row-next { right: 0; }
+.scroll-row.can-prev .scroll-row-prev, .scroll-row.can-next .scroll-row-next { opacity: 1; pointer-events: auto; }
