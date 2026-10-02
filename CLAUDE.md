@@ -230,6 +230,7 @@ GA4_PROPERTY_ID="533617757"       # GOOGLE_CLIENT_SECRET ไม่จำเป�
 - **Social OG ฝั่ง server**: social bot UA ที่เข้า `/product/:slug` ถูก route ไป `server/src/lib/socialOg.ts` render OG จาก DB (FB/LINE ไม่รัน JS) — Googlebot ได้ static ปกติ
 - **OG image กลาง**: `images/og-cover.jpg` (1200×630) — FB ไม่รองรับ webp/avif **ห้ามเปลี่ยนกลับ**
 - **Chat widget** (2026-07-25): `#bt-chat-widget` ใน components.js ลากย้ายได้ (pointer events, threshold 8px แยกแตะ/ลาก) — ตำแหน่งเก็บ localStorage `btChatPos` `{r,b}` px จากขวา/ล่าง · ห้ามลบ `touch-action:none` บนปุ่ม ไม่งั้นลากบนมือถือไม่ได้
+- **Mobile header** (2026-10-02): แถบบน = [โลโก้][ช่องค้นหา `#mobile-search-form`][ตะกร้า `#mtop-cart-btn`][แชท] · แถบล่าง = เมนู/ร้านค้า/บัญชี (ปุ่มเมนู `#bnav-menu-btn`) · ตำแหน่งคุมใน `style.css` (`@media max-width:767px`) · **หน้าสินค้า** (มี `#mobile-product-bar` ซึ่งซ่อนแถบล่าง) ใช้ `body:has(#mobile-product-bar)` คืนปุ่ม ☰ ไว้บน + ซ่อนตะกร้า/แชทบน — แก้ layout ต้องดูทั้ง 2 กรณี
 - **Product Studio** (2026-08-18): `npm run mkt:studio` → http://localhost:4777 — ลงสินค้าใหม่ / แก้ไขสินค้าเดิม / QR ครบในที่เดียว
   - ไฟล์: `scripts/listing-studio.js` (server) + `scripts/lib/studio-page.js` (HTML/CSS) + `scripts/lib/studio-client.js` (client JS แยกไฟล์ — **ห้ามยัด client JS กลับเข้า template literal** จะต้อง escape `${}` ทุกจุด)
   - SEO engine `scripts/lib/seo.js` — สร้างชื่อ/รายละเอียด/meta/tags/slug + ดึงชื่อศิลปินจาก tracklist ทำ long-tail keyword + validate ความยาว/ซ้ำ · **155 ตัวแรกของ description = meta description จริง** (inline-product-jsonld ตัดตรงนั้น)
