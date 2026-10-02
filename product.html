@@ -17,7 +17,7 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
 <base href="/">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="app.min.css?v=b2ed229a">
+    <link rel="stylesheet" href="app.min.css?v=d8e27021">
   <meta name="theme-color" content="#8B7355">
   <link rel="icon" type="image/webp" href="images/logo.webp">
 
@@ -514,13 +514,32 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <!-- Buttons -->
           <div class="flex flex-col sm:flex-row gap-3 mb-4">
             <button onclick="addToCartFromDetail()"
-              class="btn-add-cart flex-1 bg-secondary text-white font-bold py-3.5 px-4 sm:px-6 rounded-xl flex items-center justify-center gap-2 text-base shadow-md">
+              class="btn-add-cart hidden sm:flex flex-1 bg-secondary text-white font-bold py-3.5 px-4 sm:px-6 rounded-xl items-center justify-center gap-2 text-base shadow-md">
               <i class="ph ph-shopping-cart text-xl text-[#f4ce76]"></i> เพิ่มในตะกร้า
             </button>
             <button onclick="buyNow()"
-              class="btn-buy-now btn-luxe flex-1 font-bold py-3.5 px-4 sm:px-6 rounded-xl flex items-center justify-center gap-2 text-base shadow-md">
-              <i class="ph ph-lightning text-xl"></i> ซื้อเลย
+              class="btn-buy-now flex-1 bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-[#1a1206] font-['Kanit'] font-semibold tracking-wide py-3.5 px-4 sm:px-6 rounded-xl flex items-center justify-center gap-2 text-xl sm:text-lg shadow-md">
+              <i class="ph-fill ph-lightning text-2xl sm:text-xl"></i> ซื้อเลย
             </button>
+          </div>
+
+          <!-- ร้านค้าอื่น (มือถือ: ย้ายขึ้นมาใต้ปุ่มซื้อ) -->
+          <div class="mb-5 sm:hidden">
+            <p class="text-xs text-gray-400 mb-2 font-medium">ช้อปได้ที่</p>
+            <div class="flex items-center gap-3">
+              <a href="https://www.tiktok.com/@btmusicdrive" target="_blank" rel="noopener" class="shop-link"
+                title="TikTok Shop">
+                <img src="images/tiktok.webp" alt="TikTok" class="w-14 h-14 object-contain" loading="lazy">
+              </a>
+              <a href="https://shopee.co.th/shop/134575937" target="_blank" rel="noopener" class="shop-link"
+                title="Shopee">
+                <img src="images/shopeer.webp" alt="Shopee" class="w-14 h-14 object-contain" loading="lazy">
+              </a>
+              <a href="https://www.lazada.co.th/shop/buythrrm1992/" target="_blank" rel="noopener" class="shop-link"
+                title="Lazada">
+                <img src="images/lazada.webp" alt="Lazada" class="w-14 h-14 object-contain" loading="lazy">
+              </a>
+            </div>
           </div>
 
           <!-- Wishlist Button -->
@@ -609,8 +628,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <!-- Tags -->
           <div id="p-tags" class="flex flex-wrap gap-2 mb-4"></div>
 
-          <!-- ร้านค้าอื่น -->
-          <div class="pt-4 border-t border-gray-100">
+          <!-- ร้านค้าอื่น (เดสก์ท็อป) -->
+          <div class="hidden sm:block pt-4 border-t border-gray-100">
             <p class="text-xs text-gray-400 mb-2 font-medium">ช้อปได้ที่</p>
             <div class="flex items-center gap-3">
               <a href="https://www.tiktok.com/@btmusicdrive" target="_blank" rel="noopener" class="shop-link"
