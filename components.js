@@ -135,7 +135,7 @@ function _navbarHTML() {
           <img src="images/logo.webp" alt="" class="h-9 w-9 rounded-full mr-2">
           <span class="hidden md:inline font-bold text-xl tracking-tight text-white">btmusicdrive</span>
         </a>
-        <form id="mobile-search-form" role="search" class="md:hidden absolute top-1/2 -translate-y-1/2 left-[7.25rem] right-4 flex items-center gap-2 h-10 px-3 bg-white rounded-xl shadow-sm">
+        <form id="mobile-search-form" role="search" class="md:hidden absolute top-1/2 -translate-y-1/2 left-[6.25rem] right-0 flex items-center gap-2 h-10 px-3 bg-white rounded-xl shadow-sm">
           <i class="ph ph-magnifying-glass text-xl text-gray-500 shrink-0"></i>
           <input type="search" id="mobile-search-input" enterkeyhint="search" placeholder="ค้นหาเพลง ศิลปิน..." autocomplete="off" aria-label="ค้นหาสินค้า" class="flex-1 min-w-0 bg-transparent text-gray-900 placeholder-gray-400 text-base outline-none">
         </form>
