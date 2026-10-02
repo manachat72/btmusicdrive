@@ -60,7 +60,16 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
       font-family: 'Inter', sans-serif;
     }
 
-    /* Gallery */
+    /* Gallery — ซ่อน scrollbar ของแถบรูปย่อ แต่ยังปัด/เลื่อนได้ */
+    #thumbs {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    #thumbs::-webkit-scrollbar {
+      display: none;
+    }
+
     .thumb {
       border: 2px solid transparent;
       cursor: pointer;
@@ -474,7 +483,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <button class="gallery-nav left-3" onclick="prevImage()"><i class="ph ph-caret-left text-lg"></i></button>
             <button class="gallery-nav right-3" onclick="nextImage()"><i class="ph ph-caret-right text-lg"></i></button>
           </div>
-          <div id="thumbs" class="flex gap-3 mt-4 overflow-x-auto pb-2"></div>
+          <div id="thumbs" class="flex gap-3 mt-4 overflow-x-auto"></div>
         </div>
 
         <!-- Info -->
