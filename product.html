@@ -512,18 +512,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           </div>
 
           <!-- Buttons -->
-          <div class="flex flex-col sm:flex-row gap-3 mb-4">
+          <!-- มือถือซ่อนปุ่มนี้ทั้งคู่ — ใช้แถบล่าง (mobile-product-bar) แทน -->
+          <div class="hidden sm:flex flex-row gap-3 mb-4">
             <button onclick="addToCartFromDetail()"
-              class="btn-add-cart hidden sm:flex flex-1 bg-secondary text-white font-bold py-3.5 px-4 sm:px-6 rounded-xl items-center justify-center gap-2 text-base shadow-md">
+              class="btn-add-cart flex-1 bg-secondary text-white font-bold py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 text-base shadow-md">
               <i class="ph ph-shopping-cart text-xl text-[#f4ce76]"></i> เพิ่มในตะกร้า
             </button>
             <button onclick="buyNow()"
-              class="btn-buy-now flex-1 bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-[#1a1206] font-['Kanit'] font-semibold tracking-wide py-3.5 px-4 sm:px-6 rounded-xl flex items-center justify-center gap-2 text-xl sm:text-lg shadow-md">
-              <i class="ph-fill ph-lightning text-2xl sm:text-xl"></i> ซื้อเลย
+              class="btn-buy-now flex-1 bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-[#1a1206] font-['Kanit'] font-semibold tracking-wide py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 text-lg shadow-md">
+              <i class="ph-fill ph-lightning text-xl"></i> ซื้อเลย
             </button>
           </div>
 
-          <!-- ร้านค้าอื่น (มือถือ: ย้ายขึ้นมาใต้ปุ่มซื้อ) -->
+          <!-- ร้านค้าอื่น (มือถือ: ย้ายขึ้นมาแทนที่ปุ่ม) -->
           <div class="mb-5 sm:hidden">
             <p class="text-xs text-gray-400 mb-2 font-medium">ช้อปได้ที่</p>
             <div class="flex items-center gap-3">
@@ -2046,7 +2047,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </button>
       <button type="button" onclick="buyNow()"
         class="flex-1 flex flex-col items-center justify-center bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-gray-900 active:brightness-95">
-        <span class="text-xs font-semibold leading-tight">ซื้อเลย</span>
+        <span class="font-['Kanit'] text-[15px] font-semibold tracking-wide leading-tight flex items-center gap-1"><i class="ph-fill ph-lightning text-base"></i>ซื้อเลย</span>
         <span class="flex items-baseline gap-1.5 leading-tight">
           <span id="pbar-price" class="text-lg font-bold text-red-600"></span>
           <span id="pbar-original" class="hidden text-xs text-gray-700 line-through"></span>
