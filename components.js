@@ -506,16 +506,34 @@ function _mobileBottomNavHTML() {
         <i class="ph ph-list" style="font-size:21px;line-height:1;"></i>
         <span style="font-size:9px;letter-spacing:0.04em;font-weight:500;">เมนู</span>
       </button>
-      <a href="/shop" class="flex flex-col items-center justify-center flex-1 gap-[3px] no-underline" style="color:#7a7163;">
-        <i class="ph ph-storefront" style="font-size:21px;line-height:1;"></i>
-        <span style="font-size:9px;letter-spacing:0.04em;font-weight:500;">ร้านค้า</span>
-      </a>
+      <button type="button" id="bnav-cat-btn" class="flex flex-col items-center justify-center flex-1 gap-[3px]" style="background:none;border:none;cursor:pointer;color:#7a7163;" aria-label="หมวดหมู่สินค้า" aria-expanded="false" aria-controls="bnav-cat-sheet">
+        <i class="ph ph-squares-four" style="font-size:21px;line-height:1;"></i>
+        <span style="font-size:9px;letter-spacing:0.04em;font-weight:500;">หมวดหมู่</span>
+      </button>
       <button id="bnav-account-btn" class="flex flex-col items-center justify-center flex-1 gap-[3px]" style="background:none;border:none;cursor:pointer;">
         <i class="ph ph-user"></i>
         <span class="bnav-account-label">บัญชี</span>
       </button>
     </div>
   </nav>
+
+  <!-- ── Category sheet (เปิดจากปุ่ม "หมวดหมู่" แถบล่าง) — รูปโหลดตอนเปิดครั้งแรก (data-src) ── -->
+  <div id="bnav-cat-overlay" class="fixed inset-0 z-[48] hidden md:hidden" style="background:rgba(0,0,0,0.6);"></div>
+  <div id="bnav-cat-sheet" role="dialog" aria-label="หมวดหมู่สินค้า" class="fixed inset-x-0 z-[49] md:hidden translate-y-[110%] transition-transform duration-300 ease-out rounded-t-3xl px-4 pt-4 pb-5" style="bottom:60px;max-height:calc(100vh - 140px);overflow-y:auto;background:linear-gradient(180deg,#1a130c 0%,#0d0906 100%);border-top:1px solid rgba(212,175,82,0.25);box-shadow:0 -12px 40px rgba(0,0,0,0.5);">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="font-['Kanit'] font-semibold text-lg text-[#f4ce76]">หมวดหมู่สินค้า</h2>
+      <button type="button" id="bnav-cat-close" class="w-8 h-8 flex items-center justify-center rounded-full text-gray-300 hover:bg-white/10" aria-label="ปิด"><i class="ph ph-x text-xl"></i></button>
+    </div>
+    <div class="grid grid-cols-3 gap-3">
+      ${[['ทั้งหมด','all','/shop'],['ลูกทุ่ง','lukthung'],['เพื่อชีวิต','phuea-chiwit'],['ธรรมะ','dhamma'],['เพลงสตริง','phleng-satring'],['เพลงสากล','international'],['แดนซ์','dance'],['เพลงใต้','phleng-tai'],['ลูกกรุง','luk-krung']].map(([name, icon, href]) => `
+      <a href="${href || '/category/' + icon}" class="block overflow-hidden rounded-[1.1rem] bg-white shadow-md ring-1 ring-white/40 active:scale-95 transition-transform" aria-label="${name}">
+        <picture class="block aspect-square">
+          <source data-srcset="/images/category/icons/${icon}.avif" type="image/avif">
+          <img data-src="/images/category/icons/${icon}.webp" alt="${name}" class="h-full w-full object-cover" decoding="async">
+        </picture>
+      </a>`).join('')}
+    </div>
+  </div>
 
   <!-- Backdrop -->
   <div id="bnav-account-overlay" class="fixed inset-0 z-[55] hidden md:hidden" style="background:rgba(0,0,0,0.72);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);"></div>
@@ -1624,6 +1642,32 @@ function _setupSharedEvents() {
 
   mobileBtn?.addEventListener('click', () => _toggleMobileMenu());
   document.getElementById('bnav-menu-btn')?.addEventListener('click', () => _toggleMobileMenu());
+
+  // Bottom nav: หมวดหมู่ sheet
+  const _catBtn = document.getElementById('bnav-cat-btn');
+  const _catSheet = document.getElementById('bnav-cat-sheet');
+  const _catOverlay = document.getElementById('bnav-cat-overlay');
+  function _toggleCatSheet(forceOpen) {
+    if (!_catSheet) return;
+    const isOpen = !_catSheet.classList.contains('translate-y-[110%]');
+    const open = forceOpen !== undefined ? forceOpen : !isOpen;
+    if (open === isOpen) return;   // ไม่เปลี่ยนสถานะ → อย่าไปแตะ body.overflow ของเมนูอื่น
+    if (open) {
+      _catSheet.querySelectorAll('[data-src]').forEach(el => { el.src = el.dataset.src; el.removeAttribute('data-src'); });
+      _catSheet.querySelectorAll('[data-srcset]').forEach(el => { el.srcset = el.dataset.srcset; el.removeAttribute('data-srcset'); });
+    }
+    _catSheet.classList.toggle('translate-y-[110%]', !open);
+    _catOverlay?.classList.toggle('hidden', !open);
+    document.body.style.overflow = open ? 'hidden' : '';
+    _catBtn?.setAttribute('aria-expanded', String(open));
+    _catBtn?.classList.toggle('active-tab', open);
+  }
+  _catBtn?.addEventListener('click', () => _toggleCatSheet());
+  _catOverlay?.addEventListener('click', () => _toggleCatSheet(false));
+  document.getElementById('bnav-cat-close')?.addEventListener('click', () => _toggleCatSheet(false));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') _toggleCatSheet(false); });
+  // ปิด sheet ก่อน (capture) แล้วค่อยให้เมนู/บัญชีเปิด + ล็อก scroll ของมันเอง
+  ['bnav-menu-btn', 'bnav-account-btn'].forEach(id => document.getElementById(id)?.addEventListener('click', () => _toggleCatSheet(false), true));
   document.getElementById('mobile-menu-close')?.addEventListener('click', () => _toggleMobileMenu(false));
   document.getElementById('mobile-menu-overlay')?.addEventListener('click', () => _toggleMobileMenu(false));
 
