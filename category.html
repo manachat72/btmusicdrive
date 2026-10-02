@@ -16,7 +16,7 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
 <base href="/">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="app.min.css?v=63cc54ce">
+    <link rel="stylesheet" href="app.min.css?v=08883bc4">
     <meta name="theme-color" content="#8B7355">
     <link rel="icon" type="image/webp" href="images/logo.webp">
     <title>หมวดหมู่ — Bt music drive</title>
@@ -84,6 +84,8 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
             /* width:100% กัน max-height ถูกแปลงผ่าน aspect-ratio เป็น max-width (กล่องหดเหลือครึ่งจอบนจอเตี้ย) */
             #banner-box.has-mobile-banner { width: 100%; aspect-ratio: 1122 / 1402; max-height: 70vh; }
         }
+        #cat-chips { scrollbar-width: none; -ms-overflow-style: none; }
+        #cat-chips::-webkit-scrollbar { display: none; }
         .cat-chip-active { background: linear-gradient(135deg, var(--gold-hi), var(--gold)); color: #1a1206; border-color: var(--gold); }
     </style>
     <!-- INLINE_CATEGORIES_START -->
@@ -148,7 +150,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             }catch(e){}})();
             </script>
             <!-- Category Chips -->
-            <div class="flex items-center gap-3 overflow-x-auto scrollbar-hide" id="cat-chips">
+            <div class="flex items-center gap-3 overflow-x-auto scrollbar-hide p-1" id="cat-chips">
                 <!-- Populated by JS -->
             </div>
         </div>
@@ -357,19 +359,28 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
 
+    // ไอคอนหมวด (ชุดเดียวกับหน้าแรก — มีชื่อหมวดในรูปแล้ว) · หมวดที่ไม่มีรูปใช้ Phosphor + ชื่อ
+    const CAT_TILE_ICONS = {
+        'ทั้งหมด': 'all', 'ลูกทุ่ง': 'lukthung', 'เพื่อชีวิต': 'phuea-chiwit', 'ธรรมะ': 'dhamma',
+        'เพลงสตริง': 'phleng-satring', 'เพลงสากล': 'international', 'แดนซ์': 'dance',
+        'เพลงใต้': 'phleng-tai', 'ลูกกรุง': 'luk-krung'
+    };
+    function catTile(href, name, iconSlug, phIcon, isActive) {
+        const ring = isActive ? 'ring-2 ring-amber-400 shadow-lg' : 'ring-1 ring-gray-200 hover:ring-primary';
+        const body = iconSlug
+            ? `<picture class="block h-full w-full"><source srcset="images/category/icons/${iconSlug}.avif" type="image/avif"><img src="images/category/icons/${iconSlug}.webp" alt="${name}" class="h-full w-full object-cover" loading="lazy" decoding="async" width="80" height="80"></picture>`
+            : `<span class="flex h-full w-full flex-col items-center justify-center gap-1 bg-white text-gray-700"><i class="${phIcon} text-2xl md:text-3xl"></i><span class="text-[10px] md:text-xs font-semibold leading-tight text-center px-1">${name}</span></span>`;
+        return `<a href="${href}" class="flex-shrink-0 block w-16 h-16 md:w-20 md:h-20 overflow-hidden rounded-2xl bg-white transition-all hover:-translate-y-0.5 ${ring}" title="${name}" aria-label="${name}"${href === '/shop' ? '' : ` data-cat="${name}"`}${isActive ? ' aria-current="page"' : ''}>${body}</a>`;
+    }
+
     function renderCatChips() {
         const container = document.getElementById('cat-chips');
         const savedCats = getCategoriesFromStorage();
 
-        let html = `<a href="/shop" class="flex-shrink-0 px-4 py-2 rounded-full border border-gray-200 text-sm font-medium text-gray-600 hover:border-primary hover:text-primary transition-all">ทั้งหมด</a>`;
+        let html = catTile('/shop', 'ทั้งหมด', CAT_TILE_ICONS['ทั้งหมด'], '', false);
         allCats.forEach(cat => {
-            const isActive = cat === activeCat;
             const savedCat = savedCats.find(c => c.name === cat);
-            const icon = savedCat?.icon || '';
-            const catUrl = getCatUrl(cat);
-            html += `<a href="${catUrl}" class="flex-shrink-0 px-4 py-2 rounded-full border text-sm font-medium transition-all ${isActive ? 'cat-chip-active' : 'border-gray-200 text-gray-600 hover:border-primary hover:text-primary'}" data-cat="${cat}">
-                ${icon ? `<i class="${icon} mr-1"></i>` : ''}${cat}
-            </a>`;
+            html += catTile(getCatUrl(cat), cat, CAT_TILE_ICONS[cat], savedCat?.icon || 'ph ph-music-notes', cat === activeCat);
         });
         container.innerHTML = html;
     }
