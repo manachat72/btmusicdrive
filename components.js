@@ -148,7 +148,7 @@ function _navbarHTML() {
             <i class="ph-fill ph-chat-circle-dots text-xl"></i>
           </button>
         </div>
-        <div class="hidden md:flex flex-1 items-center justify-center gap-1 px-6" id="desktop-nav"></div>
+        <div class="hidden md:flex flex-1 items-center justify-center gap-0 lg:gap-1 px-2 lg:px-6" id="desktop-nav"></div>
         <div class="hidden md:flex items-center">
           <a href="/admin" id="admin-nav-link" class="hidden text-gray-300 hover:text-primary transition-colors font-medium flex items-center gap-1 text-sm mr-4">
             <i class="ph ph-shield-check text-base"></i> Admin
@@ -812,17 +812,17 @@ function _renderNavMenus(menus) {
   if (!desktop) return;
 
   desktop.innerHTML = menus.map(m => {
-    const icon = m.icon ? `<i class="${_escapeHtml(m.icon)} text-base"></i> ` : '';
+    const icon = m.icon ? `<i class="${_escapeHtml(m.icon)} text-base hidden lg:inline"></i> ` : '';
     if (m.children && m.children.length > 0) {
       const sub = m.children.map(c =>
         `<a href="${_escapeHtml(c.url)}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary">${c.icon ? `<i class="${_escapeHtml(c.icon)}"></i> ` : ''}${_escapeHtml(c.label)}</a>`
       ).join('');
       return `<div class="relative group">
-        <button class="text-gray-300 hover:text-primary transition-colors font-medium flex items-center gap-1 px-3 py-2 rounded-lg hover:bg-white/10">${icon}${_escapeHtml(m.label)} <i class="ph ph-caret-down text-xs ml-1"></i></button>
+        <button class="text-gray-300 hover:text-primary transition-colors font-medium flex items-center gap-1 whitespace-nowrap px-2 lg:px-3 py-2 rounded-lg hover:bg-white/10">${icon}${_escapeHtml(m.label)} <i class="ph ph-caret-down text-xs ml-1"></i></button>
         <div class="absolute left-0 top-full mt-1 w-52 bg-white rounded-xl shadow-xl border border-gray-100 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">${sub}</div>
       </div>`;
     }
-    return `<a href="${_escapeHtml(m.url)}" class="text-gray-300 hover:text-primary transition-colors font-medium flex items-center gap-1 px-3 py-2 rounded-lg hover:bg-white/10">${icon}${_escapeHtml(m.label)}</a>`;
+    return `<a href="${_escapeHtml(m.url)}" class="text-gray-300 hover:text-primary transition-colors font-medium flex items-center gap-1 whitespace-nowrap px-2 lg:px-3 py-2 rounded-lg hover:bg-white/10">${icon}${_escapeHtml(m.label)}</a>`;
   }).join('');
 
   if (_IS_LIVE_SERVER && desktop) _patchLinks(desktop);
