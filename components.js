@@ -135,10 +135,19 @@ function _navbarHTML() {
           <img src="images/logo.webp" alt="" class="h-9 w-9 rounded-full mr-2">
           <span class="hidden md:inline font-bold text-xl tracking-tight text-white">btmusicdrive</span>
         </a>
-        <form id="mobile-search-form" role="search" class="md:hidden absolute top-1/2 -translate-y-1/2 right-0 flex items-center gap-2 h-10 px-3 bg-white rounded-xl shadow-sm">
+        <form id="mobile-search-form" role="search" class="md:hidden absolute top-1/2 -translate-y-1/2 flex items-center gap-2 h-10 px-3 bg-white rounded-xl shadow-sm">
           <i class="ph ph-magnifying-glass text-xl text-gray-500 shrink-0"></i>
           <input type="search" id="mobile-search-input" enterkeyhint="search" placeholder="ค้นหาเพลง ศิลปิน..." autocomplete="off" aria-label="ค้นหาสินค้า" class="flex-1 min-w-0 bg-transparent text-gray-900 placeholder-gray-400 text-base outline-none">
         </form>
+        <div id="mobile-top-actions" class="md:hidden absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+          <a href="/cart" id="mtop-cart-btn" class="relative w-9 h-9 flex items-center justify-center text-[#e8c97a] no-underline" aria-label="ตะกร้าสินค้า">
+            <i class="ph ph-shopping-cart text-2xl"></i>
+            <span id="mtop-cart-count" class="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 rounded-full bg-red-600 text-white text-[10px] font-bold leading-none items-center justify-center" style="display:none;">0</span>
+          </a>
+          <button type="button" onclick="event.stopPropagation(); document.getElementById('bt-chat-toggle')?.click()" class="w-9 h-9 rounded-full flex items-center justify-center bg-gradient-to-br from-amber-300 to-amber-600 text-[#1a1206] shadow-sm" aria-label="แชทกับเรา">
+            <i class="ph-fill ph-chat-circle-dots text-xl"></i>
+          </button>
+        </div>
         <div class="hidden md:flex flex-1 items-center justify-center gap-1 px-6" id="desktop-nav"></div>
         <div class="hidden md:flex items-center">
           <a href="/admin" id="admin-nav-link" class="hidden text-gray-300 hover:text-primary transition-colors font-medium flex items-center gap-1 text-sm mr-4">
@@ -500,14 +509,6 @@ function _mobileBottomNavHTML() {
       <a href="/shop" class="flex flex-col items-center justify-center flex-1 gap-[3px] no-underline" style="color:#7a7163;">
         <i class="ph ph-storefront" style="font-size:21px;line-height:1;"></i>
         <span style="font-size:9px;letter-spacing:0.04em;font-weight:500;">ร้านค้า</span>
-      </a>
-      <a href="/cart" id="bnav-cart-btn" class="flex flex-col items-center justify-center flex-1 gap-[3px] relative no-underline" style="color:#7a7163;" aria-label="ตะกร้าสินค้า">
-        <div class="relative flex-shrink-0" style="width:28px;height:21px;display:flex;align-items:center;justify-content:center;">
-          <i class="ph ph-shopping-cart" style="font-size:21px;line-height:1;"></i>
-          <span id="bnav-cart-count" class="absolute flex items-center justify-center" style="top:-2px;right:-4px;min-width:14px;height:14px;padding:0 3px;font-size:7.5px;font-weight:700;color:#1a1408;background:#d4af52;border-radius:99px;display:none;">0</span>
-        </div>
-        <span id="bnav-cart-label" style="font-size:9px;letter-spacing:0.04em;font-weight:500;">ตะกร้า</span>
-        <span id="bnav-cart-amount" style="display:none;font-size:8px;line-height:1;font-weight:700;color:#C9A876;">฿0</span>
       </a>
       <button id="bnav-account-btn" class="flex flex-col items-center justify-center flex-1 gap-[3px]" style="background:none;border:none;cursor:pointer;">
         <i class="ph ph-user"></i>
@@ -1235,7 +1236,7 @@ function _updateCartUI() {
   }
 
   // Update bottom nav + product action bar cart count badges
-  ['bnav-cart-count', 'pbar-cart-count'].forEach(id => {
+  ['bnav-cart-count', 'pbar-cart-count', 'mtop-cart-count'].forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
     el.textContent = totalItems > 99 ? '99+' : totalItems;
@@ -1627,7 +1628,7 @@ function _setupSharedEvents() {
   document.getElementById('mobile-menu-overlay')?.addEventListener('click', () => _toggleMobileMenu(false));
 
   // Bottom nav events
-  const bnavCartBtn = document.getElementById('bnav-cart-btn');
+  const bnavCartBtn = document.getElementById('mtop-cart-btn');
   const bnavAccountBtn = document.getElementById('bnav-account-btn');
   const bnavLogoutBtn = document.getElementById('bnav-logout-btn');
   const bnavLoginBtn = document.getElementById('bnav-login-btn');

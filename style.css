@@ -246,12 +246,14 @@ body {
         top: 50%;
         transform: translateY(-50%);
     }
-    #mobile-search-form { left: 3rem; }
+    #mobile-search-form { left: 3rem; right: 5.375rem; }   /* เว้นที่ให้ [ตะกร้า][แชท] (#mobile-top-actions) */
     #mobile-menu-btn { display: none; }
 
+    /* หน้าสินค้า: แถบล่างมีแชท/ตะกร้าอยู่แล้ว → ซ่อนปุ่มบน คืนพื้นที่ให้ช่องค้นหา */
     body:has(#mobile-product-bar) #mobile-menu-btn { display: inline-block; }
     body:has(#mobile-product-bar) #navbar > div > div > a:first-child { left: 3.25rem; }
-    body:has(#mobile-product-bar) #mobile-search-form { left: 6.25rem; }
+    body:has(#mobile-product-bar) #mobile-search-form { left: 6.25rem; right: 0; }
+    body:has(#mobile-product-bar) #mobile-top-actions { display: none; }
 }
 
 #navbar-search-bar {
