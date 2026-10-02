@@ -235,13 +235,14 @@ body {
     box-shadow: 0 1px 0 rgba(212,175,82,0.12), 0 6px 24px rgba(0,0,0,0.35);
 }
 
-/* Brand centered on mobile (top bar shows brand alone), left on desktop */
+/* Mobile: โลโก้อย่างเดียว วางถัดจากปุ่มเมนู (ปุ่มเมนูอยู่ซ้ายสุด) · desktop: โลโก้+ชื่อ ซ้ายปกติ */
 @media (max-width: 767px) {
     #navbar > div > div { position: relative; }
     #navbar > div > div > a:first-child {
         position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
+        left: 2.75rem;
+        top: 50%;
+        transform: translateY(-50%);
     }
 }
 

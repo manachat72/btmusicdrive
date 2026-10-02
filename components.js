@@ -131,9 +131,9 @@ function _navbarHTML() {
   <nav class="bg-secondary shadow-sm fixed w-full z-50 top-0 transition-all duration-300" id="navbar">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between h-16 items-center">
-        <a href="/" class="flex-shrink-0 flex items-center cursor-pointer no-underline">
+        <a href="/" class="flex-shrink-0 flex items-center cursor-pointer no-underline" aria-label="btmusicdrive หน้าแรก">
           <img src="images/logo.webp" alt="" class="h-9 w-9 rounded-full mr-2">
-          <span class="font-bold text-xl tracking-tight text-white">btmusicdrive</span>
+          <span class="hidden md:inline font-bold text-xl tracking-tight text-white">btmusicdrive</span>
         </a>
         <div class="hidden md:flex flex-1 items-center justify-center gap-1 px-6" id="desktop-nav"></div>
         <div class="hidden md:flex items-center">
