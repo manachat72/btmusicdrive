@@ -17,7 +17,7 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
 <base href="/">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="app.min.css?v=d8e27021">
+    <link rel="stylesheet" href="app.min.css?v=5ef18c87">
   <meta name="theme-color" content="#8B7355">
   <link rel="icon" type="image/webp" href="images/logo.webp">
 
@@ -2042,7 +2042,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </button>
       <button type="button" onclick="addToCartFromDetail()"
         class="w-[20%] flex flex-col items-center justify-center gap-0.5 text-[#C9A876] border-l border-white/10 active:bg-white/5" aria-label="ใส่ตะกร้า">
-        <i class="ph ph-shopping-cart-simple text-[22px] leading-none"></i>
+        <span class="relative">
+          <i class="ph ph-shopping-cart-simple text-[22px] leading-none"></i>
+          <span id="pbar-cart-count" class="absolute -top-1.5 -right-2.5 min-w-[16px] h-4 px-1 rounded-full bg-red-600 text-white text-[10px] font-bold leading-none items-center justify-center" style="display:none;">0</span>
+        </span>
         <span class="text-[10px] font-medium">ใส่ตะกร้า</span>
       </button>
       <button type="button" onclick="buyNow()"
@@ -2059,7 +2062,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <!-- Shared Footer -->
   <div id="site-footer"></div>
 
-  <script src="components.min.js?v=5bd8f1a1"></script>
+  <script src="components.min.js?v=27520f62"></script>
 </body>
 
 </html>

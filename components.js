@@ -1247,12 +1247,13 @@ function _updateCartUI() {
     countEl.style.display = totalItems > 0 ? 'flex' : 'none';
   }
 
-  // Update bottom nav cart count badge
-  const bnavCount = document.getElementById('bnav-cart-count');
-  if (bnavCount) {
-    bnavCount.textContent = totalItems;
-    bnavCount.style.display = totalItems > 0 ? 'flex' : 'none';
-  }
+  // Update bottom nav + product action bar cart count badges
+  ['bnav-cart-count', 'pbar-cart-count'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = totalItems > 99 ? '99+' : totalItems;
+    el.style.display = totalItems > 0 ? 'flex' : 'none';
+  });
 
   const clearBtn = document.getElementById('clear-cart-btn');
 
