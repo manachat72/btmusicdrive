@@ -235,15 +235,23 @@ body {
     box-shadow: 0 1px 0 rgba(212,175,82,0.12), 0 6px 24px rgba(0,0,0,0.35);
 }
 
-/* Mobile: โลโก้อย่างเดียว วางถัดจากปุ่มเมนู (ปุ่มเมนูอยู่ซ้ายสุด) · desktop: โลโก้+ชื่อ ซ้ายปกติ */
+/* Mobile top bar: [โลโก้] [ช่องค้นหา] — ปุ่มเมนูย้ายไปแถบล่าง (#bnav-menu-btn)
+   ยกเว้นหน้าที่มีแถบสินค้า (#mobile-product-bar ซ่อนแถบล่าง) → คงปุ่มเมนูไว้บน: [☰] [โลโก้] [ค้นหา]
+   desktop: โลโก้+ชื่อ ซ้ายปกติ */
 @media (max-width: 767px) {
     #navbar > div > div { position: relative; }
     #navbar > div > div > a:first-child {
         position: absolute;
-        left: 3.25rem;
+        left: 0;
         top: 50%;
         transform: translateY(-50%);
     }
+    #mobile-search-form { left: 3rem; }
+    #mobile-menu-btn { display: none; }
+
+    body:has(#mobile-product-bar) #mobile-menu-btn { display: inline-block; }
+    body:has(#mobile-product-bar) #navbar > div > div > a:first-child { left: 3.25rem; }
+    body:has(#mobile-product-bar) #mobile-search-form { left: 6.25rem; }
 }
 
 #navbar-search-bar {

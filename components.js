@@ -135,7 +135,7 @@ function _navbarHTML() {
           <img src="images/logo.webp" alt="" class="h-9 w-9 rounded-full mr-2">
           <span class="hidden md:inline font-bold text-xl tracking-tight text-white">btmusicdrive</span>
         </a>
-        <form id="mobile-search-form" role="search" class="md:hidden absolute top-1/2 -translate-y-1/2 left-[6.25rem] right-0 flex items-center gap-2 h-10 px-3 bg-white rounded-xl shadow-sm">
+        <form id="mobile-search-form" role="search" class="md:hidden absolute top-1/2 -translate-y-1/2 right-0 flex items-center gap-2 h-10 px-3 bg-white rounded-xl shadow-sm">
           <i class="ph ph-magnifying-glass text-xl text-gray-500 shrink-0"></i>
           <input type="search" id="mobile-search-input" enterkeyhint="search" placeholder="ค้นหาเพลง ศิลปิน..." autocomplete="off" aria-label="ค้นหาสินค้า" class="flex-1 min-w-0 bg-transparent text-gray-900 placeholder-gray-400 text-base outline-none">
         </form>
@@ -470,7 +470,6 @@ function _mobileBottomNavHTML() {
   <style>
     ._dlink:active { background: rgba(212,175,82,0.1) !important; }
     @media (hover: hover) { ._dlink:hover { background: rgba(212,175,82,0.06) !important; } }
-    #bnav-home.active-tab, #bnav-home.active-tab i,
     .bnav-tab.active-tab, .bnav-tab.active-tab i { color: #d4af52 !important; }
     #bnav-account-btn {
       color: #7a7163;
@@ -494,10 +493,10 @@ function _mobileBottomNavHTML() {
   <!-- ── Mobile Bottom Bar ── -->
   <nav id="mobile-bottom-nav" aria-label="เมนูหลัก" class="fixed bottom-0 left-0 right-0 z-50 md:hidden" style="background:#0F172A;border-top:1px solid rgba(212,175,82,0.18);height:60px;">
     <div class="flex h-full">
-      <a href="/" id="bnav-home" class="flex flex-col items-center justify-center flex-1 gap-[3px] no-underline" style="color:#7a7163;">
-        <i class="ph ph-house" style="font-size:21px;line-height:1;"></i>
-        <span style="font-size:9px;letter-spacing:0.04em;font-weight:500;">หน้าแรก</span>
-      </a>
+      <button type="button" id="bnav-menu-btn" class="flex flex-col items-center justify-center flex-1 gap-[3px]" style="background:none;border:none;cursor:pointer;color:#7a7163;" aria-label="เมนู" aria-expanded="false">
+        <i class="ph ph-list" style="font-size:21px;line-height:1;"></i>
+        <span style="font-size:9px;letter-spacing:0.04em;font-weight:500;">เมนู</span>
+      </button>
       <a href="/shop" class="flex flex-col items-center justify-center flex-1 gap-[3px] no-underline" style="color:#7a7163;">
         <i class="ph ph-storefront" style="font-size:21px;line-height:1;"></i>
         <span style="font-size:9px;letter-spacing:0.04em;font-weight:500;">ร้านค้า</span>
@@ -1196,7 +1195,7 @@ function _toggleAccountDrawer(forceOpen) {
 function _toggleMobileMenu(forceOpen) {
   const menu = document.getElementById('mobile-menu');
   const overlay = document.getElementById('mobile-menu-overlay');
-  const btn = document.getElementById('mobile-menu-btn');
+  const btns = ['mobile-menu-btn', 'bnav-menu-btn'].map(id => document.getElementById(id));
   if (!menu) return;
   const isOpen = !menu.classList.contains('translate-x-full');
   const shouldOpen = forceOpen !== undefined ? forceOpen : !isOpen;
@@ -1204,13 +1203,12 @@ function _toggleMobileMenu(forceOpen) {
     overlay?.classList.remove('hidden');
     menu.classList.remove('translate-x-full');
     document.body.style.overflow = 'hidden';
-    btn?.setAttribute('aria-expanded', 'true');
   } else {
     menu.classList.add('translate-x-full');
     overlay?.classList.add('hidden');
     document.body.style.overflow = '';
-    btn?.setAttribute('aria-expanded', 'false');
   }
+  btns.forEach(b => b?.setAttribute('aria-expanded', String(shouldOpen)));
 }
 
 // ── Cart ─────────────────────────────────────────────────────────────────────
@@ -1624,6 +1622,7 @@ function _setupSharedEvents() {
   authForm?.addEventListener('submit', (e) => { if (typeof handleAuthSubmit === 'function') return; _handleAuthSubmit(e); });
 
   mobileBtn?.addEventListener('click', () => _toggleMobileMenu());
+  document.getElementById('bnav-menu-btn')?.addEventListener('click', () => _toggleMobileMenu());
   document.getElementById('mobile-menu-close')?.addEventListener('click', () => _toggleMobileMenu(false));
   document.getElementById('mobile-menu-overlay')?.addEventListener('click', () => _toggleMobileMenu(false));
 
