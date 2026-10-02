@@ -18,7 +18,7 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
 <base href="/">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="app.min.css?v=0065b76d">
+    <link rel="stylesheet" href="app.min.css?v=3f66e74b">
     <meta name="theme-color" content="#8B7355">
     <link rel="icon" type="image/webp" href="images/logo.webp">
     <title>USB เพลง แฟลชไดร์ฟ MP3 ฟังในรถไม่ใช้เน็ต | Bt music drive</title>
@@ -405,7 +405,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <div class="lux-divider"></div>
             </div>
 
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-5 auto-rows-[200px] md:auto-rows-[220px]"
+            <div class="grid grid-cols-3 gap-3 sm:gap-4 md:gap-5 max-w-4xl mx-auto"
                 id="categories-grid">
                 <!-- จะถูกสร้างโดย JS จาก localStorage -->
             </div>
@@ -424,6 +424,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             const CATEGORY_API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
                 ? 'http://localhost:5000/api'
                 : '/api';
+            const CATEGORY_ICON_TILES = [
+                { name: 'ทั้งหมด', icon: 'all', href: '/shop' },
+                { name: 'ลูกทุ่ง', icon: 'lukthung' },
+                { name: 'เพื่อชีวิต', icon: 'phuea-chiwit' },
+                { name: 'ธรรมะ', icon: 'dhamma' },
+                { name: 'เพลงสตริง', icon: 'phleng-satring' },
+                { name: 'เพลงสากล', icon: 'international' },
+                { name: 'แดนซ์', icon: 'dance' },
+                { name: 'เพลงใต้', icon: 'phleng-tai' },
+                { name: 'ลูกกรุง', icon: 'luk-krung' }
+            ];
             const THAI_COMBINING_MARKS_RE = /[ัิ-ฺ็-๎]/;
             const normalizeCategoryName = (value) => {
                 const input = String(value || '').normalize('NFC').replace(/[​-‍﻿]/g, '').replace(/\s+/g, ' ').trim();
@@ -489,6 +500,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
                 const grid = document.getElementById('categories-grid');
                 if (!grid) return;
+                const categoriesByName = new Map(cats.map(c => [categoryKey(c.name), c]));
+                grid.innerHTML = CATEGORY_ICON_TILES.map(tile => {
+                    const category = categoriesByName.get(categoryKey(tile.name));
+                    const catHref = tile.href || (category?.slug ? `/category/${category.slug}` : `category.html?cat=${encodeURIComponent(tile.name)}`);
+                    const imageBase = `images/category/icons/${tile.icon}`;
+                    return `
+                <a href="${(typeof _url === 'function') ? _url(catHref) : catHref}" class="group block overflow-hidden rounded-[1.35rem] bg-white shadow-md ring-1 ring-white/40 transition duration-300 hover:-translate-y-1 hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-300" aria-label="${escapeHtml(tile.name)}">
+                    <picture class="block aspect-square">
+                        <source srcset="${imageBase}.avif" type="image/avif">
+                        <img src="${imageBase}.webp" alt="${escapeHtml(tile.name)}" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" loading="lazy" decoding="async">
+                    </picture>
+                </a>`;
+                }).join('');
+                return;
+
                 grid.innerHTML = cats.map((c, idx) => {
                     const jc = jsonCats.find(j => j.name === c.name);
                     const slug = c.slug || (jc && jc.slug);
