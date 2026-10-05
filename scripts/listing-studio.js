@@ -829,6 +829,38 @@ const studioServer = http.createServer(async (req, res) => {
       return json(200, { files: genAll(String(b.code).padStart(2, '0')) });
     }
 
+    // ติ๊กเลือกสินค้าเว็บหลายตัว → xlsx TikTok ไฟล์เดียว (ข้อมูลจาก DB + รูปกลาง mid/<slug>/ จาก reports/mid-images.json)
+    if (url.pathname === '/api/tiktok-selected' && req.method === 'POST') {
+      const b = JSON.parse(await readBody(req));
+      const ids = new Set(Array.isArray(b.ids) ? b.ids.map(String) : []);
+      if (!ids.size) return json(400, { error: 'ยังไม่ได้เลือกสินค้า' });
+      const picked = (await loadLiveWebProducts()).filter(p => ids.has(String(p.id)));
+      let mid = {};
+      try { mid = JSON.parse(fs.readFileSync(path.join(ROOT, 'reports', 'mid-images.json'), 'utf8')); } catch { }
+      const midBySlug = {};
+      for (const v of Object.values(mid)) if (v && v.slug) midBySlug[v.slug] = v.images || [];
+      const abs = (u) => /^https?:/.test(u) ? u : `https://btmusicdrive.com/${String(u).replace(/^\//, '')}`;
+      const noMid = [];
+      const items = picked.map(p => {
+        let imgs = (mid[p.sku] && mid[p.sku].images) || midBySlug[p.slug];
+        if (!imgs || !imgs.length) { noMid.push(p.name); imgs = (p.images.length ? p.images : [p.imageUrl]).filter(Boolean).map(abs); }
+        const tags = (p.tags || []).slice(0, 6).map(t => '#' + String(t).replace(/[\s#]+/g, '')).filter(t => t.length > 1);
+        const row = { Code: p.sku || p.slug, 'ชื่อสินค้า (SEO ≤255)': p.name, 'รายละเอียด': String(p.description || '').slice(0, 9500),
+          Hashtags: tags.join(' '), 'ราคา': p.price, 'สต็อก': p.stock, SKU: p.sku || '' };
+        ['ภาพปก', 'รูป 1', 'รูป 2', 'รูป 3', 'รูป 4', 'รูป 5', 'รูป 6', 'รูป 7', 'รูป 8'].forEach((k, i) => { row[k] = imgs[i] || ''; });
+        return row;
+      });
+      const stamp = new Date().toISOString().slice(0, 16).replace(/[-:T]/g, '');
+      const out = `tiktok-upload-selected-${stamp}.xlsx`;
+      const tmp = path.join(OUT_DIR, `.tiktok-selected-${stamp}.json`);
+      fs.mkdirSync(OUT_DIR, { recursive: true });
+      fs.writeFileSync(tmp, JSON.stringify(items), 'utf8');
+      try { runScript('fill-tiktok-template.js', ['--apply', '--items', tmp, '--out', out]); }
+      catch (e) { return json(500, { error: String(e.stderr || e.message).slice(0, 300) }); }
+      finally { fs.rmSync(tmp, { force: true }); }
+      return json(200, { file: out, count: items.length, noMid });
+    }
+
     if (url.pathname === '/api/generate') {
       const file = genFile(url.searchParams.get('platform'), url.searchParams.get('code'));
       res.writeHead(200, {

@@ -129,6 +129,10 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .item img { width:48px; height:48px; object-fit:cover; border-radius:7px; background:#eee; flex:none; }
 .item .t { font-size:13px; line-height:1.35; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
 .item .m { font-size:11px; color:var(--muted); margin-top:3px; }
+.item .pick { width:18px; height:18px; flex:none; cursor:pointer; accent-color:var(--primary); }
+.pickbar { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:8px; margin-top:10px; font-size:13px; }
+.pickbar label { white-space:nowrap; }
+.pickbar label { display:flex; align-items:center; gap:6px; cursor:pointer; }
 .split { display:grid; grid-template-columns:minmax(290px,350px) minmax(0,1fr); gap:18px; align-items:start; }
 .btn { border:0; color:#fff; }
 .shopee { background:#ee4d2d; } .lazada { background:#0f146d; } .tiktok { background:#111; }

@@ -530,19 +530,49 @@ function renderEdit() {
     '<div class="split">' +
     '<div><div class="card" style="padding:14px 16px"><input type="text" id="q" placeholder="ค้นหาสินค้าบนเว็บ… (ชื่อ / slug / SKU)" ' +
     'style="width:100%;border:1px solid #d6d3ce;border-radius:8px;padding:9px 12px;font-size:14px" oninput="filterWeb(this.value)">' +
-    '<div class="hint">' + WEB.length + ' สินค้าบนเว็บ (จาก products.json)</div></div>' +
+    '<div class="hint">' + WEB.length + ' สินค้าบนเว็บ (จาก products.json)</div>' +
+    '<div class="pickbar"><label><input type="checkbox" id="pickAll" onchange="pickAll(this.checked)"> เลือกทั้งหมดที่แสดง</label>' +
+    '<button class="btn tiktok" onclick="exportTiktok(this)">⬛ สร้าง xlsx TikTok (<span id="pickN">0</span>)</button></div>' +
+    '<div id="pickStatus" class="hint"></div></div>' +
     '<div class="list" id="wlist"></div></div>' +
     '<div id="epane"><div class="card"><div class="sub" style="margin:0">← เลือกสินค้าที่จะแก้</div></div></div></div>'
   );
   drawWeb(WEB);
 }
+var picked = {};     // id → true สินค้าที่ติ๊กไว้ทำ xlsx TikTok (คงไว้แม้ค้นหาเปลี่ยนรายการ)
+var shownWeb = [];
 function drawWeb(items) {
-  $('wlist').innerHTML = items.slice(0, 300).map(function (p) {
+  shownWeb = items.slice(0, 300);
+  $('wlist').innerHTML = shownWeb.map(function (p) {
     return '<div class="item" data-id="' + esc(p.id) + '" onclick="pickWeb(\'' + esc(p.id) + '\')">' +
+      '<input type="checkbox" class="pick" onclick="event.stopPropagation();togglePick(\'' + esc(p.id) + '\',this.checked)"' +
+      (picked[p.id] ? ' checked' : '') + '>' +
       '<img loading="lazy" src="' + esc(p.imageUrl || '') + '" alt="">' +
       '<div><div class="t">' + esc(p.name) + '</div>' +
       '<div class="m">฿' + p.price + ' · สต็อก ' + p.stock + ' · ' + esc(p.category || '-') + '</div></div></div>';
   }).join('') || '<div class="hint" style="padding:14px">ไม่พบสินค้า</div>';
+  updatePickCount();
+}
+function togglePick(id, on) { if (on) picked[id] = true; else delete picked[id]; updatePickCount(); }
+function pickAll(on) {
+  shownWeb.forEach(function (p) { if (on) picked[p.id] = true; else delete picked[p.id]; });
+  [].forEach.call(document.querySelectorAll('#wlist .pick'), function (c) { c.checked = on; });
+  updatePickCount();
+}
+function updatePickCount() {
+  if ($('pickN')) $('pickN').textContent = Object.keys(picked).length;
+  if ($('pickAll')) $('pickAll').checked = shownWeb.length > 0 && shownWeb.every(function (p) { return picked[p.id]; });
+}
+async function exportTiktok(btn) {
+  var ids = Object.keys(picked);
+  if (!ids.length) return status('pickStatus', 'ติ๊กเลือกสินค้าก่อน', 'warnc');
+  btn.disabled = true; status('pickStatus', '⏳ กำลังสร้าง xlsx TikTok ' + ids.length + ' รายการ…');
+  try {
+    var r = await jpost('/api/tiktok-selected', { ids: ids });
+    status('pickStatus', '<a class="btn tiktok" href="/api/download?file=' + encodeURIComponent(r.file) + '">⬛ ' + esc(r.file) + ' ⬇</a> ' + r.count + ' รายการ' +
+      (r.noMid.length ? '<br><span class="warnc">⚠ ไม่มีรูปกลาง jpg (ใช้รูปเว็บแทน): ' + r.noMid.map(esc).join(', ') + '</span>' : ''));
+  } catch (e) { status('pickStatus', '✖ ' + esc(e.message), 'warnc'); }
+  btn.disabled = false;
 }
 function filterWeb(q) {
   q = q.toLowerCase();

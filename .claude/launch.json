@@ -11,6 +11,16 @@
       "autoPort": false
     },
     {
+      "name": "listing-studio-test",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "scripts/listing-studio.js"
+      ],
+      "env": { "PORT": "4788" },
+      "port": 4788,
+      "autoPort": false
+    },
+    {
       "name": "static-site",
       "runtimeExecutable": "npx",
       "runtimeArgs": [

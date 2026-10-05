@@ -67,13 +67,20 @@ const LAST_COL = 27;        // AB
   console.log(`template : ${tplFile}`);
 
   // 2) ข้อมูลจาก marketplace-listings.xlsx ชีต TikTok Shop
-  const listFile = path.join(OUT_DIR, 'marketplace-listings.xlsx');
-  if (!fs.existsSync(listFile)) {
-    console.error('✖ ไม่พบ templates/marketplace-listings.xlsx — รัน npm run mkt:listings ก่อน');
-    process.exit(1);
+  //    หรือ --items <file.json> = แถวที่เตรียมมาแล้ว (key เดียวกับชีต) — studio ใช้ตอนติ๊กเลือกสินค้าเว็บ
+  const ITEMS = arg('--items');
+  let items;
+  if (ITEMS) {
+    items = JSON.parse(fs.readFileSync(ITEMS, 'utf8'));
+  } else {
+    const listFile = path.join(OUT_DIR, 'marketplace-listings.xlsx');
+    if (!fs.existsSync(listFile)) {
+      console.error('✖ ไม่พบ templates/marketplace-listings.xlsx — รัน npm run mkt:listings ก่อน');
+      process.exit(1);
+    }
+    const lwb = XLSX.read(fs.readFileSync(listFile), { type: 'buffer' });
+    items = XLSX.utils.sheet_to_json(lwb.Sheets['TikTok Shop'], { defval: '' });
   }
-  const lwb = XLSX.read(fs.readFileSync(listFile), { type: 'buffer' });
-  let items = XLSX.utils.sheet_to_json(lwb.Sheets['TikTok Shop'], { defval: '' });
   const CODE = arg('--code') ? String(arg('--code')).padStart(2, '0') : null;
   if (CODE) {
     items = items.filter(it => String(it.Code ?? '').padStart(2, '0') === CODE);
@@ -140,7 +147,8 @@ const LAST_COL = 27;        // AB
   XLSX.utils.sheet_add_aoa(ws, [new Array(LAST_COL + 1).fill('')], { origin: { r: EXAMPLE_ROW, c: 0 } });
   XLSX.utils.sheet_add_aoa(ws, rows, { origin: { r: DATA_START_ROW, c: 0 } });
   fs.mkdirSync(OUT_DIR, { recursive: true });
-  const outFile = path.join(OUT_DIR, CODE ? `tiktok-upload-${CODE}.xlsx` : 'tiktok-upload-filled.xlsx');
+  const outFile = path.join(OUT_DIR, arg('--out') ? path.basename(arg('--out'))
+    : CODE ? `tiktok-upload-${CODE}.xlsx` : 'tiktok-upload-filled.xlsx');
   XLSX.writeFile(wb, outFile, { bookType: 'xlsx' });
   console.log(`\n✔ ${path.relative(ROOT, outFile)}  (${rows.length} รายการ)`);
   console.log('  อัปโหลดที่ Seller Center → สินค้า → เพิ่มสินค้าเป็นชุด (Batch upload)');
