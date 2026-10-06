@@ -70,7 +70,8 @@
     "id": "10",
     "name": "แดนซ์",
     "slug": "dance",
-    "imageUrl": "images/category/category-dance.webp",
+    "imageUrl": "images/category/category-dance-banner.webp",
+    "imageUrlMobile": "images/category/category-dance-banner-mobile.webp",
     "h1Description": "รวมเพลงแดนซ์มันส์ๆ EDM, Remix, แดนซ์เพื่อชีวิต ฟังเร้าใจ MP3 คุณภาพ HD พร้อมเสียบฟังในรถ ปาร์ตี้สนุกได้ทันที",
     "titleTag": "แฟลชไดร์ฟเพลงแดนซ์ MP3 EDM Remix มันส์ๆ — Bt music drive",
     "metaDescription": "เลือกซื้อแฟลชไดร์ฟเพลงแดนซ์ MP3 EDM Remix แดนซ์เพื่อชีวิต เสียงชัด HD เสียบปุ๊บฟังปั๊บ จัดส่งทั่วไทย — Bt music drive"
