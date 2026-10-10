@@ -246,6 +246,7 @@ GA4_PROPERTY_ID="533617757"       # GOOGLE_CLIENT_SECRET ไม่จำเป�
   - `npm run mkt:originals -- --apply` = backfill ต้นฉบับเก่าจาก NAS ขึ้น R2 (รันตอน NAS ต่ออยู่)
   - studio **commit + push ให้อัตโนมัติ** — ลำดับสำคัญ: rename/สร้างรูป → build → push → ค่อยเขียน DB (DB ชี้มาก่อนไฟล์ขึ้น = รูป 404)
   - **QR รายชื่อเพลงอัตโนมัติ** (2026-08-31): ลงสินค้าใหม่ที่มี tracklist → studio สร้างหน้ารายชื่อเพลงบน R2 `docs/tracklist-<code>.html` + QR `qr/qr-tracklist-<code> <ชื่อสินค้า>.png` + ลงคลัง QR ให้เอง ไม่ต้องรันมือ · โค้ดกลาง `scripts/lib/tracklist-qr.js` ใช้ร่วมกับ `npm run mkt:qr-all` (ทำย้อนหลังครบทุกตัว / `--code NN` ทีละตัว) — URL ผูกกับ code เท่านั้น รันซ้ำได้ QR ที่พิมพ์ไปแล้วไม่เสีย
+  - **รายชื่อเพลงจาก NAS** (2026-10-10): หน้าแก้ไขมีปุ่ม "🎵 ดึงรายชื่อเพลงจาก NAS" → `/api/nas-tracklist?sku=` อ่านไฟล์เพลงใน `Z:\music\<เลขชุดท้าย SKU>.*` (`scripts/lib/nas-music.js`) มาเตรียมทับ tracklist + จำนวนเพลง — ยังไม่เขียนจนกด "บันทึก" · เตือนถ้าความจุในชื่อโฟลเดอร์ ≠ ช่องความจุ
   - ⚠ `marketplace-images/` `templates/` `qr/` อยู่ใน .gitignore — ห้ามใส่ใน `git add` ของ studio จะล้ม
 
 - **บอท LINE ใช้โมเดลในเครื่องร้าน** (2026-09-12): Vercel → `https://ai.btmusicdrive.com` (Cloudflare Tunnel `bt-ai`, config `~/.cloudflared/config.yml`) → `scripts/ollama-gateway.js` :11435 → Ollama :11434

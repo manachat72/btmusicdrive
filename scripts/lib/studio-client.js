@@ -629,7 +629,9 @@ function pickWeb(id) {
     '<div class="f"><label>รายละเอียด — 155 ตัวแรกคือ meta description</label><textarea id="eDesc">' + esc(editing.description) + '</textarea></div>' +
     '<div class="f"><label>Tags / คีย์เวิร์ด</label><input type="text" id="eTags" value="' + esc((editing.tags || []).join(', ')) + '"></div>' +
     '<div class="f"><label>เปลี่ยนรายชื่อเพลง (.txt — ไม่แนบ = ใช้ของเดิม ' + (editing.tracklist || []).length + ' เพลง)</label>' +
-    '<input type="file" accept=".txt" onchange="readEditTxt(this)"><div class="hint" id="eTxtInfo"></div></div>' +
+    '<input type="file" accept=".txt" onchange="readEditTxt(this)"> ' +
+    '<button type="button" class="ghost compact" onclick="loadNasTracklist(this)">🎵 ดึงรายชื่อเพลงจาก NAS (เลขชุดตาม SKU)</button>' +
+    '<div class="hint" id="eTxtInfo"></div></div>' +
     '<hr style="border:0;border-top:1px solid #e2ded8;margin:16px 0">' +
     '<h2 style="font-size:15px">🖼 จัดการรูปสินค้า</h2>' +
     nasBox +
@@ -910,6 +912,28 @@ function readEditTxt(inp) {
     $('eTxtInfo').textContent = '✔ อ่านได้ ' + editTrack.length + ' เพลง (จะทับของเดิมตอนบันทึก)';
     if (editTrack.length) $('eSongs').value = editTrack.length;
   });
+}
+
+/* รายชื่อเพลงจากไฟล์จริงใน Z:\music — แค่เตรียมไว้ ยังไม่เขียนอะไรจนกว่าจะกดบันทึก */
+async function loadNasTracklist(btn) {
+  btn.disabled = true;
+  var info = $('eTxtInfo');
+  info.textContent = 'กำลังอ่านไฟล์เพลงจาก NAS…';
+  try {
+    var out = await jget('/api/nas-tracklist?sku=' + encodeURIComponent(editing.sku || ''));
+    if (!out.tracks.length) throw new Error('โฟลเดอร์ "' + out.folder + '" ไม่มีไฟล์เพลง');
+    var old = editing.tracklist || [];
+    var gone = old.filter(function (t) { return out.tracks.indexOf(t) < 0; }).length;
+    var added = out.tracks.filter(function (t) { return old.indexOf(t) < 0; }).length;
+    var cap = $('eCap').value.trim();
+    editTrack = out.tracks;
+    $('eSongs').value = out.tracks.length;
+    info.innerHTML = '✔ ' + esc(out.folder) + ' — ' + out.tracks.length + ' เพลง (เดิม ' + old.length +
+      ' · เพิ่ม ' + added + ' · ตัดออก ' + gone + ') จะทับของเดิมตอนบันทึก' +
+      (out.capacity && cap && out.capacity.toUpperCase() !== cap.toUpperCase().replace(/\s/g, '')
+        ? '<br><b style="color:#b45309">⚠ ความจุในชื่อโฟลเดอร์ NAS = ' + esc(out.capacity) + ' แต่ช่องความจุ = ' + esc(cap) + ' — ตรวจก่อนบันทึก</b>' : '');
+  } catch (e) { info.textContent = '✖ ' + e.message; }
+  btn.disabled = false;
 }
 
 async function regenSeo(btn) {

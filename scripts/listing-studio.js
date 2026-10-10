@@ -31,6 +31,7 @@ const { runHermesSeo } = require('./lib/hermes-seo-agent');
 const { slugify, imageSlug, uniqueImageSlug } = require('./lib/product-slug');
 const { imageSlugFromUrl } = require('./lib/product-image-path');
 const { resolveNasFolder, previewNasImages } = require('./lib/nas-image-selection');
+const { readNasTracklist } = require('./lib/nas-music');
 const webImg = require('./lib/web-images');
 const r2 = require('./lib/r2');
 const r2WebImg = require('./lib/r2-web-images');
@@ -365,6 +366,9 @@ const studioServer = http.createServer(async (req, res) => {
           : ext === '.png' ? 'image/png' : 'image/jpeg';
       res.writeHead(200, { 'content-type': contentType, 'cache-control': 'no-store' });
       return res.end(fs.readFileSync(imageFile));
+    }
+    if (url.pathname === '/api/nas-tracklist' && req.method === 'GET') {
+      return json(200, readNasTracklist(url.searchParams.get('sku')));
     }
     if (url.pathname === '/api/products') return json(200, loadProducts());
     if (url.pathname === '/api/web-products') return json(200, await loadLiveWebProducts());
