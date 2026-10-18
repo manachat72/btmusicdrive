@@ -41,6 +41,8 @@ for (const f of htmlFiles) {
     const escaped = asset.replace(/\./g, '\\.');
     const regex = new RegExp(`(href|src)="${escaped}(?:\\?v=[a-f0-9]+)?"`, 'g');
     s = s.replace(regex, `$1="${asset}?v=${hash}"`);
+    // Inline lazy-loaders (e.g. index.html: const scriptSrc = 'script.min.js?v=xxxx')
+    s = s.replace(new RegExp(`'${escaped}\\?v=[a-f0-9]+'`, 'g'), `'${asset}?v=${hash}'`);
   }
 
   if (s !== before) {
