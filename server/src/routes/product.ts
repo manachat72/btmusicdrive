@@ -71,6 +71,9 @@ router.get('/', async (req: Request, res: Response) => {
     const skip = (page - 1) * limit;
     // admin=1 returns all including hidden; storefront only gets active
     const isAdmin = req.query.admin === '1';
+    // lite=1 (storefront listings only): strip description/tracklist/specs from the
+    // payload — cards never render them. tracklist becomes tracklistCount.
+    const isLite = req.query.lite === '1' && !isAdmin;
     const where = isAdmin ? {} : { isActive: true };
 
     const [products, total] = await Promise.all([
@@ -84,7 +87,13 @@ router.get('/', async (req: Request, res: Response) => {
       prisma.product.count({ where }),
     ]);
 
-    const normalizedProducts = products.map(withNormalizedCategory);
+    let normalizedProducts: any[] = products.map(withNormalizedCategory);
+    if (isLite) {
+      normalizedProducts = normalizedProducts.map((p: any) => {
+        const { description, specs, tracklist, ...rest } = p;
+        return { ...rest, tracklistCount: Array.isArray(tracklist) ? tracklist.length : 0 };
+      });
+    }
     const data = isAdmin ? normalizedProducts : normalizedProducts.map(withImageVersion);
     // Product images can change from Product Studio at any time. Revalidate the
     // product document on every page load; the content-addressed image files

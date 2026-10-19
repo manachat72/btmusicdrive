@@ -23,7 +23,8 @@
     "id": "5",
     "name": "เพลงใต้",
     "slug": "phleng-tai",
-    "imageUrl": "images/category/category-southern-thai.webp",
+    "imageUrl": "images/category/category-southern-thai-banner.webp",
+    "imageUrlMobile": "images/category/category-southern-thai-banner-mobile.webp",
     "h1Description": "รวมเพลงใต้สุดหรอย เพลงฮิตดังจากภาคใต้ หลากหลายศิลปิน เสียงดัง ชัด สนุกสนาน พร้อมเสียบฟัง",
     "titleTag": "แฟลชไดร์ฟเพลงใต้ MP3 หรอยจังฮู้ — Bt music drive",
     "metaDescription": "เลือกซื้อแฟลชไดร์ฟเพลงใต้ MP3 รวมเพลงใต้ฮิต เสียงดัง ชัด เสียบปุ๊บฟังปั๊บ ส่งด่วนทั่วไทย — Bt music drive"
@@ -42,7 +43,8 @@
     "id": "7",
     "name": "ลูกกรุง",
     "slug": "luk-krung",
-    "imageUrl": "images/category/category-thai-oldies.webp",
+    "imageUrl": "images/category/category-luk-krung-banner.webp",
+    "imageUrlMobile": "images/category/category-luk-krung-banner-mobile.webp",
     "h1Description": "รวมเพลงลูกกรุงคลาสสิกในตำนาน เพลงไทยยุคทองและไทยเดิม คุณภาพ MP3 เสียงชัดทุกบท",
     "titleTag": "แฟลชไดร์ฟเพลงลูกกรุง MP3 เพลงไทยคลาสสิก — Bt music drive",
     "metaDescription": "เลือกซื้อแฟลชไดร์ฟเพลงลูกกรุง MP3 รวมเพลงไทยคลาสสิกในตำนาน ยุคทองไทย เสียงชัด เสียบปุ๊บฟังปั๊บ ส่งทั่วไทย — Bt music drive"

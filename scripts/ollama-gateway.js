@@ -17,7 +17,8 @@ const crypto = require('crypto');
 
 const ROOT = path.join(__dirname, '..');
 const PORT = Number(process.env.GATEWAY_PORT) || 11435;
-const OLLAMA = new URL(process.env.OLLAMA_LOCAL_URL || 'http://127.0.0.1:11434');
+const LLAMA = new URL(process.env.LLAMA_CPP_URL || 'http://127.0.0.1:8080');
+const LLAMA_MODEL = process.env.LLAMA_CPP_MODEL || 'qwen3.8-27b';
 const MAX_BODY = 1024 * 1024; // 1mb เท่ากับ body limit ของ server
 
 function keyFromEnvFile() {
@@ -50,52 +51,105 @@ function send(res, status, obj) {
   res.end(JSON.stringify(obj));
 }
 
-const server = http.createServer((req, res) => {
-  const url = (req.url || '').split('?')[0];
-
-  if (req.method === 'GET' && url === '/health') {
-    // เช็คว่า Ollama ยังตอบอยู่ไหม (ไม่ต้องใช้ key — ไม่เปิดเผยอะไร)
-    const probe = http.get(new URL('/api/version', OLLAMA), (r) => {
-      r.resume();
-      send(res, r.statusCode === 200 ? 200 : 502, { ok: r.statusCode === 200 });
-    });
-    probe.on('error', () => send(res, 502, { ok: false, error: 'ollama not running' }));
-    probe.setTimeout(3000, () => probe.destroy(new Error('timeout')));
-    return;
+// Vercel ยังเรียก gateway นี้ด้วย Ollama /api/chat format อยู่ จึงแปลงเป็น
+// OpenAI-compatible API ของ llama.cpp ที่นี่ โดยไม่เปิด llama-server ออก tunnel โดยตรง.
+function toLlamaRequest(payload) {
+  const options = payload?.options || {};
+  const request = {
+    model: LLAMA_MODEL,
+    stream: false,
+    messages: Array.isArray(payload?.messages) ? payload.messages : [],
+  };
+  if (Number.isFinite(Number(options.num_predict)) && Number(options.num_predict) > 0) {
+    request.max_tokens = Number(options.num_predict);
   }
+  if (Number.isFinite(Number(options.temperature))) request.temperature = Number(options.temperature);
+  return request;
+}
 
-  if (req.method !== 'POST' || url !== '/api/chat') return send(res, 404, { error: 'not found' });
-  if (!authorized(req)) return send(res, 401, { error: 'unauthorized' });
+function toOllamaResponse(payload) {
+  const choice = payload?.choices?.[0] || {};
+  return {
+    model: payload?.model || LLAMA_MODEL,
+    created_at: payload?.id || new Date().toISOString(),
+    message: {
+      role: choice?.message?.role || 'assistant',
+      content: choice?.message?.content || '',
+    },
+    done: true,
+    done_reason: choice?.finish_reason || 'stop',
+  };
+}
 
-  const chunks = [];
-  let size = 0;
-  req.on('data', (c) => {
-    size += c.length;
-    if (size > MAX_BODY) {
-      send(res, 413, { error: 'body too large' });
-      req.destroy();
-    } else chunks.push(c);
-  });
-  req.on('end', () => {
-    if (res.headersSent) return;
-    const body = Buffer.concat(chunks);
-    const started = Date.now();
-    const up = http.request(new URL('/api/chat', OLLAMA), {
-      method: 'POST',
-      headers: { 'content-type': 'application/json', 'content-length': body.length },
-    }, (r) => {
-      res.writeHead(r.statusCode || 502, { 'content-type': r.headers['content-type'] || 'application/json' });
-      r.pipe(res);
-      r.on('end', () => console.log(`[gateway] ${new Date().toLocaleTimeString('th-TH')} /api/chat ${r.statusCode} ${Date.now() - started}ms`));
+function createServer() {
+  return http.createServer((req, res) => {
+    const url = (req.url || '').split('?')[0];
+
+    if (req.method === 'GET' && url === '/health') {
+      const probe = http.get(new URL('/health', LLAMA), (r) => {
+        r.resume();
+        send(res, r.statusCode === 200 ? 200 : 502, { ok: r.statusCode === 200 });
+      });
+      probe.on('error', () => send(res, 502, { ok: false, error: 'llama.cpp not running' }));
+      probe.setTimeout(3000, () => probe.destroy(new Error('timeout')));
+      return;
+    }
+
+    if (req.method !== 'POST' || url !== '/api/chat') return send(res, 404, { error: 'not found' });
+    if (!authorized(req)) return send(res, 401, { error: 'unauthorized' });
+
+    const chunks = [];
+    let size = 0;
+    req.on('data', (chunk) => {
+      size += chunk.length;
+      if (size > MAX_BODY) {
+        send(res, 413, { error: 'body too large' });
+        req.destroy();
+      } else chunks.push(chunk);
     });
-    up.on('error', (err) => {
-      console.error('[gateway] ollama error:', err.message);
-      if (!res.headersSent) send(res, 502, { error: 'ollama not running' });
+    req.on('end', () => {
+      if (res.headersSent) return;
+      let payload;
+      try {
+        payload = JSON.parse(Buffer.concat(chunks).toString('utf8'));
+      } catch {
+        return send(res, 400, { error: 'invalid JSON body' });
+      }
+      const body = Buffer.from(JSON.stringify(toLlamaRequest(payload)));
+      const started = Date.now();
+      const upstream = http.request(new URL('/v1/chat/completions', LLAMA), {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', 'content-length': body.length },
+      }, (upstreamRes) => {
+        const responseChunks = [];
+        upstreamRes.on('data', (chunk) => responseChunks.push(chunk));
+        upstreamRes.on('end', () => {
+          let response;
+          try {
+            response = JSON.parse(Buffer.concat(responseChunks).toString('utf8'));
+          } catch {
+            return send(res, 502, { error: 'invalid response from llama.cpp' });
+          }
+          const status = upstreamRes.statusCode || 502;
+          send(res, status, status >= 200 && status < 300 ? toOllamaResponse(response) : {
+            error: response?.error?.message || response?.error || 'llama.cpp request failed',
+          });
+          console.log(`[gateway] ${new Date().toLocaleTimeString('th-TH')} /api/chat ${status} ${Date.now() - started}ms`);
+        });
+      });
+      upstream.on('error', (err) => {
+        console.error('[gateway] llama.cpp error:', err.message);
+        if (!res.headersSent) send(res, 502, { error: 'llama.cpp not running' });
+      });
+      upstream.end(body);
     });
-    up.end(body);
   });
-});
+}
 
-server.listen(PORT, '127.0.0.1', () => {
-  console.log(`[gateway] http://127.0.0.1:${PORT} → ${OLLAMA.origin}`);
-});
+module.exports = { createServer, toLlamaRequest, toOllamaResponse };
+
+if (require.main === module) {
+  createServer().listen(PORT, '127.0.0.1', () => {
+    console.log(`[gateway] http://127.0.0.1:${PORT} → ${LLAMA.origin} (${LLAMA_MODEL})`);
+  });
+}

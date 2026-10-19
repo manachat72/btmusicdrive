@@ -99,6 +99,9 @@ window.togglePasswordVisibility = togglePasswordVisibility;
 
 // Fetch Products from API or fallback to local JSON
 async function fetchProducts() {
+    // Pages without a product grid or any add-to-cart button (blog, info pages)
+    // never render products — skip the catalog download entirely.
+    if (!productsContainer && !document.querySelector('.add-to-cart-btn, .add-to-cart-btn-mobile')) return;
     // If server pre-inlined products at build time, skip the spinner —
     // just render over the existing cards once fresh data arrives.
     const hasInlineProducts = productsContainer && productsContainer.querySelector('[data-id]');
@@ -108,13 +111,14 @@ async function fetchProducts() {
     try {
         let response;
         try {
-            // First try to fetch from API
-            response = await fetch(`${API_BASE}/products?_=${Date.now()}`, { cache: 'no-store' });
+            // lite=1: cards don't use description/tracklist/specs (sends ~90% less data).
+            // No cache-buster: server sends no-cache + ETag, so unchanged data = cheap 304.
+            response = await fetch(`${API_BASE}/products?lite=1&limit=100`);
             if (!response.ok) throw new Error('API failed');
         } catch (apiError) {
             // Fallback to local products.json if DB is down
             console.log('Database fetch failed, falling back to local JSON', apiError);
-            response = await fetch('products.json', { cache: 'no-store' });
+            response = await fetch('products.json');
         }
         
         if (!response.ok) {

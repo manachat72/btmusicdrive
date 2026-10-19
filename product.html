@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="th">
 
 <head>
@@ -433,6 +433,8 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
     var can=document.getElementById('canonical-url');if(can)can.href=pageUrl;
     var ogU=document.getElementById('og-url');if(ogU)ogU.setAttribute('content',pageUrl);
     var ogI=document.getElementById('og-image');if(ogI)ogI.setAttribute('content',imgUrl);
+    // Preload รูปสินค้าหลัก (LCP) ตั้งแต่ parse head — โหลดขนานกับ API fetch ไม่ต้องรอ renderProduct()
+    var pre=document.createElement('link');pre.rel='preload';pre.as='image';pre.href=imgUrl;pre.setAttribute('fetchpriority','high');document.head.appendChild(pre);
   }catch(e){}})();
   </script>
   </head>
@@ -479,7 +481,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <!-- Gallery -->
         <div>
           <div class="gallery-main relative" id="main-image-wrap">
-            <img id="main-image" src="" alt="รูปสินค้าแฟลชไดร์ฟเพลง MP3 Bt music drive">
+            <img id="main-image" src="" alt="รูปสินค้าแฟลชไดร์ฟเพลง MP3 Bt music drive" fetchpriority="high">
+            <script>
+            // ตั้ง src รูปหลักจาก __PMAP__ ทันทีตอน parse — ไม่ต้องรอ API กว่า renderProduct() จะรัน
+            (function(){try{
+              var map=window.__PMAP__||{};
+              var m=window.location.pathname.match(/\/product\/([^/?#]+)/);
+              var slug=(new URLSearchParams(window.location.search)).get('slug')||(m?decodeURIComponent(m[1]):null);
+              if(!slug||!map[slug])return;
+              var img=document.getElementById('main-image');
+              var u=map[slug].i||'';
+              if(u&&u.charAt(0)==='/')u=window.location.origin+u;
+              if(img&&u&&!img.getAttribute('src'))img.src=u;
+            }catch(e){}})();
+            </script>
             <button class="gallery-nav left-3" onclick="prevImage()"><i class="ph ph-caret-left text-lg"></i></button>
             <button class="gallery-nav right-3" onclick="nextImage()"><i class="ph ph-caret-right text-lg"></i></button>
             <!-- Flash Sale strip (แสดงเมื่อมีส่วนลด · นับถอยหลังถึงเที่ยงคืนเวลาไทย) -->
@@ -1284,10 +1299,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       // 1. โหลด product — ถ้ามี slug ใช้ /products/slug/:slug, ไม่งั้นใช้ /products/:id
       try {
+        // ไม่ใส่ cache-buster/no-store: server ส่ง ETag — ถ้าข้อมูลไม่เปลี่ยนจะได้ 304 (เร็ว+ประหยัด)
         if (urlSlug) {
-          res = await fetch(`${PRODUCT_API_BASE}/products/slug/${urlSlug}?_=${Date.now()}`, { cache: 'no-store' });
+          res = await fetch(`${PRODUCT_API_BASE}/products/slug/${urlSlug}`);
         } else {
-          res = await fetch(`${PRODUCT_API_BASE}/products/${id}?_=${Date.now()}`, { cache: 'no-store' });
+          res = await fetch(`${PRODUCT_API_BASE}/products/${id}`);
         }
         if (res.ok) product = await res.json();
       } catch (_) { }
@@ -1319,7 +1335,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       // 3. โหลดสินค้าทั้งหมดสำหรับ related products
       try {
-        const allRes = await fetch(`${PRODUCT_API_BASE}/products?_=${Date.now()}`, { cache: 'no-store' });
+        const allRes = await fetch(`${PRODUCT_API_BASE}/products?lite=1&limit=100`);
         if (allRes.ok) {
           const json = await allRes.json();
           allProducts = Array.isArray(json) ? json : (json.data || []);
@@ -2117,7 +2133,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <!-- Shared Footer -->
   <div id="site-footer"></div>
 
-  <script src="components.min.js?v=77f1694f"></script>
+  <script src="components.min.js?v=5948367e"></script>
 </body>
 
 </html>

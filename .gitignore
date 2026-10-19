@@ -57,3 +57,6 @@ cert.pem
 # local cover-generation outputs / scratch images
 cover-output/
 test_thai.png
+
+# ทางลัดโฟลเดอร์รูปสินค้าเรียงตาม SKU (junction ในเครื่อง)
+images-by-sku/

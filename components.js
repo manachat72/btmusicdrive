@@ -1232,13 +1232,23 @@ function _toggleMobileMenu(forceOpen) {
 
 // ── Cart ─────────────────────────────────────────────────────────────────────
 
+let _cartSidebarOpened = false; // gate free-ship recs fetch — โหลดเฉพาะตอนเปิด cart ครั้งแรก
+
 function _toggleCart() {
   const sidebar = document.getElementById('cart-sidebar');
   const overlay = document.getElementById('cart-overlay');
   if (!sidebar) return;
   const open = !sidebar.classList.contains('translate-x-full');
   if (open) { sidebar.classList.add('translate-x-full'); overlay?.classList.add('hidden'); document.body.style.overflow = ''; }
-  else { sidebar.classList.remove('translate-x-full'); overlay?.classList.remove('hidden'); document.body.style.overflow = 'hidden'; }
+  else {
+    sidebar.classList.remove('translate-x-full'); overlay?.classList.remove('hidden'); document.body.style.overflow = 'hidden';
+    if (!_cartSidebarOpened) {
+      _cartSidebarOpened = true;
+      // First open: fetch recs now (deferred from page load to save ~28KB on every page)
+      const subtotal = _cart.reduce((s, i) => s + i.price * i.quantity, 0);
+      _renderFreeShipRecs(subtotal);
+    }
+  }
 }
 
 function _updateCartUI() {
@@ -1366,7 +1376,9 @@ let _freeShipRecsLastCartKey = '';
 async function _loadFreeShipRecs() {
   if (_freeShipRecsCache) return _freeShipRecsCache;
   try {
-    const res = await fetch(`${API_BASE}/products?limit=8&_=${Date.now()}`, { cache: 'no-store' });
+    // lite=1: rec cards ใช้แค่ name/price/image — payload เล็กกว่า ~90%
+    // ไม่ใส่ cache-buster: server ส่ง no-cache + ETag อยู่แล้ว ถ้าข้อมูลไม่เปลี่ยนจะได้ 304
+    const res = await fetch(`${API_BASE}/products?lite=1&limit=8`);
     if (res.ok) {
       const json = await res.json();
       _freeShipRecsCache = (json.data || json).slice(0, 6);
@@ -1374,7 +1386,7 @@ async function _loadFreeShipRecs() {
   } catch (_) {}
   if (!_freeShipRecsCache) {
     try {
-      const res = await fetch('/products.json', { cache: 'no-store' });
+      const res = await fetch('/products.json');
       if (res.ok) _freeShipRecsCache = (await res.json()).slice(0, 6);
     } catch (_) {}
   }
@@ -1388,6 +1400,8 @@ async function _renderFreeShipRecs(total) {
   if (!sec || !list) return;
 
   if (total >= threshold) { sec.classList.add('hidden'); return; }
+  // ยังไม่เคยเปิด cart sidebar → ยังไม่ต้องโหลด recs (ประหยัด request ทุก page load)
+  if (!_cartSidebarOpened) return;
   sec.classList.remove('hidden');
 
   const cartKey = _cart.map(i => i.id).sort().join(',');
@@ -1541,7 +1555,9 @@ async function _refreshCartProductData() {
 
   _cartProductRefreshPromise = (async () => {
     try {
-      const res = await fetch(`${API_BASE}/products?limit=100&_=${Date.now()}`, { cache: 'no-store' });
+      // lite=1 + ไม่ใส่ cache-buster: เดิมโหลด catalog เต็ม ~177KB ทุกหน้าที่มีของในตะกร้า
+      // ตอนนี้ payload เล็กลง ~90% และถ้าข้อมูลไม่เปลี่ยนจะได้ 304 แทนการดาวน์โหลดใหม่
+      const res = await fetch(`${API_BASE}/products?lite=1&limit=100`);
       if (!res.ok) return _cart;
       const json = await res.json();
       const products = Array.isArray(json) ? json : (json.data || []);
