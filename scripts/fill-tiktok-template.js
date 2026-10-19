@@ -98,7 +98,11 @@ const LAST_COL = 27;        // AB
   const cats = listOf('Category');
   const brands = listOf('Brand');
   if (!cats.includes(CONFIG.category)) console.warn(`⚠ หมวดหมู่ "${CONFIG.category}" ไม่อยู่ในชีต Category — เช็คสะกดให้ตรงเป๊ะ`);
-  if (!brands.includes(CONFIG.brand)) console.warn(`⚠ แบรนด์ "${CONFIG.brand}" ไม่อยู่ในชีต Brand`);
+  // เทมเพลตบางรอบไม่มีแบรนด์ร้านในดรอปดาวน์ (เช่นมีแค่ "ไม่มีแบรนด์") → ใช้ตัวแรกในชีตแทน ไม่งั้นอัปไม่ผ่าน
+  if (!brands.includes(CONFIG.brand)) {
+    console.warn(`⚠ แบรนด์ "${CONFIG.brand}" ไม่อยู่ในชีต Brand — ใช้ "${brands[0] || ''}" แทน`);
+    CONFIG.brand = brands[0] || '';
+  }
 
   // 4) map คอลัมน์ A..AB ตามหัวเทมเพลต
   const rows = [];
