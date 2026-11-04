@@ -123,12 +123,54 @@ function _escapeHtml(str) {
 
 // ── HTML Templates ──────────────────────────────────────────────────────────
 
+function _topAnnouncementBarHTML() {
+  let cfg = null;
+  try {
+    const raw = localStorage.getItem('btmd_storefront_config');
+    if (raw) cfg = JSON.parse(raw);
+  } catch {}
+
+  const ann = (cfg && cfg.announcement) ? cfg.announcement : {
+    enabled: true,
+    text: '🚚 ส่งด่วนฟรี Flash Express ทั่วประเทศ เมื่อสั่งซื้อ 200.- ขึ้นไป | เก็บเงินปลายทาง (COD) ได้',
+    link: '/shipping',
+    theme: 'bronze'
+  };
+
+  if (ann.enabled === false || !ann.text) return '';
+
+  const text = _escapeHtml(ann.text);
+  const link = ann.link ? _url(ann.link) : '';
+  const theme = ann.theme || 'bronze';
+
+  let bgClass = 'bg-[#8B7355] text-white';
+  if (theme === 'dark') {
+    bgClass = 'bg-[#0F172A] text-slate-100 border-b border-white/10';
+  } else if (theme === 'ruby') {
+    bgClass = 'bg-[#991b1b] text-white';
+  } else if (theme === 'gold') {
+    bgClass = 'bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-gray-900 font-semibold';
+  }
+
+  const content = link
+    ? `<a href="${link}" class="inline-flex items-center gap-1.5 hover:underline font-medium text-xs sm:text-[13px] tracking-wide">${text} <i class="ph ph-arrow-right text-xs"></i></a>`
+    : `<span class="inline-flex items-center gap-1.5 font-medium text-xs sm:text-[13px] tracking-wide">${text}</span>`;
+
+  return `
+  <div id="site-top-announcement" class="w-full py-1 px-4 text-center transition-all duration-300 relative z-[51] shadow-sm ${bgClass}">
+    <div class="max-w-7xl mx-auto flex items-center justify-center">
+      ${content}
+    </div>
+  </div>`;
+}
+
 function _navbarHTML() {
   const _fbUrl   = localStorage.getItem('btmd_social_facebook') || 'https://www.facebook.com/btmusicdrive';
   const _lineUrl = localStorage.getItem('btmd_social_line')     || 'https://line.me/R/ti/p/@bt1992?from=page&openQrModal=true&searchId=bt1992';
   const _ttUrl   = localStorage.getItem('btmd_social_tiktok')   || 'https://www.tiktok.com/@btmusicdrive';
   return `
   <nav class="bg-secondary shadow-sm fixed w-full z-50 top-0 transition-all duration-300" id="navbar">
+    ${_topAnnouncementBarHTML()}
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between h-16 items-center">
         <a href="/" class="flex-shrink-0 flex items-center cursor-pointer no-underline" aria-label="btmusicdrive หน้าแรก">

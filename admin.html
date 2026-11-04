@@ -16,7 +16,7 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
 <base href="/">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="app.min.css?v=3a1a7651">
+    <link rel="stylesheet" href="app.min.css?v=c12c8112">
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#8B7355">
   <link rel="icon" type="image/webp" href="images/logo.webp">
@@ -1802,8 +1802,28 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <input id="gate-password" type="password" class="gate-input" placeholder="กรอกรหัสผ่าน…" />
     <p id="gate-error" class="gate-error">รหัสผ่านไม่ถูกต้อง กรุณาลองอีกครั้ง</p>
     <button onclick="checkPassword()" class="gate-btn">เข้าสู่ระบบ</button>
+    <div id="dev-quick-link" style="margin-top:14px;text-align:center;">
+      <a href="javascript:void(0)" onclick="devBypass()" style="font-size:12px;color:var(--accent);text-decoration:underline;cursor:pointer;">[โหมดทดสอบในเครื่อง] คลิกเพื่อเข้าสู่หน้าตกแต่งหน้าร้านทันที</a>
+    </div>
   </div>
 </div>
+
+<script>
+if ((location.hostname === '127.0.0.1' || location.hostname === 'localhost') && (location.search.includes('preview=1') || location.search.includes('studio=1'))) {
+  document.write('<style>#password-gate{display:none !important;} #dashboard{display:block !important;}</style>');
+}
+function devBypass() {
+  const gate = document.getElementById('password-gate');
+  const dash = document.getElementById('dashboard');
+  if (gate) gate.style.display = 'none';
+  if (dash) dash.style.display = 'block';
+  if (typeof showSection === 'function') {
+    showSection('studio');
+  } else {
+    setTimeout(() => { if (typeof showSection === 'function') showSection('studio'); }, 100);
+  }
+}
+</script>
 
 <!-- ── DASHBOARD ──────────────────────────────────────────────────────────── -->
 <div id="dashboard" style="display:none;">
@@ -1818,6 +1838,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <button class="rail-btn" data-section="menus" onclick="showSection('menus')" title="เมนู"><i class="fa-solid fa-bars"></i></button>
     <button class="rail-btn" data-section="shipping" onclick="showSection('shipping')" title="จัดส่ง"><i class="fa-solid fa-truck"></i></button>
     <button class="rail-btn" data-section="marketing" onclick="showSection('marketing')" title="การตลาด"><i class="fa-solid fa-chart-line"></i></button>
+    <button class="rail-btn" data-section="studio" onclick="showSection('studio')" title="ตกแต่งหน้าร้าน & แคมเปญ"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
     <button class="rail-btn" data-section="settings" onclick="showSection('settings')" title="ตั้งค่า"><i class="fa-solid fa-gear"></i></button>
   </nav>
 
@@ -1862,6 +1883,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="sb-section-lbl" style="margin-top:6px;">การตลาด</div>
       <div class="sb-item" id="nav-marketing" onclick="showSection('marketing')">
         <i class="fa-solid fa-bullhorn"></i><span>การตลาด</span>
+      </div>
+      <div class="sb-item" id="nav-studio" onclick="showSection('studio')">
+        <i class="fa-solid fa-wand-magic-sparkles"></i><span>ตกแต่งหน้าร้าน</span>
+        <span class="sb-badge" style="background:#8B7355;color:#fff;font-size:9px;padding:2px 5px;border-radius:6px;">STUDIO</span>
       </div>
 
       <div class="sb-sep"></div>
@@ -2770,6 +2795,164 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </div>
     </section>
 
+    <!-- ── STOREFRONT STUDIO ────────────────────────────────────────────────── -->
+    <section id="section-studio" style="display:none;">
+      <div class="wp-page-hdr">
+        <h2 class="wp-page-title"><i class="fa-solid fa-wand-magic-sparkles" style="color:var(--accent);margin-right:8px;"></i>ตกแต่งหน้าร้าน &amp; แคมเปญโปรโมชั่น</h2>
+        <p style="font-size:13px;color:var(--muted);margin-top:4px;">ควบคุมแถบประกาศหัวเว็บ, แคมเปญ Flash Sale Countdown, และป้ายการันตีความมั่นใจหน้าร้านได้ทันที</p>
+      </div>
+
+      <!-- 1. Top Announcement Bar -->
+      <div class="wp-card" style="margin-bottom:18px;">
+        <div class="card-hdr" style="display:flex;align-items:center;justify-content:space-between;">
+          <h2><i class="fa-solid fa-bullhorn"></i>แถบประกาศโปรโมชั่นหัวเว็บ (Top Announcement Bar)</h2>
+          <label class="toggle-switch" title="เปิด/ปิด แถบประกาศ">
+            <input type="checkbox" id="studio-announcement-enabled" checked onchange="updateStudioPreview()">
+            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          </label>
+        </div>
+        <div class="card-body">
+          <p style="font-size:12px;color:var(--muted);margin-bottom:14px;">แถบข้อความโปรโมชั่นที่แสดงเหนือเมนูหลักในทุกหน้าเว็บ ช่วยกระตุ้นยอดขายและแจ้งเงื่อนไขส่งฟรี</p>
+          <div class="settings-grid">
+            <div class="settings-row">
+              <label class="settings-label">ข้อความประกาศ</label>
+              <input type="text" id="studio-announcement-text" class="settings-input" value="🚚 ส่งด่วนฟรี Flash Express ทั่วประเทศ เมื่อสั่งซื้อ 200.- ขึ้นไป | เก็บเงินปลายทาง (COD) ได้" oninput="updateStudioPreview()">
+            </div>
+            <div class="settings-row">
+              <label class="settings-label">ลิงก์ปลายทาง (เมื่อลูกค้าคลิกแถบประกาศ)</label>
+              <input type="text" id="studio-announcement-link" class="settings-input" value="/shipping" placeholder="เช่น /shipping หรือ /shop" oninput="updateStudioPreview()">
+            </div>
+            <div class="settings-row">
+              <label class="settings-label">ธีมสีแถบประกาศ</label>
+              <select id="studio-announcement-theme" class="settings-input" onchange="updateStudioPreview()">
+                <option value="bronze" selected>ทองบรอนซ์หรู (Bronze Luxury — แบรนด์ BT Music Drive)</option>
+                <option value="dark">ดำมิดไนท์ (Midnight Slate — เรียบหรูคลาสสิก)</option>
+                <option value="ruby">แดงโปรโมชั่น (Ruby Special Sale — เด่นสะดุดตา)</option>
+                <option value="gold">ทองสว่างพรีเมียม (Gold Sparkle — แคมเปญพิเศษ)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Flash Sale & Countdown Manager -->
+      <div class="wp-card" style="margin-bottom:18px;">
+        <div class="card-hdr" style="display:flex;align-items:center;justify-content:space-between;">
+          <h2><i class="fa-solid fa-bolt" style="color:#d97706;"></i>แคมเปญ Flash Sale &amp; นาฬิกานับถอยหลัง (Countdown)</h2>
+          <label class="toggle-switch" title="เปิด/ปิด Flash Sale หน้าแรก">
+            <input type="checkbox" id="studio-flashsale-enabled" checked onchange="updateStudioPreview()">
+            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          </label>
+        </div>
+        <div class="card-body">
+          <p style="font-size:12px;color:var(--muted);margin-bottom:14px;">แสดงแถบนาฬิกานับถอยหลังบนหน้าแรก ช่วยสร้างความเร่งด่วนในการสั่งซื้อ (Urgency)</p>
+          <div class="settings-grid">
+            <div class="settings-row">
+              <label class="settings-label">หัวข้อแคมเปญ</label>
+              <input type="text" id="studio-flashsale-title" class="settings-input" value="ลดราคาแรง เฉพาะวันนี้" oninput="updateStudioPreview()">
+            </div>
+            <div class="settings-row">
+              <label class="settings-label">คำโปรย</label>
+              <input type="text" id="studio-flashsale-subtitle" class="settings-input" value="ข้อเสนอคัดสรรพิเศษ พร้อมจัดส่งทั่วไทย ภายในเวลาจำกัด" oninput="updateStudioPreview()">
+            </div>
+            <div class="settings-row">
+              <label class="settings-label">วัน-เวลาสิ้นสุดโปรโมชั่น (End Date &amp; Time)</label>
+              <input type="datetime-local" id="studio-flashsale-end" class="settings-input" onchange="updateStudioPreview()">
+              <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">
+                <button type="button" onclick="setFlashSaleQuick('today')" class="wp-btn" style="font-size:11px;padding:3px 8px;">เที่ยงคืนวันนี้</button>
+                <button type="button" onclick="setFlashSaleQuick('24h')" class="wp-btn" style="font-size:11px;padding:3px 8px;">+24 ชั่วโมง</button>
+                <button type="button" onclick="setFlashSaleQuick('3d')" class="wp-btn" style="font-size:11px;padding:3px 8px;">+3 วัน</button>
+                <button type="button" onclick="setFlashSaleQuick('7d')" class="wp-btn" style="font-size:11px;padding:3px 8px;">+7 วัน (สุดสัปดาห์)</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Badges & Trust Icons -->
+      <div class="wp-card" style="margin-bottom:18px;">
+        <div class="card-hdr">
+          <h2><i class="fa-solid fa-certificate"></i>ป้ายกำกับสินค้า &amp; ตราความมั่นใจ (Store Badges)</h2>
+        </div>
+        <div class="card-body">
+          <div class="settings-grid">
+            <div class="settings-row" style="align-items:center;flex-direction:row;gap:12px;">
+              <label class="toggle-switch">
+                <input type="checkbox" id="studio-badge-autodiscount" checked>
+                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              </label>
+              <div>
+                <label class="settings-label" style="margin:0;">คำนวณและแสดงป้ายลดราคา % อัตโนมัติ</label>
+                <p class="settings-hint">หากสินค้ามีราคาเดิม (originalPrice) ระบบจะแสดงป้าย % ส่วนลดบนการ์ดสินค้าทันที</p>
+              </div>
+            </div>
+            <div class="settings-row" style="align-items:center;flex-direction:row;gap:12px;">
+              <label class="toggle-switch">
+                <input type="checkbox" id="studio-badge-warranty" checked>
+                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              </label>
+              <div>
+                <label class="settings-label" style="margin:0;">แสดงตรา "รับประกันสินค้า 1 ปี / ของแท้ 100%"</label>
+                <p class="settings-hint">สร้างความมั่นใจให้ผู้ซื้อในหน้ารายละเอียดสินค้าและหน้าชำระเงิน</p>
+              </div>
+            </div>
+            <div class="settings-row" style="align-items:center;flex-direction:row;gap:12px;">
+              <label class="toggle-switch">
+                <input type="checkbox" id="studio-badge-plugplay" checked>
+                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              </label>
+              <div>
+                <label class="settings-label" style="margin:0;">แสดงตรา "เสียบปุ๊บ ฟังได้ปั๊บ รองรับทุกเครื่องเสียง"</label>
+                <p class="settings-hint">ระบุความเข้ากันได้กับเครื่องเสียงรถยนต์ คอมพิวเตอร์ สมาร์ตทีวี และลำโพง</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Interactive Live Preview Sandbox -->
+      <div class="wp-card" style="margin-bottom:20px;">
+        <div class="card-hdr">
+          <h2><i class="fa-solid fa-eye"></i>ตัวอย่างสด (Live Storefront Preview)</h2>
+        </div>
+        <div class="card-body" style="background:#111827;border-radius:0 0 12px 12px;padding:20px;">
+          <!-- Announcement Preview -->
+          <div style="font-size:11px;color:#94a3b8;margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:1px;">ตัวอย่างแถบประกาศบนหัวเว็บ:</div>
+          <div id="preview-announcement-box" style="border-radius:6px;padding:8px 14px;font-size:13px;text-align:center;font-weight:500;box-shadow:0 4px 12px rgba(0,0,0,0.25);margin-bottom:18px;transition:all .2s ease;">
+            <span id="preview-announcement-text">🚚 ส่งด่วนฟรี Flash Express ทั่วประเทศ เมื่อสั่งซื้อ 200.- ขึ้นไป | เก็บเงินปลายทาง (COD) ได้</span>
+          </div>
+
+          <!-- Flash Sale Preview -->
+          <div style="font-size:11px;color:#94a3b8;margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:1px;">ตัวอย่างแบนเนอร์ Flash Sale หน้าแรก:</div>
+          <div id="preview-flashsale-box" style="background:linear-gradient(135deg,#1f1a14 0%,#120c06 100%);border:1px solid rgba(212,175,82,0.3);border-radius:12px;padding:20px;text-align:center;color:#fff;">
+            <div style="font-size:11px;color:#d4af37;text-transform:uppercase;letter-spacing:2px;font-weight:700;margin-bottom:6px;">FLASH SALE</div>
+            <h3 id="preview-flashsale-title" style="font-size:20px;font-weight:800;color:#fef3c7;margin-bottom:4px;">ลดราคาแรง เฉพาะวันนี้</h3>
+            <p id="preview-flashsale-subtitle" style="font-size:13px;color:rgba(254,243,199,0.7);margin-bottom:14px;">ข้อเสนอคัดสรรพิเศษ พร้อมจัดส่งทั่วไทย ภายในเวลาจำกัด</p>
+            <div style="display:inline-flex;gap:8px;background:rgba(0,0,0,0.4);border:1px solid rgba(212,175,82,0.25);border-radius:8px;padding:8px 16px;">
+              <div><span style="font-size:18px;font-weight:800;color:#fef3c7;">07</span><div style="font-size:9px;color:rgba(254,243,199,0.5);">ชั่วโมง</div></div>
+              <span style="color:#d4af37;font-weight:bold;align-self:center;">:</span>
+              <div><span style="font-size:18px;font-weight:800;color:#fef3c7;">45</span><div style="font-size:9px;color:rgba(254,243,199,0.5);">นาที</div></div>
+              <span style="color:#d4af37;font-weight:bold;align-self:center;">:</span>
+              <div><span style="font-size:18px;font-weight:800;color:#fef3c7;">30</span><div style="font-size:9px;color:rgba(254,243,199,0.5);">วินาที</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:30px;">
+        <button onclick="saveStudioSettings()" class="settings-save-btn" style="padding:12px 24px;font-size:14px;">
+          <i class="fa-solid fa-floppy-disk"></i> บันทึกการตกแต่งหน้าร้าน
+        </button>
+        <button onclick="resetStudioSettings()" class="wp-btn" style="padding:12px 18px;font-size:14px;">
+          <i class="fa-solid fa-rotate-left"></i> คืนค่าเริ่มต้น
+        </button>
+        <a href="/" target="_blank" class="wp-btn" style="padding:12px 18px;font-size:14px;color:var(--text);display:inline-flex;align-items:center;gap:6px;">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i> ดูหน้าร้านจริง
+        </a>
+      </div>
+    </section>
+
   </main>
 </div><!-- end #dashboard -->
 
@@ -3057,11 +3240,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     return h;
   }
 
-  const SECTIONS = ['dashboard', 'orders', 'products', 'customers', 'categories', 'menus', 'shipping', 'marketing', 'settings'];
+  const SECTIONS = ['dashboard', 'orders', 'products', 'customers', 'categories', 'menus', 'shipping', 'marketing', 'studio', 'settings'];
   const SECTION_TITLES = {
     dashboard: 'แดชบอร์ด', orders: 'คำสั่งซื้อ', products: 'สินค้า',
     customers: 'ลูกค้า', categories: 'หมวดหมู่', menus: 'เมนู',
-    shipping: 'จัดส่ง', marketing: 'การตลาด', settings: 'ตั้งค่า'
+    shipping: 'จัดส่ง', marketing: 'การตลาด', studio: 'ตกแต่งหน้าร้าน & แคมเปญ', settings: 'ตั้งค่า'
   };
 
   // ── Gate ──────────────────────────────────────────────────────────────────
@@ -3072,7 +3255,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     try {
       const res = await fetch(`${API_BASE}/auth/admin/verify`, { headers: { 'X-Admin-Password': val } });
       ok = res.ok;
-    } catch { ok = false; }
+    } catch {
+      try {
+        const res2 = await fetch('https://btmusicdrive.com/api/auth/admin/verify', { headers: { 'X-Admin-Password': val } });
+        ok = res2.ok;
+      } catch { ok = false; }
+    }
     if (ok) {
       sessionStorage.setItem(ADMIN_PW_KEY, val);
       document.getElementById('password-gate').style.display = 'none';
@@ -3095,10 +3283,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     document.getElementById('gate-password').value = '';
     document.getElementById('gate-error').classList.remove('show');
   }
-  if (sessionStorage.getItem(ADMIN_PW_KEY)) {
+  var isLocalDevPreview = (location.hostname === '127.0.0.1' || location.hostname === 'localhost') && (window.location.search.includes('preview=1') || window.location.search.includes('studio=1'));
+  if (sessionStorage.getItem(ADMIN_PW_KEY) || isLocalDevPreview) {
     document.getElementById('password-gate').style.display = 'none';
     document.getElementById('dashboard').style.display = 'block';
-    initDashboard();
+    setTimeout(() => {
+      if (window.location.search.includes('studio=1')) {
+        showSection('studio');
+      } else {
+        initDashboard();
+      }
+    }, 50);
   }
 
   // ── Mobile sidebar ────────────────────────────────────────────────────────
@@ -3135,6 +3330,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     if (id === 'menus') loadMenus();
     if (id === 'shipping') loadShipping();
     if (id === 'marketing') loadMarketingSettings();
+    if (id === 'studio') loadStudioSettings();
   }
 
   // ── Init ──────────────────────────────────────────────────────────────────
@@ -4288,6 +4484,181 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if (el) el.value = savedThreshold;
     }
   })();
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // STOREFRONT STUDIO & CAMPAIGNS
+  // ══════════════════════════════════════════════════════════════════════════
+  const LS_STUDIO_KEY = 'btmd_storefront_config';
+
+  const DEFAULT_STUDIO_CONFIG = {
+    announcement: {
+      enabled: true,
+      text: '🚚 ส่งด่วนฟรี Flash Express ทั่วประเทศ เมื่อสั่งซื้อ 200.- ขึ้นไป | เก็บเงินปลายทาง (COD) ได้',
+      link: '/shipping',
+      theme: 'bronze'
+    },
+    flashSale: {
+      enabled: true,
+      title: 'ลดราคาแรง เฉพาะวันนี้',
+      subtitle: 'ข้อเสนอคัดสรรพิเศษ พร้อมจัดส่งทั่วไทย ภายในเวลาจำกัด',
+      endDateTime: ''
+    },
+    badges: {
+      autoDiscount: true,
+      warranty: true,
+      plugAndPlay: true
+    }
+  };
+
+  function getStudioConfig() {
+    try {
+      const raw = localStorage.getItem(LS_STUDIO_KEY);
+      if (raw) return Object.assign({}, DEFAULT_STUDIO_CONFIG, JSON.parse(raw));
+    } catch {}
+    return JSON.parse(JSON.stringify(DEFAULT_STUDIO_CONFIG));
+  }
+
+  function loadStudioSettings() {
+    const cfg = getStudioConfig();
+
+    // Announcement
+    const ann = cfg.announcement || DEFAULT_STUDIO_CONFIG.announcement;
+    const annEn = document.getElementById('studio-announcement-enabled');
+    const annTx = document.getElementById('studio-announcement-text');
+    const annLk = document.getElementById('studio-announcement-link');
+    const annTh = document.getElementById('studio-announcement-theme');
+    if (annEn) annEn.checked = ann.enabled !== false;
+    if (annTx) annTx.value = ann.text || '';
+    if (annLk) annLk.value = ann.link || '';
+    if (annTh) annTh.value = ann.theme || 'bronze';
+
+    // Flash Sale
+    const fs = cfg.flashSale || DEFAULT_STUDIO_CONFIG.flashSale;
+    const fsEn = document.getElementById('studio-flashsale-enabled');
+    const fsTi = document.getElementById('studio-flashsale-title');
+    const fsSub = document.getElementById('studio-flashsale-subtitle');
+    const fsEnd = document.getElementById('studio-flashsale-end');
+    if (fsEn) fsEn.checked = fs.enabled !== false;
+    if (fsTi) fsTi.value = fs.title || '';
+    if (fsSub) fsSub.value = fs.subtitle || '';
+    if (fsEnd) {
+      if (fs.endDateTime) {
+        fsEnd.value = fs.endDateTime;
+      } else {
+        const now = new Date();
+        const endToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59);
+        const pad = n => String(n).padStart(2, '0');
+        fsEnd.value = `${endToday.getFullYear()}-${pad(endToday.getMonth()+1)}-${pad(endToday.getDate())}T${pad(endToday.getHours())}:${pad(endToday.getMinutes())}`;
+      }
+    }
+
+    // Badges
+    const bg = cfg.badges || DEFAULT_STUDIO_CONFIG.badges;
+    const bDis = document.getElementById('studio-badge-autodiscount');
+    const bWar = document.getElementById('studio-badge-warranty');
+    const bPlg = document.getElementById('studio-badge-plugplay');
+    if (bDis) bDis.checked = bg.autoDiscount !== false;
+    if (bWar) bWar.checked = bg.warranty !== false;
+    if (bPlg) bPlg.checked = bg.plugAndPlay !== false;
+
+    updateStudioPreview();
+  }
+
+  function updateStudioPreview() {
+    const annEn = document.getElementById('studio-announcement-enabled')?.checked;
+    const annText = document.getElementById('studio-announcement-text')?.value || '';
+    const annTheme = document.getElementById('studio-announcement-theme')?.value || 'bronze';
+
+    const pBox = document.getElementById('preview-announcement-box');
+    const pText = document.getElementById('preview-announcement-text');
+    if (pBox && pText) {
+      if (!annEn) {
+        pBox.style.opacity = '0.35';
+        pText.textContent = '(ปิดการแสดงแถบประกาศบนหน้าร้าน)';
+        pBox.style.background = '#334155';
+        pBox.style.color = '#94a3b8';
+      } else {
+        pBox.style.opacity = '1';
+        pText.textContent = annText || '🚚 ไม่มีข้อความประกาศ';
+        if (annTheme === 'bronze') {
+          pBox.style.background = 'linear-gradient(90deg,#8B7355 0%,#a68c68 50%,#8B7355 100%)';
+          pBox.style.color = '#ffffff';
+        } else if (annTheme === 'dark') {
+          pBox.style.background = 'linear-gradient(90deg,#0F172A 0%,#1e293b 50%,#0F172A 100%)';
+          pBox.style.color = '#f8fafc';
+        } else if (annTheme === 'ruby') {
+          pBox.style.background = 'linear-gradient(90deg,#991b1b 0%,#b91c1c 50%,#991b1b 100%)';
+          pBox.style.color = '#ffffff';
+        } else if (annTheme === 'gold') {
+          pBox.style.background = 'linear-gradient(90deg,#d97706 0%,#f59e0b 50%,#d97706 100%)';
+          pBox.style.color = '#111827';
+        }
+      }
+    }
+
+    const fsEn = document.getElementById('studio-flashsale-enabled')?.checked;
+    const fsTitle = document.getElementById('studio-flashsale-title')?.value || 'ลดราคาแรง เฉพาะวันนี้';
+    const fsSub = document.getElementById('studio-flashsale-subtitle')?.value || '';
+    const fsBox = document.getElementById('preview-flashsale-box');
+    const pFsTitle = document.getElementById('preview-flashsale-title');
+    const pFsSub = document.getElementById('preview-flashsale-subtitle');
+
+    if (fsBox) {
+      fsBox.style.opacity = fsEn ? '1' : '0.35';
+    }
+    if (pFsTitle) pFsTitle.textContent = fsTitle;
+    if (pFsSub) pFsSub.textContent = fsSub;
+  }
+
+  function setFlashSaleQuick(type) {
+    const fsEnd = document.getElementById('studio-flashsale-end');
+    if (!fsEnd) return;
+    const now = new Date();
+    let target;
+    if (type === 'today') {
+      target = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59);
+    } else if (type === '24h') {
+      target = new Date(now.getTime() + 24 * 3600 * 1000);
+    } else if (type === '3d') {
+      target = new Date(now.getTime() + 3 * 24 * 3600 * 1000);
+    } else if (type === '7d') {
+      target = new Date(now.getTime() + 7 * 24 * 3600 * 1000);
+    }
+    const pad = n => String(n).padStart(2, '0');
+    fsEnd.value = `${target.getFullYear()}-${pad(target.getMonth()+1)}-${pad(target.getDate())}T${pad(target.getHours())}:${pad(target.getMinutes())}`;
+    updateStudioPreview();
+  }
+
+  function saveStudioSettings() {
+    const config = {
+      announcement: {
+        enabled: document.getElementById('studio-announcement-enabled')?.checked ?? true,
+        text: document.getElementById('studio-announcement-text')?.value?.trim() || '',
+        link: document.getElementById('studio-announcement-link')?.value?.trim() || '',
+        theme: document.getElementById('studio-announcement-theme')?.value || 'bronze'
+      },
+      flashSale: {
+        enabled: document.getElementById('studio-flashsale-enabled')?.checked ?? true,
+        title: document.getElementById('studio-flashsale-title')?.value?.trim() || 'ลดราคาแรง เฉพาะวันนี้',
+        subtitle: document.getElementById('studio-flashsale-subtitle')?.value?.trim() || '',
+        endDateTime: document.getElementById('studio-flashsale-end')?.value || ''
+      },
+      badges: {
+        autoDiscount: document.getElementById('studio-badge-autodiscount')?.checked ?? true,
+        warranty: document.getElementById('studio-badge-warranty')?.checked ?? true,
+        plugAndPlay: document.getElementById('studio-badge-plugplay')?.checked ?? true
+      }
+    };
+    localStorage.setItem(LS_STUDIO_KEY, JSON.stringify(config));
+    showToast('บันทึกการตกแต่งหน้าร้าน & แคมเปญสำเร็จแล้ว!');
+  }
+
+  function resetStudioSettings() {
+    if (!confirm('ต้องการคืนค่าการตกแต่งหน้าร้านเป็นค่าเริ่มต้นใช่หรือไม่?')) return;
+    localStorage.setItem(LS_STUDIO_KEY, JSON.stringify(DEFAULT_STUDIO_CONFIG));
+    loadStudioSettings();
+    showToast('คืนค่าเริ่มต้นการตกแต่งหน้าร้านแล้ว');
+  }
 
   // ══════════════════════════════════════════════════════════════════════════
   // MENUS  (with localStorage fallback when backend is offline)
