@@ -316,17 +316,34 @@ router.post('/confirm-order', authenticateToken, async (req: AuthRequest, res: R
       });
     }
 
-    const order = (await createOrderInDB(
-      userId,
-      cart,
-      totalAmount,
-      discountAmount || discountAmountFromMeta,
-      validatedPromo,
-      shippingAddress,
-      'PAID',
-      invoiceNo || metadata.invoiceNo,
-      paymentIntentId
-    )) as any;
+    let order: any;
+    try {
+      order = await createOrderInDB(
+        userId,
+        cart,
+        totalAmount,
+        discountAmount || discountAmountFromMeta,
+        validatedPromo,
+        shippingAddress,
+        'PAID',
+        metadata.invoiceNo || invoiceNo || paymentIntentId,
+        paymentIntentId
+      );
+    } catch (e: any) {
+      // Webhook fallback may have created the order concurrently — return it instead of a 500
+      if (e?.code === 'P2002') {
+        const raced = await prisma.order.findUnique({ where: { paymentIntentId } });
+        if (raced) {
+          return res.json({
+            orderId: raced.id,
+            invoiceNo: raced.stripeSessionId,
+            paymentMethod: 'card',
+            message: 'Order already confirmed',
+          });
+        }
+      }
+      throw e;
+    }
 
     // Send confirmation email (await on serverless to avoid termination before SMTP completes)
     if (order.user) {
@@ -370,6 +387,22 @@ router.post('/confirm-order', authenticateToken, async (req: AuthRequest, res: R
     });
   } catch (error: any) {
     console.error('Confirm order error:', error);
+    // Cart already emptied by the webhook fallback → the order exists; return it
+    if (error.message?.includes('Cart is empty') && req.body?.paymentIntentId) {
+      try {
+        const existing = await prisma.order.findUnique({
+          where: { paymentIntentId: req.body.paymentIntentId },
+        });
+        if (existing && existing.userId === req.user?.id) {
+          return res.json({
+            orderId: existing.id,
+            invoiceNo: existing.stripeSessionId,
+            paymentMethod: 'card',
+            message: 'Order already confirmed',
+          });
+        }
+      } catch {}
+    }
     if (error.message?.includes('สต็อก') || error.message?.includes('Cart is empty')) {
       return res.status(400).json({ error: error.message });
     }
@@ -572,7 +605,7 @@ router.post('/cod-order', authenticateToken, async (req: AuthRequest, res: Respo
     sendTikTokPlaceOrderEvent({
       orderId: order.id,
       totalAmount,
-      products: cart.items.map((i: any) => ({ id: i.productId, name: i.product?.name, price: Number(i.priceAtTime) })),
+      products: cart.items.map((i: any) => ({ id: i.productId, name: i.product?.name, price: Number(i.product?.price) })),
       userData: _codEventData.userData,
     }).catch(() => {});
 

@@ -84,6 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadCart();
     initAddressDropdowns();
     initStripe();
+    if (handleStripeRedirectReturn()) return;
     if (typeof fbq === 'function') {
         const savedCart = JSON.parse(localStorage.getItem('btmusicdrive_cart') || '[]');
         const subtotal = savedCart.reduce((s, i) => s + Number(i.price || 0) * Number(i.quantity || 0), 0);
@@ -96,6 +97,50 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typeof ttq !== 'undefined') ttq.track('InitiateCheckout', { value: subtotal, currency: 'THB' });
     }
 });
+
+// ── Stripe redirect return (3DS / PromptPay ที่ต้อง redirect กลับมา) ─────────
+
+function handleStripeRedirectReturn() {
+    const params = new URLSearchParams(window.location.search);
+    const paymentIntentId = params.get('payment_intent');
+    const redirectStatus = params.get('redirect_status');
+    if (!paymentIntentId) return false;
+
+    // ล้าง query ออกจาก URL กันการยืนยันซ้ำเมื่อรีเฟรช
+    window.history.replaceState({}, document.title, window.location.pathname);
+
+    if (redirectStatus !== 'succeeded') {
+        showError('การชำระเงินไม่สำเร็จหรือถูกยกเลิก กรุณาลองใหม่อีกครั้ง');
+        return true;
+    }
+
+    const token = localStorage.getItem('btmusicdrive_token');
+    fetch(`${API_BASE}/payment/confirm-order`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ paymentIntentId })
+    })
+        .then(res => res.json().then(data => ({ ok: res.ok, data })))
+        .then(({ ok, data }) => {
+            if (!ok) {
+                showError(data.error || 'ไม่สามารถยืนยันคำสั่งซื้อได้ กรุณาติดต่อร้านค้า');
+                return;
+            }
+            const savedCart = JSON.parse(localStorage.getItem('btmusicdrive_cart') || '[]');
+            const value = savedCart.reduce((s, i) => s + Number(i.price || 0) * Number(i.quantity || 0), 0);
+            if (typeof ttq !== 'undefined') ttq.track('CompletePayment', { value, currency: 'THB' });
+            cart = [];
+            localStorage.removeItem('btmusicdrive_cart');
+            showSuccessModal(data.orderId, 'promptpay');
+        })
+        .catch(() => {
+            showError('เกิดข้อผิดพลาดเครือข่ายขณะยืนยันคำสั่งซื้อ หากถูกตัดเงินแล้วกรุณาติดต่อร้านค้า');
+        });
+    return true;
+}
 
 // ── Stripe Init ──────────────────────────────────────────────────────────────
 
@@ -600,7 +645,7 @@ async function placeOrder() {
     const honeypot = document.getElementById('order-confirm-token');
     if (honeypot && honeypot.value) {
         // Bot trap
-        showCheckoutError("ระบบตรวจพบสแปม กรุณาลองใหม่ในภายหลัง");
+        showError("ระบบตรวจพบสแปม กรุณาลองใหม่ในภายหลัง");
         return;
     }
 
@@ -708,7 +753,7 @@ async function processStripeOrder(method, shippingAddress, phone, btn, btnMobile
         const { error, paymentIntent } = await stripeInstance.confirmPayment({
             elements,
             confirmParams: {
-                return_url: window.location.origin + '//checkout',
+                return_url: window.location.origin + '/checkout',
             },
             redirect: 'if_required',
         });
