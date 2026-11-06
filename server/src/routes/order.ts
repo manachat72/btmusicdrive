@@ -256,8 +256,13 @@ router.get('/', authenticateToken, orderSearchLimiter, async (req: AuthRequest, 
     // Allow any authenticated user to search orders by their own phone number
     if (phoneQuery) {
       const normalizedPhone = phoneQuery.replace(/[-\s]/g, '');
+      if (normalizedPhone.length < 4) return res.json([]);
+      // Non-admins: only match their own account, so a partial number can't
+      // resolve to another user first and hide the caller's own orders.
       const user = await prisma.user.findFirst({
-        where: { phone: { contains: normalizedPhone } }
+        where: role === 'ADMIN'
+          ? { phone: { contains: normalizedPhone } }
+          : { id: userId, phone: { contains: normalizedPhone } },
       });
 
       if (!user) return res.json([]);

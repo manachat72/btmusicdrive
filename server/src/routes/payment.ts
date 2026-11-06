@@ -146,6 +146,11 @@ async function createOrderInDB(
 }
 
 // ── Create Payment Intent (Stripe) ──────────────────────────────────────────
+// Public, read-only: lets the storefront display the same shipping rules the server charges
+router.get('/shipping-config', (_req: Request, res: Response) => {
+  res.json({ shippingCost: SHIPPING_COST_THB, freeShippingThreshold: FREE_SHIPPING_THRESHOLD });
+});
+
 router.post('/create-payment-intent', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
     if (!stripe) {

@@ -4465,7 +4465,7 @@ function devBypass() {
       const freeThreshold = Number(document.getElementById('s-free-shipping').value) || 0;
       localStorage.setItem('btmd_shipping_cost', cost);
       localStorage.setItem('btmd_free_shipping_threshold', freeThreshold);
-      showToast(`บันทึกการจัดส่งแล้ว! ค่าส่ง ฿${cost} | ส่งฟรีเมื่อซื้อครบ ฿${freeThreshold}`);
+      showToast(`บันทึกในเบราว์เซอร์นี้แล้ว (ค่าส่ง ฿${cost} | ส่งฟรี ฿${freeThreshold}) — ยอดที่เก็บเงินจริงยังใช้ค่าจาก server: แก้ที่ server/src/routes/payment.ts`, true);
     } else {
       showToast(`บันทึก${labels[section] || 'การตั้งค่า'}แล้ว!`);
     }
