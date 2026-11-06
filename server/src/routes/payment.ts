@@ -1,7 +1,8 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import crypto from 'crypto';
 import Stripe from 'stripe';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
+import { getShippingConfig, saveShippingConfig, validateShippingConfig, calcShippingCost } from '../lib/shopSettings';
 import prisma from '../lib/prisma';
 import { sendOrderConfirmationEmail } from '../services/emailService';
 import { sendPurchaseEvent } from '../lib/meta-capi';
@@ -11,8 +12,6 @@ type StripeClient = InstanceType<typeof Stripe>;
 
 const router = Router();
 
-const SHIPPING_COST_THB = 35;
-const FREE_SHIPPING_THRESHOLD = 200;
 const TAX_RATE = 0;
 
 // ── Stripe setup ────────────────────────────────────────────────────────────
@@ -72,7 +71,7 @@ async function calculateOrderTotals(userId: string, promoCode?: string) {
 
   const discountedSubtotal = subtotal - discountAmount;
   const tax = Math.round(discountedSubtotal * TAX_RATE * 100) / 100;
-  const shippingCost = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST_THB;
+  const shippingCost = calcShippingCost(subtotal, await getShippingConfig());
   const totalAmount = Math.round((discountedSubtotal + shippingCost + tax) * 100) / 100;
 
   return { cart, subtotal, discountAmount, validatedPromo, tax, totalAmount };
@@ -147,8 +146,32 @@ async function createOrderInDB(
 
 // ── Create Payment Intent (Stripe) ──────────────────────────────────────────
 // Public, read-only: lets the storefront display the same shipping rules the server charges
-router.get('/shipping-config', (_req: Request, res: Response) => {
-  res.json({ shippingCost: SHIPPING_COST_THB, freeShippingThreshold: FREE_SHIPPING_THRESHOLD });
+router.get('/shipping-config', async (_req: Request, res: Response) => {
+  res.set('Cache-Control', 'no-store');
+  res.json(await getShippingConfig());
+});
+
+function requireAdminRole(req: AuthRequest, res: Response, next: NextFunction) {
+  if (req.user?.role !== 'ADMIN') {
+    res.status(403).json({ error: 'Forbidden' });
+    return;
+  }
+  next();
+}
+
+// ADMIN only: update shipping fee / free-shipping threshold (stored in ShopSetting)
+router.put('/shipping-config', authenticateToken, requireAdminRole, async (req: AuthRequest, res: Response) => {
+  const parsed = validateShippingConfig(req.body);
+  if (typeof parsed === 'string') {
+    res.status(400).json({ error: parsed });
+    return;
+  }
+  try {
+    res.json(await saveShippingConfig(parsed));
+  } catch (err) {
+    console.error('[ShippingConfig] save failed:', err);
+    res.status(500).json({ error: 'บันทึกไม่สำเร็จ — ตรวจว่า run prisma migrate deploy แล้ว' });
+  }
 });
 
 router.post('/create-payment-intent', authenticateToken, async (req: AuthRequest, res: Response) => {

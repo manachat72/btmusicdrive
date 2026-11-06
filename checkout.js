@@ -490,7 +490,7 @@ function updateTotals() {
     const discount = calcDiscount(subtotal);
     const tax = (subtotal - discount) * TAX_RATE;
     const shippingBase = cart.length > 0 ? SHIPPING_COST : 0;
-    const shippingDiscount = subtotal >= FREE_SHIPPING_THRESHOLD ? shippingBase : 0;
+    const shippingDiscount = FREE_SHIPPING_THRESHOLD > 0 && subtotal >= FREE_SHIPPING_THRESHOLD ? shippingBase : 0;
     const shippingPayable = shippingBase - shippingDiscount;
     const total = subtotal + shippingPayable + tax - discount;
     const fmt = (value) => `฿${Number(value || 0).toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;

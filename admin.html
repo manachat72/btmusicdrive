@@ -4458,31 +4458,48 @@ function devBypass() {
 
   // SETTINGS
   // ══════════════════════════════════════════════════════════════════════════
-  function saveSettings(section) {
+  async function saveSettings(section) {
     const labels = { store: 'ข้อมูลร้านค้า', shipping: 'การจัดส่ง', payment: 'ผู้ให้บริการชำระเงิน' };
     if (section === 'shipping') {
-      const cost = Number(document.getElementById('s-shipping').value) || 35;
-      const freeThreshold = Number(document.getElementById('s-free-shipping').value) || 0;
-      localStorage.setItem('btmd_shipping_cost', cost);
-      localStorage.setItem('btmd_free_shipping_threshold', freeThreshold);
-      showToast(`บันทึกในเบราว์เซอร์นี้แล้ว (ค่าส่ง ฿${cost} | ส่งฟรี ฿${freeThreshold}) — ยอดที่เก็บเงินจริงยังใช้ค่าจาก server: แก้ที่ server/src/routes/payment.ts`, true);
+      const costRaw = document.getElementById('s-shipping').value.trim();
+      const thresholdRaw = document.getElementById('s-free-shipping').value.trim();
+      const cost = Number(costRaw);
+      const freeThreshold = thresholdRaw === '' ? 0 : Number(thresholdRaw);
+      if (costRaw === '' || !Number.isFinite(cost) || cost < 0 || !Number.isFinite(freeThreshold) || freeThreshold < 0) {
+        showToast('กรุณากรอกค่าส่งและยอดส่งฟรีเป็นตัวเลขตั้งแต่ 0 ขึ้นไป', true);
+        return;
+      }
+      try {
+        const res = await fetch(`${API_BASE}/payment/shipping-config`, {
+          method: 'PUT',
+          headers: adminHeaders(),
+          body: JSON.stringify({ shippingCost: cost, freeShippingThreshold: freeThreshold }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+        // keep storefront cache in this browser in sync (components.js reads it as a fast fallback)
+        localStorage.setItem('btmd_shipping_cost', data.shippingCost);
+        localStorage.setItem('btmd_free_shipping_threshold', data.freeShippingThreshold);
+        showToast(`บันทึกการจัดส่งแล้ว! ค่าส่ง ฿${data.shippingCost} | ${data.freeShippingThreshold > 0 ? `ส่งฟรีเมื่อซื้อครบ ฿${data.freeShippingThreshold}` : 'ปิดส่งฟรี'}`);
+      } catch (err) {
+        showToast('บันทึกค่าส่งไม่สำเร็จ: ' + err.message, true);
+      }
     } else {
       showToast(`บันทึก${labels[section] || 'การตั้งค่า'}แล้ว!`);
     }
   }
 
-  // Load saved shipping settings into the admin UI fields
-  (function initShippingSettings() {
-    const savedCost = localStorage.getItem('btmd_shipping_cost');
-    const savedThreshold = localStorage.getItem('btmd_free_shipping_threshold');
-    if (savedCost !== null) {
-      const el = document.getElementById('s-shipping');
-      if (el) el.value = savedCost;
-    }
-    if (savedThreshold !== null) {
-      const el = document.getElementById('s-free-shipping');
-      if (el) el.value = savedThreshold;
-    }
+  // Load shipping settings from server (source of truth for checkout) into the admin UI fields
+  (async function initShippingSettings() {
+    try {
+      const res = await fetch(`${API_BASE}/payment/shipping-config`);
+      if (!res.ok) return;
+      const cfg = await res.json();
+      const costEl = document.getElementById('s-shipping');
+      const thrEl = document.getElementById('s-free-shipping');
+      if (costEl && Number.isFinite(cfg.shippingCost)) costEl.value = cfg.shippingCost;
+      if (thrEl && Number.isFinite(cfg.freeShippingThreshold)) thrEl.value = cfg.freeShippingThreshold;
+    } catch (_) { /* keep defaults in the form */ }
   })();
 
   // ══════════════════════════════════════════════════════════════════════════

@@ -44,6 +44,30 @@ if (localStorage.getItem('btmusicdrive_cookie_consent') === 'all') {
 var API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
   ? 'http://localhost:5000/api' : '/api';
 
+// ── Shipping config (source of truth = server, set from admin) ──────────────
+// localStorage is only a cache so the cart renders instantly; refreshed every page load.
+function _shipCfg() {
+  const cost = Number(localStorage.getItem('btmd_shipping_cost'));
+  const thr = Number(localStorage.getItem('btmd_free_shipping_threshold'));
+  return {
+    cost: localStorage.getItem('btmd_shipping_cost') !== null && Number.isFinite(cost) ? cost : 35,
+    threshold: localStorage.getItem('btmd_free_shipping_threshold') !== null && Number.isFinite(thr) ? thr : 200, // 0 = ปิดส่งฟรี
+  };
+}
+fetch(`${API_BASE}/payment/shipping-config`)
+  .then(r => (r.ok ? r.json() : null))
+  .then(cfg => {
+    if (!cfg || !Number.isFinite(cfg.shippingCost) || !Number.isFinite(cfg.freeShippingThreshold)) return;
+    const prev = _shipCfg();
+    localStorage.setItem('btmd_shipping_cost', cfg.shippingCost);
+    localStorage.setItem('btmd_free_shipping_threshold', cfg.freeShippingThreshold);
+    const changed = prev.cost !== cfg.shippingCost || prev.threshold !== cfg.freeShippingThreshold;
+    if (changed && document.readyState !== 'loading' && typeof _updateCartUI === 'function') {
+      try { _updateCartUI(); } catch (_) {}
+    }
+  })
+  .catch(() => {});
+
 const BTMD_IMAGE_FALLBACK = 'images/logo.webp';
 function _isBlockedProductImageSrc(src) {
   return /\/\/p16-oec-[^/]+\.ibyteimg\.com\//i.test(String(src || ''));
@@ -1364,9 +1388,8 @@ function _updateCartUI() {
   });
 
   // Calculate shipping
-  const shippingThreshold = Number(localStorage.getItem('btmd_free_shipping_threshold') || 200);
-  const shippingCost = Number(localStorage.getItem('btmd_shipping_cost') || 35);
-  const shipping = total >= shippingThreshold ? 0 : shippingCost;
+  const { cost: shippingCost, threshold: shippingThreshold } = _shipCfg();
+  const shipping = total <= 0 || (shippingThreshold > 0 && total >= shippingThreshold) ? 0 : shippingCost;
   const grandTotal = total + shipping;
 
   _updateCartPriceBreakdown(total, shipping, grandTotal);
@@ -1391,11 +1414,11 @@ function _updateCartPriceBreakdown(subtotal, shipping, grandTotal) {
 }
 
 function _updateBnavCart(subtotal) {
-  const threshold = Number(localStorage.getItem('btmd_free_shipping_threshold') || 200);
+  const threshold = _shipCfg().threshold;
   const amountEl = document.getElementById('bnav-cart-amount');
   const labelEl  = document.getElementById('bnav-cart-label');
   const stripFill = document.getElementById('bnav-ship-strip-fill');
-  const pct = Math.min((subtotal / threshold) * 100, 100);
+  const pct = threshold > 0 ? Math.min((subtotal / threshold) * 100, 100) : 0;
 
   if (stripFill) stripFill.style.width = pct + '%';
   if (stripFill) stripFill.style.background = pct >= 100
@@ -1436,12 +1459,12 @@ async function _loadFreeShipRecs() {
 }
 
 async function _renderFreeShipRecs(total) {
-  const threshold = Number(localStorage.getItem('btmd_free_shipping_threshold') || 200);
+  const threshold = _shipCfg().threshold;
   const sec = document.getElementById('free-ship-recs');
   const list = document.getElementById('free-ship-recs-list');
   if (!sec || !list) return;
 
-  if (total >= threshold) { sec.classList.add('hidden'); return; }
+  if (threshold <= 0 || total >= threshold) { sec.classList.add('hidden'); return; }
   // ยังไม่เคยเปิด cart sidebar → ยังไม่ต้องโหลด recs (ประหยัด request ทุก page load)
   if (!_cartSidebarOpened) return;
   sec.classList.remove('hidden');
@@ -1505,13 +1528,16 @@ function _addRecToCart(btn, id, name, price, img) {
 window._addRecToCart = _addRecToCart;
 
 function _updateFreeShippingBar(total) {
-  const threshold = Number(localStorage.getItem('btmd_free_shipping_threshold') || 200);
+  const threshold = _shipCfg().threshold;
   const bar      = document.getElementById('free-shipping-bar');
   const msgEl    = document.getElementById('free-shipping-msg');
   const pctEl    = document.getElementById('free-shipping-pct');
   const progress = document.getElementById('free-shipping-progress');
   const iconEl   = document.getElementById('free-ship-icon');
   if (!bar || !progress) return;
+  // ปิดส่งฟรี (threshold = 0) → ซ่อนแถบ
+  bar.style.display = threshold > 0 ? '' : 'none';
+  if (threshold <= 0) { _renderFreeShipRecs(total); return; }
 
   const pct = Math.min((total / threshold) * 100, 100);
   progress.style.width = pct + '%';

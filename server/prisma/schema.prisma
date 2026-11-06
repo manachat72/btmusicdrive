@@ -160,3 +160,11 @@ model PromoCode {
   isActive    Boolean   @default(true)
   createdAt   DateTime  @default(now())
 }
+
+// Key-value store for shop settings editable from admin (e.g. shipping config).
+// Values are JSON strings; see src/lib/shopSettings.ts for keys and defaults.
+model ShopSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
