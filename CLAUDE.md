@@ -268,3 +268,8 @@ GA4_PROPERTY_ID="533617757"       # GOOGLE_CLIENT_SECRET ไม่จำเป�
 - **Triage labels**: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix` — ดู `docs/agents/triage-labels.md`
 - **Domain docs**: single-context — `CONTEXT.md` + `docs/adr/` ที่ root (ยังไม่มี ให้ proceed silently) — ดู `docs/agents/domain.md`
 - **check-commit-push**: `.claude/skills/check-commit-push/` — ปิดงาน git ครบวงจร (เช็ค build ค้าง → commit → push → รายงาน)
+- **ระบบทำวิดีโออัตโนมัติ** (2026-11-09): skill `video-director` = ผู้กำกับ สั่ง SKU → คลิป 9:16 จาก Google Flow (Veo) + แคปชัน
+  - ทีม: `scripts/video/product-facts.js` (ข้อมูล) → agent `video-scriptwriter` (บท+พรอม) → ผู้กำกับเจนใน Flow ผ่าน Chrome
+    (`docs/google-flow-video-flow.md`) → agent `video-qa` (`scripts/video/qa-check.py` + ดูเฟรม) → agent `video-caption-writer`
+  - งานผลิตอยู่ `videos/flow/<SKU>/` (gitignore) · กด "อนุมัติ" เครดิตเองได้ทีละคลิป ≤10 เครดิต ห้าม "อนุมัติเสมอ"
+  - หน้า Flow ใช้ได้แค่ `javascript_tool` (screenshot/find timeout) · QA ถอดเสียงด้วย `py -3.12` (faster-whisper)

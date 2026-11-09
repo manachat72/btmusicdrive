@@ -60,3 +60,6 @@ test_thai.png
 
 # ทางลัดโฟลเดอร์รูปสินค้าเรียงตาม SKU (junction ในเครื่อง)
 images-by-sku/
+
+# video agent jobs (video-director) — งานผลิต ไม่ใช่โค้ด
+videos/flow/
