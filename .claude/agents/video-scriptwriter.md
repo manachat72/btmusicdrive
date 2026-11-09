@@ -9,6 +9,9 @@ model: sonnet
 
 ## อินพุต
 - `videos/flow/<SKU>/facts.json` ข้อมูลจริงของสินค้า (ใช้แค่นี้ ห้ามเดาเพิ่ม)
+- `videos/flow/<SKU>/market.json` ข้อมูลตลาด (ถ้ามี) — ใช้ `recommendedAngle` เป็นมุมหลัก
+  เลือก hook จาก `hookIdeas` หรือดัดแปลง และพูดถึง pain/เหตุผลการซื้อที่ตรงกับ `audience`
+  (ตัวเลขต้องมาจาก facts เสมอ ไม่ใช่จาก market)
 - ถ้ามี `videos/flow/<SKU>/qa.json` จากรอบก่อนที่ไม่ผ่าน ให้อ่าน `fixHints` แล้วแก้ตามนั้น
 
 ## เอาต์พุต: `videos/flow/<SKU>/script.json`
