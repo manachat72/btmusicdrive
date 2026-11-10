@@ -27,13 +27,13 @@ btmusicdrive/
 ├── style.css               # Custom CSS variables + Tailwind supplements (BEM-lite)
 ├── tailwind.input.css      # Tailwind source → tailwind.min.css → app.min.css
 ├── *.min.js / app.min.css  # ไฟล์ที่ production ใช้จริง (generate จาก source)
-├── products.json           # Static product data 1000+ รายการ (fallback + CDN cache)
-├── categories.json         # Static category data 9 หมวด
+├── products.json           # Static product data ~55 รายการ ณ 2026-11 (fallback + CDN cache · sync จาก DB)
+├── categories.json         # Static category data 10 หมวด (รวม อุปกรณ์เสริม)
 ├── images/                 # AVIF/WebP images served statically
 ├── scripts/                # Build/utility scripts (Node.js)
 ├── server/src/
 │   ├── index.ts            # Express entry, middleware, route registration
-│   ├── routes/             # 13 route files (รวม line.ts — LINE chatbot webhook)
+│   ├── routes/             # 17 route files (รวม line.ts — LINE chatbot webhook, tiktok-shop.ts, search-console.ts)
 │   ├── middleware/         # auth.ts (JWT + admin password), rateLimiter.ts (500 req/15min)
 │   ├── lib/                # prisma.ts, categoryName, productSlug, meta-capi, tiktok-events, socialOg
 │   └── services/           # emailService.ts (Nodemailer order confirmation)
