@@ -270,7 +270,7 @@ GA4_PROPERTY_ID="533617757"       # GOOGLE_CLIENT_SECRET ไม่จำเป�
 - **check-commit-push**: `.claude/skills/check-commit-push/` — ปิดงาน git ครบวงจร (เช็ค build ค้าง → commit → push → รายงาน)
 - **ระบบทำวิดีโออัตโนมัติ** (2026-11-09): **agent `video-director`** = ผู้กำกับ (skill ชื่อเดียวกันเป็นแค่ทางลัดเรียก agent) สั่ง SKU → คลิป 9:16 จาก Google Flow (Veo) + แคปชัน
   - agent เรียก agent ต่อไม่ได้ → ผู้กำกับ Read กฎของ agent ลูกแล้วทำเองทุกขั้น · agent ลูกยังเรียกเดี่ยว ๆ ได้
-  - ทีม: `scripts/video/product-facts.js` (ข้อมูล) → agent `video-market-researcher` (ข้อมูลตลาด cache ต่อหมวด 14 วันที่ `videos/flow/_market/`) → agent `video-scriptwriter` (บท+พรอม) → ผู้กำกับเจนใน Flow ผ่าน Chrome
+  - ทีม: `scripts/video/product-facts.js` (ข้อมูล) → agent `video-market-researcher` (ข้อมูลตลาด cache ต่อหมวด 14 วันที่ `videos/flow/_market/`) → agent `video-scriptwriter` (บท+พรอม) → agent `video-producer` (เจนใน Flow ผ่าน Chrome + ดาวน์โหลด video.mp4)
     (`docs/google-flow-video-flow.md`) → agent `video-qa` (`scripts/video/qa-check.py` + ดูเฟรม) → agent `video-caption-writer`
   - งานผลิตอยู่ `videos/flow/<SKU>/` (gitignore) · กด "อนุมัติ" เครดิตเองได้ทีละคลิป ≤10 เครดิต ห้าม "อนุมัติเสมอ"
   - หน้า Flow ใช้ได้แค่ `javascript_tool` (screenshot/find timeout) · QA ถอดเสียงด้วย `py -3.12` (faster-whisper)

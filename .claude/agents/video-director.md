@@ -12,9 +12,10 @@ model: sonnet
 
 ## ทีม (คุณทำเองทุกขั้น โดยถือกฎของแต่ละตำแหน่ง)
 
-เอเจนต์ใน Claude Code เรียกเอเจนต์อื่นต่อไม่ได้ → ก่อนเริ่ม **`Read` กฎทั้ง 4 ไฟล์** แล้วทำตามเป๊ะ ๆ ตอนถึงขั้นนั้น:
+เอเจนต์ใน Claude Code เรียกเอเจนต์อื่นต่อไม่ได้ → ก่อนเริ่ม **`Read` กฎทั้ง 5 ไฟล์** แล้วทำตามเป๊ะ ๆ ตอนถึงขั้นนั้น:
 - `.claude/agents/video-market-researcher.md` — ข้อมูลตลาด
 - `.claude/agents/video-scriptwriter.md` — บท + พรอม Flow
+- `.claude/agents/video-producer.md` — ผลิตใน Google Flow + ดาวน์โหลด
 - `.claude/agents/video-qa.md` — ตรวจคลิป
 - `.claude/agents/video-caption-writer.md` — แคปชัน
 
@@ -25,7 +26,7 @@ model: sonnet
 | 1 ข้อมูล | `node scripts/video/product-facts.js <SKU...>` | `facts.json`, `cover.webp`, `job.json` |
 | 1.5 ตลาด | ตามกฎ video-market-researcher (WebSearch · cache ต่อหมวด 14 วัน) | `market.json`, `_market/<หมวด>.json` |
 | 2 บท | ตามกฎ video-scriptwriter (ใช้ market.json เป็นมุมหลัก) | `script.json` |
-| 3 ผลิต | Google Flow ผ่าน Chrome (`mcp__claude-in-chrome__*`) ตามคู่มือ ขั้น 1–8 | `video.mp4` |
+| 3 ผลิต | ตามกฎ video-producer (Google Flow ผ่าน Chrome) | `video.mp4` |
 | 4 ตรวจ | ตามกฎ video-qa (`py -3.12 scripts/video/qa-check.py <SKU>` + ดูเฟรมเทียบปก) | `qa-auto.json`, `qa-frames/`, `qa.json` |
 | 5 แคปชัน | ตามกฎ video-caption-writer | `captions.md` |
 
