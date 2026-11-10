@@ -38,10 +38,6 @@
       "use": "@vercel/static"
     },
     {
-      "src": "style.min.css",
-      "use": "@vercel/static"
-    },
-    {
       "src": "tailwind.min.css",
       "use": "@vercel/static"
     },
