@@ -268,8 +268,8 @@ GA4_PROPERTY_ID="533617757"       # GOOGLE_CLIENT_SECRET ไม่จำเป�
 - **Triage labels**: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix` — ดู `docs/agents/triage-labels.md`
 - **Domain docs**: single-context — `CONTEXT.md` + `docs/adr/` ที่ root (ยังไม่มี ให้ proceed silently) — ดู `docs/agents/domain.md`
 - **check-commit-push**: `.claude/skills/check-commit-push/` — ปิดงาน git ครบวงจร (เช็ค build ค้าง → commit → push → รายงาน)
-- **ระบบทำวิดีโออัตโนมัติ** (2026-11-09): **agent `video-director`** = ผู้กำกับ (skill ชื่อเดียวกันเป็นแค่ทางลัดเรียก agent) สั่ง SKU → คลิป 9:16 จาก Google Flow (Veo) + แคปชัน
-  - agent เรียก agent ต่อไม่ได้ → ผู้กำกับ Read กฎของ agent ลูกแล้วทำเองทุกขั้น · agent ลูกยังเรียกเดี่ยว ๆ ได้
+- **ระบบทำวิดีโออัตโนมัติ** (2026-11-11): **หัวหน้า = skill `/video-director`** รันในแชตหลัก รับแค่สินค้า (SKU/ชื่อ) → สร้าง `videos/flow/<SKU>/` → มอบงานลูกทีมทีละคนด้วย Agent tool → คลิป 9:16 จาก Google Flow (Veo) + แคปชัน
+  - หัวหน้าต้องอยู่แชตหลัก เพราะ agent เรียก agent ต่อไม่ได้ · agent `video-director` (ทำเองทุกขั้น) เหลือไว้เป็นทางสำรอง
   - ทีม: `scripts/video/product-facts.js` (ข้อมูล) → agent `video-market-researcher` (ข้อมูลตลาด cache ต่อหมวด 14 วันที่ `videos/flow/_market/`) → agent `video-scriptwriter` (บท+พรอม) → agent `video-producer` (เจนใน Flow ผ่าน Chrome + ดาวน์โหลด video.mp4)
     (`docs/google-flow-video-flow.md`) → agent `video-qa` (`scripts/video/qa-check.py` + ดูเฟรม) → agent `video-caption-writer`
   - งานผลิตอยู่ `videos/flow/<SKU>/` (gitignore) · กด "อนุมัติ" เครดิตเองได้ทีละคลิป ≤10 เครดิต ห้าม "อนุมัติเสมอ"
