@@ -325,6 +325,80 @@ function enforceLogin() {
     }
 }
 
+// ปุ่ม "เข้าสู่ระบบที่นี่" เปิดหน้าต่างล็อกอินบนหน้านี้เลย ลูกค้าไม่ต้องออกไปหน้าแรกแล้วหาทางกลับมาเอง
+// หน้านี้ไม่ได้โหลด components.js ไว้ จึงโหลดตอนกดครั้งแรก แล้วเก็บไว้แค่หน้าต่างล็อกอิน
+let checkoutAuthReady = null;
+let checkoutLoginWatch = null;
+
+function loadCheckoutAuthModal(src) {
+    if (checkoutAuthReady) return checkoutAuthReady;
+    checkoutAuthReady = new Promise((resolve, reject) => {
+        const before = new Set(document.body.children);
+        const script = document.createElement('script');
+        script.src = src || 'components.min.js';
+        script.onload = () => {
+            // components.js แปะเมนูล่าง แชต และตะกร้าข้างลงมาด้วย หน้าชำระเงินไม่ใช้ ลบออก
+            // (เว้น iframe/script ไว้ เพราะ Stripe ใส่ iframe ของตัวเองลง body)
+            [...document.body.children].forEach(el => {
+                if (before.has(el) || el.id === 'auth-modal' || el.tagName === 'IFRAME' || el.tagName === 'SCRIPT') return;
+                el.remove();
+            });
+            const modal = document.getElementById('auth-modal');
+            if (!modal || typeof _toggleAuthModal !== 'function') {
+                reject(new Error('auth modal not available'));
+                return;
+            }
+            document.getElementById('close-auth-btn')?.addEventListener('click', () => _toggleAuthModal());
+            modal.addEventListener('click', e => { if (e.target === modal) _toggleAuthModal(); });
+            document.getElementById('auth-toggle-btn')?.addEventListener('click', () => {
+                _isLoginMode = !_isLoginMode;
+                _updateAuthUI();
+            });
+            document.getElementById('auth-form')?.addEventListener('submit', e => _handleAuthSubmit(e));
+            resolve();
+        };
+        script.onerror = () => {
+            checkoutAuthReady = null;
+            reject(new Error('components script failed to load'));
+        };
+        document.body.appendChild(script);
+    });
+    return checkoutAuthReady;
+}
+
+function unlockCheckoutAfterLogin() {
+    document.getElementById('auth-guard')?.classList.add('hidden');
+    ['place-order-btn', 'place-order-btn-mobile'].forEach(id => {
+        const btn = document.getElementById(id);
+        if (!btn) return;
+        btn.disabled = false;
+        btn.classList.remove('opacity-50', 'cursor-not-allowed');
+    });
+    loadUserInfo();
+}
+
+async function openCheckoutLogin(src) {
+    try {
+        await loadCheckoutAuthModal(src);
+    } catch (e) {
+        console.error('Checkout login modal error:', e);
+        window.location = '/'; // โหลดหน้าต่างไม่ขึ้น ใช้ทางเดิม
+        return;
+    }
+    _toggleAuthModal();
+    // components.js ไม่ได้แจ้งว่าล็อกอินเสร็จ จึงคอยดู token ระหว่างที่หน้าต่างเปิดอยู่
+    clearInterval(checkoutLoginWatch);
+    checkoutLoginWatch = setInterval(() => {
+        if (localStorage.getItem('btmusicdrive_token')) {
+            clearInterval(checkoutLoginWatch);
+            unlockCheckoutAfterLogin();
+        } else if (document.getElementById('auth-modal')?.classList.contains('hidden')) {
+            clearInterval(checkoutLoginWatch);
+        }
+    }, 400);
+}
+window.openCheckoutLogin = openCheckoutLogin;
+
 // ── User Info ─────────────────────────────────────────────────────────────────
 
 async function loadUserInfo() {
