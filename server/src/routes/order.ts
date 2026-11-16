@@ -36,6 +36,7 @@ router.get('/stats', authenticateToken, async (req: AuthRequest, res: Response) 
       newCustomersThis, newCustomersLast,
       chartOrders,
       chartCustomers,
+      cartsWithItems,
     ] = await Promise.all([
       // รายได้เดือนนี้
       prisma.order.aggregate({
@@ -96,6 +97,8 @@ router.get('/stats', authenticateToken, async (req: AuthRequest, res: Response) 
         where: { createdAt: { gte: startOfSeries }, role: 'CUSTOMER' },
         select: { createdAt: true },
       }),
+      // ตะกร้าที่มีสินค้าแต่ยังไม่สั่งซื้อ — proxy สำหรับ "ลูกค้าหลุดตรงไหน" (checkout drop-off)
+      prisma.cart.count({ where: { items: { some: {} } } }),
     ]);
 
     // ดึงชื่อสินค้าขายดี
@@ -169,6 +172,7 @@ router.get('/stats', authenticateToken, async (req: AuthRequest, res: Response) 
         createdAt: o.createdAt,
       })),
       lowStock,
+      cartsWithItems,
       month: `${now.toLocaleString('th-TH', { month: 'long' })} ${now.getFullYear() + 543}`,
     });
   } catch (error) {

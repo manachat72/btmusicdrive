@@ -91,7 +91,7 @@ router.get('/stats', authenticateToken, async (req: AuthRequest, res: Response) 
     }
 
     const token = await getAccessToken(credentials);
-    const [monthlyReport, topPagesReport, countryReport, channelReport, weekReport] = await Promise.all([
+    const [monthlyReport, topPagesReport, landingPageReport, countryReport, channelReport, weekReport] = await Promise.all([
       runGaReport(propertyId, token, {
         dateRanges: [{ startDate: '365daysAgo', endDate: 'today' }],
         dimensions: [{ name: 'yearMonth' }],
@@ -111,6 +111,14 @@ router.get('/stats', authenticateToken, async (req: AuthRequest, res: Response) 
           { name: 'activeUsers' },
         ],
         orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }],
+        limit: 8,
+      }),
+      // หน้าแรกที่ลูกค้าเข้ามา (จุดเริ่มเส้นทาง) — GA4 API ไม่มี path/exit report เต็มรูปแบบ ใช้ landingPage แทน
+      runGaReport(propertyId, token, {
+        dateRanges: [{ startDate: '7daysAgo', endDate: 'today' }],
+        dimensions: [{ name: 'landingPage' }],
+        metrics: [{ name: 'sessions' }],
+        orderBys: [{ metric: { metricName: 'sessions' }, desc: true }],
         limit: 8,
       }),
       runGaReport(propertyId, token, {
@@ -168,6 +176,11 @@ router.get('/stats', authenticateToken, async (req: AuthRequest, res: Response) 
       activeUsers: reportMetric(row, 1),
     }));
 
+    const landingPages = (landingPageReport.rows || []).map((row: any) => ({
+      path: row.dimensionValues?.[0]?.value || '/',
+      sessions: reportMetric(row, 0),
+    }));
+
     const topCountries = (countryReport.rows || []).map((row: any) => ({
       country: row.dimensionValues?.[0]?.value || 'Unknown',
       activeUsers: reportMetric(row, 0),
@@ -197,6 +210,7 @@ router.get('/stats', authenticateToken, async (req: AuthRequest, res: Response) 
       monthly,
       totals,
       topPages,
+      landingPages,
       topCountries,
       channels,
       week7,

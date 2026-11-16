@@ -20,8 +20,16 @@ function _loadMarketingPixels() {
       f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-T3F9WD5P');
   }
 
-  // GA4 is configured inside GTM. Do not inject gtag.js again here: doing so
-  // downloads and initializes the same measurement ID twice.
+  // GA4 — loaded directly because the GTM container (GTM-T3F9WD5P) has no GA4 tag.
+  // If a GA4 tag is added to GTM later, remove this block to avoid double counting.
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = window.gtag || function(){ dataLayer.push(arguments); };
+  var _ga4 = document.createElement('script');
+  _ga4.async = true;
+  _ga4.src = 'https://www.googletagmanager.com/gtag/js?id=G-1QVJ5HDNZ5';
+  document.head.appendChild(_ga4);
+  gtag('js', new Date());
+  gtag('config', 'G-1QVJ5HDNZ5');
 
   // Meta Pixel
   !function(f,b,e,v,n,t,s){if(f.fbq&&f.fbq.loaded)return;n=f.fbq=function(){n.callMethod?

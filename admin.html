@@ -1981,6 +1981,14 @@ function devBypass() {
                 <div class="stat-trend" id="dash-customers-trend">กำลังโหลด...</div>
               </div>
             </div>
+            <div class="stat-card c-blue" title="ตะกร้าที่มีสินค้าแต่ลูกค้ายังไม่กดสั่งซื้อ (เฉพาะผู้ล็อกอิน)">
+              <div class="stat-icon c-blue"><i class="fa-solid fa-cart-arrow-down"></i></div>
+              <div>
+                <div class="stat-val" id="dash-cart-abandoned">—</div>
+                <div class="stat-lbl">ลูกค้าหลุดก่อน checkout</div>
+                <div class="stat-trend">ตะกร้ามีสินค้าแต่ยังไม่สั่งซื้อ</div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -2123,7 +2131,7 @@ function devBypass() {
           </div>
         </div>
         <!-- Tables -->
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:16px;">
           <!-- Top Pages -->
           <div class="wp-card" style="margin:0;">
             <div class="card-hdr"><h2>จำนวนการดู <span style="font-size:11px;color:var(--muted);font-weight:400;">7 วันล่าสุด</span></h2></div>
@@ -2133,6 +2141,17 @@ function devBypass() {
                 <th style="text-align:right;padding:6px 8px;color:var(--muted);font-weight:600;border-bottom:1px solid var(--border);">การดู</th>
               </tr></thead>
               <tbody id="ga4-pages-tbody"><tr><td colspan="2" style="padding:12px 8px;color:var(--muted);text-align:center;">กำลังโหลด...</td></tr></tbody>
+            </table>
+          </div>
+          <!-- Landing pages (จุดที่ลูกค้าเข้าสู่เว็บ) -->
+          <div class="wp-card" style="margin:0;" title="หน้าแรกที่ลูกค้าเปิดเข้ามาในแต่ละเซสชัน — GA4 API ไม่รองรับ path/exit report เต็มรูปแบบ">
+            <div class="card-hdr"><h2>หน้าที่ลูกค้าเข้ามาก่อน <span style="font-size:11px;color:var(--muted);font-weight:400;">7 วันล่าสุด</span></h2></div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px;">
+              <thead><tr>
+                <th style="text-align:left;padding:6px 8px;color:var(--muted);font-weight:600;border-bottom:1px solid var(--border);">หน้า Landing</th>
+                <th style="text-align:right;padding:6px 8px;color:var(--muted);font-weight:600;border-bottom:1px solid var(--border);">เซสชัน</th>
+              </tr></thead>
+              <tbody id="ga4-landing-tbody"><tr><td colspan="2" style="padding:12px 8px;color:var(--muted);text-align:center;">กำลังโหลด...</td></tr></tbody>
             </table>
           </div>
           <!-- Country -->
@@ -3486,11 +3505,22 @@ function devBypass() {
   }
 
   async function loadGoogleAnalyticsStats() {
+    // แสดงสาเหตุบนหน้าจอแทนการเงียบ — ไม่งั้นแอดมินไม่รู้ว่าทำไมไม่เห็นสถิติผู้เข้าชม
+    const showGaMsg = (msg) => {
+      const sec = document.getElementById('ga4-section');
+      if (!sec) return;
+      sec.style.display = 'block';
+      sec.innerHTML = `<div class="wp-card" style="padding:16px;font-size:13px;color:var(--muted);">สถิติผู้เข้าชม (GA4) ยังแสดงไม่ได้: ${escHtml(msg)}</div>`;
+    };
     try {
       const res = await fetch(`${API_BASE}/analytics/stats`, { headers: adminHeaders(false) });
-      if (!res.ok) return;
+      if (!res.ok) {
+        const e = await res.json().catch(() => ({}));
+        return showGaMsg(`${res.status} ${e.error || ''}`.trim());
+      }
       const ga = await res.json();
-      if (!ga.configured || !Array.isArray(ga.monthly)) return;
+      if (!ga.configured) return showGaMsg('เซิร์ฟเวอร์นี้ยังไม่ได้ตั้งค่า GA credentials (ถ้าเปิดจากเครื่องตัวเอง ให้เปิดที่ btmusicdrive.com/admin.html แทน)');
+      if (!Array.isArray(ga.monthly)) return showGaMsg('ข้อมูลที่ได้กลับมาไม่ครบ');
 
       // Visitor Insights chart
       const monthly = ga.monthly.map(m => ({
@@ -3532,6 +3562,17 @@ function devBypass() {
           ? ga.topPages.map(p => `<tr>
               <td style="padding:6px 8px;color:var(--text);border-bottom:1px solid var(--border);">${(p.title||'/').slice(0,40)}</td>
               <td style="padding:6px 8px;text-align:right;font-weight:600;border-bottom:1px solid var(--border);">${Number(p.pageViews).toLocaleString()}</td>
+            </tr>`).join('')
+          : '<tr><td colspan="2" style="padding:12px 8px;color:var(--muted);text-align:center;">ไม่มีข้อมูล</td></tr>';
+      }
+
+      // Landing pages (หน้าแรกที่ลูกค้าเข้ามาในแต่ละเซสชัน)
+      const landingTbody = document.getElementById('ga4-landing-tbody');
+      if (landingTbody) {
+        landingTbody.innerHTML = (ga.landingPages || []).length
+          ? ga.landingPages.map(p => `<tr>
+              <td style="padding:6px 8px;color:var(--text);border-bottom:1px solid var(--border);">${(p.path||'/').slice(0,40)}</td>
+              <td style="padding:6px 8px;text-align:right;font-weight:600;border-bottom:1px solid var(--border);">${Number(p.sessions).toLocaleString()}</td>
             </tr>`).join('')
           : '<tr><td colspan="2" style="padding:12px;text-align:center;color:var(--muted);">ไม่มีข้อมูล</td></tr>';
       }
@@ -3594,6 +3635,8 @@ function devBypass() {
 
       document.getElementById('dash-customers').textContent = d.customers.current.toLocaleString();
       document.getElementById('dash-customers-trend').innerHTML = trendHtml(d.customers.change);
+
+      document.getElementById('dash-cart-abandoned').textContent = Number(d.cartsWithItems || 0).toLocaleString();
 
       const revenueNow = Number(d.revenue.current || 0);
       const revenuePrev = d.revenue.change === -100
