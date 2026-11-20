@@ -56,7 +56,7 @@ router.get('/callback', (req: Request, res: Response) => {
     res,
     200,
     'TikTok authorization received',
-    'The authorization response was received securely. Configure the TikTok app credentials and token storage before enabling API requests.',
+    'Authorization received. Copy the full URL from the address bar and paste it into the local script (npm run ads:tiktok:auth). The code works once and expires in about an hour.',
   );
 });
 

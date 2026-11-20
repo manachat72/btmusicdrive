@@ -255,6 +255,9 @@ GA4_PROPERTY_ID="533617757"       # GOOGLE_CLIENT_SECRET ไม่จำเป�
   - รันซ่อนตอน login: Task Scheduler `BT AI Gateway` → `conhost --headless start-ai-gateway.bat` · log `%LOCALAPPDATA%\bt-ai\gateway.log` / `tunnel.log` · เช็ค `https://ai.btmusicdrive.com/health`
   - Cloudflare API endpoint create/token ค้างเป็นช่วงๆ แต่สร้างสำเร็จฝั่ง server — ถ้าต้องสร้าง tunnel ใหม่ ให้ใช้ secret ที่ถือเองแล้วเช็คด้วย `tunnel list`
 
+- **รายงานโฆษณา TikTok ให้ AI วิเคราะห์** (2026-11-21): `npm run ads:tiktok:auth` ครั้งเดียว (ต้องมี `TIKTOK_APP_ID`/`TIKTOK_APP_SECRET` ใน `server/.env.local` → วาง URL หน้า `/api/tiktok/callback` → token เก็บลง `.env.local`) แล้ว `npm run ads:tiktok [-- --days 7 | --from --to | --no-orders]` → `reports/tiktok-ads/SUMMARY.md` (+ JSON ดิบ) · **ผู้ใช้สั่ง "วิเคราะห์โฆษณา TikTok" = รันคำสั่งนี้แล้วอ่าน SUMMARY.md**
+  - ROAS ในรายงาน = blended (ออเดอร์ไม่มี ttclid/utm เลยแยกไม่ได้ว่ามาจากโฆษณาไหน) · `reports/tiktok-ads/` อยู่ใน .gitignore เพราะ repo public
+
 - **SEO artist research** (2026-08-20): agent `seo-artist-research` (`.claude/agents/`) วิจัยคีย์เวิร์ดรายศิลปินแล้วเก็บลง `scripts/data/artists.json`
   - **agent คืนแค่วัตถุดิบ** (`type/genre/aliases/keywords/hook/notes`) — **ห้ามให้มันเขียนชื่อสินค้า/description/meta/slug เอง** เพราะ `buildSeo()` คุมความยาว meta 155 ตัว + slug + validate อยู่
   - `unknown:true` = ไม่รู้จัก → `getArtist()` คืน null → ตกกลับ rule-based เดิม (แต่ยังนับว่า "วิจัยแล้ว" จะได้ไม่ยิงซ้ำ)
