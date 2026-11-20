@@ -64,5 +64,3 @@ images-by-sku/
 # video agent jobs (video-director) — งานผลิต ไม่ใช่โค้ด
 videos/flow/
 
-# TikTok Ads reports (ad spend = business data; repo is public)
-reports/tiktok-ads/

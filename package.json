@@ -34,8 +34,6 @@
     "seo:artists:test": "node scripts/artists-cli.js selftest",
     "perf:baseline": "bash scripts/run-lighthouse-baseline.sh",
     "perf:summary": "node scripts/summarize-lighthouse.js reports/pagespeed",
-    "ads:tiktok": "node scripts/tiktok-ads-report.js",
-    "ads:tiktok:auth": "node scripts/tiktok-ads-auth.js",
     "seo:descriptions": "node scripts/improve-product-descriptions.js",
     "seo:descriptions:apply": "node scripts/improve-product-descriptions.js --apply",
     "images:optimize-product": "node scripts/optimize-product-images.js",
