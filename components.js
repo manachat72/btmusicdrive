@@ -163,7 +163,7 @@ function _topAnnouncementBarHTML() {
   } catch {}
 
   const ann = (cfg && cfg.announcement) ? cfg.announcement : {
-    enabled: true,
+    enabled: false,
     text: '🚚 ส่งด่วนฟรี Flash Express ทั่วประเทศ เมื่อสั่งซื้อ 200.- ขึ้นไป | เก็บเงินปลายทาง (COD) ได้',
     link: '/shipping',
     theme: 'bronze'

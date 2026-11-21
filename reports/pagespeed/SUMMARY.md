@@ -4,13 +4,13 @@
 
 | Page | Mode | Perf | SEO | A11y | Best | FCP | LCP | CLS | TBT | Speed Index |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| blog-usb-guide | desktop | 98 | 100 | 87 | 100 | 894 ms | 894 ms | 0.002 | 0 ms | 894 ms |
-| blog-usb-guide | mobile | 96 | 100 | 92 | 100 | 2257 ms | 2257 ms | 0.022 | 8 ms | 2340 ms |
-| category-lukthung | desktop | 99 | 100 | 87 | 100 | 663 ms | 946 ms | 0.035 | 0 ms | 801 ms |
-| category-lukthung | mobile | 49 | 100 | 87 | 100 | 4362 ms | 7205 ms | 0.323 | 13 ms | 4362 ms |
-| home | desktop | 96 | 100 | 95 | 100 | 905 ms | 1062 ms | 0.001 | 0 ms | 1260 ms |
-| home | mobile | 69 | 100 | 100 | 100 | 3351 ms | 6046 ms | 0.000 | 39 ms | 4861 ms |
-| product-sek-loso | desktop | 90 | 100 | 87 | 100 | 897 ms | 1944 ms | 0.043 | 0 ms | 915 ms |
-| product-sek-loso | mobile | 62 | 100 | 87 | 100 | 4387 ms | 9449 ms | 0.000 | 6 ms | 5500 ms |
-| shop | desktop | 86 | 100 | 86 | 100 | 813 ms | 2095 ms | 0.108 | 0 ms | 858 ms |
-| shop | mobile | 63 | 100 | 86 | 100 | 4790 ms | 8639 ms | 0.041 | 6 ms | 4790 ms |
+| blog-usb-guide | desktop | 99 | 100 | 87 | 100 | 656 ms | 897 ms | 0.002 | 0 ms | 951 ms |
+| blog-usb-guide | mobile | 85 | 100 | 92 | 100 | 2969 ms | 3516 ms | 0.023 | 6 ms | 3152 ms |
+| category-lukthung | desktop | 82 | 100 | 87 | 100 | 1720 ms | 1981 ms | 0.035 | 0 ms | 1739 ms |
+| category-lukthung | mobile | 76 | 100 | 87 | 100 | 2793 ms | 5079 ms | 0.020 | 11 ms | 3634 ms |
+| home | desktop | 80 | 100 | 95 | 100 | 1671 ms | 2161 ms | 0.001 | 0 ms | 1950 ms |
+| home | mobile | 73 | 100 | 100 | 100 | 3123 ms | 4573 ms | 0.001 | 67 ms | 5686 ms |
+| product-sek-loso | desktop | 95 | 100 | 87 | 100 | 790 ms | 1358 ms | 0.043 | 0 ms | 1066 ms |
+| product-sek-loso | mobile | 77 | 100 | 87 | 100 | 2730 ms | 5026 ms | 0.000 | 26 ms | 2980 ms |
+| shop | desktop | 91 | 100 | 86 | 100 | 661 ms | 1534 ms | 0.110 | 0 ms | 938 ms |
+| shop | mobile | 71 | 100 | 86 | 100 | 2340 ms | 7578 ms | 0.038 | 63 ms | 4233 ms |
