@@ -87,7 +87,8 @@ async function createOrderInDB(
   shippingAddress: string,
   status: string,
   invoiceNo: string,
-  paymentIntentId: string
+  paymentIntentId: string,
+  shippingPhone?: string
 ) {
   const orderItems = cart.items.map((item: any) => ({
     productId: item.productId,
@@ -106,6 +107,7 @@ async function createOrderInDB(
         promoCode: validatedPromo?.code || null,
         discountAmount: discountAmount || 0,
         shippingAddress,
+        shippingPhone: shippingPhone || null,
         items: { create: orderItems },
       },
       include: { items: { include: { product: true } }, user: true },
@@ -325,6 +327,7 @@ router.post('/confirm-order', authenticateToken, async (req: AuthRequest, res: R
 
     const metadata = paymentIntent.metadata;
     const shippingAddress = metadata.shippingAddress || '';
+    const shippingPhone = metadata.phone || '';
     const promoCode = metadata.promoCode || undefined;
     const discountAmountFromMeta = parseFloat(metadata.discountAmount || '0');
 
@@ -355,7 +358,8 @@ router.post('/confirm-order', authenticateToken, async (req: AuthRequest, res: R
         shippingAddress,
         'PAID',
         metadata.invoiceNo || invoiceNo || paymentIntentId,
-        paymentIntentId
+        paymentIntentId,
+        shippingPhone
       );
     } catch (e: any) {
       // Webhook fallback may have created the order concurrently — return it instead of a 500
@@ -477,7 +481,7 @@ router.post('/webhook', async (req: Request, res: Response) => {
 
         // No order yet — customer paid but closed the browser before confirm-order.
         // Create the order from metadata so paid money never goes orderless.
-        const { userId, invoiceNo, shippingAddress, promoCode } = paymentIntent.metadata || {};
+        const { userId, invoiceNo, shippingAddress, phone: webhookPhone, promoCode } = paymentIntent.metadata || {};
         if (!userId) {
           console.error(`[Webhook] PaymentIntent ${paymentIntent.id} has no userId metadata — order not created`);
           break;
@@ -504,7 +508,8 @@ router.post('/webhook', async (req: Request, res: Response) => {
           shippingAddress || '',
           'PAID',
           invoiceNo || paymentIntent.id,
-          paymentIntent.id
+          paymentIntent.id,
+          webhookPhone || ''
         )) as any;
         console.log(`[Webhook] Order ${newOrder.id} created from webhook fallback`);
 
@@ -594,7 +599,8 @@ router.post('/cod-order', authenticateToken, async (req: AuthRequest, res: Respo
       shippingAddress,
       'PROCESSING',
       invoiceNo,
-      `cod_${invoiceNo}`
+      `cod_${invoiceNo}`,
+      phone
     )) as any;
 
     // Send confirmation email (await on serverless to avoid termination before SMTP completes)
