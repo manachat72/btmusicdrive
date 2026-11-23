@@ -176,12 +176,6 @@
   </url>
 
   <url>
-    <loc>https://btmusicdrive.com/product/usb-mp3-string-90s</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
     <loc>https://btmusicdrive.com/product/usb-mp3-tai-phroaa</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -303,12 +297,6 @@
 
   <url>
     <loc>https://btmusicdrive.com/product/usb-mp3-tai-dontri</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://btmusicdrive.com/product/usb-mp3-carabao-2gb</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -494,7 +482,19 @@
   </url>
 
   <url>
+    <loc>https://btmusicdrive.com/blog/download-playlist-to-mp3.sync-conflict-20261121-161930-ZYZEI5C</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
     <loc>https://btmusicdrive.com/blog/fix-car-usb-not-playing</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://btmusicdrive.com/blog/fix-car-usb-not-playing.sync-conflict-20261121-161930-ZYZEI5C</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -506,7 +506,19 @@
   </url>
 
   <url>
+    <loc>https://btmusicdrive.com/blog/how-to-play-usb-music-in-car.sync-conflict-20261121-161930-ZYZEI5C</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
     <loc>https://btmusicdrive.com/blog/listen-music-without-internet</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://btmusicdrive.com/blog/listen-music-without-internet.sync-conflict-20261121-161930-ZYZEI5C</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -518,7 +530,19 @@
   </url>
 
   <url>
+    <loc>https://btmusicdrive.com/blog/usb-music-buying-guide.sync-conflict-20261121-161931-ZYZEI5C</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
     <loc>https://btmusicdrive.com/blog/usb-music-gift-for-parents</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://btmusicdrive.com/blog/usb-music-gift-for-parents.sync-conflict-20261121-161929-ZYZEI5C</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>

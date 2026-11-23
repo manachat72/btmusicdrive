@@ -62,6 +62,12 @@ function _shipCfg() {
     threshold: localStorage.getItem('btmd_free_shipping_threshold') !== null && Number.isFinite(thr) ? thr : 200, // 0 = ปิดส่งฟรี
   };
 }
+// Product-card free-shipping badge text (style.css a.aspect-square.group.cursor-pointer::before); none = free shipping off.
+function _setFreeShipBadge() {
+  const t = _shipCfg().threshold;
+  document.documentElement.style.setProperty('--btmd-free-ship', t > 0 ? `"🚚 ส่งฟรี ครบ ฿${t}"` : 'none');
+}
+_setFreeShipBadge();
 fetch(`${API_BASE}/payment/shipping-config`)
   .then(r => (r.ok ? r.json() : null))
   .then(cfg => {
@@ -69,6 +75,7 @@ fetch(`${API_BASE}/payment/shipping-config`)
     const prev = _shipCfg();
     localStorage.setItem('btmd_shipping_cost', cfg.shippingCost);
     localStorage.setItem('btmd_free_shipping_threshold', cfg.freeShippingThreshold);
+    _setFreeShipBadge();
     const changed = prev.cost !== cfg.shippingCost || prev.threshold !== cfg.freeShippingThreshold;
     if (changed && document.readyState !== 'loading' && typeof _updateCartUI === 'function') {
       try { _updateCartUI(); } catch (_) {}
@@ -137,14 +144,12 @@ function _patchLinks(root) {
 window._url = _url;
 window._patchLinks = _patchLinks;
 const GOOGLE_CLIENT_ID = '46644504211-02mjffk321u1h5hbh1r5e5j5in30od93.apps.googleusercontent.com';
-const FB_APP_ID = '1946815902671088';
 
 let _currentUser = null;
 let _cart = [];
 let _isLoginMode = true;
 let _googleSdkPromise = null;
 let _googleInitialized = false;
-let _fbSdkPromise = null;
 
 // Escapes quotes too — createTextNode-based escaping is unsafe in attribute contexts
 function _escapeHtml(str) {
@@ -395,14 +400,10 @@ function _authModalHTML() {
             <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-200"></div></div>
             <div class="relative flex justify-center text-sm"><span class="px-3 bg-white text-gray-400">\u0E2B\u0E23\u0E37\u0E2D\u0E40\u0E02\u0E49\u0E32\u0E2A\u0E39\u0E48\u0E23\u0E30\u0E1A\u0E1A\u0E14\u0E49\u0E27\u0E22</span></div>
           </div>
-          <div class="mt-5 space-y-3">
+          <div class="mt-5">
             <div id="google-btn-container" class="w-full">
               <div id="google-signin-button" class="w-full"></div>
             </div>
-            <button type="button" id="fb-login-btn" onclick="window._handleFacebookLogin()" class="w-full flex items-center justify-center gap-3 bg-[#1877F2] hover:bg-[#166FE5] text-white font-semibold py-3 px-4 rounded-xl transition-colors text-sm">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.514c-1.491 0-1.956.93-1.956 1.886v2.267h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
-              เข้าสู่ระบบด้วย Facebook
-            </button>
           </div>
         </div>
         <div class="mt-5 text-center">
@@ -1048,57 +1049,6 @@ async function _handleGoogleCredential(response) {
   finally { _setAuthLoading(false); }
 }
 window._handleGoogleCredential = _handleGoogleCredential;
-
-function _loadFacebookSDK() {
-  if (window.FB) return Promise.resolve(window.FB);
-  if (_fbSdkPromise) return _fbSdkPromise;
-  _fbSdkPromise = new Promise((resolve, reject) => {
-    window.fbAsyncInit = function () {
-      FB.init({ appId: FB_APP_ID, cookie: true, xfbml: false, version: 'v21.0' });
-      resolve(window.FB);
-    };
-    const s = document.createElement('script');
-    s.src = 'https://connect.facebook.net/th_TH/sdk.js';
-    s.async = true;
-    s.defer = true;
-    s.onerror = () => reject(new Error('Failed to load Facebook SDK'));
-    document.head.appendChild(s);
-  });
-  return _fbSdkPromise;
-}
-
-async function _handleFacebookLogin() {
-  _setAuthLoading(true);
-  document.getElementById('auth-error')?.classList.add('hidden');
-  try {
-    const FB = await _loadFacebookSDK();
-    const loginResult = await new Promise((resolve) => {
-      FB.login((r) => resolve(r), { scope: 'public_profile' });
-    });
-    if (loginResult.status !== 'connected') {
-      throw new Error('Facebook login was cancelled');
-    }
-    const accessToken = loginResult.authResponse.accessToken;
-    const res = await fetch(`${API_BASE}/auth/facebook`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ accessToken }),
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Facebook login failed');
-    localStorage.setItem('btmusicdrive_token', data.token);
-    _currentUser = data.user;
-    localStorage.setItem('user', JSON.stringify(_currentUser));
-    _updateUserUI();
-    _toggleAuthModal();
-    _showToast('เข้าสู่ระบบด้วย Facebook สำเร็จ!');
-  } catch (err) {
-    _showAuthError(err.message);
-  } finally {
-    _setAuthLoading(false);
-  }
-}
-window._handleFacebookLogin = _handleFacebookLogin;
 
 function _loadGoogleSDK() {
   if (window.google?.accounts?.id) {

@@ -15,34 +15,34 @@ datasource db {
 }
 
 model User {
-  id           String    @id @default(uuid())
-  email        String    @unique
+  id           String   @id @default(uuid())
+  email        String   @unique
   passwordHash String?
-  googleId     String?   @unique
-  facebookId   String?   @unique
+  googleId     String?  @unique
+  facebookId   String?  @unique
   name         String?
   phone        String?
   birthday     String?
   gender       String?
-  role         Role      @default(CUSTOMER)
+  role         Role     @default(CUSTOMER)
   orders       Order[]
   cart         Cart?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model MenuItem {
-  id        String   @id @default(uuid())
+  id        String     @id @default(uuid())
   label     String
   url       String
   icon      String?
-  sortOrder Int      @default(0)
-  isActive  Boolean  @default(true)
+  sortOrder Int        @default(0)
+  isActive  Boolean    @default(true)
   parentId  String?
-  parent    MenuItem? @relation("MenuChildren", fields: [parentId], references: [id])
+  parent    MenuItem?  @relation("MenuChildren", fields: [parentId], references: [id])
   children  MenuItem[] @relation("MenuChildren")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 }
 
 model Cart {
@@ -101,21 +101,23 @@ model Product {
 }
 
 model Order {
-  id               String      @id @default(uuid())
-  user             User        @relation(fields: [userId], references: [id])
-  userId           String
-  totalAmount      Float
-  status           OrderStatus @default(PENDING)
-  paymentIntentId  String?     @unique
-  stripeSessionId  String?     @unique
-  trackingNumber   String?
-  carrier          String?
-  shippingAddress  String?
-  promoCode        String?
-  discountAmount   Float?      @default(0)
-  items            OrderItem[]
-  createdAt        DateTime    @default(now())
-  updatedAt        DateTime    @updatedAt
+  id              String      @id @default(uuid())
+  user            User        @relation(fields: [userId], references: [id])
+  userId          String
+  totalAmount     Float
+  status          OrderStatus @default(PENDING)
+  paymentIntentId String?     @unique
+  stripeSessionId String?     @unique
+  trackingNumber  String?
+  carrier         String?
+  shippingAddress String?
+  shippingPhone   String?
+  extraSongs      String?
+  promoCode       String?
+  discountAmount  Float?      @default(0)
+  items           OrderItem[]
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
 
   @@index([userId])
   @@index([status])
@@ -150,7 +152,7 @@ enum OrderStatus {
 model PromoCode {
   id          String    @id @default(uuid())
   code        String    @unique
-  type        String    // "PERCENT" | "FIXED"
+  type        String // "PERCENT" | "FIXED"
   value       Float
   description String?
   minOrder    Float?

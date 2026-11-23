@@ -141,10 +141,12 @@ function clearNewProductDraft(redraw) {
 /* ───────── nav ───────── */
 function go(v) {
   view = v;
-  ['new', 'edit', 'qr'].forEach(function (k) { $('tab' + k[0].toUpperCase() + k.slice(1)).classList.toggle('on', k === v); });
+  ['new', 'edit', 'qr', 'adsSum', 'adsList'].forEach(function (k) { $('tab' + k[0].toUpperCase() + k.slice(1)).classList.toggle('on', k === v); });
   if (v === 'new') renderNew();
   if (v === 'edit') renderEdit();
   if (v === 'qr') renderQr();
+  if (v === 'adsSum') renderAdsSummary();
+  if (v === 'adsList') renderAdsList();
 }
 
 /* ═════════ 1. ลงสินค้าใหม่ ═════════ */

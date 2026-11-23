@@ -19,6 +19,20 @@ export const orderSearchLimiter = rateLimit({
   message: { error: 'Too many search attempts, please try again later.' },
 });
 
+// Limiter for promo code validation: 5 per 15 min, keyed by logged-in user id
+// (not IP) — /validate always runs after authenticateToken, and req.ip is
+// unreliable behind Vercel + Cloudflare tunnel's multiple proxy hops.
+// Separate from orderSearchLimiter: different endpoint, don't share its budget.
+export const promoValidateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'ใส่โค้ดผิดหรือกดใช้โค้ดบ่อยเกินไป กรุณาลองใหม่ใน 15 นาที' },
+  skipSuccessfulRequests: true, // a correct code shouldn't burn the quota for re-entering/removing it
+  keyGenerator: (req: any) => req.user?.id || ipKeyGenerator(req.ip || 'unknown'),
+});
+
 // Limiter for admin password attempts: 5 per 15 min
 export const adminPasswordLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,

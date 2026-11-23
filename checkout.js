@@ -64,6 +64,13 @@ function syncCheckoutCartUI() {
     if (typeof _updateCartUI === 'function') _updateCartUI();
 }
 
+// { [usbProductId]: [youtubeId, ...] } or undefined. IDs only: server accepts only /^[\w-]{11}$/, JSON capped at 4,000 chars.
+function getExtraSongsPayload() {
+    const out = {};
+    cart.forEach(i => { if (i.extraSongs?.length) out[i.id] = i.extraSongs.map(s => s.id); });
+    return Object.keys(out).length ? out : undefined;
+}
+
 async function syncCheckoutCartToServer() {
     const token = localStorage.getItem('btmusicdrive_token');
     if (!token) return true;
@@ -250,6 +257,7 @@ async function mountStripeElement(method) {
                 body: JSON.stringify({
                     shippingAddress: shippingAddress || 'pending',
                     phone: phone || '0000000000',
+                    extraSongs: getExtraSongsPayload(),
                     ...(appliedPromo ? { promoCode: appliedPromo.code } : {})
                 })
             });
@@ -492,13 +500,16 @@ async function loadCart() {
             });
             if (res.ok) {
                 const data = await res.json();
+                // Server cart has no per-line song list; carry it over from localStorage or it's wiped below.
+                const localSongs = new Map(JSON.parse(raw || '[]').map(i => [i.id, i.extraSongs]));
                 cart = (data.items || []).map(item => ({
                     id: item.productId,
                     name: item.product?.name || 'Product',
                     price: parseFloat(item.product?.price || 0),
                     originalPrice: parseFloat(item.product?.originalPrice || item.product?.price || 0),
                     quantity: item.quantity,
-                    image: item.product?.imageUrl || null
+                    image: item.product?.imageUrl || null,
+                    extraSongs: localSongs.get(item.productId)
                 }));
                 // Ensure UI is updated with the server's truth
                 syncCheckoutCartUI();
@@ -920,6 +931,7 @@ async function processCodOrder(shippingAddress, phone, btn, btnMobile) {
             body: JSON.stringify({
                 shippingAddress,
                 phone,
+                extraSongs: getExtraSongsPayload(),
                 ...(appliedPromo ? { promoCode: appliedPromo.code } : {})
             })
         });
