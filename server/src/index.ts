@@ -21,6 +21,7 @@ import feedRoutes from './routes/feed';
 import lineRoutes from './routes/line';
 import tiktokRoutes from './routes/tiktok';
 import tiktokShopRoutes from './routes/tiktok-shop';
+import songsRoutes from './routes/songs';
 import { sendOrderConfirmationEmail } from './services/emailService';
 import { isSocialBot, renderProductOgPage } from './lib/socialOg';
 import { renderCategoryOgPage } from './lib/categoryOg';
@@ -101,6 +102,7 @@ app.use('/api/feed', feedRoutes);
 app.use('/api/line', lineRoutes);
 app.use('/api/tiktok', tiktokRoutes);
 app.use('/api/tiktok-shop', tiktokShopRoutes);
+app.use('/api/songs', songsRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });

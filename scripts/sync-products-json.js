@@ -23,6 +23,7 @@ for (const f of ['.env.local', '.env']) {
   const prisma = new PrismaClient();
   try {
     const products = await prisma.product.findMany({
+      where: { isActive: true },
       orderBy: { createdAt: 'asc' },
       include: { category: { select: { id: true, name: true } } },
     });

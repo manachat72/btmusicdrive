@@ -34,6 +34,7 @@ const { resolveNasFolder, previewNasImages } = require('./lib/nas-image-selectio
 const { readNasTracklist } = require('./lib/nas-music');
 const webImg = require('./lib/web-images');
 const r2 = require('./lib/r2');
+const tiktokAds = require('./lib/tiktok-ads-data');
 const r2WebImg = require('./lib/r2-web-images');
 const { processProductImages, fetchOriginals, fetchMids } = require('./lib/product-images');
 const { PAGE, CLIENT_JS } = require('./lib/studio-page');
@@ -372,6 +373,12 @@ const studioServer = http.createServer(async (req, res) => {
     }
     if (url.pathname === '/api/products') return json(200, loadProducts());
     if (url.pathname === '/api/web-products') return json(200, await loadLiveWebProducts());
+    if (url.pathname === '/api/ads') return json(200, tiktokAds.latestReport());
+    if (url.pathname === '/api/ads-refresh' && req.method === 'POST') {
+      let b = ''; for await (const c of req) b += c;
+      try { await tiktokAds.refresh((JSON.parse(b || '{}')).days); return json(200, { ok: true }); }
+      catch (e) { return json(200, { error: e.message }); }
+    }
     if (url.pathname === '/api/auth-status') return json(200, { loggedIn: isAuthed() });
     if (url.pathname === '/api/qr-list') return json(200, loadQrReg());
 

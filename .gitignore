@@ -64,3 +64,5 @@ images-by-sku/
 # video agent jobs (video-director) — งานผลิต ไม่ใช่โค้ด
 videos/flow/
 
+
+*.sync-conflict-*

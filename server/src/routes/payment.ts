@@ -7,6 +7,7 @@ import prisma from '../lib/prisma';
 import { sendOrderConfirmationEmail } from '../services/emailService';
 import { sendPurchaseEvent } from '../lib/meta-capi';
 import { sendTikTokPurchaseEvent, sendTikTokPlaceOrderEvent } from '../lib/tiktok-events';
+import { validateSongPacks, chunkExtraSongsForMetadata, unchunkExtraSongsFromMetadata } from '../lib/songPacks';
 
 type StripeClient = InstanceType<typeof Stripe>;
 
@@ -88,7 +89,8 @@ async function createOrderInDB(
   status: string,
   invoiceNo: string,
   paymentIntentId: string,
-  shippingPhone?: string
+  shippingPhone?: string,
+  extraSongs?: string | null
 ) {
   const orderItems = cart.items.map((item: any) => ({
     productId: item.productId,
@@ -108,6 +110,7 @@ async function createOrderInDB(
         discountAmount: discountAmount || 0,
         shippingAddress,
         shippingPhone: shippingPhone || null,
+        extraSongs: extraSongs || null,
         items: { create: orderItems },
       },
       include: { items: { include: { product: true } }, user: true },
@@ -185,16 +188,17 @@ router.post('/create-payment-intent', authenticateToken, async (req: AuthRequest
     const userId = req.user?.id;
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
-    const { promoCode, shippingAddress, phone } = req.body;
+    const { promoCode, shippingAddress, phone, extraSongs } = req.body;
 
     if (!shippingAddress || !phone) {
       return res.status(400).json({ error: 'ต้องระบุที่อยู่จัดส่งและเบอร์โทรศัพท์' });
     }
 
-    const { totalAmount, discountAmount, validatedPromo } = await calculateOrderTotals(
+    const { cart, totalAmount, discountAmount, validatedPromo } = await calculateOrderTotals(
       userId,
       promoCode
     );
+    const validatedExtraSongs = validateSongPacks(cart, extraSongs);
 
     const invoiceNo = `BTM${Date.now()}${crypto.randomBytes(3).toString('hex')}`;
 
@@ -209,6 +213,7 @@ router.post('/create-payment-intent', authenticateToken, async (req: AuthRequest
         phone,
         promoCode: validatedPromo?.code || '',
         discountAmount: String(discountAmount),
+        ...chunkExtraSongsForMetadata(validatedExtraSongs),
       },
       automatic_payment_methods: {
         enabled: true,
@@ -223,7 +228,11 @@ router.post('/create-payment-intent', authenticateToken, async (req: AuthRequest
     });
   } catch (error: any) {
     console.error('Create PaymentIntent error:', error);
-    if (error.message?.includes('สต็อก') || error.message?.includes('Cart is empty')) {
+    if (
+      error.message?.includes('สต็อก') ||
+      error.message?.includes('Cart is empty') ||
+      error.message?.includes('เพลงพิเศษ')
+    ) {
       return res.status(400).json({ error: error.message });
     }
     return res.status(500).json({ error: 'Failed to create payment intent' });
@@ -240,7 +249,7 @@ router.post('/update-payment-intent', authenticateToken, async (req: AuthRequest
     const userId = req.user?.id;
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
-    const { paymentIntentId, shippingAddress, phone, promoCode } = req.body;
+    const { paymentIntentId, shippingAddress, phone, promoCode, extraSongs } = req.body;
     if (!paymentIntentId) {
       return res.status(400).json({ error: 'Missing paymentIntentId' });
     }
@@ -254,9 +263,15 @@ router.post('/update-payment-intent', authenticateToken, async (req: AuthRequest
       return res.status(400).json({ error: 'Payment already completed' });
     }
 
-    const { totalAmount, discountAmount, validatedPromo } = await calculateOrderTotals(
+    const { cart, totalAmount, discountAmount, validatedPromo } = await calculateOrderTotals(
       userId,
       promoCode
+    );
+    // Stripe's metadata update is a full replace, not a merge — re-validate and
+    // re-send extraSongs every time, or it silently vanishes from the PaymentIntent.
+    const validatedExtraSongs = validateSongPacks(
+      cart,
+      extraSongs != null && extraSongs !== '' ? extraSongs : unchunkExtraSongsFromMetadata(paymentIntent.metadata)
     );
 
     await stripe.paymentIntents.update(paymentIntentId, {
@@ -271,13 +286,18 @@ router.post('/update-payment-intent', authenticateToken, async (req: AuthRequest
         phone: typeof phone === 'string' && phone ? phone : paymentIntent.metadata.phone,
         promoCode: validatedPromo?.code || '',
         discountAmount: String(discountAmount),
+        ...chunkExtraSongsForMetadata(validatedExtraSongs),
       },
     });
 
     return res.json({ totalAmount });
   } catch (error: any) {
     console.error('Update PaymentIntent error:', error);
-    if (error.message?.includes('สต็อก') || error.message?.includes('Cart is empty')) {
+    if (
+      error.message?.includes('สต็อก') ||
+      error.message?.includes('Cart is empty') ||
+      error.message?.includes('เพลงพิเศษ')
+    ) {
       return res.status(400).json({ error: error.message });
     }
     return res.status(500).json({ error: 'Failed to update payment intent' });
@@ -335,6 +355,7 @@ router.post('/confirm-order', authenticateToken, async (req: AuthRequest, res: R
       userId,
       promoCode
     );
+    const extraSongs = validateSongPacks(cart, unchunkExtraSongsFromMetadata(metadata));
 
     // Amount actually paid must match the current cart total — otherwise the cart
     // was modified after the PaymentIntent was created (underpayment attack)
@@ -359,7 +380,8 @@ router.post('/confirm-order', authenticateToken, async (req: AuthRequest, res: R
         'PAID',
         metadata.invoiceNo || invoiceNo || paymentIntentId,
         paymentIntentId,
-        shippingPhone
+        shippingPhone,
+        extraSongs
       );
     } catch (e: any) {
       // Webhook fallback may have created the order concurrently — return it instead of a 500
@@ -435,7 +457,11 @@ router.post('/confirm-order', authenticateToken, async (req: AuthRequest, res: R
         }
       } catch {}
     }
-    if (error.message?.includes('สต็อก') || error.message?.includes('Cart is empty')) {
+    if (
+      error.message?.includes('สต็อก') ||
+      error.message?.includes('Cart is empty') ||
+      error.message?.includes('เพลงพิเศษ')
+    ) {
       return res.status(400).json({ error: error.message });
     }
     return res.status(500).json({ error: 'Failed to confirm order' });
@@ -499,6 +525,10 @@ router.post('/webhook', async (req: Request, res: Response) => {
           break;
         }
 
+        // Money already captured — reconstruct extraSongs from metadata but don't
+        // re-validate (the amount check above already proves the cart hasn't moved).
+        const webhookExtraSongs = unchunkExtraSongsFromMetadata(paymentIntent.metadata);
+
         const newOrder = (await createOrderInDB(
           userId,
           cart,
@@ -509,7 +539,8 @@ router.post('/webhook', async (req: Request, res: Response) => {
           'PAID',
           invoiceNo || paymentIntent.id,
           paymentIntent.id,
-          webhookPhone || ''
+          webhookPhone || '',
+          webhookExtraSongs
         )) as any;
         console.log(`[Webhook] Order ${newOrder.id} created from webhook fallback`);
 
@@ -577,7 +608,7 @@ router.post('/cod-order', authenticateToken, async (req: AuthRequest, res: Respo
     const userId = req.user?.id;
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
-    const { shippingAddress, phone, promoCode } = req.body;
+    const { shippingAddress, phone, promoCode, extraSongs } = req.body;
 
     if (!shippingAddress || !phone) {
       return res.status(400).json({ error: 'ต้องระบุที่อยู่จัดส่งและเบอร์โทรศัพท์' });
@@ -587,6 +618,7 @@ router.post('/cod-order', authenticateToken, async (req: AuthRequest, res: Respo
       userId,
       promoCode
     );
+    const validatedExtraSongs = validateSongPacks(cart, extraSongs);
 
     const invoiceNo = `BTM${Date.now()}${crypto.randomBytes(3).toString('hex')}`;
 
@@ -600,7 +632,8 @@ router.post('/cod-order', authenticateToken, async (req: AuthRequest, res: Respo
       'PROCESSING',
       invoiceNo,
       `cod_${invoiceNo}`,
-      phone
+      phone,
+      validatedExtraSongs
     )) as any;
 
     // Send confirmation email (await on serverless to avoid termination before SMTP completes)
@@ -651,7 +684,11 @@ router.post('/cod-order', authenticateToken, async (req: AuthRequest, res: Respo
     });
   } catch (error: any) {
     console.error('COD order error:', error);
-    if (error.message?.includes('สต็อก') || error.message?.includes('Cart is empty')) {
+    if (
+      error.message?.includes('สต็อก') ||
+      error.message?.includes('Cart is empty') ||
+      error.message?.includes('เพลงพิเศษ')
+    ) {
       return res.status(400).json({ error: error.message });
     }
     return res.status(500).json({ error: 'Failed to process COD order' });

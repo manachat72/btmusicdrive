@@ -1,17 +1,19 @@
-import { Router, Request, Response } from 'express';
+import { Router, Response } from 'express';
 import prisma from '../lib/prisma';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
+import { promoValidateLimiter } from '../middleware/rateLimiter';
 
 const router = Router();
 
 // ── POST /api/promo/validate ──────────────────────────────────────────────
 // Validate and apply a promo code. Called before checkout.
-router.post('/validate', authenticateToken, async (req: AuthRequest, res: Response) => {
+// authenticateToken runs first so promoValidateLimiter can key by req.user.id.
+router.post('/validate', authenticateToken, promoValidateLimiter, async (req: AuthRequest, res: Response) => {
   try {
     const { code, subtotal } = req.body;
 
     if (!code || !subtotal) {
-      return res.status(400).json({ error: 'code and subtotal are required' });
+      return res.status(400).json({ error: 'ต้องระบุโค้ดและยอดสั่งซื้อ' });
     }
 
     // Find promo code
@@ -20,25 +22,25 @@ router.post('/validate', authenticateToken, async (req: AuthRequest, res: Respon
     });
 
     if (!promo) {
-      return res.status(404).json({ error: 'Promo code not found' });
+      return res.status(404).json({ error: 'ไม่พบโค้ดนี้' });
     }
 
     // Validate promo code
     if (!promo.isActive) {
-      return res.status(400).json({ error: 'Promo code is inactive' });
+      return res.status(400).json({ error: 'โค้ดนี้ถูกปิดใช้งานแล้ว' });
     }
 
     if (promo.expiresAt && promo.expiresAt < new Date()) {
-      return res.status(400).json({ error: 'Promo code has expired' });
+      return res.status(400).json({ error: 'โค้ดนี้หมดอายุแล้ว' });
     }
 
     if (promo.maxUses && promo.usedCount >= promo.maxUses) {
-      return res.status(400).json({ error: 'Promo code usage limit exceeded' });
+      return res.status(400).json({ error: 'โค้ดนี้ถูกใช้ครบจำนวนแล้ว' });
     }
 
     if (promo.minOrder && subtotal < promo.minOrder) {
-      return res.status(400).json({ 
-        error: `Minimum order amount is ฿${promo.minOrder}` 
+      return res.status(400).json({
+        error: `ยอดสั่งซื้อขั้นต่ำ ฿${promo.minOrder}`
       });
     }
 
@@ -62,7 +64,7 @@ router.post('/validate', authenticateToken, async (req: AuthRequest, res: Respon
     });
   } catch (error) {
     console.error('Promo validation error:', error);
-    res.status(500).json({ error: 'Failed to validate promo code' });
+    res.status(500).json({ error: 'ตรวจสอบโค้ดไม่สำเร็จ กรุณาลองใหม่' });
   }
 });
 
@@ -188,34 +190,7 @@ router.delete('/:id', authenticateToken, async (req: AuthRequest, res: Response)
   }
 });
 
-// ── GET /api/promo/:code ──────────────────────────────────────────────────
-// Get promo code details (public, no auth)
-router.get('/:code', async (req: Request, res: Response) => {
-  try {
-    const code = req.params.code as string;
-
-    const promo = await prisma.promoCode.findUnique({
-      where: { code: code.trim().toUpperCase() },
-      select: {
-        code: true,
-        type: true,
-        value: true,
-        description: true,
-        minOrder: true,
-        expiresAt: true,
-        isActive: true,
-      }
-    });
-
-    if (!promo) {
-      return res.status(404).json({ error: 'Promo code not found' });
-    }
-
-    res.json(promo);
-  } catch (error) {
-    console.error('Error fetching promo:', error);
-    res.status(500).json({ error: 'Failed to fetch promo code' });
-  }
-});
+// GET /api/promo/:code (public code-guessing lookup) was removed — grepped the
+// whole repo, nothing calls it (storefront only calls POST /validate above).
 
 export default router;

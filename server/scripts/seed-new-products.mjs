@@ -181,6 +181,7 @@ const NEW_PRODUCTS = [
 
     // sync products.json จาก DB ใหม่
     const all = await prisma.product.findMany({
+      where: { isActive: true },
       orderBy: { createdAt: 'asc' },
       include: { category: { select: { id: true, name: true } } },
     });

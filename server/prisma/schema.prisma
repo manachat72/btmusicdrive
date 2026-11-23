@@ -112,6 +112,7 @@ model Order {
   carrier         String?
   shippingAddress String?
   shippingPhone   String?
+  extraSongs      String?
   promoCode       String?
   discountAmount  Float?      @default(0)
   items           OrderItem[]

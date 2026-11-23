@@ -176,12 +176,6 @@
   </url>
 
   <url>
-    <loc>https://btmusicdrive.com/product/usb-mp3-string-90s</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
     <loc>https://btmusicdrive.com/product/usb-mp3-tai-phroaa</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -303,12 +297,6 @@
 
   <url>
     <loc>https://btmusicdrive.com/product/usb-mp3-tai-dontri</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://btmusicdrive.com/product/usb-mp3-carabao-2gb</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
