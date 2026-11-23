@@ -255,7 +255,7 @@ GA4_PROPERTY_ID="533617757"       # GOOGLE_CLIENT_SECRET ไม่จำเป�
   - รันซ่อนตอน login: Task Scheduler `BT AI Gateway` → `conhost --headless start-ai-gateway.bat` · log `%LOCALAPPDATA%\bt-ai\gateway.log` / `tunnel.log` · เช็ค `https://ai.btmusicdrive.com/health`
   - Cloudflare API endpoint create/token ค้างเป็นช่วงๆ แต่สร้างสำเร็จฝั่ง server — ถ้าต้องสร้าง tunnel ใหม่ ให้ใช้ secret ที่ถือเองแล้วเช็คด้วย `tunnel list`
 
-- **รายงานโฆษณา TikTok** ย้ายไปโฟลเดอร์แยก `../tiktok-ads/` (ไม่อยู่ใน git — รายงานมีค่าโฆษณา/ยอดขาย) ดู `tiktok-ads/CLAUDE.md` · repo นี้เหลือแค่หน้า callback `server/src/routes/tiktok.ts` · ผู้ใช้สั่ง "วิเคราะห์โฆษณา TikTok" = `cd ../tiktok-ads && npm run report` แล้วอ่าน `reports/SUMMARY.md`
+- **รายงานโฆษณา TikTok** ย้ายไปโฟลเดอร์แยก `C:\Users\may\Workspace\00-Daily-Work\tiktok-ads\` (repo นี้อยู่ `Z:\btmusicdrive` แล้ว `../tiktok-ads` จึงหาไม่เจอ — Studio ต้องตั้ง env `TIKTOK_ADS_DIR` ชี้ไปที่นั่น · ไม่อยู่ใน git — รายงานมีค่าโฆษณา/ยอดขาย) ดู `tiktok-ads/CLAUDE.md` · repo นี้เหลือแค่หน้า callback `server/src/routes/tiktok.ts` · ผู้ใช้สั่ง "วิเคราะห์โฆษณา TikTok" = `cd ../tiktok-ads && npm run report` แล้วอ่าน `reports/SUMMARY.md`
 
 - **SEO artist research** (2026-08-20): agent `seo-artist-research` (`.claude/agents/`) วิจัยคีย์เวิร์ดรายศิลปินแล้วเก็บลง `scripts/data/artists.json`
   - **agent คืนแค่วัตถุดิบ** (`type/genre/aliases/keywords/hook/notes`) — **ห้ามให้มันเขียนชื่อสินค้า/description/meta/slug เอง** เพราะ `buildSeo()` คุมความยาว meta 155 ตัว + slug + validate อยู่
