@@ -4,7 +4,8 @@ REM LINE bot on Vercel -> https://ai.btmusicdrive.com -> Cloudflare Tunnel "bt-a
 REM   -> scripts\ollama-gateway.js (127.0.0.1:11435) -> llama.cpp (127.0.0.1:8080)
 REM Started hidden at logon by Task Scheduler task "BT AI Gateway".
 REM Logs: %LOCALAPPDATA%\bt-ai\gateway.log + tunnel.log and %USERPROFILE%\llama.cpp\logs\hermes-router.log
-cd /d "%~dp0"
+REM pushd (not cd /d) so this also works when run from a UNC path on the NAS.
+pushd "%~dp0"
 set LOGDIR=%LOCALAPPDATA%\bt-ai
 if not exist "%LOGDIR%" mkdir "%LOGDIR%"
 
