@@ -143,7 +143,7 @@ function renderProducts() {
         // Create product card
         const productCard = document.createElement('div');
         productCard.className = `bg-white rounded-2xl overflow-hidden product-card border border-gray-100 animate-fade-in-up shadow-[0_4px_20px_rgba(0,0,0,0.07)] hover:shadow-[0_12px_36px_rgba(139,115,85,0.18)]`;
-        productCard.style.animationDelay = `${index * 0.1}s`;
+        productCard.style.animationDelay = `${Math.min(index, 8) * 0.1}s`; // cap: uncapped stagger kept 50+ animations alive for 5 s → per-frame style recalc
         
         // Generate stars HTML
         const rating = product.rating || 0;
@@ -179,9 +179,12 @@ function renderProducts() {
 
         const _rawPUrl = product.slug ? `/product/${product.slug}` : `/product?id=${encodeURIComponent(product.id)}`;
         const _pUrl = (typeof _url === 'function') ? _url(_rawPUrl) : _rawPUrl;
+        // guard: script.js can run before components.js on index.html (async/idle load order isn't guaranteed)
+        const _w = w => (typeof _cdnImg === 'function') ? _cdnImg(product.imageUrl, w) : product.imageUrl;
+        const _imgOnerror = escapeHtml(`this.onerror=null;this.removeAttribute('srcset');this.src=${JSON.stringify(product.imageUrl)}`);
         productCard.innerHTML = `
             <a href="${_pUrl}" class="block relative aspect-square overflow-hidden group cursor-pointer">
-                <img src="${escapeHtml(product.imageUrl)}" alt="${escapeHtml(product.name)}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy">
+                <img src="${escapeHtml(_w(400))}" srcset="${escapeHtml(_w(200))} 200w, ${escapeHtml(_w(400))} 400w, ${escapeHtml(_w(600))} 600w" sizes="(max-width: 640px) 45vw, 260px" alt="${escapeHtml(product.name)}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" onerror="${_imgOnerror}">
                 ${badgeHtml}
                 <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <span class="eq-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>

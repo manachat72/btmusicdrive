@@ -146,6 +146,15 @@ let _googleSdkPromise = null;
 let _googleInitialized = false;
 let _fbSdkPromise = null;
 
+// Cloudflare Image Resizing proxies img.btmusicdrive.com — shrink product thumbs without re-uploading.
+// Single shared helper for shop/home/category product cards (see t_22336288).
+const _CDN_IMG_PREFIX = 'https://img.btmusicdrive.com/';
+function _cdnImg(url, w) {
+  if (!url || !url.startsWith(_CDN_IMG_PREFIX)) return url;
+  return `${_CDN_IMG_PREFIX}cdn-cgi/image/width=${w},format=auto/${url.slice(_CDN_IMG_PREFIX.length)}`;
+}
+window._cdnImg = _cdnImg;
+
 // Escapes quotes too — createTextNode-based escaping is unsafe in attribute contexts
 function _escapeHtml(str) {
   return String(str ?? '').replace(/[&<>"']/g, c => (

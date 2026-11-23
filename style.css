@@ -134,8 +134,9 @@ body {
     animation: float-usb 4s ease-in-out infinite;
 }
 
+/* static: an infinite text-shadow animation can't be composited → style+paint every frame */
 .countdown-glow {
-    animation: glow-pulse 1.5s ease-in-out infinite;
+    text-shadow: 0 0 8px rgba(255, 243, 207, 0.5), 0 0 20px rgba(212, 175, 82, 0.45);
 }
 
 /* ── Hero Grainy Gradient ───────────────────────────────────────────── */
@@ -944,15 +945,6 @@ body {
     100% { transform: translateY(-86vh) translateX(24px); opacity: 0; }
 }
 
-/* Gold shimmer sweeping across .heading-gold text */
-@keyframes gold-shimmer {
-    0%, 100% { background-position: 0% 50%; }
-    50%      { background-position: 100% 50%; }
-}
-.heading-gold {
-    background-size: 220% auto;
-    animation: gold-shimmer 7s ease-in-out infinite;
-}
 
 /* Periodic light sweep across gold CTA buttons */
 .btn-shine {
