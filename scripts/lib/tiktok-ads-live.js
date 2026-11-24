@@ -111,6 +111,37 @@ async function gmvMaxReport(adv, storeIds, start, end) {
   return { camp, daily };
 }
 
+// "สถานะและข้อมูลเชิงลึก" แบบของเราเอง — TikTok ไม่เปิด API เกรด/คำแนะนำของ Ads Manager
+// (/tool/diagnosis/get/ ไม่ได้รับสิทธิ์ และไม่รองรับ GMV Max) จึงคำนวณจากเป้า ROAS / งบ / ยอดใช้จริงในช่วงที่เลือก
+const STATUS_TH = { CAMPAIGN_STATUS_ENABLE: 'กำลังส่งโฆษณา', CAMPAIGN_STATUS_DISABLE: 'ปิดอยู่', CAMPAIGN_STATUS_BUDGET_EXCEED: 'งบหมด',
+  CAMPAIGN_STATUS_DELETE: 'ถูกลบ', CAMPAIGN_STATUS_ADVERTISER_AUDIT_DENY: 'บัญชีไม่ผ่านตรวจ', CAMPAIGN_STATUS_ADVERTISER_AUDIT: 'บัญชีรอตรวจ',
+  CAMPAIGN_STATUS_NOT_DELETE: 'กำลังส่งโฆษณา' };
+const RANK = { good: 0, info: 0, mid: 1, bad: 2 };
+
+function insight(r, start, end) {
+  const label = STATUS_TH[r.secondary] || (r.status === 'ENABLE' ? 'กำลังส่งโฆษณา' : 'ปิดอยู่');
+  if (r.status !== 'ENABLE') return { grade: null, label, notes: [] };
+  const notes = [];
+  const from = r.created && r.created > start ? r.created : start;
+  const days = Math.max(1, Math.round((new Date(end) - new Date(from)) / 864e5) + 1);
+  if (!r.spend) notes.push(['bad', 'ไม่มีการใช้จ่ายในช่วงนี้ — โฆษณาอาจไม่ได้ส่งเลย ลองลดเป้า ROAS หรือเช็กสินค้า/วิดีโอใน Ads Manager']);
+  if (r.spend && r.roasBid) {
+    const ratio = r.roas / r.roasBid;
+    if (ratio >= 1) notes.push(['good', `ROAS ถึงเป้า (${r.roas} / เป้า ${r.roasBid})`]);
+    else notes.push([ratio >= 0.8 ? 'mid' : 'bad', `ROAS ต่ำกว่าเป้า (${r.roas} / เป้า ${r.roasBid})`]);
+  } else if (r.spend) notes.push([r.roas >= 3 ? 'good' : r.roas >= 1.5 ? 'mid' : 'bad', `ROAS ${r.roas}x`]);
+  if (r.spend && r.budget && r.budgetMode === 'BUDGET_MODE_DAY') {
+    const use = r.spend / days / r.budget * 100, avg = Math.round(r.spend / days);
+    if (use < 10) notes.push(['mid', `ใช้งบแค่ ${use.toFixed(1)}% (เฉลี่ย ฿${avg}/วัน จากงบ ฿${r.budget}) — ระบบหาคนซื้อที่ ROAS เป้านี้ได้น้อย ถ้าอยากได้ยอดเพิ่ม ลองลดเป้า ROAS`]);
+    else if (use > 90) notes.push([r.roas >= 3 ? 'good' : 'mid', `ใช้งบเกือบเต็ม (${use.toFixed(0)}%) — ${r.roas >= 3 ? 'ROAS ดี เพิ่มงบได้' : 'งบอาจจำกัดยอดขาย'}`]);
+    else notes.push(['info', `ใช้งบ ${use.toFixed(0)}% (เฉลี่ย ฿${avg}/วัน)`]);
+  }
+  if (r.orders && r.cpa) notes.push(['info', `ต้นทุน ฿${r.cpa}/ออเดอร์`]);
+  if (r.roiProtection) notes.push(['info', 'ROI protection เปิดอยู่ (TikTok ชดเชยถ้า ROI ต่ำกว่าเป้ามาก)']);
+  const worst = Math.max(0, ...notes.map(([lv]) => RANK[lv]));
+  return { grade: ['ดี', 'ปานกลาง', 'ควรแก้'][worst], level: ['good', 'mid', 'bad'][worst], label, notes: notes.map(([level, text]) => ({ level, text })) };
+}
+
 async function overview(adv, q) {
   const campaigns = await listAll('/campaign/get/', { advertiser_id: adv });
   let gmv = { list: [], storeIds: [] }, gmvError = null;
@@ -140,16 +171,22 @@ async function overview(adv, q) {
   if (gmv.list.length) {
     try {
       const rep = await gmvMaxReport(adv, gmv.storeIds, start, end);
-      const budgets = {};
+      const info = {};
       await Promise.all(gmv.list.filter((c) => c.operation_status === 'ENABLE').map(async (c) => {
-        try { budgets[c.campaign_id] = num((await tt('GET', '/campaign/gmv_max/info/', { advertiser_id: adv, campaign_id: c.campaign_id })).budget); } catch { /* งบไม่ขึ้นก็ยังแสดงแถว */ }
+        try { info[c.campaign_id] = await tt('GET', '/campaign/gmv_max/info/', { advertiser_id: adv, campaign_id: c.campaign_id }); } catch { /* งบไม่ขึ้นก็ยังแสดงแถว */ }
       }));
-      for (const c of gmv.list) rows.push({ id: c.campaign_id, name: c.campaign_name, status: c.operation_status, secondary: c.secondary_status,
-        objective: c.objective_type, budgetMode: c.campaign_id in budgets ? 'BUDGET_MODE_DAY' : 'UNKNOWN', budget: budgets[c.campaign_id] || 0, type: 'GMV_MAX',
-        ...finish({ ...zero, ...(rep.camp[c.campaign_id] || {}) }) });
+      for (const c of gmv.list) {
+        const i = info[c.campaign_id];
+        rows.push({ id: c.campaign_id, name: c.campaign_name, status: c.operation_status, secondary: c.secondary_status,
+          objective: c.objective_type, budgetMode: i ? 'BUDGET_MODE_DAY' : 'UNKNOWN', budget: i ? num(i.budget) : 0, type: 'GMV_MAX',
+          created: (c.create_time || '').slice(0, 10), roasBid: i ? num(i.roas_bid) : 0,
+          roiProtection: c.roi_protection_compensation_status === 'IN_EFFECT' || !!(i && i.roi_protection_enabled),
+          ...finish({ ...zero, ...(rep.camp[c.campaign_id] || {}) }) });
+      }
       for (const [date, m] of Object.entries(rep.daily)) daily.push({ date, ...m });
     } catch (e) { gmvError = e.message; }
   }
+  for (const r of rows) r.insight = insight(r, start, end);
   rows.sort((a, b) => b.spend - a.spend);
   const byDate = {};
   for (const d of daily) add(byDate[d.date] ||= { date: d.date }, d);
