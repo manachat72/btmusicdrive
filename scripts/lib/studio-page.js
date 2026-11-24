@@ -184,6 +184,7 @@ const PAGE = `<!doctype html>
       <div class="nav-label" style="margin-top:12px">โฆษณา</div>
       <button class="tab" id="tabAdsSum" onclick="go('adsSum')"><span class="nav-icon" aria-hidden="true">▤</span>TikTok สรุป</button>
       <button class="tab" id="tabAdsList" onclick="go('adsList')"><span class="nav-icon" aria-hidden="true">☰</span>TikTok โฆษณา</button>
+      <button class="tab" id="tabAdsLive" onclick="go('adsLive')"><span class="nav-icon" aria-hidden="true">⚡</span>TikTok คุมแคมเปญ</button>
     </nav>
     <div class="sidebar-footer">
       <span class="connection-label">สถานะการเชื่อมต่อ</span>

@@ -141,12 +141,13 @@ function clearNewProductDraft(redraw) {
 /* ───────── nav ───────── */
 function go(v) {
   view = v;
-  ['new', 'edit', 'qr', 'adsSum', 'adsList'].forEach(function (k) { $('tab' + k[0].toUpperCase() + k.slice(1)).classList.toggle('on', k === v); });
+  ['new', 'edit', 'qr', 'adsSum', 'adsList', 'adsLive'].forEach(function (k) { $('tab' + k[0].toUpperCase() + k.slice(1)).classList.toggle('on', k === v); });
   if (v === 'new') renderNew();
   if (v === 'edit') renderEdit();
   if (v === 'qr') renderQr();
   if (v === 'adsSum') renderAdsSummary();
   if (v === 'adsList') renderAdsList();
+  if (v === 'adsLive') $('view').innerHTML = '<iframe src="/ads-live/" title="TikTok คุมแคมเปญ" style="width:100%;height:calc(100vh - 48px);border:0;border-radius:12px;background:#0b0f19"></iframe>';
 }
 
 /* ═════════ 1. ลงสินค้าใหม่ ═════════ */

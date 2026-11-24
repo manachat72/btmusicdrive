@@ -255,6 +255,8 @@ GA4_PROPERTY_ID="533617757"       # GOOGLE_CLIENT_SECRET ไม่จำเป�
   - รันซ่อนตอน login: Task Scheduler `BT AI Gateway` → `conhost --headless "\\DXP2800-98FA\song\btmusicdrive\start-ai-gateway.bat"` (UNC ไม่ใช่ `Z:` เพราะตอน login ไดรฟ์ Z ยังอาจไม่ต่อ · หน่วง 45 วิ + ลองใหม่ 5 ครั้ง · bat ใช้ `pushd` เพราะ `cd /d` เข้า UNC ไม่ได้) · log `%LOCALAPPDATA%\bt-ai\gateway.log` / `tunnel.log` · เช็ค `https://ai.btmusicdrive.com/health`
   - Cloudflare API endpoint create/token ค้างเป็นช่วงๆ แต่สร้างสำเร็จฝั่ง server — ถ้าต้องสร้าง tunnel ใหม่ ให้ใช้ secret ที่ถือเองแล้วเช็คด้วย `tunnel list`
 
+- **คุมแคมเปญ TikTok** (2026-11-25): แท็บ "TikTok คุมแคมเปญ" ใน Studio (:4777) → iframe `/ads-live/` จาก `scripts/lib/tiktok-ads-live.js` (+ `.html`) — เปิด/ปิดแคมเปญ ปรับงบ **เขียนลง TikTok จริง** · รับเฉพาะ Host `127.0.0.1`/`localhost` + header `X-Dashboard: 1` + audit log · token จาก `server/.env.local` · **ห้ามเปิด Studio ผ่าน tunnel** · ไม่มีเซิร์ฟเวอร์ :4780 แยกแล้ว
+
 - **รายงานโฆษณา TikTok** ย้ายไปโฟลเดอร์แยก `C:\Users\may\Workspace\00-Daily-Work\tiktok-ads\` (repo นี้อยู่ `Z:\btmusicdrive` แล้ว `../tiktok-ads` จึงหาไม่เจอ — Studio ต้องตั้ง env `TIKTOK_ADS_DIR` ชี้ไปที่นั่น · ไม่อยู่ใน git — รายงานมีค่าโฆษณา/ยอดขาย) ดู `tiktok-ads/CLAUDE.md` · repo นี้เหลือแค่หน้า callback `server/src/routes/tiktok.ts` · ผู้ใช้สั่ง "วิเคราะห์โฆษณา TikTok" = `cd ../tiktok-ads && npm run report` แล้วอ่าน `reports/SUMMARY.md`
 
 - **SEO artist research** (2026-08-20): agent `seo-artist-research` (`.claude/agents/`) วิจัยคีย์เวิร์ดรายศิลปินแล้วเก็บลง `scripts/data/artists.json`

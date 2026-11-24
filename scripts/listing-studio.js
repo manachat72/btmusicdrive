@@ -35,6 +35,7 @@ const { readNasTracklist } = require('./lib/nas-music');
 const webImg = require('./lib/web-images');
 const r2 = require('./lib/r2');
 const tiktokAds = require('./lib/tiktok-ads-data');
+const tiktokAdsLive = require('./lib/tiktok-ads-live');
 const r2WebImg = require('./lib/r2-web-images');
 const { processProductImages, fetchOriginals, fetchMids } = require('./lib/product-images');
 const { PAGE, CLIENT_JS } = require('./lib/studio-page');
@@ -340,6 +341,7 @@ const studioServer = http.createServer(async (req, res) => {
   const log = (m) => { logs.push(m); console.log('  ' + m); };
 
   try {
+    if (await tiktokAdsLive.handle(req, res, url)) return; // /ads-live/* : คุมแคมเปญ TikTok (เฉพาะ localhost)
     if (url.pathname === '/') { res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' }); return res.end(PAGE); }
     if (url.pathname === '/studio.js') { res.writeHead(200, { 'content-type': 'text/javascript; charset=utf-8' }); return res.end(CLIENT_JS); }
 
