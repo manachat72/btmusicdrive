@@ -83,9 +83,39 @@ function chunks(start, end, span = 360) {
   return out;
 }
 
+// GMV Max (แคมเปญ TikTok Shop แบบใหม่) ไม่ออกมาใน /campaign/get/ และรายงานปกติ — ต้องใช้ /gmv_max/* แยก
+// ต้องมี store_ids · รายงานรายวันจำกัดครั้งละ 30 วัน · งบอยู่ใน /campaign/gmv_max/info/ (ทีละแคมเปญ)
+const GMV_METRICS = ['cost', 'orders', 'gross_revenue'];
+const gmvRow = (m) => ({ spend: num(m.cost), impressions: 0, clicks: 0, orders: num(m.orders), revenue: num(m.gross_revenue) });
+
+async function gmvMaxCampaigns(adv) {
+  const list = [];
+  for (const t of ['PRODUCT_GMV_MAX', 'LIVE_GMV_MAX']) list.push(...await listAll('/gmv_max/campaign/get/', { advertiser_id: adv, filtering: { gmv_max_promotion_types: [t] } }));
+  if (!list.length) return { list, storeIds: [] };
+  const stores = (await tt('GET', '/gmv_max/store/list/', { advertiser_id: adv })).store_list || [];
+  return { list, storeIds: stores.map((s) => s.store_id) };
+}
+
+async function gmvMaxReport(adv, storeIds, start, end) {
+  const camp = {}, daily = {};
+  if (!storeIds.length) return { camp, daily };
+  const base = { advertiser_id: adv, store_ids: storeIds, metrics: GMV_METRICS };
+  for (const [s, e] of chunks(start, end)) {
+    for (const r of await listAll('/gmv_max/report/get/', { ...base, start_date: s, end_date: e, dimensions: ['campaign_id'] })) add(camp[r.dimensions.campaign_id] ||= {}, gmvRow(r.metrics));
+  }
+  const dc = chunks(start, end, 30);
+  for (let i = 0; i < dc.length; i += 3) {
+    const parts = await Promise.all(dc.slice(i, i + 3).map(([s, e]) => listAll('/gmv_max/report/get/', { ...base, start_date: s, end_date: e, dimensions: ['advertiser_id', 'stat_time_day'] })));
+    for (const day of parts) for (const d of day) add(daily[d.dimensions.stat_time_day.slice(0, 10)] ||= {}, gmvRow(d.metrics));
+  }
+  return { camp, daily };
+}
+
 async function overview(adv, q) {
   const campaigns = await listAll('/campaign/get/', { advertiser_id: adv });
-  const earliest = campaigns.map((c) => (c.create_time || '').slice(0, 10)).filter(Boolean).sort()[0] || '2024-01-01';
+  let gmv = { list: [], storeIds: [] }, gmvError = null;
+  try { gmv = await gmvMaxCampaigns(adv); } catch (e) { gmvError = e.message; }
+  const earliest = [...campaigns, ...gmv.list].map((c) => (c.create_time || '').slice(0, 10)).filter(Boolean).sort()[0] || '2024-01-01';
   const days = q.get('days');
   const end = iso(new Date());
   const start = days === 'all' ? earliest : iso(new Date(Date.now() - (Math.min(Math.max(parseInt(days, 10) || 30, 1), 1200) - 1) * 864e5));
@@ -98,16 +128,34 @@ async function overview(adv, q) {
   const dc = chunks(start, end, 30);
   for (let i = 0; i < dc.length; i += 3) {
     const parts = await Promise.all(dc.slice(i, i + 3).map(([s, e]) => listAll('/report/integrated/get/', { advertiser_id: adv, report_type: 'BASIC', start_date: s, end_date: e, data_level: 'AUCTION_ADVERTISER', dimensions: ['stat_time_day'], metrics: METRICS })));
-    for (const day of parts) for (const d of day) daily.push({ date: d.dimensions.stat_time_day.slice(0, 10), ...finish(row(d.metrics)) });
+    for (const day of parts) for (const d of day) daily.push({ date: d.dimensions.stat_time_day.slice(0, 10), ...row(d.metrics) });
   }
+  const zero = { spend: 0, impressions: 0, clicks: 0, orders: 0, revenue: 0 };
   const rows = campaigns.map((c) => ({
     id: c.campaign_id, name: c.campaign_name, status: c.operation_status, secondary: c.secondary_status,
-    objective: c.objective_type, budgetMode: c.budget_mode, budget: num(c.budget),
-    ...finish({ spend: 0, impressions: 0, clicks: 0, orders: 0, revenue: 0, ...(camp[c.campaign_id] || {}) }),
-  })).sort((a, b) => b.spend - a.spend);
+    objective: c.objective_type, budgetMode: c.budget_mode, budget: num(c.budget), type: 'MANUAL',
+    ...finish({ ...zero, ...(camp[c.campaign_id] || {}) }),
+  }));
+  // รวม GMV Max เข้าแถว/ยอดรวม/กราฟรายวัน
+  if (gmv.list.length) {
+    try {
+      const rep = await gmvMaxReport(adv, gmv.storeIds, start, end);
+      const budgets = {};
+      await Promise.all(gmv.list.filter((c) => c.operation_status === 'ENABLE').map(async (c) => {
+        try { budgets[c.campaign_id] = num((await tt('GET', '/campaign/gmv_max/info/', { advertiser_id: adv, campaign_id: c.campaign_id })).budget); } catch { /* งบไม่ขึ้นก็ยังแสดงแถว */ }
+      }));
+      for (const c of gmv.list) rows.push({ id: c.campaign_id, name: c.campaign_name, status: c.operation_status, secondary: c.secondary_status,
+        objective: c.objective_type, budgetMode: c.campaign_id in budgets ? 'BUDGET_MODE_DAY' : 'UNKNOWN', budget: budgets[c.campaign_id] || 0, type: 'GMV_MAX',
+        ...finish({ ...zero, ...(rep.camp[c.campaign_id] || {}) }) });
+      for (const [date, m] of Object.entries(rep.daily)) daily.push({ date, ...m });
+    } catch (e) { gmvError = e.message; }
+  }
+  rows.sort((a, b) => b.spend - a.spend);
+  const byDate = {};
+  for (const d of daily) add(byDate[d.date] ||= { date: d.date }, d);
   const totals = finish(rows.reduce((t, r) => add(t, r), {}));
-  return { advertiser: adv, name: ADV_NAMES[adv] || adv, range: { start_date: start, end_date: end }, totals, campaigns: rows,
-    daily: daily.sort((a, b) => a.date.localeCompare(b.date)) };
+  return { advertiser: adv, name: ADV_NAMES[adv] || adv, range: { start_date: start, end_date: end }, totals, campaigns: rows, gmvError,
+    daily: Object.values(byDate).map(finish).sort((a, b) => a.date.localeCompare(b.date)) };
 }
 
 async function adgroups(adv, campaignId) {
