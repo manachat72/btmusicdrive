@@ -210,7 +210,22 @@ async function writeOp(body) {
   if (!ADV_IDS.includes(advertiser)) throw new Error('advertiser ไม่อยู่ในรายการ');
   if (!/^\d+$/.test(String(id))) throw new Error('id ไม่ถูกต้อง');
   let res;
-  if (action === 'status') {
+  if (level === 'gmv_max') {
+    // GMV Max: งบ/เป้า ROAS ผ่าน /campaign/gmv_max/update/ (ทดสอบแล้ว) · เปิด/ปิดใช้ /campaign/status/update/ ตัวเดียวกับแคมเปญปกติ
+    if (action === 'status') {
+      if (!['ENABLE', 'DISABLE'].includes(value)) throw new Error('สถานะต้องเป็น ENABLE หรือ DISABLE');
+      res = await tt('POST', '/campaign/status/update/', { advertiser_id: advertiser, campaign_ids: [id], operation_status: value });
+    } else if (action === 'budget') {
+      const b = Number(value);
+      if (!(b >= 20 && b <= 100000)) throw new Error('งบต้องอยู่ระหว่าง 20 – 100,000');
+      res = await tt('POST', '/campaign/gmv_max/update/', { advertiser_id: advertiser, campaign_id: id, budget: b });
+    } else if (action === 'roas_bid') {
+      const r = Number(value);
+      if (!(r >= 1 && r <= 50)) throw new Error('เป้า ROAS ต้องอยู่ระหว่าง 1 – 50');
+      res = await tt('POST', '/campaign/gmv_max/update/', { advertiser_id: advertiser, campaign_id: id, roas_bid: r });
+    } else throw new Error('action ไม่รองรับ');
+    res = { campaign_id: res.campaign_id, budget: res.budget, roas_bid: res.roas_bid, operation_status: res.operation_status, campaign_ids: res.campaign_ids };
+  } else if (action === 'status') {
     if (!['ENABLE', 'DISABLE'].includes(value)) throw new Error('สถานะต้องเป็น ENABLE หรือ DISABLE');
     res = level === 'adgroup'
       ? await tt('POST', '/adgroup/status/update/', { advertiser_id: advertiser, adgroup_ids: [id], operation_status: value })
@@ -222,7 +237,7 @@ async function writeOp(body) {
       ? await tt('POST', '/adgroup/update/', { advertiser_id: advertiser, adgroup_id: id, budget: b })
       : await tt('POST', '/campaign/update/', { advertiser_id: advertiser, campaign_id: id, budget: b });
   } else throw new Error('action ไม่รองรับ');
-  audit({ advertiser, level, id, action, value, result: res });
+  audit({ advertiser, level, id, action, value, by: body.by || 'dashboard', result: res });
   return res;
 }
 
@@ -265,4 +280,6 @@ async function handle(req, res, url) {
   return true;
 }
 
-module.exports = { handle };
+// ใช้ร่วมกับบอทดูแลโฆษณา (scripts/tiktok-ads-bot.js ที่ Hermes รัน)
+module.exports = { handle, tt, listAll, overview, gmvMaxCampaigns, gmvMaxReport, insight, finish, writeOp, chunks,
+  ADV_IDS, ADV_NAMES, AUDIT, hasToken: () => !!TOKEN };

@@ -55,7 +55,7 @@ tr.sub td{background:#172033;font-size:13px}
   <div class="panel"><h2>ค่าโฆษณา vs ยอดขาย รายวัน <span class="legend"><span><i style="background:#ef4444"></i>ค่าโฆษณา</span><span><i style="background:#22c55e"></i>ยอดขาย</span></span></h2><svg id="chart" class="chart"></svg></div>
   <div class="panel"><h2>แคมเปญ <small class="note" id="cnt"></small></h2>
     <table id="tbl"><thead></thead><tbody></tbody></table>
-    <div class="note">ROAS = ยอดขาย ÷ ค่าโฆษณา · คลิกชื่อแคมเปญเพื่อดูกลุ่มโฆษณา · คลิกหัวคอลัมน์เพื่อเรียงลำดับ · แถว GMV Max ดูได้อย่างเดียว (TikTok ไม่ส่งยอดคลิก/การแสดงผลของ GMV Max)</div>
+    <div class="note">ROAS = ยอดขาย ÷ ค่าโฆษณา · คลิกชื่อแคมเปญเพื่อดูกลุ่มโฆษณา · คลิกหัวคอลัมน์เพื่อเรียงลำดับ · แถว GMV Max ไม่มียอดคลิก/การแสดงผล (TikTok ไม่ส่งมา)</div>
   </div>
   <div class="panel" id="auditPanel" style="display:none"><h2>ประวัติการสั่ง (30 รายการล่าสุด)</h2><div id="audit"></div></div>
 </main>
@@ -139,7 +139,9 @@ function table() {
       <td>${c.budgetMode === 'BUDGET_MODE_DAY' ? money(c.budget) : '-'}</td>
       <td>${money(c.spend)}</td><td>${money(c.revenue)}</td><td class="${c.spend ? roasCls(c.roas) : ''}"><b>${c.spend ? c.roas + 'x' : '-'}</b></td>
       <td>${fmt(c.orders)}</td><td>${c.orders ? money(c.cpa) : '-'}</td><td>-</td><td>-</td>
-      <td><small style="color:var(--mut,#94a3b8)">คุมใน Ads Manager</small></td></tr>`;
+      <td><div class="act"><button onclick="setStatus('gmv_max','${c.id}','${on ? 'DISABLE' : 'ENABLE'}','${c.name.replace(/'/g, '')}')">${on ? '⏸ ปิด' : '▶ เปิด'}</button>
+      ${c.budgetMode === 'BUDGET_MODE_DAY' ? `<button onclick="setBudget('gmv_max','${c.id}',${c.budget},'${c.name.replace(/'/g, '')}')">✎ งบ</button>
+      <button onclick="setRoas('${c.id}',${c.roasBid},'${c.name.replace(/'/g, '')}')">🎯 ROAS</button>` : ''}</div></td></tr>`;
     }
     return `<tr><td class="name" title="${c.name}"><a href="#" style="color:var(--pri2);text-decoration:none" onclick="toggleCamp('${c.id}');return false">${openCamp === c.id ? '▾' : '▸'} ${c.name}</a></td>
       <td><span class="badge ${on ? 'on' : 'off'}">${on ? 'เปิด' : 'ปิด'}</span></td>
@@ -181,6 +183,11 @@ function setBudget(level, id, cur, name) {
   const v = prompt(`งบต่อวันใหม่ (บาท) ของ\n"${name}"\nปัจจุบัน ${cur}`, cur);
   if (v === null) return;
   write({ level, id, action: 'budget', value: Number(v) }, `เปลี่ยนงบ "${name}"\n${cur} → ${v} บาท/วัน`);
+}
+function setRoas(id, cur, name) {
+  const v = prompt(`เป้า ROAS ใหม่ของ\n"${name}"\nปัจจุบัน ${cur} (ลดเป้า = ระบบใช้งบได้มากขึ้นแต่กำไรต่อบาทลดลง)`, cur);
+  if (v === null) return;
+  write({ level: 'gmv_max', id, action: 'roas_bid', value: Number(v) }, `เปลี่ยนเป้า ROAS "${name}"\n${cur} → ${v}`);
 }
 
 async function showAudit() {

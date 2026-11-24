@@ -66,3 +66,6 @@ videos/flow/
 
 
 *.sync-conflict-*
+
+# TikTok ads bot runtime state (pending proposals, audit) — written by Hermes on the NAS
+.ads-bot/
