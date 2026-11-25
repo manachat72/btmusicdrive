@@ -69,3 +69,7 @@ videos/flow/
 
 # TikTok ads bot runtime state (pending proposals, audit) — written by Hermes on the NAS
 .ads-bot/
+
+# TikTok exports for the finance tab (sales/ad spend data, public repo, do not commit)
+tiktok-daily-sales-export/
+tiktok-daily-ads-spend/
