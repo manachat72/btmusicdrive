@@ -111,10 +111,13 @@ async function report() {
     row.videos_7d = await creatives(c, info, win.d7[0], win.d7[1], storeIds);
     campaigns.push(row);
   }
+  // แคมเปญที่ปิดส่วนใหญ่ถูกปิดไปก่อน 30 วัน → ดูย้อน 3 เดือน + 6 เดือน (ผู้ใช้กำหนด) ไม่งั้นยอดเป็น 0 ทั้งที่เคยขายดี
+  const d90 = (await ads.gmvMaxReport(ADV, storeIds, ictDate(-89), ictDate(0))).camp;
+  const d180 = (await ads.gmvMaxReport(ADV, storeIds, ictDate(-179), ictDate(0))).camp;
   const paused = list.filter((c) => c.operation_status !== 'ENABLE')
-    .map((c) => ({ campaign_id: c.campaign_id, name: c.campaign_name, last30d: pick('d30', c.campaign_id) }))
-    .filter((c) => c.last30d.revenue > 0)
-    .sort((a, b) => b.last30d.revenue - a.last30d.revenue).slice(0, 20);
+    .map((c) => ({ campaign_id: c.campaign_id, name: c.campaign_name, last30d: pick('d30', c.campaign_id), created: c.create_time, last90d: metrics(d90[c.campaign_id] || {}), last180d: metrics(d180[c.campaign_id] || {}) }))
+    .filter((c) => c.last180d.revenue > 0)
+    .sort((a, b) => b.last180d.revenue - a.last180d.revenue).slice(0, 30);
   const manualOn = (await ads.listAll('/campaign/get/', { advertiser_id: ADV })).filter((c) => c.operation_status === 'ENABLE').map((c) => c.campaign_name);
   const s = loadState(); expire(s); saveState(s);
   return {
@@ -122,7 +125,7 @@ async function report() {
     note: 'today = ข้อมูลวันนี้ถึงตอนนี้ (ยังไม่ครบวัน) · ROAS = ยอดขาย ÷ ค่าโฆษณา · roas_bid = เป้า ROAS ที่ตั้งใน GMV Max',
     guardrails: GUARD,
     active_gmv_max: campaigns,
-    paused_with_recent_sales_30d: paused,
+    paused_with_sales_6m: paused,
     manual_campaigns_enabled: manualOn,
     pending_proposals: s.proposals.filter((p) => p.status === 'pending'),
     recent_changes_7d: actions,
