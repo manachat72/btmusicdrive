@@ -27,7 +27,8 @@ const STATE = path.join(DIR, 'state.json');
 const BRIEFS = path.join(DIR, 'video-briefs.jsonl');
 const ADV = process.env.TIKTOK_BOT_ADV || '7442465076160282640'; // buythrrmshop
 const GUARD = {
-  budgetMin: 200, budgetMax: 10000, budgetMaxChangePct: 30,
+  budgetMin: 200, budgetMax: 1500, budgetMaxChangePct: 30,
+  totalDailyMax: 1500,    // งบ/วันรวมทุกแคมเปญที่เปิดอยู่ ห้ามเกิน (ผู้ใช้กำหนด) · ลดงบเพื่อเข้าเพดานได้โดยไม่ติดกฎ ±30%
   roasMin: 2, roasMax: 30, roasMaxStep: 2,
   cooldownHours: 24,      // แคมเปญ+ประเภทคำสั่งเดียวกัน ห้ามเปลี่ยนซ้ำภายใน 24 ชม. (GMV Max ต้องใช้เวลาเรียนรู้)
   proposalTtlHours: 6,
@@ -58,6 +59,28 @@ function recentActions(hours) {
 }
 
 async function gmvInfo(id) { return ads.tt('GET', '/campaign/gmv_max/info/', { advertiser_id: ADV, campaign_id: id }); }
+
+// งบ/วันของแคมเปญ GMV Max ที่เปิดอยู่ทั้งหมด { campaign_id: budget }
+async function activeBudgets() {
+  const { list } = await ads.gmvMaxCampaigns(ADV);
+  const out = {};
+  for (const c of list.filter((x) => x.operation_status === 'ENABLE')) out[c.campaign_id] = num((await gmvInfo(c.campaign_id)).budget);
+  return out;
+}
+const sumExcept = (m, id) => Object.entries(m).reduce((t, [k, v]) => t + (k === String(id) ? 0 : v), 0);
+
+// GMV Max: สินค้า (item_group_id) หนึ่งตัวควรอยู่ในแคมเปญที่เปิดได้แค่แคมเปญเดียว — เปิดซ้ำ = แย่งงบ/ประมูลกันเอง
+// คืนชื่อแคมเปญที่เปิดอยู่ (ไม่นับตัวเอง) ที่มีสินค้าซ้ำกับ groups
+async function activeOverlap(selfId, groups) {
+  const { list } = await ads.gmvMaxCampaigns(ADV);
+  const hit = [];
+  for (const c of list.filter((x) => x.operation_status === 'ENABLE' && x.campaign_id !== String(selfId))) {
+    const g = (await gmvInfo(c.campaign_id)).item_group_ids || [];
+    const n = g.filter((x) => groups.includes(x)).length;
+    if (n) hit.push(`${c.campaign_name} (ซ้ำ ${n} สินค้า)`);
+  }
+  return hit;
+}
 
 function metrics(m) {
   const spend = r2(num(m.spend)), revenue = r2(num(m.revenue)), orders = num(m.orders);
@@ -99,7 +122,7 @@ async function report() {
   for (const c of enabled) {
     const info = await gmvInfo(c.campaign_id);
     const row = { campaign_id: c.campaign_id, name: c.campaign_name, status: c.operation_status, delivery: c.secondary_status,
-      budget: num(info.budget), roas_bid: num(info.roas_bid), roi_protection: !!info.roi_protection_enabled,
+      budget: num(info.budget), roas_bid: num(info.roas_bid), roi_protection: !!info.roi_protection_enabled, product_ids: info.item_group_ids || [],
       created: (c.create_time || '').slice(0, 10),
       today: pick('today', c.campaign_id), yesterday: pick('yesterday', c.campaign_id), last7d: pick('d7', c.campaign_id), last30d: pick('d30', c.campaign_id) };
     row.budget_use_7d_pct = row.budget ? r2(row.last7d.spend / 7 / row.budget * 100) : null;
@@ -118,26 +141,43 @@ async function report() {
     .map((c) => ({ campaign_id: c.campaign_id, name: c.campaign_name, last30d: pick('d30', c.campaign_id), created: c.create_time, last90d: metrics(d90[c.campaign_id] || {}), last180d: metrics(d180[c.campaign_id] || {}) }))
     .filter((c) => c.last180d.revenue > 0)
     .sort((a, b) => b.last180d.revenue - a.last180d.revenue).slice(0, 30);
+  const activeByProduct = {};
+  for (const c of campaigns) for (const g of c.product_ids) activeByProduct[g] = c.name;
+  for (const c of paused) c.product_ids = (await gmvInfo(c.campaign_id)).item_group_ids || [];
+  for (const c of paused) {
+    c.products_count = c.product_ids.length;
+    c.overlaps_active = [...new Set(c.product_ids.filter((g) => activeByProduct[g]).map((g) => activeByProduct[g]))];
+    c.same_products_as_paused = paused.filter((o) => o !== c && o.product_ids.some((g) => c.product_ids.includes(g))).map((o) => o.name);
+    c.can_enable = c.overlaps_active.length === 0;
+  }
+  for (const c of paused) delete c.product_ids;
   const manualOn = (await ads.listAll('/campaign/get/', { advertiser_id: ADV })).filter((c) => c.operation_status === 'ENABLE').map((c) => c.campaign_name);
   const s = loadState(); expire(s); saveState(s);
   return {
     now_th: ictNow(), account: `${ads.ADV_NAMES[ADV] || ADV} (${ADV})`, currency: 'THB',
     note: 'today = ข้อมูลวันนี้ถึงตอนนี้ (ยังไม่ครบวัน) · ROAS = ยอดขาย ÷ ค่าโฆษณา · roas_bid = เป้า ROAS ที่ตั้งใน GMV Max',
     guardrails: GUARD,
+    total_active_budget: campaigns.reduce((t, c) => t + c.budget, 0),
+    over_total_cap: campaigns.reduce((t, c) => t + c.budget, 0) > GUARD.totalDailyMax,
     active_gmv_max: campaigns,
     paused_with_sales_6m: paused,
+    paused_note: 'can_enable=false แปลว่าสินค้าซ้ำกับแคมเปญที่เปิดอยู่ (overlaps_active) ห้ามเสนอเปิด · same_products_as_paused = แคมเปญที่ปิดซึ่งขายสินค้าเดียวกัน เลือกเปิดได้แค่ตัวที่ดีที่สุดตัวเดียว',
     manual_campaigns_enabled: manualOn,
     pending_proposals: s.proposals.filter((p) => p.status === 'pending'),
     recent_changes_7d: actions,
   };
 }
 
-function checkGuard(p, info, actions) {
+function checkGuard(p, info, actions, budgets = {}) {
   const cur = { budget: num(info.budget), roas_bid: num(info.roas_bid), status: info.operation_status };
   if (p.action === 'budget') {
     const v = Number(p.value);
     if (!(v >= GUARD.budgetMin && v <= GUARD.budgetMax)) return `งบต้องอยู่ระหว่าง ${GUARD.budgetMin}–${GUARD.budgetMax}`;
-    if (cur.budget && Math.abs(v - cur.budget) / cur.budget * 100 > GUARD.budgetMaxChangePct + 1e-9) return `เปลี่ยนงบเกิน ${GUARD.budgetMaxChangePct}% (ปัจจุบัน ${cur.budget})`;
+    const others = sumExcept(budgets, p.campaign_id), isOn = cur.status === 'ENABLE';
+    const curTotal = others + (isOn ? cur.budget : 0);
+    if (isOn && v > cur.budget && others + v > GUARD.totalDailyMax) return `งบรวมทุกแคมเปญจะเป็น ฿${others + v} เกินเพดาน ฿${GUARD.totalDailyMax}/วัน (แคมเปญอื่นใช้ ฿${others})`;
+    const shrinkToCap = v < cur.budget && curTotal > GUARD.totalDailyMax;   // ลดเพื่อเข้าเพดาน → ไม่ติดกฎ ±30%
+    if (!shrinkToCap && cur.budget && Math.abs(v - cur.budget) / cur.budget * 100 > GUARD.budgetMaxChangePct + 1e-9) return `เปลี่ยนงบเกิน ${GUARD.budgetMaxChangePct}% (ปัจจุบัน ${cur.budget})`;
     if (v === cur.budget) return 'งบเท่าเดิม';
   } else if (p.action === 'roas_bid') {
     const v = Number(p.value);
@@ -147,7 +187,14 @@ function checkGuard(p, info, actions) {
   } else if (p.action === 'status') {
     if (!['ENABLE', 'DISABLE'].includes(p.value)) return 'สถานะต้องเป็น ENABLE หรือ DISABLE';
     if (p.value === cur.status) return `สถานะเป็น ${cur.status} อยู่แล้ว`;
+    if (p.value === 'ENABLE') {
+      const others = sumExcept(budgets, p.campaign_id);
+      if (others + cur.budget > GUARD.totalDailyMax) return `เปิดแล้วงบรวมจะเป็น ฿${others + cur.budget} เกินเพดาน ฿${GUARD.totalDailyMax}/วัน — ต้องลดงบแคมเปญนี้ให้ ≤ ฿${Math.max(0, GUARD.totalDailyMax - others)} หรือลดงบแคมเปญอื่นก่อน`;
+    }
   } else return `action "${p.action}" ไม่รองรับ (ใช้ budget / roas_bid / status · เรื่องวิดีโอใช้คำสั่ง brief)`;
+  // ลดงบลงเพื่อให้เข้าเพดานรวม = ทิศปลอดภัย → ไม่ติด cooldown
+  const totalNow = sumExcept(budgets, p.campaign_id) + (cur.status === 'ENABLE' ? cur.budget : 0);
+  if (p.action === 'budget' && Number(p.value) < cur.budget && totalNow > GUARD.totalDailyMax) return { from: cur[p.action] };
   const recent = actions.find((a) => a.campaign_id === String(p.campaign_id) && a.action === p.action && !/no-op/.test(a.note || ''));
   if (recent) return `เพิ่งเปลี่ยน${ACT_TH[p.action]}ไปเมื่อ ${recent.at.slice(0, 16)} — รอให้ครบ ${GUARD.cooldownHours} ชม. ก่อน`;
   return { from: cur[p.action] };
@@ -170,11 +217,18 @@ async function propose(arg) {
       if (!/^\d+$/.test(id)) throw new Error('campaign_id ไม่ถูกต้อง');
       if (!it.reason) throw new Error('ต้องมีเหตุผล (reason)');
       const info = await gmvInfo(id);
-      const g = checkGuard(it, info, actions);
+      const g = checkGuard({ ...it, campaign_id: id }, info, actions, await activeBudgets());
       if (typeof g === 'string') throw new Error(g);
       if (s.proposals.some((p) => p.status === 'pending' && p.campaign_id === id && p.action === it.action)) throw new Error('มีข้อเสนอแบบเดียวกันรออนุมัติอยู่แล้ว');
+      if (it.action === 'status' && it.value === 'ENABLE') {
+        const groups = info.item_group_ids || [];
+        const dup = await activeOverlap(id, groups);
+        if (dup.length) throw new Error('สินค้าซ้ำกับแคมเปญที่เปิดอยู่: ' + dup.join(', '));
+        const pend = s.proposals.filter((p) => p.status === 'pending' && p.action === 'status' && p.value === 'ENABLE' && (p.product_ids || []).some((g) => groups.includes(g)));
+        if (pend.length) throw new Error('สินค้าซ้ำกับข้อเสนอเปิดที่รออยู่: ' + pend.map((p) => p.id).join(', '));
+      }
       const p = { id: 'P' + (++s.seq), status: 'pending', campaign_id: id, name: info.campaign_name, action: it.action, from: g.from, value: it.action === 'status' ? it.value : Number(it.value),
-        reason: String(it.reason).slice(0, 400), createdAt: new Date().toISOString(), expiresAt: new Date(Date.now() + GUARD.proposalTtlHours * 36e5).toISOString() };
+        product_ids: info.item_group_ids || [], reason: String(it.reason).slice(0, 400), createdAt: new Date().toISOString(), expiresAt: new Date(Date.now() + GUARD.proposalTtlHours * 36e5).toISOString() };
       s.proposals.push(p);
       out.push(`✅ ${p.id} · ${p.name} · ${ACT_TH[p.action]} ${fmtVal(p.action, p.from)} → ${fmtVal(p.action, p.value)}\n   เหตุผล: ${p.reason}`);
     } catch (e) { out.push(`⛔ ไม่รับข้อเสนอ ${id || '?'} ${it.action || ''}: ${e.message}`); }
@@ -200,8 +254,12 @@ async function apply(ids) {
     if (p.status !== 'pending') { out.push(`⏭ ${p.id} ข้าม (สถานะ ${p.status})`); continue; }
     try {
       const info = await gmvInfo(p.campaign_id);
-      const g = checkGuard(p, info, recentActions(GUARD.cooldownHours));
+      const g = checkGuard(p, info, recentActions(GUARD.cooldownHours), await activeBudgets());
       if (typeof g === 'string') throw new Error('ค่าปัจจุบันเปลี่ยนไปแล้ว: ' + g);
+      if (p.action === 'status' && p.value === 'ENABLE') {
+        const dup = await activeOverlap(p.campaign_id, info.item_group_ids || []);
+        if (dup.length) throw new Error('สินค้าซ้ำกับแคมเปญที่เปิดอยู่: ' + dup.join(', '));
+      }
       const res = await ads.writeOp({ advertiser: ADV, level: 'gmv_max', id: p.campaign_id, action: p.action, value: p.value, by: 'hermes-bot' });
       p.status = 'applied'; p.appliedAt = new Date().toISOString(); p.result = res;
       out.push(`✅ ${p.id} ทำแล้ว · ${p.name} · ${ACT_TH[p.action]} ${fmtVal(p.action, g.from)} → ${fmtVal(p.action, p.value)}`);
