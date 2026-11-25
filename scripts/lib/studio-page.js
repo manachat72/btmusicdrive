@@ -8,7 +8,8 @@ const path = require('path');
 
 const CLIENT_JS = fs.readFileSync(path.join(__dirname, 'studio-client.js'), 'utf8') + '\n' + fs.readFileSync(path.join(__dirname, 'studio-ads-client.js'), 'utf8')
   + '\n' + fs.readFileSync(path.join(__dirname, 'studio-finance-client.js'), 'utf8')
-  + '\n' + fs.readFileSync(path.join(__dirname, 'studio-costs-client.js'), 'utf8');
+  + '\n' + fs.readFileSync(path.join(__dirname, 'studio-costs-client.js'), 'utf8')
+  + '\n' + fs.readFileSync(path.join(__dirname, 'studio-overview-client.js'), 'utf8');
 
 const CSS = `
 :root {
@@ -180,7 +181,8 @@ const PAGE = `<!doctype html>
     </div>
     <div class="nav-label">เมนูหลัก</div>
     <nav class="sidebar-nav" aria-label="เมนูหลัก">
-      <button class="tab on" id="tabNew" onclick="go('new')"><span class="nav-icon" aria-hidden="true">＋</span>ลงสินค้าใหม่</button>
+      <button class="tab" id="tabOverview" onclick="go('overview')"><span class="nav-icon" aria-hidden="true">◎</span>ภาพรวม</button>
+      <button class="tab" id="tabNew" onclick="go('new')"><span class="nav-icon" aria-hidden="true">＋</span>ลงสินค้าใหม่</button>
       <button class="tab" id="tabEdit" onclick="go('edit')"><span class="nav-icon" aria-hidden="true">✎</span>แก้ไขสินค้า</button>
       <button class="tab" id="tabQr" onclick="go('qr')"><span class="nav-icon" aria-hidden="true">⌁</span>QR Code</button>
       <div class="nav-label" style="margin-top:12px">การเงิน</div>
