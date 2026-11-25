@@ -40,7 +40,9 @@ function renderFinance(fresh) {
       '<div class="card" style="display:flex;gap:12px;flex-wrap:wrap">' +
         adsCard('เงินเข้ารวม', b(t.income), f(t.orders) + ' ออเดอร์') +
         adsCard('ค่าโฆษณา', b(t.adSpend), t.income ? f(t.adShare, 1) + '% ของเงินเข้า' : '') +
-        adsCard('เหลือหลังหักโฆษณา', '<span style="color:' + netColor + '">' + b(t.net) + '</span>', 'ยังไม่หักต้นทุนสินค้า/ค่าส่ง/ค่าธรรมเนียม') +
+        adsCard('เหลือหลังหักโฆษณา', '<span style="color:' + netColor + '">' + b(t.net) + '</span>', 'ก่อนหักต้นทุนสินค้า') +
+        adsCard('ต้นทุนสินค้า', b(t.cost), 'เว็บคิดจากสินค้าจริง ' + b(w.cost) + (t.ttCostEstimated ? ' · TikTok ประมาณ ' + b(t.ttCostEstimated) : '')) +
+        adsCard('กำไรโดยประมาณ', '<span style="color:' + (t.profit >= 0 ? '#047857' : '#b91c1c') + '">' + b(t.profit) + '</span>', 'ยังไม่หักค่าส่ง/ค่าธรรมเนียม/กล่อง-ปก') +
         adsCard('ROAS รวม', t.adSpend ? f(t.roas, 2) + 'x' : '–', 'เงินเข้ารวม ÷ ค่าโฆษณา') +
       '</div>' +
       '<div class="card" style="display:flex;gap:12px;flex-wrap:wrap">' +
@@ -87,7 +89,9 @@ function renderFinanceFiles() {
         adsCard('ค่าธรรมเนียม TikTok', b(m.fees), 'คอมมิชชั่น ค่าส่ง แอฟฟิลิเอต ฯลฯ') +
         adsCard('ค่าโฆษณาที่หักจากยอดขาย', b(-m.paidFromGmv), '"ชำระด้วย GMV สำหรับโฆษณา"') +
         adsCard('เงินเข้าบัญชีจริง', '<span style="color:#047857">' + b(m.payout) + '</span>', 'ยอดการชำระเงินทั้งหมด') +
-        (m.sameRange ? adsCard('เหลือหลังจ่ายค่าโฆษณาเพิ่ม', col(m.netAfterAds), 'ค่าโฆษณาส่วนที่จ่ายเอง ' + b(m.adOutOfPocket) + ' · ยังไม่หักต้นทุนสินค้า') : '') +
+        (m.sameRange ? adsCard('เหลือหลังจ่ายค่าโฆษณาเพิ่ม', col(m.netAfterAds), 'ค่าโฆษณาส่วนที่จ่ายเอง ' + b(m.adOutOfPocket)) : '') +
+        (m.sameRange ? adsCard('ต้นทุนสินค้า (ประมาณ)', b(-m.productCostEst), f(m.soldOrders) + ' ออเดอร์ × ฿55 (ทุน 4GB — ไฟล์ไม่บอกความจุ)') : '') +
+        (m.sameRange ? adsCard('กำไรโดยประมาณ', col(m.profitEst), 'ยังไม่หักค่าส่งที่ร้านจ่าย/กล่อง-ปก') : '') +
         '</div>';
     }
     var adCards = '<div class="card" style="display:flex;gap:12px;flex-wrap:wrap">' +

@@ -9,6 +9,7 @@
 const fs = require('fs');
 const path = require('path');
 const XLSX = require('xlsx');
+const { FALLBACK_COST } = require('./unit-costs');
 
 const ROOT = path.resolve(__dirname, '..', '..');
 const SALES_DIR = path.join(ROOT, 'tiktok-daily-sales-export');
@@ -105,7 +106,13 @@ function summary(q) {
       // ค่าโฆษณาส่วนที่ไม่ได้หักจากยอดขาย = จ่ายเพิ่มเอง (บัตร/เติมเงิน) → หักออกอีกทีถึงจะเป็นเงินเหลือจริง
       adOutOfPocket: sameRange ? Math.max(0, adCost - paidFromGmv) : null,
       feeLines: rep.lines.filter((l) => l.v !== 0) };
-    if (sameRange) money.netAfterAds = payout - money.adOutOfPocket;
+    if (sameRange) {
+      money.netAfterAds = payout - money.adOutOfPocket;
+      // ไฟล์ TikTok ไม่บอกความจุ → ประมาณต้นทุน = จำนวนออเดอร์ที่ได้เงิน × ราคาทุน 4GB (ขายดีสุด) — ไม่ใช่ตัวเลขจริง
+      money.soldOrders = orders.filter((o) => o.payout > 0).length;
+      money.productCostEst = money.soldOrders * FALLBACK_COST;
+      money.profitEst = money.netAfterAds - money.productCostEst;
+    }
   }
 
   return {
