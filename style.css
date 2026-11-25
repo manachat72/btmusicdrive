@@ -1098,21 +1098,12 @@ body {
 .scroll-row-next { right: 0; }
 .scroll-row.can-prev .scroll-row-prev, .scroll-row.can-next .scroll-row-next { opacity: 1; pointer-events: auto; }
 
-/* ป้ายโปรโมชันบนรูปการ์ดสินค้าทุกหน้า (index/shop/category) — แก้ข้อความที่นี่ที่เดียว */
-a.aspect-square.group.cursor-pointer::after {
-    content: "🎁 ฟรี 10 เพลง เลือกได้";
-    position: absolute; left: 8px; bottom: 8px; z-index: 2;
-    background: #dc2626; color: #fff; font-weight: 700;
-    font-size: 10px; line-height: 1; padding: 4px 8px; border-radius: 4px;
-    box-shadow: 0 1px 2px rgba(0,0,0,.2); pointer-events: none;
-}
-@media (min-width: 640px) { a.aspect-square.group.cursor-pointer::after { font-size: 12px; } }
-/* ป้ายส่งฟรี ซ้อนเหนือป้ายโปรด้านบน — ข้อความมาจาก --btmd-free-ship ที่ components.js ตั้งจากค่าส่งในแอดมิน (none = ปิดส่งฟรี) */
+/* ป้ายส่งฟรีบนรูปการ์ดสินค้าทุกหน้า (index/shop/category) — ข้อความมาจาก --btmd-free-ship ที่ components.js ตั้งจากค่าส่งในแอดมิน (none = ปิดส่งฟรี) */
 a.aspect-square.group.cursor-pointer::before {
     content: var(--btmd-free-ship, "🚚 ส่งฟรี ครบ ฿200");
-    position: absolute; left: 8px; bottom: 30px; z-index: 2;
+    position: absolute; left: 8px; bottom: 8px; z-index: 2;
     background: #0f766e; color: #fff; font-weight: 700;
     font-size: 10px; line-height: 1; padding: 4px 8px; border-radius: 4px;
     box-shadow: 0 1px 2px rgba(0,0,0,.2); pointer-events: none;
 }
-@media (min-width: 640px) { a.aspect-square.group.cursor-pointer::before { font-size: 12px; bottom: 32px; } }
+@media (min-width: 640px) { a.aspect-square.group.cursor-pointer::before { font-size: 12px; } }
