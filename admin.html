@@ -2260,64 +2260,20 @@ function devBypass() {
       </div>
     </section>
 
-    <!-- ── PRODUCTS ──────────────────────────────────────────────────────── -->
+    <!-- ── PRODUCTS = ลงสินค้าที่ Product Studio ที่เดียว ───────────────────── -->
     <section id="section-products" style="display:none;">
       <div class="wp-page-hdr">
         <div>
           <h2 class="wp-page-title">สินค้า</h2>
-          <p class="wp-page-desc" id="products-count-label">จัดการคาตาล็อกสินค้า</p>
-        </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <button onclick="loadProducts()" class="wp-btn"><i class="fa-solid fa-arrows-rotate"></i> รีเฟรช</button>
-          <button onclick="exportProductTemplate()" class="wp-btn" style="background:#166534;color:#fff;border-color:#166534;">
-            <i class="fa-solid fa-file-arrow-down"></i> Export Template
-          </button>
-          <button onclick="document.getElementById('bulk-import-file').click()" class="wp-btn" style="background:#1d4ed8;color:#fff;border-color:#1d4ed8;">
-            <i class="fa-solid fa-file-arrow-up"></i> Import XLSX
-          </button>
-          <input type="file" id="bulk-import-file" accept=".xlsx,.xls" style="display:none;" onchange="onBulkImportFileSelected(this)">
-          <button onclick="openProductModal(null)" class="wp-btn" style="background:var(--accent);color:#fff;border-color:var(--accent);">
-            <i class="fa-solid fa-plus"></i> เพิ่มสินค้า
-          </button>
+          <p class="wp-page-desc" id="products-count-label">ลงสินค้า แก้ไข ลงรูป SEO และ QR ทำที่ Product Studio ที่เดียว</p>
         </div>
       </div>
-
-      <div id="products-loading" class="wp-card" style="display:none;">
-        <div class="wp-loading-box"><div class="wp-spinner"></div><p style="color:var(--muted);">กำลังโหลดสินค้า…</p></div>
-      </div>
-      <div id="products-error" class="wp-notice err" style="display:none;">
-        <strong>ข้อผิดพลาด:</strong> <span id="products-error-text"></span>
-      </div>
-
-      <div id="products-bulk-bar" style="display:none;background:#fff7ed;border:1px solid #fdba74;border-radius:6px;padding:10px 14px;margin-bottom:10px;align-items:center;justify-content:space-between;gap:12px;">
-        <span style="font-size:13px;color:#9a3412;"><i class="fa-solid fa-check-double"></i> เลือก <strong id="products-bulk-count">0</strong> รายการ</span>
-        <div style="display:flex;gap:8px;">
-          <button onclick="clearProductSelection()" class="wp-btn" style="font-size:12px;">ยกเลิก</button>
-          <button onclick="askBulkDeleteProducts()" class="wp-btn" style="background:#d63638;color:#fff;border-color:#d63638;font-size:12px;"><i class="fa-solid fa-trash"></i> ลบที่เลือก</button>
+      <div class="wp-card">
+        <div class="card-body" style="padding:28px;">
+          <p style="font-size:15px;font-weight:700;margin-bottom:8px;">ลงสินค้า / แก้ไขสินค้า ใช้ Product Studio</p>
+          <p style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:16px;">Studio ทำงานบนคอมร้านที่ต่อ NAS — ดับเบิลคลิก <code>start-studio.bat</code> ก่อน แล้วกดปุ่มด้านล่าง</p>
+          <a href="http://localhost:4777/" target="_blank" rel="noopener" class="wp-btn" style="background:var(--accent);color:#fff;border-color:var(--accent);display:inline-flex;align-items:center;gap:6px;"><i class="fa-solid fa-arrow-up-right-from-square"></i> เปิด Product Studio</a>
         </div>
-      </div>
-      <div id="products-table-wrapper" class="wp-card" style="display:none;">
-        <div class="card-body nopad" style="overflow-x:auto;">
-          <table class="wp-tbl">
-            <thead>
-              <tr>
-                <th style="width:36px;text-align:center;"><input type="checkbox" id="products-select-all" onchange="toggleSelectAllProducts(this.checked)" title="เลือกทั้งหมด"></th>
-                <th style="width:52px;"></th>
-                <th>สินค้า</th>
-                <th>หมวดหมู่</th>
-                <th class="r">ราคา</th>
-                <th class="r">ราคาเดิม</th>
-                <th class="r">คลัง</th>
-                <th style="width:72px;text-align:center;">แสดง</th>
-                <th style="width:120px;">จัดการ</th>
-              </tr>
-            </thead>
-            <tbody id="products-tbody"></tbody>
-          </table>
-        </div>
-      </div>
-      <div id="products-empty" class="wp-empty-box" style="display:none;">
-        <i class="fa-solid fa-tag"></i><p>ไม่พบสินค้า</p>
       </div>
     </section>
 
@@ -3218,9 +3174,8 @@ function devBypass() {
     closeSidebar();
     if (id === 'dashboard') initDashboard();
     if (id === 'orders') loadOrders();
-    if (id === 'products') loadProducts();
     if (id === 'customers') loadCustomers();
-    if (id === 'categories') loadCategories();
+    if (id === 'categories') { loadProducts(); loadCategories(); }
     if (id === 'menus') loadMenus();
     if (id === 'shipping') loadShipping();
     if (id === 'marketing') loadMarketingSettings();
@@ -3821,32 +3776,17 @@ function devBypass() {
   }
 
   async function loadProducts() {
-    vis('products-loading', true);
-    vis('products-table-wrapper', false);
-    vis('products-error', false);
-    vis('products-empty', false);
-
     try {
-      let products = [];
       const res = await fetch(`${API_BASE}/products?admin=1&limit=200&_=${Date.now()}`, { headers: adminHeaders(false), cache: 'no-store' });
-      if (res.ok) { const json = await res.json(); products = Array.isArray(json) ? json : (json.data || []); }
-      else throw new Error('api_fail');
-      _products = products;
+      if (!res.ok) throw new Error('api_fail');
+      const json = await res.json();
+      _products = Array.isArray(json) ? json : (json.data || []);
     } catch {
-      // Fallback to local products.json
       try {
         const res = await fetch('products.json', { cache: 'no-store' });
         _products = res.ok ? await res.json() : [];
       } catch { _products = []; }
     }
-
-    vis('products-loading', false);
-    document.getElementById('products-count-label').textContent =
-      `${_products.length} สินค้าในคาตาล็อก`;
-
-    if (!_products.length) { vis('products-empty', true); return; }
-    renderProductsTable(_products);
-    vis('products-table-wrapper', true);
   }
 
   function renderProductsTable(products) {
