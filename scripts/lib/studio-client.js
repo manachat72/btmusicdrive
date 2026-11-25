@@ -1081,5 +1081,7 @@ async function createQr(btn) {
     WEB = await jget('/api/web-products');
     MKT = await jget('/api/products');
   } catch (e) { $('who').textContent = 'โหลดข้อมูลไม่ได้'; }
-  go('new');
+  // ลิงก์ลัดจากหลังบ้าน: http://localhost:4777/#finance | #adsLive
+  var hv = (location.hash || '').slice(1);
+  go(['new', 'edit', 'qr', 'finance', 'adsSum', 'adsList', 'adsLive'].indexOf(hv) >= 0 ? hv : 'new');
 })();
