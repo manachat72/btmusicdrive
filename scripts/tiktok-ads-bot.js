@@ -113,7 +113,8 @@ async function report() {
   }
   const paused = list.filter((c) => c.operation_status !== 'ENABLE')
     .map((c) => ({ campaign_id: c.campaign_id, name: c.campaign_name, last30d: pick('d30', c.campaign_id) }))
-    .filter((c) => c.last30d.spend > 0).sort((a, b) => b.last30d.revenue - a.last30d.revenue).slice(0, 5);
+    .filter((c) => c.last30d.revenue > 0)
+    .sort((a, b) => b.last30d.revenue - a.last30d.revenue).slice(0, 20);
   const manualOn = (await ads.listAll('/campaign/get/', { advertiser_id: ADV })).filter((c) => c.operation_status === 'ENABLE').map((c) => c.campaign_name);
   const s = loadState(); expire(s); saveState(s);
   return {
