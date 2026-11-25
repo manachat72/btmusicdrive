@@ -6,7 +6,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const CLIENT_JS = fs.readFileSync(path.join(__dirname, 'studio-client.js'), 'utf8') + '\n' + fs.readFileSync(path.join(__dirname, 'studio-ads-client.js'), 'utf8');
+const CLIENT_JS = fs.readFileSync(path.join(__dirname, 'studio-client.js'), 'utf8') + '\n' + fs.readFileSync(path.join(__dirname, 'studio-ads-client.js'), 'utf8')
+  + '\n' + fs.readFileSync(path.join(__dirname, 'studio-finance-client.js'), 'utf8');
 
 const CSS = `
 :root {
@@ -181,6 +182,8 @@ const PAGE = `<!doctype html>
       <button class="tab on" id="tabNew" onclick="go('new')"><span class="nav-icon" aria-hidden="true">＋</span>ลงสินค้าใหม่</button>
       <button class="tab" id="tabEdit" onclick="go('edit')"><span class="nav-icon" aria-hidden="true">✎</span>แก้ไขสินค้า</button>
       <button class="tab" id="tabQr" onclick="go('qr')"><span class="nav-icon" aria-hidden="true">⌁</span>QR Code</button>
+      <div class="nav-label" style="margin-top:12px">การเงิน</div>
+      <button class="tab" id="tabFinance" onclick="go('finance')"><span class="nav-icon" aria-hidden="true">฿</span>สรุปการเงิน</button>
       <div class="nav-label" style="margin-top:12px">โฆษณา</div>
       <button class="tab" id="tabAdsSum" onclick="go('adsSum')"><span class="nav-icon" aria-hidden="true">▤</span>TikTok สรุป</button>
       <button class="tab" id="tabAdsList" onclick="go('adsList')"><span class="nav-icon" aria-hidden="true">☰</span>TikTok โฆษณา</button>

@@ -36,6 +36,7 @@ const webImg = require('./lib/web-images');
 const r2 = require('./lib/r2');
 const tiktokAds = require('./lib/tiktok-ads-data');
 const tiktokAdsLive = require('./lib/tiktok-ads-live');
+const finance = require('./lib/finance-summary');
 const r2WebImg = require('./lib/r2-web-images');
 const { processProductImages, fetchOriginals, fetchMids } = require('./lib/product-images');
 const { PAGE, CLIENT_JS } = require('./lib/studio-page');
@@ -381,6 +382,7 @@ const studioServer = http.createServer(async (req, res) => {
       try { await tiktokAds.refresh((JSON.parse(b || '{}')).days); return json(200, { ok: true }); }
       catch (e) { return json(200, { error: e.message }); }
     }
+    if (url.pathname === '/api/finance') return json(200, await finance.summary(url.searchParams)); // แท็บ สรุปการเงิน (อ่านอย่างเดียว)
     if (url.pathname === '/api/auth-status') return json(200, { loggedIn: isAuthed() });
     if (url.pathname === '/api/qr-list') return json(200, loadQrReg());
 
