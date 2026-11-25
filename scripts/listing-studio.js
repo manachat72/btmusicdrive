@@ -38,6 +38,7 @@ const tiktokAds = require('./lib/tiktok-ads-data');
 const tiktokAdsLive = require('./lib/tiktok-ads-live');
 const finance = require('./lib/finance-summary');
 const financeFiles = require('./lib/finance-files');
+const productCosts = require('./lib/product-costs');
 const r2WebImg = require('./lib/r2-web-images');
 const { processProductImages, fetchOriginals, fetchMids } = require('./lib/product-images');
 const { PAGE, CLIENT_JS } = require('./lib/studio-page');
@@ -384,6 +385,7 @@ const studioServer = http.createServer(async (req, res) => {
       catch (e) { return json(200, { error: e.message }); }
     }
     if (url.pathname === '/api/finance-files') return json(200, financeFiles.summary(url.searchParams)); // สรุปการเงินจากไฟล์ export TikTok
+    if (url.pathname === '/api/product-costs') return json(200, await productCosts.summary(url.searchParams)); // แท็บ ต้นทุนสินค้า (อ่านอย่างเดียว)
     if (url.pathname === '/api/finance') return json(200, await finance.summary(url.searchParams)); // แท็บ สรุปการเงิน (อ่านอย่างเดียว)
     if (url.pathname === '/api/auth-status') return json(200, { loggedIn: isAuthed() });
     if (url.pathname === '/api/qr-list') return json(200, loadQrReg());

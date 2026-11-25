@@ -137,4 +137,4 @@ async function summary(q) {
   return data;
 }
 
-module.exports = { summary };
+module.exports = { summary, db, SOLD };

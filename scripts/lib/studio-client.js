@@ -141,11 +141,12 @@ function clearNewProductDraft(redraw) {
 /* ───────── nav ───────── */
 function go(v) {
   view = v;
-  ['new', 'edit', 'qr', 'finance', 'adsSum', 'adsList', 'adsLive'].forEach(function (k) { $('tab' + k[0].toUpperCase() + k.slice(1)).classList.toggle('on', k === v); });
+  ['new', 'edit', 'qr', 'finance', 'costs', 'adsSum', 'adsList', 'adsLive'].forEach(function (k) { $('tab' + k[0].toUpperCase() + k.slice(1)).classList.toggle('on', k === v); });
   if (v === 'new') renderNew();
   if (v === 'edit') renderEdit();
   if (v === 'qr') renderQr();
   if (v === 'finance') renderFinance();
+  if (v === 'costs') renderCosts();
   if (v === 'adsSum') renderAdsSummary();
   if (v === 'adsList') renderAdsList();
   if (v === 'adsLive') $('view').innerHTML = '<iframe src="/ads-live/" title="TikTok คุมแคมเปญ" style="width:100%;height:calc(100vh - 48px);border:0;border-radius:12px;background:#0b0f19"></iframe>';
@@ -1083,5 +1084,5 @@ async function createQr(btn) {
   } catch (e) { $('who').textContent = 'โหลดข้อมูลไม่ได้'; }
   // ลิงก์ลัดจากหลังบ้าน: http://localhost:4777/#finance | #adsLive
   var hv = (location.hash || '').slice(1);
-  go(['new', 'edit', 'qr', 'finance', 'adsSum', 'adsList', 'adsLive'].indexOf(hv) >= 0 ? hv : 'new');
+  go(['new', 'edit', 'qr', 'finance', 'costs', 'adsSum', 'adsList', 'adsLive'].indexOf(hv) >= 0 ? hv : 'new');
 })();
