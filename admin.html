@@ -1818,9 +1818,9 @@ function devBypass() {
   if (gate) gate.style.display = 'none';
   if (dash) dash.style.display = 'block';
   if (typeof showSection === 'function') {
-    showSection('studio');
+    showSection('products');
   } else {
-    setTimeout(() => { if (typeof showSection === 'function') showSection('studio'); }, 100);
+    setTimeout(() => { if (typeof showSection === 'function') showSection('products'); }, 100);
   }
 }
 </script>
@@ -1838,7 +1838,6 @@ function devBypass() {
     <button class="rail-btn" data-section="menus" onclick="showSection('menus')" title="เมนู"><i class="fa-solid fa-bars"></i></button>
     <button class="rail-btn" data-section="shipping" onclick="showSection('shipping')" title="จัดส่ง"><i class="fa-solid fa-truck"></i></button>
     <button class="rail-btn" data-section="marketing" onclick="showSection('marketing')" title="การตลาด"><i class="fa-solid fa-chart-line"></i></button>
-    <button class="rail-btn" data-section="studio" onclick="showSection('studio')" title="Product Studio"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
     <button class="rail-btn" data-section="settings" onclick="showSection('settings')" title="ตั้งค่า"><i class="fa-solid fa-gear"></i></button>
   </nav>
 
@@ -1883,10 +1882,6 @@ function devBypass() {
       <div class="sb-section-lbl" style="margin-top:6px;">การตลาด</div>
       <div class="sb-item" id="nav-marketing" onclick="showSection('marketing')">
         <i class="fa-solid fa-bullhorn"></i><span>การตลาด</span>
-      </div>
-      <div class="sb-item" id="nav-studio" onclick="showSection('studio')">
-        <i class="fa-solid fa-wand-magic-sparkles"></i><span>Product Studio</span>
-        <span class="sb-badge" style="background:#8B7355;color:#fff;font-size:9px;padding:2px 5px;border-radius:6px;">STUDIO</span>
       </div>
 
       <div class="sb-sep"></div>
@@ -2264,65 +2259,20 @@ function devBypass() {
       </div>
     </section>
 
-    <!-- ── PRODUCTS ──────────────────────────────────────────────────────── -->
+    <!-- ── PRODUCTS = Product Studio (ฝังจากเครื่อง :4777 ลงรูป/SEO/QR ได้) ── -->
     <section id="section-products" style="display:none;">
-      <div class="wp-page-hdr">
-        <div>
-          <h2 class="wp-page-title">สินค้า</h2>
-          <p class="wp-page-desc" id="products-count-label">จัดการคาตาล็อกสินค้า</p>
-        </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <button onclick="loadProducts()" class="wp-btn"><i class="fa-solid fa-arrows-rotate"></i> รีเฟรช</button>
-          <button onclick="exportProductTemplate()" class="wp-btn" style="background:#166534;color:#fff;border-color:#166534;">
-            <i class="fa-solid fa-file-arrow-down"></i> Export Template
-          </button>
-          <button onclick="document.getElementById('bulk-import-file').click()" class="wp-btn" style="background:#1d4ed8;color:#fff;border-color:#1d4ed8;">
-            <i class="fa-solid fa-file-arrow-up"></i> Import XLSX
-          </button>
-          <input type="file" id="bulk-import-file" accept=".xlsx,.xls" style="display:none;" onchange="onBulkImportFileSelected(this)">
-          <button onclick="openProductModal(null)" class="wp-btn" style="background:var(--accent);color:#fff;border-color:var(--accent);">
-            <i class="fa-solid fa-plus"></i> เพิ่มสินค้า
-          </button>
-        </div>
-      </div>
-
-      <div id="products-loading" class="wp-card" style="display:none;">
-        <div class="wp-loading-box"><div class="wp-spinner"></div><p style="color:var(--muted);">กำลังโหลดสินค้า…</p></div>
-      </div>
-      <div id="products-error" class="wp-notice err" style="display:none;">
-        <strong>ข้อผิดพลาด:</strong> <span id="products-error-text"></span>
-      </div>
-
-      <div id="products-bulk-bar" style="display:none;background:#fff7ed;border:1px solid #fdba74;border-radius:6px;padding:10px 14px;margin-bottom:10px;align-items:center;justify-content:space-between;gap:12px;">
-        <span style="font-size:13px;color:#9a3412;"><i class="fa-solid fa-check-double"></i> เลือก <strong id="products-bulk-count">0</strong> รายการ</span>
+      <div class="wp-page-hdr" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+        <h2 class="wp-page-title"><i class="fa-solid fa-tag" style="color:var(--accent);margin-right:8px;"></i>สินค้า</h2>
         <div style="display:flex;gap:8px;">
-          <button onclick="clearProductSelection()" class="wp-btn" style="font-size:12px;">ยกเลิก</button>
-          <button onclick="askBulkDeleteProducts()" class="wp-btn" style="background:#d63638;color:#fff;border-color:#d63638;font-size:12px;"><i class="fa-solid fa-trash"></i> ลบที่เลือก</button>
+          <button onclick="reloadStudio()" class="wp-btn"><i class="fa-solid fa-rotate"></i> โหลดใหม่</button>
+          <a href="http://localhost:4777/" target="_blank" rel="noopener" class="wp-btn" style="color:var(--text);display:inline-flex;align-items:center;gap:6px;"><i class="fa-solid fa-arrow-up-right-from-square"></i> เปิดแท็บใหม่</a>
         </div>
       </div>
-      <div id="products-table-wrapper" class="wp-card" style="display:none;">
-        <div class="card-body nopad" style="overflow-x:auto;">
-          <table class="wp-tbl">
-            <thead>
-              <tr>
-                <th style="width:36px;text-align:center;"><input type="checkbox" id="products-select-all" onchange="toggleSelectAllProducts(this.checked)" title="เลือกทั้งหมด"></th>
-                <th style="width:52px;"></th>
-                <th>สินค้า</th>
-                <th>หมวดหมู่</th>
-                <th class="r">ราคา</th>
-                <th class="r">ราคาเดิม</th>
-                <th class="r">คลัง</th>
-                <th style="width:72px;text-align:center;">แสดง</th>
-                <th style="width:120px;">จัดการ</th>
-              </tr>
-            </thead>
-            <tbody id="products-tbody"></tbody>
-          </table>
-        </div>
+      <div id="studio-offline" style="display:none;padding:28px;border:1px dashed var(--card-border);border-radius:8px;background:#fff;">
+        <p style="font-size:15px;font-weight:700;margin-bottom:8px;">ยังไม่ได้เปิด Studio บนเครื่องนี้</p>
+        <p style="font-size:13px;color:var(--muted);line-height:1.7;">Studio ทำงานบนคอมที่ต่อ NAS อยู่ — ดับเบิลคลิก <code>start-studio.bat</code> ก่อน แล้วกด "โหลดใหม่"</p>
       </div>
-      <div id="products-empty" class="wp-empty-box" style="display:none;">
-        <i class="fa-solid fa-tag"></i><p>ไม่พบสินค้า</p>
-      </div>
+      <iframe id="studio-frame" title="Product Studio" allow="local-network-access; local-network; loopback-network" style="display:none;width:100%;height:calc(100vh - 150px);min-height:560px;border:1px solid var(--card-border);border-radius:8px;background:#fff;"></iframe>
     </section>
 
     <!-- ── CUSTOMERS ─────────────────────────────────────────────────────── -->
@@ -2854,21 +2804,6 @@ function devBypass() {
       </div>
     </section>
 
-    <!-- ── PRODUCT STUDIO (ฝังจากเครื่อง :4777) ─────────────────────────────── -->
-    <section id="section-studio" style="display:none;">
-      <div class="wp-page-hdr" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
-        <h2 class="wp-page-title"><i class="fa-solid fa-wand-magic-sparkles" style="color:var(--accent);margin-right:8px;"></i>Product Studio</h2>
-        <div style="display:flex;gap:8px;">
-          <button onclick="reloadStudio()" class="wp-btn"><i class="fa-solid fa-rotate"></i> โหลดใหม่</button>
-          <a href="http://localhost:4777/" target="_blank" rel="noopener" class="wp-btn" style="color:var(--text);display:inline-flex;align-items:center;gap:6px;"><i class="fa-solid fa-arrow-up-right-from-square"></i> เปิดแท็บใหม่</a>
-        </div>
-      </div>
-      <div id="studio-offline" style="display:none;padding:28px;border:1px dashed var(--card-border);border-radius:8px;background:#fff;">
-        <p style="font-size:15px;font-weight:700;margin-bottom:8px;">ยังไม่ได้เปิด Studio บนเครื่องนี้</p>
-        <p style="font-size:13px;color:var(--muted);line-height:1.7;">Studio ทำงานบนคอมที่ต่อ NAS อยู่ — ดับเบิลคลิก <code>start-studio.bat</code> ก่อน แล้วกด "โหลดใหม่"</p>
-      </div>
-      <iframe id="studio-frame" title="Product Studio" allow="local-network-access; local-network; loopback-network" style="display:none;width:100%;height:calc(100vh - 150px);min-height:560px;border:1px solid var(--card-border);border-radius:8px;background:#fff;"></iframe>
-    </section>
 
   </main>
 </div><!-- end #dashboard -->
@@ -3157,11 +3092,11 @@ function devBypass() {
     return h;
   }
 
-  const SECTIONS = ['dashboard', 'orders', 'products', 'customers', 'categories', 'menus', 'shipping', 'marketing', 'studio', 'settings'];
+  const SECTIONS = ['dashboard', 'orders', 'products', 'customers', 'categories', 'menus', 'shipping', 'marketing', 'settings'];
   const SECTION_TITLES = {
     dashboard: 'แดชบอร์ด', orders: 'คำสั่งซื้อ', products: 'สินค้า',
     customers: 'ลูกค้า', categories: 'หมวดหมู่', menus: 'เมนู',
-    shipping: 'จัดส่ง', marketing: 'การตลาด', studio: 'Product Studio', settings: 'ตั้งค่า'
+    shipping: 'จัดส่ง', marketing: 'การตลาด', settings: 'ตั้งค่า'
   };
 
   // ── Gate ──────────────────────────────────────────────────────────────────
@@ -3206,7 +3141,7 @@ function devBypass() {
     document.getElementById('dashboard').style.display = 'block';
     setTimeout(() => {
       if (window.location.search.includes('studio=1')) {
-        showSection('studio');
+        showSection('products');
       } else {
         initDashboard();
       }
@@ -3241,13 +3176,12 @@ function devBypass() {
     closeSidebar();
     if (id === 'dashboard') initDashboard();
     if (id === 'orders') loadOrders();
-    if (id === 'products') loadProducts();
+    if (id === 'products') loadStudio();
     if (id === 'customers') loadCustomers();
-    if (id === 'categories') loadCategories();
+    if (id === 'categories') { loadProducts(); loadCategories(); }
     if (id === 'menus') loadMenus();
     if (id === 'shipping') loadShipping();
     if (id === 'marketing') loadMarketingSettings();
-    if (id === 'studio') loadStudio();
   }
 
   // ── Init ──────────────────────────────────────────────────────────────────
@@ -3845,32 +3779,17 @@ function devBypass() {
   }
 
   async function loadProducts() {
-    vis('products-loading', true);
-    vis('products-table-wrapper', false);
-    vis('products-error', false);
-    vis('products-empty', false);
-
     try {
-      let products = [];
       const res = await fetch(`${API_BASE}/products?admin=1&limit=200&_=${Date.now()}`, { headers: adminHeaders(false), cache: 'no-store' });
-      if (res.ok) { const json = await res.json(); products = Array.isArray(json) ? json : (json.data || []); }
-      else throw new Error('api_fail');
-      _products = products;
+      if (!res.ok) throw new Error('api_fail');
+      const json = await res.json();
+      _products = Array.isArray(json) ? json : (json.data || []);
     } catch {
-      // Fallback to local products.json
       try {
         const res = await fetch('products.json', { cache: 'no-store' });
         _products = res.ok ? await res.json() : [];
       } catch { _products = []; }
     }
-
-    vis('products-loading', false);
-    document.getElementById('products-count-label').textContent =
-      `${_products.length} สินค้าในคาตาล็อก`;
-
-    if (!_products.length) { vis('products-empty', true); return; }
-    renderProductsTable(_products);
-    vis('products-table-wrapper', true);
   }
 
   function renderProductsTable(products) {
