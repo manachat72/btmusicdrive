@@ -346,7 +346,7 @@ const studioServer = http.createServer(async (req, res) => {
   try {
     if (await tiktokAdsLive.handle(req, res, url)) return; // /ads-live/* : คุมแคมเปญ TikTok (เฉพาะ localhost)
     if (url.pathname === '/') { res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' }); return res.end(PAGE); }
-    if (url.pathname === '/studio.js') { res.writeHead(200, { 'content-type': 'text/javascript; charset=utf-8' }); return res.end(CLIENT_JS); }
+    if (url.pathname === '/studio.js') { res.writeHead(200, { 'content-type': 'text/javascript; charset=utf-8', 'cache-control': 'no-cache' }); return res.end(CLIENT_JS); } // no-cache: รีสตาร์ท Studio แล้วเบราว์เซอร์ต้องได้โค้ดใหม่
 
     if (url.pathname === '/api/meta') {
       return json(200, {

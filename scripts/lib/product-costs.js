@@ -20,7 +20,7 @@ async function summary(q) {
   const since = new Date(Date.now() - days * 864e5);
 
   const [prods, items] = await Promise.all([
-    db().product.findMany({ where: { isActive: true }, select: { id: true, name: true, sku: true, price: true, originalPrice: true, specs: true } }),
+    db().product.findMany({ where: { isActive: true }, select: { id: true, name: true, sku: true, slug: true, price: true, originalPrice: true, specs: true, imageUrl: true } }),
     db().orderItem.findMany({ where: { order: { status: { in: SOLD }, createdAt: { gte: since } } }, select: { productId: true, quantity: true } }),
   ]);
   const sold = {};
@@ -31,7 +31,7 @@ async function summary(q) {
     // อุปกรณ์เสริม (SKU BT-AC-…) ไม่ใช่แฟลชไดร์ฟ → ราคาทุนตามความจุใช้ไม่ได้ (ต้องให้ร้านระบุทีละชิ้น)
     const accessory = /^BT-AC-/i.test(p.sku || '');
     const c = accessory ? { cost: 0, known: false } : costOf(cap), price = Number(p.price) || 0;
-    return { id: p.id, sku: p.sku || '', name: p.name, cap: accessory ? 'อุปกรณ์เสริม' : cap, accessory, price, listPrice: Number(p.originalPrice) || 0, cost: c.cost, costKnown: c.known,
+    return { id: p.id, sku: p.sku || '', name: p.name, slug: p.slug || '', image: p.imageUrl || '', cap: accessory ? 'อุปกรณ์เสริม' : cap, accessory, price, listPrice: Number(p.originalPrice) || 0, cost: c.cost, costKnown: c.known,
       profit: accessory ? 0 : price - c.cost, margin: accessory ? 0 : (price ? (price - c.cost) / price * 100 : 0), sold: sold[p.id] || 0 };
   });
 
