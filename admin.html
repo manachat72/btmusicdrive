@@ -2867,7 +2867,7 @@ function devBypass() {
         <p style="font-size:15px;font-weight:700;margin-bottom:8px;">ยังไม่ได้เปิด Studio บนเครื่องนี้</p>
         <p style="font-size:13px;color:var(--muted);line-height:1.7;">Studio ทำงานบนคอมที่ต่อ NAS อยู่ — ดับเบิลคลิก <code>start-studio.bat</code> ก่อน แล้วกด "โหลดใหม่"</p>
       </div>
-      <iframe id="studio-frame" title="Product Studio" style="display:none;width:100%;height:calc(100vh - 150px);min-height:560px;border:1px solid var(--card-border);border-radius:8px;background:#fff;"></iframe>
+      <iframe id="studio-frame" title="Product Studio" allow="local-network-access; local-network; loopback-network" style="display:none;width:100%;height:calc(100vh - 150px);min-height:560px;border:1px solid var(--card-border);border-radius:8px;background:#fff;"></iframe>
     </section>
 
   </main>
@@ -4567,7 +4567,7 @@ function devBypass() {
     if (!frame || !off) return;
     if (_studioLoaded) return;
     // เช็คว่า Studio เปิดอยู่ไหม (no-cors: ได้แค่รู้ว่าต่อติดหรือไม่)
-    fetch(STUDIO_URL, { mode: 'no-cors', cache: 'no-store' }).then(() => {
+    fetch(STUDIO_URL, { mode: 'no-cors', cache: 'no-store', targetAddressSpace: 'loopback' }).then(() => {
       off.style.display = 'none';
       frame.style.display = 'block';
       frame.src = STUDIO_URL;
